@@ -14,12 +14,16 @@ public class RytInput : MonoBehaviour
 
 		public Vector2 screenDelta;
 		public Vector2 prevPos;
+		public Vector2 startPos;
+		public Vector2 currentPos;
 	};
 
 	public static Touch[] touches;
 	public static float scrollAmount;
 
 	private float pcScrollRate = 2.0f;
+
+	private const float distForMove = 5.0f;
 
 	void Start()
 	{
@@ -65,6 +69,31 @@ public class RytInput : MonoBehaviour
 		//string output = string.Format("isDown {0} onDown {1} isUp {2} onUp {3} ", touches[0].isDown, touches[0].onDown, touches[0].isUp, touches[0].onUp);
 		//string output = string.Format("deltaPos {0} ", touches[0].screenDelta);
 		//Debug.Log(output);
+
+		// selection
+		{
+			if (touches[0].isDown) {
+
+				Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(touches[0].currentPos.x, touches[0].currentPos.y, Camera.main.transform.position.z * -1));
+				//SelectionDisplay.instance.transform.position = worldPos;
+
+				Vector3 origin = Camera.main.transform.position;
+				Vector3 dir = (worldPos - Camera.main.transform.position).normalized;
+				RaycastHit hit;
+
+				Debug.Log(origin + " - " + worldPos);
+				Debug.DrawRay(origin, dir * 1000.0f, Color.red, 0.01f);
+
+				if (Physics.Raycast(origin, dir, out hit)) {
+
+					// If it hits something...
+					if (hit.collider != null) {
+						//Debug.Break();
+						Debug.Log("Hit something " + hit.collider.gameObject.name);
+					}
+				}
+			}
+		}
 	}
 
 	private void UpdateTouchStates(Touch touch, bool newState, Vector2 position)
@@ -79,6 +108,8 @@ public class RytInput : MonoBehaviour
 				touch.onUp = false;
 			}
 		} else {
+			touch.moved = false;
+
 			if (touch.isUp) {
 				touch.onUp = false;
 			} else {
@@ -91,12 +122,19 @@ public class RytInput : MonoBehaviour
 
 		touch.screenDelta.x = 0;
 		touch.screenDelta.y = 0;
+		touch.currentPos = position;
 		if (touch.onDown) {
+			touch.startPos = position;
 			touch.prevPos = position;
 		}
 		if (touch.isDown) {
 			touch.screenDelta = touch.prevPos - position;
 			touch.prevPos = position;
+
+			float dist = Vector2.Distance(touch.startPos, position);
+			if (dist > distForMove) {
+				touch.moved = true;
+			}
 		}
 	}
 }

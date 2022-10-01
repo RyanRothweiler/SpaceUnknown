@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Ship : MonoBehaviour
 {
+	public static Ship shipSelected;
+
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -16,8 +18,13 @@ public class Ship : MonoBehaviour
 
 	}
 
-	void OnMouseDown()
+	/*
+	void OnMouseUp()
 	{
-		Debug.Log("clicked");
+		if (!RytInput.touches[0].moved) {
+			SelectionDisplay.instance.gameObject.SetActive(true);
+			SelectionDisplay.instance.transform.position = this.transform.position;
+		}
 	}
+	*/
 }
