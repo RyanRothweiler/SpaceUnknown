@@ -11,6 +11,13 @@ public class Ship : MonoBehaviour
 
 	private LineRenderer pathLine;
 
+	// 0 means no conservation, boost all the way until counter boost.
+	//private float fuelConservation;
+
+	// this is in tons
+	private float mass = 2250.0f;
+	private Vector2 velocity;
+
 	public void Awake()
 	{
 		pathLine = this.GetComponent<LineRenderer>();
@@ -26,10 +33,13 @@ public class Ship : MonoBehaviour
 			positions[0] = this.transform.position;
 			positions[1] = new Vector3(targetPosition.x, targetPosition.y, 0);
 			pathLine.SetPositions(positions);
+
+			Step();
 		} else {
 			pathLine.positionCount = 0;
 		}
 	}
+
 
 	public void SetTargetPosition(Vector2 pos)
 	{
@@ -39,8 +49,27 @@ public class Ship : MonoBehaviour
 
 	public void Step()
 	{
+		float time = 0.1f;
+		Vector2 currentPos = new Vector2(this.transform.position.x, this.transform.position.y);
+		Vector2 force = (targetPosition - currentPos).normalized * 0.1f;
 
+		velocity = velocity + force;
+		Vector2 distMoved = velocity * time;
+
+		this.transform.position = currentPos + distMoved;
 	}
+
+	/*
+	private double PhysicsCalc(double current, double velocity)
+	{
+		float time = 0.1;
+
+		current = velocity + accele;
+
+
+		return current;
+	}
+	*/
 
 	/*
 	void OnMouseUp()
