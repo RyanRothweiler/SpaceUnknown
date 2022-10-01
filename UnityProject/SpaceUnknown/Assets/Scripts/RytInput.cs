@@ -18,8 +18,13 @@ public class RytInput : MonoBehaviour
 		public Vector2 currentPos;
 	};
 
-	public static Touch[] touches;
+	//public static Touch[] touches;
 	public static float scrollAmount;
+
+	public static Touch leftTouch;
+	public static Touch rightTouch;
+
+	private Ship shipSelected;
 
 	private float pcScrollRate = 2.0f;
 
@@ -27,8 +32,11 @@ public class RytInput : MonoBehaviour
 
 	void Start()
 	{
-		touches = new Touch[1];
-		touches[0] = new Touch();
+		//touches = new Touch[1];
+		//touches[0] = new Touch();
+
+		leftTouch = new Touch();
+		rightTouch = new Touch();
 	}
 
 	void Update()
@@ -41,9 +49,10 @@ public class RytInput : MonoBehaviour
 
 		// touches
 		{
-			Touch rytTouch = touches[0];
+			//Touch rytTouch = touches[0];
 
-			UpdateTouchStates(rytTouch, Input.GetMouseButton(0), Input.mousePosition);
+			UpdateTouchStates(leftTouch, Input.GetMouseButton(0), Input.mousePosition);
+			UpdateTouchStates(rightTouch, Input.GetMouseButton(1), Input.mousePosition);
 
 			/*
 			if (Input.touches.Length > 0) {
@@ -66,32 +75,46 @@ public class RytInput : MonoBehaviour
 			*/
 		}
 
-		//string output = string.Format("isDown {0} onDown {1} isUp {2} onUp {3} ", touches[0].isDown, touches[0].onDown, touches[0].isUp, touches[0].onUp);
-		//string output = string.Format("deltaPos {0} ", touches[0].screenDelta);
-		//Debug.Log(output);
-
 		// selection
 		{
-			if (touches[0].isDown) {
+			if (leftTouch.onUp) {
 
-				Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(touches[0].currentPos.x, touches[0].currentPos.y, Camera.main.transform.position.z * -1));
-				//SelectionDisplay.instance.transform.position = worldPos;
+				if (!leftTouch.moved) {
+					shipSelected = null;
 
-				Vector3 origin = Camera.main.transform.position;
-				Vector3 dir = (worldPos - Camera.main.transform.position).normalized;
-				RaycastHit hit;
+					Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(leftTouch.currentPos.x, leftTouch.currentPos.y, Camera.main.transform.position.z * -1));
 
-				Debug.Log(origin + " - " + worldPos);
-				Debug.DrawRay(origin, dir * 1000.0f, Color.red, 0.01f);
+					Vector3 origin = Camera.main.transform.position;
+					Vector3 dir = (worldPos - Camera.main.transform.position).normalized;
+					RaycastHit hit;
 
-				if (Physics.Raycast(origin, dir, out hit)) {
+					if (Physics.Raycast(origin, dir, out hit)) {
 
-					// If it hits something...
-					if (hit.collider != null) {
-						//Debug.Break();
-						Debug.Log("Hit something " + hit.collider.gameObject.name);
+						GameObject hitObj = hit.collider.gameObject;
+						Ship hitShip = hitObj.GetComponent<Ship>();
+
+						if (hitShip != null) {
+							shipSelected = hitShip;
+
+							SelectionDisplay.instance.gameObject.SetActive(true);
+							SelectionDisplay.instance.transform.position = hitObj.transform.position;
+						}
 					}
 				}
+
+				// selection dispaly
+				if (shipSelected != null) {
+					SelectionDisplay.instance.gameObject.SetActive(true);
+					SelectionDisplay.instance.transform.position = shipSelected.transform.position;
+				} else {
+					SelectionDisplay.instance.gameObject.SetActive(false);
+				}
+			}
+
+			// ship movement
+			if (shipSelected != null && rightTouch.onUp && !rightTouch.moved) {
+				Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(leftTouch.currentPos.x, leftTouch.currentPos.y, Camera.main.transform.position.z * -1));
+				shipSelected.SetTargetPosition(worldPos);
 			}
 		}
 	}
@@ -108,9 +131,8 @@ public class RytInput : MonoBehaviour
 				touch.onUp = false;
 			}
 		} else {
-			touch.moved = false;
-
 			if (touch.isUp) {
+				touch.moved = false;
 				touch.onUp = false;
 			} else {
 				touch.isDown = false;

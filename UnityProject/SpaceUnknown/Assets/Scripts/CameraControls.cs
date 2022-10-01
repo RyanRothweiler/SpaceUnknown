@@ -11,14 +11,12 @@ public class CameraControls : MonoBehaviour
 
 	void Update()
 	{
-
-		return;
-
 		Vector3 newPos = this.transform.position;
 		newPos.z = Mathf.Clamp(newPos.z + RytInput.scrollAmount, -1000.0f, -10.0f);
-		newPos.x += RytInput.touches[0].screenDelta.x * 0.05f;
-		newPos.y += RytInput.touches[0].screenDelta.y * 0.05f;
+		if (RytInput.leftTouch.moved) {
+			newPos.x += RytInput.leftTouch.screenDelta.x * 0.05f;
+			newPos.y += RytInput.leftTouch.screenDelta.y * 0.05f;
+		}
 		this.transform.position = newPos;
-
 	}
 }

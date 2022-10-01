@@ -6,14 +6,38 @@ public class Ship : MonoBehaviour
 {
 	public static Ship shipSelected;
 
-	// Start is called before the first frame update
-	void Start()
-	{
+	private bool hasTarget;
+	private Vector2 targetPosition;
 
+	private LineRenderer pathLine;
+
+	public void Awake()
+	{
+		pathLine = this.GetComponent<LineRenderer>();
+		pathLine.positionCount = 0;
 	}
 
-	// Update is called once per frame
 	void Update()
+	{
+		if (hasTarget) {
+			pathLine.positionCount = 2;
+
+			Vector3[] positions = new Vector3[2];
+			positions[0] = this.transform.position;
+			positions[1] = new Vector3(targetPosition.x, targetPosition.y, 0);
+			pathLine.SetPositions(positions);
+		} else {
+			pathLine.positionCount = 0;
+		}
+	}
+
+	public void SetTargetPosition(Vector2 pos)
+	{
+		hasTarget = true;
+		targetPosition = pos;
+	}
+
+	public void Step()
 	{
 
 	}

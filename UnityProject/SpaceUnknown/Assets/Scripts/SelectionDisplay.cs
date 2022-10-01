@@ -9,7 +9,7 @@ public class SelectionDisplay : MonoBehaviour
 	void Awake()
 	{
 		instance = this;
-		//this.gameObject.SetActive(false);
+		this.gameObject.SetActive(false);
 	}
 
 }
