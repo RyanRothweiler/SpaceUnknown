@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// 1 unit = 1000 miles
+
 public class Ship : MonoBehaviour
 {
 	public static Ship shipSelected;
@@ -17,6 +19,9 @@ public class Ship : MonoBehaviour
 	// this is in tons
 	private float mass = 2250.0f;
 	private Vector2 velocity;
+
+	// amount of siulation time for one world step
+	private float timeStepsMinutes = 1.0f;
 
 	public void Awake()
 	{
@@ -49,12 +54,11 @@ public class Ship : MonoBehaviour
 
 	public void Step()
 	{
-		float time = 0.1f;
 		Vector2 currentPos = new Vector2(this.transform.position.x, this.transform.position.y);
 		Vector2 force = (targetPosition - currentPos).normalized * 0.1f;
 
 		velocity = velocity + force;
-		Vector2 distMoved = velocity * time;
+		Vector2 distMoved = velocity * timeStepsMinutes;
 
 		this.transform.position = currentPos + distMoved;
 	}
