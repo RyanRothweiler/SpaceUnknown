@@ -17,14 +17,18 @@ public class Ship : MonoBehaviour
 	//private float fuelConservation;
 
 	// this is in tons
-	private float mass = 2250.0f;
+	public float mass = 2250.0f;
 	private Vector2 velocity;
 
 	// amount of siulation time for one world step
 	private float timeStepsMinutes = 1.0f;
 
+	private UniversalPosition uniPos;
+
 	public void Awake()
 	{
+		uniPos = this.GetComponent<UniversalPosition>();
+
 		pathLine = this.GetComponent<LineRenderer>();
 		pathLine.positionCount = 0;
 	}
@@ -45,7 +49,6 @@ public class Ship : MonoBehaviour
 		}
 	}
 
-
 	public void SetTargetPosition(Vector2 pos)
 	{
 		hasTarget = true;
@@ -54,13 +57,14 @@ public class Ship : MonoBehaviour
 
 	public void Step()
 	{
-		Vector2 currentPos = new Vector2(this.transform.position.x, this.transform.position.y);
-		Vector2 force = (targetPosition - currentPos).normalized * 0.1f;
+		Vector2 force = (targetPosition - uniPos.Get()).normalized * 0.1f;
+		Vector2 acceleration = force / mass;
 
-		velocity = velocity + force;
+		velocity = velocity + acceleration;
 		Vector2 distMoved = velocity * timeStepsMinutes;
 
-		this.transform.position = currentPos + distMoved;
+		Vector3 newPos = uniPos.Get() + distMoved;
+		uniPos.Set(newPos);
 	}
 
 	/*

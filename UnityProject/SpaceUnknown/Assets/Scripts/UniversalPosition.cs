@@ -5,8 +5,20 @@ using UnityEngine;
 public class UniversalPosition : MonoBehaviour
 {
 	// Units here are just made up, not related to anything in the real world
-	public long x;
-	public long y;
+	public double x;
+	public double y;
+
+	// just for convenience
+	public void Set(Vector3 pos)
+	{
+		x = (double)pos.x;
+		y = (double)pos.y;
+	}
+
+	public Vector2 Get()
+	{
+		return new Vector2((float)x, (float)y);
+	}
 
 	void Update()
 	{
