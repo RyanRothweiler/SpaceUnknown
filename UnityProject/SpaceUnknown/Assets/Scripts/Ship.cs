@@ -9,15 +9,14 @@ public class Ship : MonoBehaviour
 	public static Ship shipSelected;
 
 	private bool hasTarget;
-	private Vector2 targetPosition;
+	private UniversalPosition targetPosition;
 
 	private LineRenderer pathLine;
 
 	// 0 means no conservation, boost all the way until counter boost.
 	//private float fuelConservation;
 
-	// this is in tons
-	public float mass = 2250.0f;
+	private float massTons = 2250.0f;
 	private Vector2 velocity;
 
 	// amount of siulation time for one world step
@@ -40,7 +39,7 @@ public class Ship : MonoBehaviour
 
 			Vector3[] positions = new Vector3[2];
 			positions[0] = this.transform.position;
-			positions[1] = new Vector3(targetPosition.x, targetPosition.y, 0);
+			positions[1] = targetPosition.UniverseToUnity();
 			pathLine.SetPositions(positions);
 
 			Step();
@@ -49,16 +48,23 @@ public class Ship : MonoBehaviour
 		}
 	}
 
-	public void SetTargetPosition(Vector2 pos)
+	public void SetTargetPosition(Vector2 unityPos)
 	{
 		hasTarget = true;
-		targetPosition = pos;
+		targetPosition = UniversalPosition.UnityToUniverse(unityPos);
 	}
 
 	public void Step()
 	{
-		Vector2 force = (targetPosition - uniPos.Get()).normalized * 0.1f;
-		Vector2 acceleration = force / mass;
+		// how much push the fuel provides
+		float fuelForce = 1.0f;
+
+		float stepsNeededToStop = velocity.magnitude / fuelForce;
+		//float distToTarget = Vector3.Distance(uniPos.Get());
+		//float stepsToTarget = velocity.magnitude / V
+
+		Vector2 force = (targetPosition.Get() - uniPos.Get()).normalized * fuelForce;
+		Vector2 acceleration = force / massTons;
 
 		velocity = velocity + acceleration;
 		Vector2 distMoved = velocity * timeStepsMinutes;
@@ -66,26 +72,4 @@ public class Ship : MonoBehaviour
 		Vector3 newPos = uniPos.Get() + distMoved;
 		uniPos.Set(newPos);
 	}
-
-	/*
-	private double PhysicsCalc(double current, double velocity)
-	{
-		float time = 0.1;
-
-		current = velocity + accele;
-
-
-		return current;
-	}
-	*/
-
-	/*
-	void OnMouseUp()
-	{
-		if (!RytInput.touches[0].moved) {
-			SelectionDisplay.instance.gameObject.SetActive(true);
-			SelectionDisplay.instance.transform.position = this.transform.position;
-		}
-	}
-	*/
 }

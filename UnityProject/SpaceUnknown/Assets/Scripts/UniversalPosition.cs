@@ -20,11 +20,25 @@ public class UniversalPosition : MonoBehaviour
 		return new Vector2((float)x, (float)y);
 	}
 
-	void Update()
+	public Vector3 UniverseToUnity()
 	{
 		Vector3 pos = new Vector3();
 		pos.x = (float)(x / CameraControls.unityUnitsToGameUnits);
 		pos.y = (float)(y / CameraControls.unityUnitsToGameUnits);
-		this.transform.position = pos;
+		return pos;
 	}
+
+	void Update()
+	{
+		this.transform.position = UniverseToUnity();
+	}
+
+	public static UniversalPosition UnityToUniverse(Vector3 pos)
+	{
+		UniversalPosition ret = new UniversalPosition();
+		ret.x = pos.x * CameraControls.unityUnitsToGameUnits;
+		ret.y = pos.y * CameraControls.unityUnitsToGameUnits;
+		return ret;
+	}
+
 }
