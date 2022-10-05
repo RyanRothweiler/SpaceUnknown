@@ -25,6 +25,7 @@ public class UniversalPosition : MonoBehaviour
 		Vector3 pos = new Vector3();
 		pos.x = (float)(x / CameraControls.unityUnitsToGameUnits);
 		pos.y = (float)(y / CameraControls.unityUnitsToGameUnits);
+		pos.z = 0;
 		return pos;
 	}
 

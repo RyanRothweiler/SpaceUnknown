@@ -17,12 +17,16 @@ public class Ship : MonoBehaviour
 	//private float fuelConservation;
 
 	private float massTons = 2250.0f;
-	private Vector2 velocity;
-
-	// amount of siulation time for one world step
-	private float timeStepsMinutes = 1.0f;
+	public Vector2 velocity;
 
 	private UniversalPosition uniPos;
+
+	private List<float> currentFlightPlanForce;
+
+	public float maxStepsNeededToStop;
+	public float distToTarget;
+	public float stepsToTarget;
+	public Vector2 force;
 
 	public void Awake()
 	{
@@ -52,24 +56,61 @@ public class Ship : MonoBehaviour
 	{
 		hasTarget = true;
 		targetPosition = UniversalPosition.UnityToUniverse(unityPos);
+
+		/*
+		// how much push the fuel provides
+		float fuelForce = 1.0f;
+
+		int flightWorldMinutes = 120;
+		currentFlightPlanForce = new List<float>();
+		float flightDist = Vector2.Distance(uniPos.Get(), targetPos.Get());
+
+		//int minSteps = (int)(flightDist / fuelForce) + 1;
+
+		for (int i = 0; i < flightWorldMinutes; i++) {
+		}
+		*/
 	}
 
+	// one step is one minute game world time
 	public void Step()
 	{
 		// how much push the fuel provides
 		float fuelForce = 1.0f;
+		float maxAcceleration = (1 / massTons) * fuelForce;
 
-		float stepsNeededToStop = velocity.magnitude / fuelForce;
-		//float distToTarget = Vector3.Distance(uniPos.Get());
-		//float stepsToTarget = velocity.magnitude / V
+		//
+		maxStepsNeededToStop = velocity.magnitude / maxAcceleration;
+		distToTarget = Vector2.Distance(uniPos.Get(), targetPosition.Get());
+		stepsToTarget = distToTarget / velocity.magnitude;
+		//
 
-		Vector2 force = (targetPosition.Get() - uniPos.Get()).normalized * fuelForce;
+		// close enough
+		if (distToTarget < 0.01f) {
+			hasTarget = false;
+			velocity = new Vector2(0, 0);
+			return;
+		}
+
+
+		if ( maxStepsNeededToStop > stepsToTarget) {
+			// slow down, apply opposite force
+			force = velocity.normalized * -1 * fuelForce;
+		} else if (maxStepsNeededToStop > stepsToTarget - 2) {
+			// coast, apply no force
+			force = new Vector2(0, 0);
+		} else {
+			// push towards target
+			force = (targetPosition.Get() - uniPos.Get()).normalized * fuelForce;
+		}
+
+		Debug.DrawRay(uniPos.UniverseToUnity(), force, Color.red, 0.1f);
+		Debug.DrawRay(uniPos.UniverseToUnity(), velocity, Color.green, 0.1f);
+
 		Vector2 acceleration = force / massTons;
-
 		velocity = velocity + acceleration;
-		Vector2 distMoved = velocity * timeStepsMinutes;
 
-		Vector3 newPos = uniPos.Get() + distMoved;
+		Vector3 newPos = uniPos.Get() + velocity;
 		uniPos.Set(newPos);
 	}
 }
