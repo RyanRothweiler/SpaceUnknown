@@ -92,8 +92,7 @@ public class Ship : MonoBehaviour
 			return;
 		}
 
-
-		if ( maxStepsNeededToStop > stepsToTarget) {
+		if (maxStepsNeededToStop > stepsToTarget) {
 			// slow down, apply opposite force
 			force = velocity.normalized * -1 * fuelForce;
 		} else if (maxStepsNeededToStop > stepsToTarget - 2) {
@@ -104,8 +103,8 @@ public class Ship : MonoBehaviour
 			force = (targetPosition.Get() - uniPos.Get()).normalized * fuelForce;
 		}
 
-		Debug.DrawRay(uniPos.UniverseToUnity(), force, Color.red, 0.1f);
-		Debug.DrawRay(uniPos.UniverseToUnity(), velocity, Color.green, 0.1f);
+		//Debug.DrawRay(uniPos.UniverseToUnity(), force, Color.red, 0.1f);
+		//Debug.DrawRay(uniPos.UniverseToUnity(), velocity, Color.green, 0.1f);
 
 		Vector2 acceleration = force / massTons;
 		velocity = velocity + acceleration;
