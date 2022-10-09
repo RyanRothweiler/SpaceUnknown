@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class Ship : MonoBehaviour, IActor
 {
+	public ItemDefinition testDef;
+
 	private bool hasTarget;
 	private UniversalPosition targetPosition;
 
 	public List<Module> modules;
+	public List<ItemInstance> cargo;
 
 	private LineRenderer pathLine;
 
@@ -26,7 +29,7 @@ public class Ship : MonoBehaviour, IActor
 	public float stepsToTarget;
 	public Vector2 force;
 
-	public int storageTons = 1000;
+	public float storageTons = 1000;
 
 	public void Awake()
 	{
@@ -39,6 +42,8 @@ public class Ship : MonoBehaviour, IActor
 
 		modules = new List<Module>();
 		modules.Add(new Module());
+
+		cargo = new List<ItemInstance>();
 	}
 
 	void Update()
@@ -54,31 +59,58 @@ public class Ship : MonoBehaviour, IActor
 		} else {
 			pathLine.positionCount = 0;
 		}
+
+		if (Input.GetKeyDown(KeyCode.I)) {
+			GiveItem(testDef, 80);
+		}
+	}
+
+	public void GiveItem(ItemDefinition def, int count)
+	{
+		for (int i = 0; i < cargo.Count; i++) {
+			if (cargo[i].definition.id == def.id) {
+				GiveMaxAllowed(cargo[i], count);
+				return;
+			}
+		}
+
+		ItemInstance inst = new ItemInstance(def);
+		GiveMaxAllowed(inst, count);
+		cargo.Add(inst);
+	}
+
+	public void GiveMaxAllowed(ItemInstance inst, int countGiving)
+	{
+		float weightCurrent = CurrentStorageTons();
+		float weightGiving = countGiving * inst.definition.weightTons;
+		if (weightCurrent + weightGiving <= storageTons) {
+			inst.count += countGiving;
+		} else {
+			float weightExtra = (weightCurrent + weightGiving) - storageTons;
+			int countExtra = (int)(weightExtra / inst.definition.weightTons);
+			int newCountGiving = countGiving - countExtra;
+
+			// handle various roundings
+			if ((newCountGiving * inst.definition.weightTons) + weightCurrent > storageTons) {
+				newCountGiving--;
+			}
+			inst.count += newCountGiving;
+		}
 	}
 
 	public void SetTargetPosition(Vector2 unityPos)
 	{
 		hasTarget = true;
 		targetPosition = UniversalPosition.UnityToUniverse(unityPos);
-
-		/*
-		// how much push the fuel provides
-		float fuelForce = 1.0f;
-
-		int flightWorldMinutes = 120;
-		currentFlightPlanForce = new List<float>();
-		float flightDist = Vector2.Distance(uniPos.Get(), targetPos.Get());
-
-		//int minSteps = (int)(flightDist / fuelForce) + 1;
-
-		for (int i = 0; i < flightWorldMinutes; i++) {
-		}
-		*/
 	}
 
-	public int CurrentStorageTons()
+	public float CurrentStorageTons()
 	{
-		return 500;
+		float ret = 0;
+		for (int i = 0; i < cargo.Count; i++) {
+			ret += cargo[i].GetWeightTons();
+		}
+		return ret;
 	}
 
 	// one step is one minute game world time

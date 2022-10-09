@@ -884,6 +884,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a78ad5a7e2739f448b4510d6995a6a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  testDef: {fileID: 11400000, guid: 7200e17adebf75641b4eac54399980be, type: 2}
   velocity: {x: 0, y: 0}
   maxStepsNeededToStop: 0
   distToTarget: 0
@@ -1416,6 +1417,10 @@ PrefabInstance:
     - target: {fileID: 6996803896663230666, guid: 83afe3f08c8bf4f4c8b025372bda2aa0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8249868919895002420, guid: 83afe3f08c8bf4f4c8b025372bda2aa0, type: 3}
+      propertyPath: m_text
+      value: Cargo
       objectReference: {fileID: 0}
     - target: {fileID: 8249868920762651540, guid: 83afe3f08c8bf4f4c8b025372bda2aa0, type: 3}
       propertyPath: m_AnchorMax.y
