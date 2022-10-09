@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// 1 unit = 1000 miles
-
-public class Ship : MonoBehaviour
+public class Ship : MonoBehaviour, IActor
 {
-	public static Ship shipSelected;
+	public ModuleLine moduleLine;
 
 	private bool hasTarget;
 	private UniversalPosition targetPosition;
+
+	private List<Module> modules;
 
 	private LineRenderer pathLine;
 
@@ -30,10 +30,16 @@ public class Ship : MonoBehaviour
 
 	public void Awake()
 	{
+		GameManager.RegisterActor(this);
+
 		uniPos = this.GetComponent<UniversalPosition>();
 
 		pathLine = this.GetComponent<LineRenderer>();
 		pathLine.positionCount = 0;
+
+		modules = new List<Module>();
+		modules.Add(new Module());
+		moduleLine.module = modules[0];
 	}
 
 	void Update()
@@ -46,7 +52,6 @@ public class Ship : MonoBehaviour
 			positions[1] = targetPosition.UniverseToUnity();
 			pathLine.SetPositions(positions);
 
-			Step();
 		} else {
 			pathLine.positionCount = 0;
 		}
@@ -73,43 +78,53 @@ public class Ship : MonoBehaviour
 	}
 
 	// one step is one minute game world time
-	public void Step()
+	public void Step(float time)
 	{
-		// how much push the fuel provides
-		float fuelForce = 1.0f;
-		float maxAcceleration = (1 / massTons) * fuelForce;
+		// Ship movement
+		if (hasTarget) {
+			// how much push the fuel provides
+			float fuelForce = 1.0f;
+			float maxAcceleration = (1 / massTons) * fuelForce;
 
-		//
-		maxStepsNeededToStop = velocity.magnitude / maxAcceleration;
-		distToTarget = Vector2.Distance(uniPos.Get(), targetPosition.Get());
-		stepsToTarget = distToTarget / velocity.magnitude;
-		//
+			//
+			maxStepsNeededToStop = velocity.magnitude / maxAcceleration;
+			distToTarget = Vector2.Distance(uniPos.Get(), targetPosition.Get());
+			stepsToTarget = distToTarget / velocity.magnitude;
+			//
 
-		// close enough
-		if (distToTarget < 0.01f) {
-			hasTarget = false;
-			velocity = new Vector2(0, 0);
-			return;
+			// close enough
+			if (distToTarget < 0.01f) {
+				hasTarget = false;
+				velocity = new Vector2(0, 0);
+				return;
+			}
+
+			if (maxStepsNeededToStop > stepsToTarget) {
+				// slow down, apply opposite force
+				force = velocity.normalized * -1 * fuelForce;
+			} else if (maxStepsNeededToStop > stepsToTarget - 2) {
+				// coast, apply no force
+				force = new Vector2(0, 0);
+			} else {
+				// push towards target
+				force = (targetPosition.Get() - uniPos.Get()).normalized * fuelForce;
+			}
+
+			//Debug.DrawRay(uniPos.UniverseToUnity(), force, Color.red, 0.1f);
+			//Debug.DrawRay(uniPos.UniverseToUnity(), velocity, Color.green, 0.1f);
+
+			Vector2 acceleration = force / massTons;
+			velocity = velocity + acceleration;
+
+			Vector3 newPos = uniPos.Get() + velocity;
+			uniPos.Set(newPos);
 		}
 
-		if (maxStepsNeededToStop > stepsToTarget) {
-			// slow down, apply opposite force
-			force = velocity.normalized * -1 * fuelForce;
-		} else if (maxStepsNeededToStop > stepsToTarget - 2) {
-			// coast, apply no force
-			force = new Vector2(0, 0);
-		} else {
-			// push towards target
-			force = (targetPosition.Get() - uniPos.Get()).normalized * fuelForce;
+		// Update modules
+		{
+			for (int i = 0; i < modules.Count; i++) {
+				modules[i].Step(time);
+			}
 		}
-
-		//Debug.DrawRay(uniPos.UniverseToUnity(), force, Color.red, 0.1f);
-		//Debug.DrawRay(uniPos.UniverseToUnity(), velocity, Color.green, 0.1f);
-
-		Vector2 acceleration = force / massTons;
-		velocity = velocity + acceleration;
-
-		Vector3 newPos = uniPos.Get() + velocity;
-		uniPos.Set(newPos);
 	}
 }

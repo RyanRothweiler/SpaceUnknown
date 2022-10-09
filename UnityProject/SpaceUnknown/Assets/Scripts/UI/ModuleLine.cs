@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class ModuleLine : MonoBehaviour
 {
 	public ProgressBar activationProgress;
+	public Module module;
 
 	void Start()
 	{
@@ -14,6 +15,6 @@ public class ModuleLine : MonoBehaviour
 
 	void Update()
 	{
-
+		activationProgress.val = module.PercentageActivation();
 	}
 }
