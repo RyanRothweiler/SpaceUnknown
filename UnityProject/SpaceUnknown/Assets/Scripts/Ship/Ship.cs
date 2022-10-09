@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class Ship : MonoBehaviour, IActor
 {
-	public ModuleLine moduleLine;
-
 	private bool hasTarget;
 	private UniversalPosition targetPosition;
 
-	private List<Module> modules;
+	public List<Module> modules;
 
 	private LineRenderer pathLine;
 
@@ -28,6 +26,8 @@ public class Ship : MonoBehaviour, IActor
 	public float stepsToTarget;
 	public Vector2 force;
 
+	public int storageTons = 1000;
+
 	public void Awake()
 	{
 		GameManager.RegisterActor(this);
@@ -39,7 +39,6 @@ public class Ship : MonoBehaviour, IActor
 
 		modules = new List<Module>();
 		modules.Add(new Module());
-		moduleLine.module = modules[0];
 	}
 
 	void Update()
@@ -75,6 +74,11 @@ public class Ship : MonoBehaviour, IActor
 		for (int i = 0; i < flightWorldMinutes; i++) {
 		}
 		*/
+	}
+
+	public int CurrentStorageTons()
+	{
+		return 500;
 	}
 
 	// one step is one minute game world time

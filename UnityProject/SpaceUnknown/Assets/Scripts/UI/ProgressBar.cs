@@ -17,8 +17,8 @@ public class ProgressBar : MonoBehaviour
 
 	void Update()
 	{
-		Vector2 d = bar.sizeDelta;
-		d.x = container.rect.width * val;
-		bar.sizeDelta = d;
+		Vector2 offsetMax = bar.offsetMax;
+		offsetMax.x = (-container.rect.width) + (container.rect.width * val);
+		bar.offsetMax = offsetMax;
 	}
 }

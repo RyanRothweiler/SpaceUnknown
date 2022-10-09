@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6656948427186259241}
+  - component: {fileID: 3093151618917239266}
   m_Layer: 5
   m_Name: ProgressBar
   m_TagString: Untagged
@@ -38,6 +39,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 26.2}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3093151618917239266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6656948427186259286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c492b485b72d83a4696ae7b0c73a1d82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  progressBar: {fileID: 1560556171924339649}
+  text: {fileID: 6656948428832867567}
 --- !u!1 &6656948427444582195
 GameObject:
   m_ObjectHideFlags: 0
@@ -67,7 +82,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6656948428259727750}
-  - {fileID: 6656948428657841688}
   m_Father: {fileID: 6656948427186259241}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -88,6 +102,7 @@ GameObject:
   - component: {fileID: 6656948428259727768}
   - component: {fileID: 6656948428259727769}
   - component: {fileID: 6138368406882348981}
+  - component: {fileID: 1560556171924339649}
   m_Layer: 5
   m_Name: BG
   m_TagString: Untagged
@@ -106,7 +121,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 6656948428657841688}
   m_Father: {fileID: 6656948427444582194}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -136,7 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.24313726, b: 0.40392157, a: 1}
+  m_Color: {r: 0, g: 0.24313739, b: 0.40392157, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -166,6 +182,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   style: {fileID: 11400000, guid: f542604dac39c20499b36be9f2a48ebe, type: 2}
+--- !u!114 &1560556171924339649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6656948428259727751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc7f2e67860c6324f889e44fa30446e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  val: 0
+  bar: {fileID: 6656948428657841688}
 --- !u!1 &6656948428657841689
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,14 +227,14 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6656948427444582194}
-  m_RootOrder: 1
+  m_Father: {fileID: 6656948428259727750}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -43.83, y: 0}
+  m_AnchoredPosition: {x: 0.005012512, y: -0.000009536743}
   m_SizeDelta: {x: -87.67, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &6656948428657841690
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -226,7 +256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.49411765, b: 0.8235294, a: 1}
+  m_Color: {r: 0.046828542, g: 0.55342865, b: 0.894, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -325,8 +355,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Fuel 18.84%
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1319825fb1cd20142915d8e5d6f93c5e, type: 2}
-  m_sharedMaterial: {fileID: 1338943414296200634, guid: 1319825fb1cd20142915d8e5d6f93c5e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 04a15648ffb1efb4bbd1c3bd61a2cd5c, type: 2}
+  m_sharedMaterial: {fileID: 5526561210824389673, guid: 04a15648ffb1efb4bbd1c3bd61a2cd5c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -350,8 +380,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 11
+  m_fontSizeBase: 11
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -404,4 +434,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31af6518c9009f147be79a6a25fa7138, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  style: {fileID: 11400000, guid: cca1d00da47aa6648b519feaf17a0523, type: 2}
+  style: {fileID: 11400000, guid: d9d9105bd272f1a4896796b59fd8abbd, type: 2}

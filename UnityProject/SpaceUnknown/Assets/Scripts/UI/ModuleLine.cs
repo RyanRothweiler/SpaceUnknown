@@ -5,13 +5,8 @@ using UnityEngine.UI;
 
 public class ModuleLine : MonoBehaviour
 {
-	public ProgressBar activationProgress;
 	public Module module;
-
-	void Start()
-	{
-
-	}
+	public ProgressBar activationProgress;
 
 	void Update()
 	{
