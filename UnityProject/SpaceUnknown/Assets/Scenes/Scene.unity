@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efbad0b4c4187fd4fbb9f3a4cc3833e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shipInfoWindow: {fileID: 2123318143}
   mineables: []
 --- !u!4 &10646793
 Transform:

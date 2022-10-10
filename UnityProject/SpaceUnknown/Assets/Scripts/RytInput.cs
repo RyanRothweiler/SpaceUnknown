@@ -98,6 +98,8 @@ public class RytInput : MonoBehaviour
 
 							SelectionDisplay.instance.gameObject.SetActive(true);
 							SelectionDisplay.instance.transform.position = hitObj.transform.position;
+
+							ShipInfoWindow.Instance.Show(shipSelected);
 						}
 					}
 				}
