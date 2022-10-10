@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Ship : MonoBehaviour, IActor
 {
-	public ItemDefinition testDef;
+	public ModuleDefinition testModuleDef;
 	public ShipInfoWindow shipInfoWindow;
 	public Mineable testMineable;
 
 	private bool hasTarget;
 	private UniversalPosition targetPosition;
 
-	public List<Module> modules;
+	public List<ModuleInstance> modules;
 	public List<ItemInstance> cargo;
 
 	private LineRenderer pathLine;
@@ -37,8 +37,8 @@ public class Ship : MonoBehaviour, IActor
 		pathLine = this.GetComponent<LineRenderer>();
 		pathLine.positionCount = 0;
 
-		modules = new List<Module>();
-		modules.Add(new Module());
+		modules = new List<ModuleInstance>();
+		modules.Add(new ModuleInstance(testModuleDef));
 		modules[0].ship = this;
 		modules[0].target = testMineable;
 
@@ -57,10 +57,6 @@ public class Ship : MonoBehaviour, IActor
 
 		} else {
 			pathLine.positionCount = 0;
-		}
-
-		if (Input.GetKeyDown(KeyCode.I)) {
-			GiveItem(testDef, 80);
 		}
 	}
 

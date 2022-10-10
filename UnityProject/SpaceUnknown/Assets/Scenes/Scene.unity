@@ -898,7 +898,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a78ad5a7e2739f448b4510d6995a6a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testDef: {fileID: 11400000, guid: 7200e17adebf75641b4eac54399980be, type: 2}
+  testModuleDef: {fileID: 11400000, guid: f1754c713b9420544ab8dfe01c423ca3, type: 2}
   shipInfoWindow: {fileID: 2123318143}
   testMineable: {fileID: 46800772}
   velocity: {x: 0, y: 0}
