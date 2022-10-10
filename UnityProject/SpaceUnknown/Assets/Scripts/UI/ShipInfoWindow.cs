@@ -7,6 +7,9 @@ public class ShipInfoWindow : MonoBehaviour
 {
 	public Ship ship;
 
+	public CargoItemLine cargoItemPrefab;
+	public GameObject cargoGridLayout;
+
 	public ModuleLine moduleLine;
 	public ProgressBarText storageDisplay;
 
@@ -18,5 +21,11 @@ public class ShipInfoWindow : MonoBehaviour
 	void Update()
 	{
 		storageDisplay.Set(ship.CurrentStorageTons(), ship.storageTons, "t");
+	}
+
+	public void AddNewItem(ItemInstance item)
+	{
+		CargoItemLine cargoLine = Instantiate(cargoItemPrefab, cargoGridLayout.transform);
+		cargoLine.SetItem(item);
 	}
 }

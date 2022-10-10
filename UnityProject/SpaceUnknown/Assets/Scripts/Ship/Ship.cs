@@ -5,6 +5,7 @@ using UnityEngine;
 public class Ship : MonoBehaviour, IActor
 {
 	public ItemDefinition testDef;
+	public ShipInfoWindow shipInfoWindow;
 
 	private bool hasTarget;
 	private UniversalPosition targetPosition;
@@ -23,11 +24,6 @@ public class Ship : MonoBehaviour, IActor
 	private UniversalPosition uniPos;
 
 	private List<float> currentFlightPlanForce;
-
-	public float maxStepsNeededToStop;
-	public float distToTarget;
-	public float stepsToTarget;
-	public Vector2 force;
 
 	public float storageTons = 1000;
 
@@ -77,6 +73,8 @@ public class Ship : MonoBehaviour, IActor
 		ItemInstance inst = new ItemInstance(def);
 		GiveMaxAllowed(inst, count);
 		cargo.Add(inst);
+
+		shipInfoWindow.AddNewItem(inst);
 	}
 
 	public void GiveMaxAllowed(ItemInstance inst, int countGiving)
@@ -113,6 +111,11 @@ public class Ship : MonoBehaviour, IActor
 		return ret;
 	}
 
+	public float TotalMass()
+	{
+		return massTons + CurrentStorageTons();
+	}
+
 	// one step is one minute game world time
 	public void Step(float time)
 	{
@@ -120,12 +123,12 @@ public class Ship : MonoBehaviour, IActor
 		if (hasTarget) {
 			// how much push the fuel provides
 			float fuelForce = 1.0f;
-			float maxAcceleration = (1 / massTons) * fuelForce;
+			float maxAcceleration = (1 / TotalMass()) * fuelForce;
 
 			//
-			maxStepsNeededToStop = velocity.magnitude / maxAcceleration;
-			distToTarget = Vector2.Distance(uniPos.Get(), targetPosition.Get());
-			stepsToTarget = distToTarget / velocity.magnitude;
+			float maxStepsNeededToStop = velocity.magnitude / maxAcceleration;
+			float distToTarget = Vector2.Distance(uniPos.Get(), targetPosition.Get());
+			float stepsToTarget = distToTarget / velocity.magnitude;
 			//
 
 			// close enough
@@ -135,6 +138,7 @@ public class Ship : MonoBehaviour, IActor
 				return;
 			}
 
+			Vector2 force = new Vector2();
 			if (maxStepsNeededToStop > stepsToTarget) {
 				// slow down, apply opposite force
 				force = velocity.normalized * -1 * fuelForce;
@@ -149,7 +153,7 @@ public class Ship : MonoBehaviour, IActor
 			//Debug.DrawRay(uniPos.UniverseToUnity(), force, Color.red, 0.1f);
 			//Debug.DrawRay(uniPos.UniverseToUnity(), velocity, Color.green, 0.1f);
 
-			Vector2 acceleration = force / massTons;
+			Vector2 acceleration = force / TotalMass();
 			velocity = velocity + acceleration;
 
 			Vector3 newPos = uniPos.Get() + velocity;
