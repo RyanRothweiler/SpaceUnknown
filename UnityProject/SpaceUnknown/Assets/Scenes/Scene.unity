@@ -193,6 +193,7 @@ GameObject:
   - component: {fileID: 46800769}
   - component: {fileID: 46800768}
   - component: {fileID: 46800771}
+  - component: {fileID: 46800772}
   m_Layer: 0
   m_Name: Moon
   m_TagString: Untagged
@@ -279,6 +280,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 15
   y: 0
+--- !u!114 &46800772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46800766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f7885a97e2e8984e9ca5c7b1b64c144, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pos: {fileID: 46800771}
 --- !u!1 &403925754
 GameObject:
   m_ObjectHideFlags: 0
@@ -886,11 +900,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   testDef: {fileID: 11400000, guid: 7200e17adebf75641b4eac54399980be, type: 2}
   shipInfoWindow: {fileID: 2123318143}
+  testMineable: {fileID: 46800772}
   velocity: {x: 0, y: 0}
-  maxStepsNeededToStop: 0
-  distToTarget: 0
-  stepsToTarget: 0
-  force: {x: 0, y: 0}
+  uniPos: {fileID: 0}
   storageTons: 1000
 --- !u!65 &1849329108
 BoxCollider:

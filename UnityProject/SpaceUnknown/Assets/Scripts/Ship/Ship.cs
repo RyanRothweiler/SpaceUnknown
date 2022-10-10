@@ -6,6 +6,7 @@ public class Ship : MonoBehaviour, IActor
 {
 	public ItemDefinition testDef;
 	public ShipInfoWindow shipInfoWindow;
+	public Mineable testMineable;
 
 	private bool hasTarget;
 	private UniversalPosition targetPosition;
@@ -21,7 +22,7 @@ public class Ship : MonoBehaviour, IActor
 	private float massTons = 2250.0f;
 	public Vector2 velocity;
 
-	private UniversalPosition uniPos;
+	public UniversalPosition uniPos;
 
 	private List<float> currentFlightPlanForce;
 
@@ -38,6 +39,8 @@ public class Ship : MonoBehaviour, IActor
 
 		modules = new List<Module>();
 		modules.Add(new Module());
+		modules[0].ship = this;
+		modules[0].target = testMineable;
 
 		cargo = new List<ItemInstance>();
 	}
@@ -125,11 +128,9 @@ public class Ship : MonoBehaviour, IActor
 			float fuelForce = 1.0f;
 			float maxAcceleration = (1 / TotalMass()) * fuelForce;
 
-			//
 			float maxStepsNeededToStop = velocity.magnitude / maxAcceleration;
 			float distToTarget = Vector2.Distance(uniPos.Get(), targetPosition.Get());
 			float stepsToTarget = distToTarget / velocity.magnitude;
-			//
 
 			// close enough
 			if (distToTarget < 0.01f) {

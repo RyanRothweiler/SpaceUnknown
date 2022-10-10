@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class Mineable : MonoBehaviour
 {
-	// Start is called before the first frame update
-	void Start()
-	{
+	public UniversalPosition pos;
 
+	public void Awake()
+	{
+		pos = this.GetComponent<UniversalPosition>();
 	}
 
-	// Update is called once per frame
-	void Update()
-	{
-
-	}
 }
