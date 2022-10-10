@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UniversalPosition : MonoBehaviour
+[Serializable]
+public class UniversalPosition
 {
 	// Units here are just made up, not related to anything in the real world
 	public double x;
@@ -27,11 +29,6 @@ public class UniversalPosition : MonoBehaviour
 		pos.y = (float)(y / CameraControls.unityUnitsToGameUnits);
 		pos.z = 0;
 		return pos;
-	}
-
-	void Update()
-	{
-		this.transform.position = UniverseToUnity();
 	}
 
 	public static UniversalPosition UnityToUniverse(Vector3 pos)

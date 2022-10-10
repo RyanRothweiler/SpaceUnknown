@@ -153,7 +153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efbad0b4c4187fd4fbb9f3a4cc3833e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shipInfoWindow: {fileID: 2123318143}
   mineables: []
 --- !u!4 &10646793
 Transform:
@@ -276,11 +275,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 46800766}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aa6eff5be0f41543a68718b806bd650, type: 3}
+  m_Script: {fileID: 11500000, guid: ce598e467f312234cbc6e19d279e91c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  x: 15
-  y: 0
+  pos:
+    x: 15
+    y: 0
 --- !u!114 &46800772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -293,7 +293,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f7885a97e2e8984e9ca5c7b1b64c144, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pos: {fileID: 46800771}
+  pos:
+    x: 0
+    y: 0
 --- !u!1 &403925754
 GameObject:
   m_ObjectHideFlags: 0
@@ -716,11 +718,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1455109128}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aa6eff5be0f41543a68718b806bd650, type: 3}
+  m_Script: {fileID: 11500000, guid: ce598e467f312234cbc6e19d279e91c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  x: 0
-  y: 0
+  pos:
+    x: 0
+    y: 0
 --- !u!1 &1659347459
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,7 +906,9 @@ MonoBehaviour:
   shipInfoWindow: {fileID: 2123318143}
   testMineable: {fileID: 46800772}
   velocity: {x: 0, y: 0}
-  uniPos: {fileID: 0}
+  uniPos:
+    x: 0
+    y: 0
   storageTons: 1000
 --- !u!65 &1849329108
 BoxCollider:
@@ -1024,11 +1029,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1849329104}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aa6eff5be0f41543a68718b806bd650, type: 3}
+  m_Script: {fileID: 11500000, guid: ce598e467f312234cbc6e19d279e91c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  x: 5
-  y: 0
+  pos:
+    x: 5
+    y: 0
 --- !u!1 &2119633236
 GameObject:
   m_ObjectHideFlags: 0

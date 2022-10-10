@@ -32,7 +32,7 @@ public class Ship : MonoBehaviour, IActor
 	{
 		GameManager.RegisterActor(this);
 
-		uniPos = this.GetComponent<UniversalPosition>();
+		uniPos = this.GetComponent<UniversalPositionMono>().pos;
 
 		pathLine = this.GetComponent<LineRenderer>();
 		pathLine.positionCount = 0;

@@ -2,13 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Mineable : MonoBehaviour
+public class UniversalPositionMono : MonoBehaviour
 {
 	public UniversalPosition pos;
 
-	public void Awake()
+	void Update()
 	{
-		pos = this.GetComponent<UniversalPositionMono>().pos;
+		this.transform.position = pos.UniverseToUnity();
 	}
-
 }
