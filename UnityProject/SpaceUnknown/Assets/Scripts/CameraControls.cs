@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class CameraControls : MonoBehaviour
 {
@@ -56,18 +57,16 @@ public class CameraControls : MonoBehaviour
 
 	void Update()
 	{
-		//convTarget = Mathf.Clamp(convTarget + (RytInput.scrollAmount * -0.25f), 1, 100000);
-		//unityUnitsToGameUnits = Mathf.Lerp(unityUnitsToGameUnits, convTarget, Time.deltaTime * 10.0f);
-		//Debug.Log(unityUnitsToGameUnits);
 		zoomSlider.value += RytInput.scrollAmount * -0.01f;
 
 		Vector3 newPos = this.transform.position;
-		//newPos.z = Mathf.Clamp(newPos.z + RytInput.scrollAmount, -1000.0f, -10.0f);
 		if (RytInput.leftTouch.moved) {
-			newPos.x += RytInput.leftTouch.screenDelta.x * 0.05f;
-			newPos.y += RytInput.leftTouch.screenDelta.y * 0.05f;
+			newPos.x += RytInput.leftTouch.screenDelta.x * 0.03f;
+			newPos.y += RytInput.leftTouch.screenDelta.y * 0.03f;
 		}
-		//this.transform.position = newPos;
+		if (!EventSystem.current.IsPointerOverGameObject()) {
+			this.transform.position = newPos;
+		}
 
 		// slider zoom
 		{
