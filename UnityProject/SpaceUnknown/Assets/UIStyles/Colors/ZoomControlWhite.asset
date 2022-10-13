@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ecd183c1229d244a3607e83d052247, type: 3}
   m_Name: ZoomControlWhite
   m_EditorClassIdentifier: 
-  color: {r: 1, g: 1, b: 1, a: 0.16862746}
+  color: {r: 1, g: 1, b: 1, a: 0.11372549}

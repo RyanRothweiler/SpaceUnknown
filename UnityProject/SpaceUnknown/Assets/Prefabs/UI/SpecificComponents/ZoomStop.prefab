@@ -236,7 +236,6 @@ GameObject:
   - component: {fileID: 8912194087135436017}
   - component: {fileID: 8132584282810468957}
   - component: {fileID: 3079260773472568873}
-  - component: {fileID: 5231922702327102358}
   m_Layer: 5
   m_Name: StopBottom
   m_TagString: Untagged
@@ -261,8 +260,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 2.3787842, y: 0.3368988}
-  m_SizeDelta: {x: 36.895, y: 0.6738}
+  m_AnchoredPosition: {x: 2.3787842, y: 1.0048981}
+  m_SizeDelta: {x: 36.895, y: 2}
   m_Pivot: {x: 1.05, y: 0.5}
 --- !u!222 &8912194087135436017
 CanvasRenderer:
@@ -315,16 +314,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   style: {fileID: 11400000, guid: 70ee7ef51cf96e34fb12a0074445acf1, type: 2}
---- !u!114 &5231922702327102358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6735700256408721808}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2455aeb79880b524fbe532e2541141ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  text: {fileID: 0}
