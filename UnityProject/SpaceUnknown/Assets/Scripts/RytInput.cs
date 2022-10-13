@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class RytInput : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class RytInput : MonoBehaviour
 		public bool isUp;
 		public bool onUp;
 		public bool moved;
+
+		public bool startedOverUI;
 
 		public Vector2 screenDelta;
 		public Vector2 prevPos;
@@ -124,41 +127,55 @@ public class RytInput : MonoBehaviour
 
 	private void UpdateTouchStates(Touch touch, bool newState, Vector2 position)
 	{
-		if (newState) {
+		if (EventSystem.current.IsPointerOverGameObject()) {
+			touch.startedOverUI = true;
+		}
+		if (!newState) {
+			touch.startedOverUI = false;
+		}
+
+
+		// Don't process anything if we were over UI
+		if (!touch.startedOverUI) {
+
+			if (newState) {
+				if (touch.isDown) {
+					touch.onDown = false;
+				} else {
+					touch.isDown = true;
+					touch.onDown = true;
+					touch.isUp = false;
+					touch.onUp = false;
+				}
+			} else {
+				touch.startedOverUI = false;
+
+				if (touch.isUp) {
+					touch.moved = false;
+					touch.onUp = false;
+				} else {
+					touch.isDown = false;
+					touch.onDown = false;
+					touch.isUp = true;
+					touch.onUp = true;
+				}
+			}
+
+			touch.screenDelta.x = 0;
+			touch.screenDelta.y = 0;
+			touch.currentPos = position;
+			if (touch.onDown) {
+				touch.startPos = position;
+				touch.prevPos = position;
+			}
 			if (touch.isDown) {
-				touch.onDown = false;
-			} else {
-				touch.isDown = true;
-				touch.onDown = true;
-				touch.isUp = false;
-				touch.onUp = false;
-			}
-		} else {
-			if (touch.isUp) {
-				touch.moved = false;
-				touch.onUp = false;
-			} else {
-				touch.isDown = false;
-				touch.onDown = false;
-				touch.isUp = true;
-				touch.onUp = true;
-			}
-		}
+				touch.screenDelta = touch.prevPos - position;
+				touch.prevPos = position;
 
-		touch.screenDelta.x = 0;
-		touch.screenDelta.y = 0;
-		touch.currentPos = position;
-		if (touch.onDown) {
-			touch.startPos = position;
-			touch.prevPos = position;
-		}
-		if (touch.isDown) {
-			touch.screenDelta = touch.prevPos - position;
-			touch.prevPos = position;
-
-			float dist = Vector2.Distance(touch.startPos, position);
-			if (dist > distForMove) {
-				touch.moved = true;
+				float dist = Vector2.Distance(touch.startPos, position);
+				if (dist > distForMove) {
+					touch.moved = true;
+				}
 			}
 		}
 	}
