@@ -9,7 +9,7 @@ public class Ship : MonoBehaviour, IActor
 	public Mineable testMineable;
 
 	private bool hasTarget;
-	private UniversalPosition targetPosition;
+	private UniversalPosition targetPosition = new UniversalPosition();
 
 	public List<ModuleInstance> modules;
 	public List<ItemInstance> cargo;
@@ -98,7 +98,7 @@ public class Ship : MonoBehaviour, IActor
 	public void SetTargetPosition(Vector2 unityPos)
 	{
 		hasTarget = true;
-		targetPosition = UniversalPosition.UnityToUniverse(unityPos);
+		UniversalPosition.UnityToUniverse(targetPosition, unityPos);
 	}
 
 	public float CurrentStorageTons()

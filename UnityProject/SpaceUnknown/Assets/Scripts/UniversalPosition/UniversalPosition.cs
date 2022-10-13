@@ -31,12 +31,10 @@ public class UniversalPosition
 		return pos;
 	}
 
-	public static UniversalPosition UnityToUniverse(Vector3 pos)
+	public static void UnityToUniverse(UniversalPosition dest, Vector3 pos)
 	{
-		UniversalPosition ret = new UniversalPosition();
-		ret.x = pos.x * CameraControls.unityUnitsToGameUnits;
-		ret.y = pos.y * CameraControls.unityUnitsToGameUnits;
-		return ret;
+		dest.x = pos.x * CameraControls.unityUnitsToGameUnits;
+		dest.y = pos.y * CameraControls.unityUnitsToGameUnits;
 	}
 
 }

@@ -9,6 +9,8 @@ public class ShipInfoWindow : MonoBehaviour
 
 	public Ship ship;
 
+	public GameObject windowBG;
+
 	public ModuleLine moduleLinePrefab;
 	public GameObject marginHolder;
 	public GameObject modulesHeader;
@@ -23,7 +25,7 @@ public class ShipInfoWindow : MonoBehaviour
 	void Awake()
 	{
 		Instance = this;
-		this.gameObject.SetActive(false);
+		Hide();
 	}
 
 	void Update()
@@ -34,6 +36,8 @@ public class ShipInfoWindow : MonoBehaviour
 	public void Show(Ship ship)
 	{
 		this.gameObject.SetActive(true);
+		windowBG.SetActive(true);
+
 		this.ship = ship;
 
 		// remove old lines
@@ -47,7 +51,15 @@ public class ShipInfoWindow : MonoBehaviour
 			ModuleLine modLine = Instantiate(moduleLinePrefab, marginHolder.transform);
 			modLine.module = ship.modules[i];
 			modLine.transform.SetSiblingIndex(modulesHeader.transform.GetSiblingIndex() + 1);
+
+			currentLines.Add(modLine.gameObject);
 		}
+	}
+
+	public void Hide()
+	{
+		this.gameObject.SetActive(false);
+		windowBG.SetActive(false);
 	}
 
 	public void AddNewItem(ItemInstance item)
