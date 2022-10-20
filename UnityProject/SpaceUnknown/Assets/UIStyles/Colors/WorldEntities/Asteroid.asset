@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ecd183c1229d244a3607e83d052247, type: 3}
   m_Name: Asteroid
   m_EditorClassIdentifier: 
-  color: {r: 0.376, g: 0.18154494, b: 0.11204801, a: 1}
+  color: {r: 0.39099997, g: 0.21621713, b: 0.15679097, a: 1}

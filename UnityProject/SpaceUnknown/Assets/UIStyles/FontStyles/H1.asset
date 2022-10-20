@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: H1
   m_EditorClassIdentifier: 
   color: {r: 1, g: 1, b: 1, a: 1}
-  size: 18
+  size: 35
   characterSpacing: 0
   lineSpacing: 0
   font: {fileID: 11400000, guid: 43e9bd31744e45442bf934e7b4e3eb4a, type: 2}
