@@ -58,8 +58,8 @@ public class ShipInfoWindow : MonoBehaviour
 
 	public void Hide()
 	{
-		//this.gameObject.SetActive(false);
-		//windowBG.SetActive(false);
+		this.gameObject.SetActive(false);
+		windowBG.SetActive(false);
 	}
 
 	public void AddNewItem(ItemInstance item)

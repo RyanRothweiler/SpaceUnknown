@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ZoomStop
   m_EditorClassIdentifier: 
   color: {r: 1, g: 1, b: 1, a: 0.7372549}
-  size: 10
+  size: 25
   characterSpacing: 0
   lineSpacing: 8.9
   font: {fileID: 11400000, guid: 9c381c7443be6a3478487b6d9c12ae1c, type: 2}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Title
   m_EditorClassIdentifier: 
   color: {r: 1, g: 1, b: 1, a: 1}
-  size: 7.04
+  size: 66.2
   characterSpacing: -2.05
   lineSpacing: -41.17
   font: {fileID: 11400000, guid: ed2c3e47e14231241a64ed3ed5d31b1b, type: 2}

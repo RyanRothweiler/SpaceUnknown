@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BodyCallout
   m_EditorClassIdentifier: 
   color: {r: 1, g: 1, b: 1, a: 1}
-  size: 15
+  size: 38
   characterSpacing: 0
   lineSpacing: 8.9
   font: {fileID: 11400000, guid: 1319825fb1cd20142915d8e5d6f93c5e, type: 2}
