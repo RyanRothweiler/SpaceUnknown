@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BodyCopy
   m_EditorClassIdentifier: 
   color: {r: 1, g: 1, b: 1, a: 1}
-  size: 11
+  size: 3.28
   characterSpacing: 0
   lineSpacing: 8.9
   font: {fileID: 11400000, guid: 04a15648ffb1efb4bbd1c3bd61a2cd5c, type: 2}

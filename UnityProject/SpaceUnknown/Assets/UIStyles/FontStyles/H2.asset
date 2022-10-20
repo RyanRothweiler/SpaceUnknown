@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: H2
   m_EditorClassIdentifier: 
   color: {r: 1, g: 1, b: 1, a: 1}
-  size: 12
+  size: 3.5
   characterSpacing: 0
   lineSpacing: 8.9
   font: {fileID: 11400000, guid: 847a5f0da50b08149ade74cee4426e93, type: 2}
