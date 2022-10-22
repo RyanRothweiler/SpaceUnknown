@@ -8,10 +8,14 @@ public class UniversalPositionMono : MonoBehaviour
 
 	private Vector3 origScale;
 
+	public static List<UniversalPositionMono> allUniversals = new List<UniversalPositionMono>();
+
 	void Awake()
 	{
 		UniversalPosition.UnityToUniverse(pos, this.transform.position);
 		origScale = this.transform.localScale;
+
+		allUniversals.Add(this);
 	}
 
 	void Update()
