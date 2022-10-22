@@ -13,10 +13,14 @@ public class MapIndicatorController : MonoBehaviour
 	private RectTransform rootCanvasRect;
 	private Dictionary<UniversalPositionMono, RectTransform> createdIndicator = new Dictionary<UniversalPositionMono, RectTransform>();
 
+	private const string indicatorPool = "MapIndicator";
+
 	void Awake()
 	{
 		Instance = this;
 		rootCanvasRect = this.GetComponent<RectTransform>();
+
+		Pooler.Setup(indicatorPool, mapIndicatorFab.gameObject, 0, mapIndicatorFab.transform.parent);
 	}
 
 	void Update()
