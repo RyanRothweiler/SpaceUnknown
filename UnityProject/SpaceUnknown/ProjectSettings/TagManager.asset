@@ -41,6 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: WorldObjects
+    uniqueID: 2324966977
+    locked: 0
+  - name: ModuleEffects
+    uniqueID: 765101909
+    locked: 0
   - name: Ships
     uniqueID: 2970895999
     locked: 0
