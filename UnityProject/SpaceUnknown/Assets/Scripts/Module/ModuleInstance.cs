@@ -8,12 +8,13 @@ public class ModuleInstance
 
 	private float currentActivationMinutes;
 
-	public Ship ship;
-	public Mineable target;
+	private Ship ship;
+	private Mineable target;
 
-	public ModuleInstance(ModuleDefinition definition)
+	public ModuleInstance(ModuleDefinition definition, Ship ship)
 	{
 		this.definition = definition;
+		this.ship = ship;
 	}
 
 	public float PercentageActivation()
@@ -26,18 +27,28 @@ public class ModuleInstance
 		if (definition.type == ModuleDefinition.Type.Active)  {
 			if (target != null) {
 
-				if (Vector2.Distance(ship.uniPos.Get(), target.pos.Get()) < 0.25f) {
+				if (Vector2.Distance(ship.pos.Get(), target.pos.Get()) < definition.range) {
+					DrawWorldLine.Draw(ship.pos.UniverseToUnity(), target.pos.UniverseToUnity());
 
 					currentActivationMinutes += time;
-					if (currentActivationMinutes >= definition.activationTimeWorldMinutes) {
+					while (currentActivationMinutes >= definition.activationTimeWorldMinutes) {
 						currentActivationMinutes = currentActivationMinutes - definition.activationTimeWorldMinutes;
 						ship.GiveItem(definition.completionReward, definition.comletionCount);
 					}
 				} else {
+					target = null;
 					currentActivationMinutes = 0;
 				}
 			} else {
 				currentActivationMinutes = 0;
+
+				// Find target
+				foreach (Mineable mineable in GameManager.Instance.mineables) {
+					if (Vector2.Distance(mineable.pos.Get(), ship.pos.Get()) < definition.range) {
+						target = mineable;
+						break;
+					}
+				}
 			}
 		}
 	}

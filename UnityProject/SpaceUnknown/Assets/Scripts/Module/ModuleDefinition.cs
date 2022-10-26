@@ -17,4 +17,5 @@ public class ModuleDefinition : ScriptableObject
 	public float activationTimeWorldMinutes;
 	public ItemDefinition completionReward;
 	public int comletionCount;
+	public float range;
 }

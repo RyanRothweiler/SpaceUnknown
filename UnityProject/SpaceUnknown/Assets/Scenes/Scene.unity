@@ -165,9 +165,10 @@ Transform:
   m_LocalPosition: {x: 1.382769, y: -0.001146784, z: -0.0750917}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1827086073}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &10646794
 MonoBehaviour:
@@ -1826,6 +1827,51 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60f648fa30218dc4183affb46c85e974, type: 3}
+--- !u!1 &1827086072
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1827086073}
+  - component: {fileID: 1827086074}
+  m_Layer: 0
+  m_Name: WorldLines
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1827086073
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1827086072}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.382769, y: 0.001146784, z: 0.0750917}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 10646793}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1827086074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1827086072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a60909255e2b07141adc23a8e2e8907e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fab: {fileID: 2293290632461778289, guid: e29b85689946ef346a4f7db7d228c566, type: 3}
 --- !u!1 &1849329104
 GameObject:
   m_ObjectHideFlags: 0
@@ -1912,7 +1958,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1849329107
 MonoBehaviour:
@@ -1930,7 +1976,7 @@ MonoBehaviour:
   shipInfoWindow: {fileID: 2123318143}
   testMineable: {fileID: 0}
   velocity: {x: 0, y: 0}
-  uniPos:
+  pos:
     x: 0
     y: 0
   storageTons: 1000
@@ -1945,7 +1991,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.2546577, y: 1.1741076, z: 0.2}
+  m_Size: {x: 21.26, y: 21.26, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!120 &1849329109
 LineRenderer:
@@ -2428,7 +2474,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &2145981212
 Animator:

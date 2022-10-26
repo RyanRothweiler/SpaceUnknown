@@ -15,6 +15,8 @@ MonoBehaviour:
   displayName: Mining Laser
   id: MINING_LASER
   icon: {fileID: 21300000, guid: e4d26559d6402f341afc91057bb3a8a3, type: 3}
+  type: 0
   activationTimeWorldMinutes: 120
   completionReward: {fileID: 11400000, guid: 7200e17adebf75641b4eac54399980be, type: 2}
   comletionCount: 10
+  range: 5

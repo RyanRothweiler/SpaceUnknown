@@ -22,7 +22,7 @@ public class Ship : MonoBehaviour, IActor
 	private float massTons = 2250.0f;
 	public Vector2 velocity;
 
-	public UniversalPosition uniPos;
+	public UniversalPosition pos;
 
 	private List<float> currentFlightPlanForce;
 
@@ -32,15 +32,13 @@ public class Ship : MonoBehaviour, IActor
 	{
 		GameManager.RegisterActor(this);
 
-		uniPos = this.GetComponent<UniversalPositionMono>().pos;
+		pos = this.GetComponent<UniversalPositionMono>().pos;
 
 		pathLine = this.GetComponent<LineRenderer>();
 		pathLine.positionCount = 0;
 
 		modules = new List<ModuleInstance>();
-		modules.Add(new ModuleInstance(testModuleDef));
-		modules[0].ship = this;
-		modules[0].target = testMineable;
+		modules.Add(new ModuleInstance(testModuleDef, this));
 
 		cargo = new List<ItemInstance>();
 	}
@@ -125,7 +123,7 @@ public class Ship : MonoBehaviour, IActor
 			float maxAcceleration = (1 / TotalMass()) * fuelForce;
 
 			float maxStepsNeededToStop = velocity.magnitude / maxAcceleration;
-			float distToTarget = Vector2.Distance(uniPos.Get(), targetPosition.Get());
+			float distToTarget = Vector2.Distance(pos.Get(), targetPosition.Get());
 			float stepsToTarget = distToTarget / velocity.magnitude;
 
 			// close enough
@@ -144,17 +142,17 @@ public class Ship : MonoBehaviour, IActor
 				force = new Vector2(0, 0);
 			} else {
 				// push towards target
-				force = (targetPosition.Get() - uniPos.Get()).normalized * fuelForce;
+				force = (targetPosition.Get() - pos.Get()).normalized * fuelForce;
 			}
 
-			//Debug.DrawRay(uniPos.UniverseToUnity(), force, Color.red, 0.1f);
-			//Debug.DrawRay(uniPos.UniverseToUnity(), velocity, Color.green, 0.1f);
+			//Debug.DrawRay(pos.UniverseToUnity(), force, Color.red, 0.1f);
+			//Debug.DrawRay(pos.UniverseToUnity(), velocity, Color.green, 0.1f);
 
 			Vector2 acceleration = force / TotalMass();
 			velocity = velocity + acceleration;
 
-			Vector3 newPos = uniPos.Get() + velocity;
-			uniPos.Set(newPos);
+			Vector3 newPos = pos.Get() + velocity;
+			pos.Set(newPos);
 		}
 
 		// Update modules

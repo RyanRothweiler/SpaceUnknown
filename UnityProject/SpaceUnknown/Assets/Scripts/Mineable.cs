@@ -11,4 +11,8 @@ public class Mineable : MonoBehaviour
 		pos = this.GetComponent<UniversalPositionMono>().pos;
 	}
 
+	public void Start()
+	{
+		GameManager.Instance.mineables.Add(this);
+	}
 }

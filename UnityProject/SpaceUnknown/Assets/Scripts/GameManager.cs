@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 	private static List<IActor> simulationActors = new List<IActor>();
 	public static void RegisterActor(IActor actor) { simulationActors.Add(actor); }
 
-	public List<Mineable> mineables;
+	public List<Mineable> mineables = new List<Mineable>();
 
 	void Awake()
 	{
