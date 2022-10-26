@@ -20,8 +20,10 @@ public class Ship : MonoBehaviour, IActor
 	// 0 means no conservation, boost all the way until counter boost.
 	//private float fuelConservation;
 
-	private float fuelGallons;
+	public float fuelGallons;
 	private Vector2 velocity;
+
+	private const float fuelForcePerGallon = 1.0f;
 
 	private List<float> currentFlightPlanForce;
 
@@ -117,8 +119,13 @@ public class Ship : MonoBehaviour, IActor
 	{
 		// Ship movement
 		if (hasTarget) {
+
+			float gallonsUsed = def.fuelRateGallonsPerMinute;
+			fuelGallons -= gallonsUsed;
+
 			// how much push the fuel provides
-			float fuelForce = 1.0f;
+			float fuelForce = gallonsUsed * fuelForcePerGallon;
+
 			float maxAcceleration = (1 / TotalMass()) * fuelForce;
 
 			float maxStepsNeededToStop = velocity.magnitude / maxAcceleration;

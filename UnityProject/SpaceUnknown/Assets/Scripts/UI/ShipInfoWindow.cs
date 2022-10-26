@@ -19,6 +19,7 @@ public class ShipInfoWindow : MonoBehaviour
 	public GameObject cargoGridLayout;
 
 	public ProgressBarText storageDisplay;
+	public ProgressBarText fuelDisplay;
 
 	private List<GameObject> currentLines = new List<GameObject>();
 
@@ -31,6 +32,7 @@ public class ShipInfoWindow : MonoBehaviour
 	void Update()
 	{
 		storageDisplay.Set(ship.CurrentStorageTons(), ship.def.storageTons, "t");
+		fuelDisplay.Set(ship.fuelGallons, ship.def.fuelTankGallons, "gal");
 	}
 
 	public void Show(Ship ship)

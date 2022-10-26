@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   massTons: 2250
   storageTons: 1000
+  fuelTankGallons: 1000
+  fuelRateGallonsPerMinute: 0.5
