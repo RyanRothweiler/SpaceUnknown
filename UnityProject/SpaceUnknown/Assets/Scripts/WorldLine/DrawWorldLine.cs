@@ -9,6 +9,7 @@ public class DrawWorldLine : MonoBehaviour
 	public class Line
 	{
 		public Vector2 start, end;
+		public Color color;
 		public GameObject obj;
 	};
 
@@ -42,14 +43,18 @@ public class DrawWorldLine : MonoBehaviour
 			points[0] = new Vector3(lineData.start.x, lineData.start.y, 0);
 			points[1] = new Vector3(lineData.end.x, lineData.end.y, 0);
 			lineRender.SetPositions(points);
+
+			lineRender.startColor = lineData.color;
+			lineRender.endColor = lineData.color;
 		}
 	}
 
-	public static void Draw(Vector2 start, Vector2 end)
+	public static void Draw(Vector2 start, Vector2 end, Color color)
 	{
 		Line line = new Line();
 		line.start = start;
 		line.end = end;
+		line.color = color;
 		linesToDraw.Add(line);
 	}
 }

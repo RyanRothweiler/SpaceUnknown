@@ -28,7 +28,7 @@ public class ModuleInstance
 			if (target != null) {
 
 				if (Vector2.Distance(ship.pos.Get(), target.pos.Get()) < definition.range) {
-					DrawWorldLine.Draw(ship.pos.UniverseToUnity(), target.pos.UniverseToUnity());
+					DrawWorldLine.Draw(ship.pos.UniverseToUnity(), target.pos.UniverseToUnity(), Color.red);
 
 					currentActivationMinutes += time;
 					while (currentActivationMinutes >= definition.activationTimeWorldMinutes) {
