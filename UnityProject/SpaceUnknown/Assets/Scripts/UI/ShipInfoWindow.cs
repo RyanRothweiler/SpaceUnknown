@@ -30,7 +30,7 @@ public class ShipInfoWindow : MonoBehaviour
 
 	void Update()
 	{
-		storageDisplay.Set(ship.CurrentStorageTons(), ship.storageTons, "t");
+		storageDisplay.Set(ship.CurrentStorageTons(), ship.def.storageTons, "t");
 	}
 
 	public void Show(Ship ship)

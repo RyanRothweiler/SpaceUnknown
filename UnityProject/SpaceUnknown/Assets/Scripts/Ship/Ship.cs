@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Ship : MonoBehaviour, IActor
 {
+	public ShipDefinition def;
 	public ModuleDefinition testModuleDef;
 	public ShipInfoWindow shipInfoWindow;
-	public Mineable testMineable;
+	public UniversalPosition pos;
 
 	private bool hasTarget;
 	private UniversalPosition targetPosition = new UniversalPosition();
@@ -19,14 +20,10 @@ public class Ship : MonoBehaviour, IActor
 	// 0 means no conservation, boost all the way until counter boost.
 	//private float fuelConservation;
 
-	private float massTons = 2250.0f;
-	public Vector2 velocity;
-
-	public UniversalPosition pos;
+	private float fuelGallons;
+	private Vector2 velocity;
 
 	private List<float> currentFlightPlanForce;
-
-	public float storageTons = 1000;
 
 	public void Awake()
 	{
@@ -41,6 +38,8 @@ public class Ship : MonoBehaviour, IActor
 		modules.Add(new ModuleInstance(testModuleDef, this));
 
 		cargo = new List<ItemInstance>();
+
+		fuelGallons = def.fuelTankGallons;
 	}
 
 	void Update()
@@ -78,15 +77,15 @@ public class Ship : MonoBehaviour, IActor
 	{
 		float weightCurrent = CurrentStorageTons();
 		float weightGiving = countGiving * inst.definition.weightTons;
-		if (weightCurrent + weightGiving <= storageTons) {
+		if (weightCurrent + weightGiving <= def.storageTons) {
 			inst.count += countGiving;
 		} else {
-			float weightExtra = (weightCurrent + weightGiving) - storageTons;
+			float weightExtra = (weightCurrent + weightGiving) - def.storageTons;
 			int countExtra = (int)(weightExtra / inst.definition.weightTons);
 			int newCountGiving = countGiving - countExtra;
 
 			// handle various roundings
-			if ((newCountGiving * inst.definition.weightTons) + weightCurrent > storageTons) {
+			if ((newCountGiving * inst.definition.weightTons) + weightCurrent > def.storageTons) {
 				newCountGiving--;
 			}
 			inst.count += newCountGiving;
@@ -110,7 +109,7 @@ public class Ship : MonoBehaviour, IActor
 
 	public float TotalMass()
 	{
-		return massTons + CurrentStorageTons();
+		return def.massTons + CurrentStorageTons();
 	}
 
 	// one step is one minute game world time

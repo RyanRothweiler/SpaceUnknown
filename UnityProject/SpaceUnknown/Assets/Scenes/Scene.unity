@@ -1932,7 +1932,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1324071297
-  m_SortingLayer: 1
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 3d59949d0af009f4abededc7ee7f7bf1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1972,14 +1972,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a78ad5a7e2739f448b4510d6995a6a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  def: {fileID: 11400000, guid: f3b010be45e060f4abe5b80b8823ff56, type: 2}
   testModuleDef: {fileID: 11400000, guid: f1754c713b9420544ab8dfe01c423ca3, type: 2}
   shipInfoWindow: {fileID: 2123318143}
-  testMineable: {fileID: 0}
   velocity: {x: 0, y: 0}
   pos:
     x: 0
     y: 0
-  storageTons: 1000
 --- !u!65 &1849329108
 BoxCollider:
   m_ObjectHideFlags: 0
