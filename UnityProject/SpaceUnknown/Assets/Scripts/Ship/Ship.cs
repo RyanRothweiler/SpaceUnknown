@@ -6,7 +6,6 @@ public class Ship : MonoBehaviour, IActor
 {
 	public ShipDefinition def;
 	public ModuleDefinition testModuleDef;
-	public ShipInfoWindow shipInfoWindow;
 	public UniversalPosition pos;
 
 	private bool hasTarget;
@@ -26,6 +25,7 @@ public class Ship : MonoBehaviour, IActor
 	private const float fuelForcePerGallon = 1.0f;
 
 	private List<float> currentFlightPlanForce;
+	public ShipInfoWindow shipInfoWindow;
 
 	public void Awake()
 	{
@@ -72,7 +72,9 @@ public class Ship : MonoBehaviour, IActor
 		GiveMaxAllowed(inst, count);
 		cargo.Add(inst);
 
-		shipInfoWindow.AddNewItem(inst);
+		if (shipInfoWindow != null) {
+			shipInfoWindow.AddNewItem(inst);
+		}
 	}
 
 	public void GiveMaxAllowed(ItemInstance inst, int countGiving)

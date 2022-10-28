@@ -30,6 +30,7 @@ public class RytInput : MonoBehaviour
 	private Ship shipSelected;
 
 	private float pcScrollRate = 2.0f;
+	private GameObject shipInfoWindow;
 
 	private const float distForMove = 5.0f;
 
@@ -102,7 +103,11 @@ public class RytInput : MonoBehaviour
 							SelectionDisplay.instance.gameObject.SetActive(true);
 							SelectionDisplay.instance.transform.position = hitObj.transform.position;
 
-							ShipInfoWindow.Instance.Show(shipSelected);
+							shipInfoWindow = UIManager.Instance.ShowPanel(PanelDefinition.ID.ShipInfo);
+
+							ShipInfoWindow siw = shipInfoWindow.GetComponent<ShipInfoWindow>();
+							siw.Show(shipSelected);
+							shipSelected.shipInfoWindow = siw;
 						}
 					}
 				}
@@ -112,7 +117,7 @@ public class RytInput : MonoBehaviour
 					SelectionDisplay.instance.gameObject.SetActive(true);
 					SelectionDisplay.instance.transform.position = shipSelected.transform.position;
 				} else {
-					ShipInfoWindow.Instance.Hide();
+					UIManager.Instance.Back();
 					SelectionDisplay.instance.gameObject.SetActive(false);
 				}
 			}

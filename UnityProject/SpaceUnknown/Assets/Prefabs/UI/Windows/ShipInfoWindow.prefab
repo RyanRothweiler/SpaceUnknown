@@ -73,6 +73,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6291120430052587516}
+  - component: {fileID: 5861640867041900630}
   m_Layer: 5
   m_Name: ShipInfoWindow
   m_TagString: Untagged
@@ -99,9 +100,30 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -0.0029907227, y: -0.005828858}
+  m_AnchoredPosition: {x: -0.0029296875, y: -0.005859375}
   m_SizeDelta: {x: 459.66, y: 0.01}
   m_Pivot: {x: 0.000000022351742, y: 0.5}
+--- !u!114 &5861640867041900630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6291120430052587519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b9deacfc2a46fa4c8e82b5129b06df5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ship: {fileID: 0}
+  windowBG: {fileID: 6291120430906775509}
+  moduleLinePrefab: {fileID: 5680994742278656687, guid: a9cc86fb0e1ea454c8abe1569c6956e5, type: 3}
+  marginHolder: {fileID: 6291120431794922237}
+  modulesHeader: {fileID: 6291120431353293065}
+  cargoItemPrefab: {fileID: 6295286614541393053, guid: 6c0cde468438d9c40a86f61c7f1714a0, type: 3}
+  cargoGridLayout: {fileID: 8546995486654321842}
+  storageDisplay: {fileID: 9053248662381731578}
+  fuelDisplay: {fileID: 847247112248164086}
 --- !u!1 &6291120430565455531
 GameObject:
   m_ObjectHideFlags: 0
@@ -111,7 +133,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6291120430565455528}
-  - component: {fileID: 2167064423353126770}
   m_Layer: 5
   m_Name: ShipInfoWindow
   m_TagString: Untagged
@@ -141,27 +162,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2167064423353126770
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6291120430565455531}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b9deacfc2a46fa4c8e82b5129b06df5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ship: {fileID: 0}
-  windowBG: {fileID: 6291120430906775509}
-  moduleLinePrefab: {fileID: 5680994742278656687, guid: a9cc86fb0e1ea454c8abe1569c6956e5, type: 3}
-  marginHolder: {fileID: 6291120431794922237}
-  modulesHeader: {fileID: 6291120431353293065}
-  cargoItemPrefab: {fileID: 6295286614541393053, guid: 6c0cde468438d9c40a86f61c7f1714a0, type: 3}
-  cargoGridLayout: {fileID: 8546995486654321842}
-  storageDisplay: {fileID: 9053248662381731578}
-  fuelDisplay: {fileID: 847247112248164086}
 --- !u!1 &6291120431794922237
 GameObject:
   m_ObjectHideFlags: 0
@@ -800,6 +800,34 @@ PrefabInstance:
     - target: {fileID: 1979699137356725111, guid: 6b2097c49267c7d4f9b2decedd4266ef, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979699137356725115, guid: 6b2097c49267c7d4f9b2decedd4266ef, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979699137356725115, guid: 6b2097c49267c7d4f9b2decedd4266ef, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979699137356725115, guid: 6b2097c49267c7d4f9b2decedd4266ef, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 5861640867041900630}
+    - target: {fileID: 1979699137356725115, guid: 6b2097c49267c7d4f9b2decedd4266ef, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979699137356725115, guid: 6b2097c49267c7d4f9b2decedd4266ef, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ShowCommands
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979699137356725115, guid: 6b2097c49267c7d4f9b2decedd4266ef, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ShipInfoWindow, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979699137356725115, guid: 6b2097c49267c7d4f9b2decedd4266ef, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b2097c49267c7d4f9b2decedd4266ef, type: 3}

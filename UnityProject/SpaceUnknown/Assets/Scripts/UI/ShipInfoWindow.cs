@@ -5,8 +5,6 @@ using TMPro;
 
 public class ShipInfoWindow : MonoBehaviour
 {
-	public static ShipInfoWindow Instance;
-
 	public Ship ship;
 
 	public GameObject windowBG;
@@ -22,12 +20,6 @@ public class ShipInfoWindow : MonoBehaviour
 	public ProgressBarText fuelDisplay;
 
 	private List<GameObject> currentLines = new List<GameObject>();
-
-	void Awake()
-	{
-		Instance = this;
-		Hide();
-	}
 
 	void Update()
 	{
@@ -58,10 +50,17 @@ public class ShipInfoWindow : MonoBehaviour
 		}
 	}
 
+	/*
 	public void Hide()
 	{
 		this.gameObject.SetActive(false);
 		windowBG.SetActive(false);
+	}
+	*/
+
+	public void ShowCommands()
+	{
+		UIManager.Instance.ShowPanel(PanelDefinition.ID.Commands);
 	}
 
 	public void AddNewItem(ItemInstance item)
