@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
 
 	void Update()
 	{
-		//StepAll();
+		StepAll();
 
 #if UNITY_EDITOR
 		// time skip editing tools. These times are in real world time
