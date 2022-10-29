@@ -34,7 +34,7 @@ public class ShipInfoWindow : MonoBehaviour
 
 		this.ship = ship;
 
-		// remove old lines
+		// remove old module lines
 		for (int i = 0; i < currentLines.Count; i++) {
 			Destroy(currentLines[i]);
 		}
@@ -48,15 +48,12 @@ public class ShipInfoWindow : MonoBehaviour
 
 			currentLines.Add(modLine.gameObject);
 		}
-	}
 
-	/*
-	public void Hide()
-	{
-		this.gameObject.SetActive(false);
-		windowBG.SetActive(false);
+		// add cargo
+		for (int i = 0; i < ship.cargo.Count; i++) {
+			AddNewItem(ship.cargo[i]);
+		}
 	}
-	*/
 
 	public void ShowCommands()
 	{
@@ -67,5 +64,7 @@ public class ShipInfoWindow : MonoBehaviour
 	{
 		CargoItemLine cargoLine = Instantiate(cargoItemPrefab, cargoGridLayout.transform);
 		cargoLine.SetItem(item);
+
+		currentLines.Add(cargoLine.gameObject);
 	}
 }

@@ -22,13 +22,23 @@ public class ModuleInstance
 		return currentActivationMinutes / definition.activationTimeWorldMinutes;
 	}
 
+	public void Update()
+	{
+		if (definition.type == ModuleDefinition.Type.Active)  {
+			if (target != null) {
+				if (Vector2.Distance(ship.pos.Get(), target.pos.Get()) < definition.range) {
+					DrawWorldLine.Draw(ship.pos.UniverseToUnity(), target.pos.UniverseToUnity(), Color.red);
+				}
+			}
+		}
+	}
+
 	public void Step(float time)
 	{
 		if (definition.type == ModuleDefinition.Type.Active)  {
 			if (target != null) {
 
 				if (Vector2.Distance(ship.pos.Get(), target.pos.Get()) < definition.range) {
-					DrawWorldLine.Draw(ship.pos.UniverseToUnity(), target.pos.UniverseToUnity(), Color.red);
 
 					currentActivationMinutes += time;
 					while (currentActivationMinutes >= definition.activationTimeWorldMinutes) {

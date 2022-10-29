@@ -57,6 +57,11 @@ public class Ship : MonoBehaviour, IActor
 		} else {
 			pathLine.positionCount = 0;
 		}
+
+		// Render modules
+		for (int i = 0; i < modules.Count; i++) {
+			modules[i].Update();
+		}
 	}
 
 	public void GiveItem(ItemDefinition def, int count)
@@ -116,7 +121,6 @@ public class Ship : MonoBehaviour, IActor
 		return def.massTons + CurrentStorageTons();
 	}
 
-	// one step is one minute game world time
 	public void Step(float time)
 	{
 		// Ship movement
@@ -164,10 +168,8 @@ public class Ship : MonoBehaviour, IActor
 		}
 
 		// Update modules
-		{
-			for (int i = 0; i < modules.Count; i++) {
-				modules[i].Step(time);
-			}
+		for (int i = 0; i < modules.Count; i++) {
+			modules[i].Step(time);
 		}
 	}
 }

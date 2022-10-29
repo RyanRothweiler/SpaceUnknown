@@ -18,5 +18,5 @@ MonoBehaviour:
   type: 0
   activationTimeWorldMinutes: 120
   completionReward: {fileID: 11400000, guid: 7200e17adebf75641b4eac54399980be, type: 2}
-  comletionCount: 10
+  comletionCount: 1
   range: 5
