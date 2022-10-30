@@ -25,4 +25,9 @@ public class UniversalPositionMono : MonoBehaviour
 		                                        (origScale.y / CameraControls.unityUnitsToGameUnits),
 		                                        (origScale.z / CameraControls.unityUnitsToGameUnits));
 	}
+
+	void OnDestroy()
+	{
+		allUniversals.Remove(this);
+	}
 }

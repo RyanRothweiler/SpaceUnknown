@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
 	private static long stepTime;
 	public static long StepTime() { return stepTime; }
 
-	public List<Mineable> mineables = new List<Mineable>();
+	public List<AsteroidInstance> asteroids = new List<AsteroidInstance>();
 
 	void Awake()
 	{

@@ -12,8 +12,13 @@ public class AsteroidSpawner : MonoBehaviour, IActor
 
 	private UniversalPositionMono mpos;
 
-	private List<UniversalPositionMono> allPositions = new List<UniversalPositionMono>();
-	private List<UniversalPositionMono> available = new List<UniversalPositionMono>();
+	private class SpawnPosition
+	{
+		public UniversalPositionMono pos;
+		public GameObject currentObj;
+	};
+
+	private List<SpawnPosition> allPositions = new List<SpawnPosition>();
 
 	private long nextStepSpawn;
 
@@ -27,9 +32,10 @@ public class AsteroidSpawner : MonoBehaviour, IActor
 		mpos = this.GetComponent<UniversalPositionMono>();
 
 		UniversalPositionMono[] comps = this.GetComponentsInChildren<UniversalPositionMono>();
-		allPositions.AddRange(comps);
-		for (int x = 0; x < allPositions.Count; x++) {
-			available.Add(allPositions[x]);
+		for (int x = 0; x < comps.Length; x++) {
+			SpawnPosition sp = new SpawnPosition();
+			sp.pos = comps[x];
+			allPositions.Add(sp);
 		}
 
 		SetNextStepTime();
@@ -50,12 +56,22 @@ public class AsteroidSpawner : MonoBehaviour, IActor
 
 	private void Spawn()
 	{
-		if (available.Count > 0) {
-			int choice = UnityEngine.Random.Range(0, available.Count - 1);
-			UniversalPositionMono destMono = available[choice];
-			available.RemoveAt(choice);
+		// create list of available positions
+		List<SpawnPosition> availablePositions = new List<SpawnPosition>();
+		for (int i = 0; i < allPositions.Count; i++) {
+			if (allPositions[i].currentObj == null) {
+				availablePositions.Add(allPositions[i]);
+			}
+		}
+
+		// pick one position randomly to spawn on
+		if (availablePositions.Count > 0) {
+			int choice = UnityEngine.Random.Range(0, availablePositions.Count - 1);
+			UniversalPositionMono destMono = availablePositions[choice].pos;
 
 			GameObject roid = Pooler.Get(poolID);
+			availablePositions[choice].currentObj = roid;
+
 			roid.transform.localEulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(0, 360));
 			UniversalPosition roidPos = roid.GetComponent<UniversalPositionMono>().pos;
 

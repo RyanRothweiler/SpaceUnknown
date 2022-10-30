@@ -9,7 +9,7 @@ public class ModuleInstance
 	private float currentActivationMinutes;
 
 	private Ship ship;
-	private Mineable target;
+	private AsteroidInstance target;
 
 	public ModuleInstance(ModuleDefinition definition, Ship ship)
 	{
@@ -53,9 +53,9 @@ public class ModuleInstance
 				currentActivationMinutes = 0;
 
 				// Find target
-				foreach (Mineable mineable in GameManager.Instance.mineables) {
-					if (Vector2.Distance(mineable.pos.Get(), ship.pos.Get()) < definition.range) {
-						target = mineable;
+				foreach (AsteroidInstance asteroid in GameManager.Instance.asteroids) {
+					if (Vector2.Distance(asteroid.pos.Get(), ship.pos.Get()) < definition.range) {
+						target = asteroid;
 						break;
 					}
 				}
