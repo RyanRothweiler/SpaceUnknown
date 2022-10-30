@@ -7,7 +7,7 @@ public static class Pooler
 	public class Pool
 	{
 		public List<GameObject> available = new List<GameObject>();
-		public GameObject fab;
+		public List<GameObject> fabs;
 		public Transform defaultParent;
 		public string id;
 	};
@@ -16,10 +16,19 @@ public static class Pooler
 
 	public static void Setup(string id, GameObject fab, int initCount, Transform defaultParent)
 	{
+		List<GameObject> fabs = new List<GameObject>();
+		fabs.Add(fab);
+		Setup(id, fabs, initCount, defaultParent);
+	}
+
+	public static void Setup(string id, List<GameObject> fabs, int initCount, Transform defaultParent)
+	{
+		Debug.Assert(!pools.ContainsKey(id));
+
 		pools[id] = new Pool();
 		pools[id].id = id;
 		pools[id].defaultParent = defaultParent;
-		pools[id].fab = fab;
+		pools[id].fabs = fabs;
 
 		for (int i = 0; i < initCount; i++) {
 			GameObject obj = CreateObj(pools[id]);
@@ -59,7 +68,9 @@ public static class Pooler
 
 	private static GameObject CreateObj(Pool pool)
 	{
-		GameObject obj = GameObject.Instantiate(pool.fab, pool.defaultParent);
+		int choice = Random.Range(0, pool.fabs.Count - 1);
+
+		GameObject obj = GameObject.Instantiate(pool.fabs[choice], pool.defaultParent);
 		PoolTag tag = obj.AddComponent<PoolTag>();
 		tag.poolID = pool.id;
 

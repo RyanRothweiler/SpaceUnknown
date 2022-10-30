@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
 	private static List<IActor> simulationActors = new List<IActor>();
 	public static void RegisterActor(IActor actor) { simulationActors.Add(actor); }
 
+	// starts at 0, incremented for each game step
+	private static long stepTime;
+	public static long StepTime() { return stepTime; }
+
 	public List<Mineable> mineables = new List<Mineable>();
 
 	void Awake()
@@ -59,9 +63,17 @@ public class GameManager : MonoBehaviour
 
 	public void StepAll()
 	{
+		stepTime++;
+
 		// One step is one minute of world time
 		for (int i = 0; i < simulationActors.Count; i++) {
 			simulationActors[i].Step(1.0f);
 		}
+	}
+
+	public static long RealtimeMinutesToSteps(float realtimeMinutes)
+	{
+		// running at 1 step is one frame. so 60 frames per second * 60 seconds in a minute
+		return (long)(realtimeMinutes * 60.0f * 60.0f);
 	}
 }
