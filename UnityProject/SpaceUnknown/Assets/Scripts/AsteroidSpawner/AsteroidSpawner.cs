@@ -32,12 +32,6 @@ public class AsteroidSpawner : MonoBehaviour, IActor
 			available.Add(allPositions[x]);
 		}
 
-		/*
-		for (int x = 0; x < allPositions.Count; x++) {
-			Spawn();
-		}
-		*/
-
 		SetNextStepTime();
 	}
 
@@ -69,4 +63,13 @@ public class AsteroidSpawner : MonoBehaviour, IActor
 			roidPos.y = destMono.pos.y;
 		}
 	}
+
+#if UNITY_EDITOR
+	private void SpawnAll()
+	{
+		for (int x = 0; x < allPositions.Count; x++) {
+			Spawn();
+		}
+	}
+#endif
 }

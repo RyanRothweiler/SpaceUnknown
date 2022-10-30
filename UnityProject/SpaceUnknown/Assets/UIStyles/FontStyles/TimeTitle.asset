@@ -16,4 +16,4 @@ MonoBehaviour:
   size: 26.52
   characterSpacing: 0
   lineSpacing: 8.9
-  font: {fileID: 11400000, guid: 1319825fb1cd20142915d8e5d6f93c5e, type: 2}
+  font: {fileID: 11400000, guid: bfdaf8c439dafaa468922ca61258c265, type: 2}

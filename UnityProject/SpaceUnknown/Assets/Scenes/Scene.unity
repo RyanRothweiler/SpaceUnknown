@@ -790,8 +790,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Time Display
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1319825fb1cd20142915d8e5d6f93c5e, type: 2}
-  m_sharedMaterial: {fileID: 1338943414296200634, guid: 1319825fb1cd20142915d8e5d6f93c5e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: bfdaf8c439dafaa468922ca61258c265, type: 2}
+  m_sharedMaterial: {fileID: 4683301632908049843, guid: bfdaf8c439dafaa468922ca61258c265, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2659,6 +2659,10 @@ PrefabInstance:
     - target: {fileID: 7313609064384820156, guid: 5128e5ab3e4aad14e927333d59baba22, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8835933251375277661, guid: 5128e5ab3e4aad14e927333d59baba22, type: 3}
+      propertyPath: realtimeMinutesUntilAsteroid
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5128e5ab3e4aad14e927333d59baba22, type: 3}
