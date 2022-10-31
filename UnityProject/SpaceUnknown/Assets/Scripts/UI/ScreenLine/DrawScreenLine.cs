@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DrawLine : MonoBehaviour
+public class DrawScreenLine : MonoBehaviour
 {
 	public GameObject fab;
 
@@ -32,13 +32,16 @@ public class DrawLine : MonoBehaviour
 			    (line.start.x + line.end.x) * 0.5f,
 			    (line.start.y + line.end.y) * 0.5f
 			);
+			//center = line.start;
 			rtrans.anchoredPosition = center;
+
 
 			Vector2 dir = (line.start - line.end).normalized;
 			rtrans.right = dir;
 
 			Vector2 sd = rtrans.sizeDelta;
 			sd.x = Vector2.Distance(line.start, line.end);;
+			//sd.x = 1.0f;
 			rtrans.sizeDelta = sd;
 		}
 	}

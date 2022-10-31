@@ -36,6 +36,10 @@ public class ModuleInstance
 	public void Step(float time)
 	{
 		if (definition.type == ModuleDefinition.Type.Active)  {
+			if (target != null && !target.gameObject.activeInHierarchy) {
+				target = null;
+			}
+
 			if (target != null) {
 
 				if (Vector2.Distance(ship.pos.Get(), target.pos.Get()) < definition.range) {
@@ -43,7 +47,9 @@ public class ModuleInstance
 					currentActivationMinutes += time;
 					while (currentActivationMinutes >= definition.activationTimeWorldMinutes) {
 						currentActivationMinutes = currentActivationMinutes - definition.activationTimeWorldMinutes;
-						ship.GiveItem(definition.completionReward, definition.comletionCount);
+
+						int amount = target.Withdraw(definition.comletionCount);
+						ship.GiveItem(definition.completionReward, amount);
 					}
 				} else {
 					target = null;

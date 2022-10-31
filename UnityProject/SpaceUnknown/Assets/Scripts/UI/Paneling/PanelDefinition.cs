@@ -6,7 +6,7 @@ using UnityEngine;
 public class PanelDefinition : ScriptableObject
 {
 	public enum ID {
-		ShipInfo, Commands
+		ShipInfo, Commands, AsteroidInfo
 	};
 
 	public GameObject fab;

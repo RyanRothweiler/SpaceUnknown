@@ -30,7 +30,6 @@ public class RytInput : MonoBehaviour
 	private Ship shipSelected;
 
 	private float pcScrollRate = 2.0f;
-	private GameObject shipInfoWindow;
 
 	private const float distForMove = 5.0f;
 
@@ -83,6 +82,8 @@ public class RytInput : MonoBehaviour
 		{
 			if (leftTouch.onUp) {
 
+				bool newSelection = false;
+
 				if (!leftTouch.moved) {
 					shipSelected = null;
 
@@ -95,31 +96,47 @@ public class RytInput : MonoBehaviour
 					if (Physics.Raycast(origin, dir, out hit)) {
 
 						GameObject hitObj = hit.collider.gameObject;
-						Ship hitShip = hitObj.GetComponent<Ship>();
 
-						if (hitShip != null) {
-							shipSelected = hitShip;
+						Ship shipInfo = hitObj.GetComponent<Ship>();
+						AsteroidInstance asteroidInfo = hitObj.GetComponent<AsteroidInstance>();
+
+						if (shipInfo != null) {
+							newSelection = true;
+
+							shipSelected = shipInfo;
 
 							SelectionDisplay.instance.gameObject.SetActive(true);
 							SelectionDisplay.instance.transform.position = hitObj.transform.position;
 
-							shipInfoWindow = UIManager.Instance.ShowPanel(PanelDefinition.ID.ShipInfo);
+							UIManager.Instance.BackOutAll();
+							GameObject shipInfoWindow = UIManager.Instance.ShowPanel(PanelDefinition.ID.ShipInfo);
 
 							ShipInfoWindow siw = shipInfoWindow.GetComponent<ShipInfoWindow>();
 							siw.Show(shipSelected);
 							shipSelected.shipInfoWindow = siw;
+						} else if (asteroidInfo != null) {
+							newSelection = true;
+
+							UIManager.Instance.BackOutAll();
+							GameObject asteroidInfoWindow = UIManager.Instance.ShowPanel(PanelDefinition.ID.AsteroidInfo);
+							AsteroidInfoWindow aiw = asteroidInfoWindow.GetComponent<AsteroidInfoWindow>();
+							aiw.asteroid = asteroidInfo;
 						}
 					}
 				}
 
-				// selection dispaly
-				if (shipSelected != null) {
-					SelectionDisplay.instance.gameObject.SetActive(true);
-					SelectionDisplay.instance.transform.position = shipSelected.transform.position;
-				} else {
-					UIManager.Instance.Back();
-					SelectionDisplay.instance.gameObject.SetActive(false);
+				/*
+				if (!newSelection) {
+					// selection dispaly
+					if (shipSelected != null) {
+						//SelectionDisplay.instance.gameObject.SetActive(true);
+						//SelectionDisplay.instance.transform.position = shipSelected.transform.position;
+					} else {
+						//UIManager.Instance.Back();
+						//SelectionDisplay.instance.gameObject.SetActive(false);
+					}
 				}
+				*/
 			}
 
 			// ship movement

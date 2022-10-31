@@ -77,6 +77,8 @@ public class AsteroidSpawner : MonoBehaviour, IActor
 
 			roidPos.x = destMono.pos.x;
 			roidPos.y = destMono.pos.y;
+
+			roid.GetComponent<AsteroidInstance>().contentsAmount = 2;
 		}
 	}
 

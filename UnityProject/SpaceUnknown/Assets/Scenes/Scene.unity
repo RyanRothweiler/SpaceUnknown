@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efbad0b4c4187fd4fbb9f3a4cc3833e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mineables: []
+  asteroids: []
 --- !u!4 &10646793
 Transform:
   m_ObjectHideFlags: 0
@@ -1855,8 +1855,8 @@ LineRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1324071297
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Positions: []
   m_Parameters:
@@ -2308,7 +2308,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2119633236}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 44e04a4414da02a449e4061487a4aed1, type: 3}
   m_Name: 
@@ -2329,6 +2329,7 @@ MonoBehaviour:
   allPanels:
   - {fileID: 11400000, guid: 139b225a51e46b049a99eac1d2d9c475, type: 2}
   - {fileID: 11400000, guid: 19b280e1b92c7434ca1a9945b8efda0c, type: 2}
+  - {fileID: 11400000, guid: 8feacde93b8393c4ca0aee5088eb6cab, type: 2}
   safeArea: {fileID: 1233729208}
   edgeGradientFab: {fileID: 5896536277291155293, guid: fccf8623ac9c7ef42b9fda05b4127910, type: 3}
 --- !u!1 &2145981207
@@ -2349,7 +2350,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &2145981208
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -48,7 +48,7 @@ public class MapIndicatorController : MonoBehaviour
 
 			//item.Value.anchoredPosition = screenPos;
 			mapIndicatorFab.gameObject.SetActive(true);
-			DrawLine.Draw(item.Value.anchoredPosition, screenPos);
+			DrawScreenLine.Draw(item.Value.anchoredPosition, screenPos);
 		}
 	}
 }

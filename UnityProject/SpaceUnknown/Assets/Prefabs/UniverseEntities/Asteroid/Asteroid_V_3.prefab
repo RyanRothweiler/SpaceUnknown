@@ -59,5 +59,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Asteroid_V_3
       objectReference: {fileID: 0}
+    - target: {fileID: 2007085117935205207, guid: 60f648fa30218dc4183affb46c85e974, type: 3}
+      propertyPath: m_Size.x
+      value: 4.605176
+      objectReference: {fileID: 0}
+    - target: {fileID: 2007085117935205207, guid: 60f648fa30218dc4183affb46c85e974, type: 3}
+      propertyPath: m_Size.y
+      value: 4.793376
+      objectReference: {fileID: 0}
+    - target: {fileID: 2007085117935205207, guid: 60f648fa30218dc4183affb46c85e974, type: 3}
+      propertyPath: m_Center.x
+      value: 0.02862215
+      objectReference: {fileID: 0}
+    - target: {fileID: 2007085117935205207, guid: 60f648fa30218dc4183affb46c85e974, type: 3}
+      propertyPath: m_Center.y
+      value: 0.04579544
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60f648fa30218dc4183affb46c85e974, type: 3}

@@ -69,8 +69,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 2.0f
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1319825fb1cd20142915d8e5d6f93c5e, type: 2}
-  m_sharedMaterial: {fileID: 1338943414296200634, guid: 1319825fb1cd20142915d8e5d6f93c5e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b02094ac0e1e5e74693ebb833bf39231, type: 2}
+  m_sharedMaterial: {fileID: -5120156140324079476, guid: b02094ac0e1e5e74693ebb833bf39231, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -94,8 +94,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25
-  m_fontSizeBase: 25
+  m_fontSize: 38
+  m_fontSizeBase: 38
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -159,6 +159,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2543913235130303175}
   - component: {fileID: 4659890789264938890}
+  - component: {fileID: 396734982049352017}
   m_Layer: 5
   m_Name: DataLine
   m_TagString: Untagged
@@ -196,6 +197,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2543913235130303174}
   m_CullTransparentMesh: 1
+--- !u!114 &396734982049352017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2543913235130303174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f149b201be7cb464ab2e52a4cb0042c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: {fileID: 7126189082324549164}
+  data: {fileID: 2543913233438385885}
 --- !u!1 &4632489122801762297
 GameObject:
   m_ObjectHideFlags: 0
@@ -265,8 +280,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Data entry here this is some info and its long
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 04a15648ffb1efb4bbd1c3bd61a2cd5c, type: 2}
-  m_sharedMaterial: {fileID: 5526561210824389673, guid: 04a15648ffb1efb4bbd1c3bd61a2cd5c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: bfdaf8c439dafaa468922ca61258c265, type: 2}
+  m_sharedMaterial: {fileID: 4683301632908049843, guid: bfdaf8c439dafaa468922ca61258c265, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -300,9 +315,9 @@ MonoBehaviour:
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0
+  m_characterSpacing: 1.29
   m_wordSpacing: 0
-  m_lineSpacing: 8.9
+  m_lineSpacing: -7.16
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
