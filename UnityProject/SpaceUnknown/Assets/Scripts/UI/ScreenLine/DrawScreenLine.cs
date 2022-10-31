@@ -13,22 +13,30 @@ public class DrawScreenLine : MonoBehaviour
 		public Color color;
 	};
 
-	private static List<Line> linesToDraw = new List<Line>();
+	private List<GameObject> lastLines = new List<GameObject>();
 
-	void Update()
+	private static List<Line> linesToDraw = new List<Line>();
+	private static string poolID = "lines";
+
+	void Start()
 	{
 		linesToDraw = new List<Line>();
+		Pooler.Setup(poolID, fab, 0, this.transform);
 	}
 
 	void LateUpdate()
 	{
-		fab.SetActive(false);
+		for (int i = 0; i < lastLines.Count; i++) {
+			Pooler.Return(lastLines[i]);
+		}
+		lastLines.Clear();
 
 		for (int i = 0; i < linesToDraw.Count; i++) {
-			fab.SetActive(true);
+			GameObject lineObj = Pooler.Get(poolID);
+			lastLines.Add(lineObj);
 
 			Line line = linesToDraw[i];
-			RectTransform rtrans = fab.GetComponent<RectTransform>();
+			RectTransform rtrans = lineObj.GetComponent<RectTransform>();
 
 			Vector2 center = new Vector2(
 			    (line.start.x + line.end.x) * 0.5f,
@@ -40,11 +48,13 @@ public class DrawScreenLine : MonoBehaviour
 			rtrans.right = dir;
 
 			Vector2 sd = rtrans.sizeDelta;
-			sd.x = Vector2.Distance(line.start, line.end);;
+			sd.x = Vector2.Distance(line.start, line.end);
 			rtrans.sizeDelta = sd;
 
-			fab.GetComponent<Image>().color = line.color;
+			lineObj.GetComponent<Image>().color = line.color;
 		}
+
+		linesToDraw.Clear();
 	}
 
 	// 0,0 is bottom left of screen, Screen.Width,Screen.Height is top right
