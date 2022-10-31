@@ -82,7 +82,7 @@ public class RytInput : MonoBehaviour
 		{
 			if (leftTouch.onUp) {
 
-				bool newSelection = false;
+				//bool newSelection = false;
 
 				if (!leftTouch.moved) {
 					shipSelected = null;
@@ -101,12 +101,12 @@ public class RytInput : MonoBehaviour
 						AsteroidInstance asteroidInfo = hitObj.GetComponent<AsteroidInstance>();
 
 						if (shipInfo != null) {
-							newSelection = true;
+							//newSelection = true;
 
 							shipSelected = shipInfo;
 
-							SelectionDisplay.instance.gameObject.SetActive(true);
-							SelectionDisplay.instance.transform.position = hitObj.transform.position;
+							//SelectionDisplay.instance.gameObject.SetActive(true);
+							//SelectionDisplay.instance.transform.position = hitObj.transform.position;
 
 							UIManager.Instance.BackOutAll();
 							GameObject shipInfoWindow = UIManager.Instance.ShowPanel(PanelDefinition.ID.ShipInfo);
@@ -115,7 +115,7 @@ public class RytInput : MonoBehaviour
 							siw.Show(shipSelected);
 							shipSelected.shipInfoWindow = siw;
 						} else if (asteroidInfo != null) {
-							newSelection = true;
+							//newSelection = true;
 
 							UIManager.Instance.BackOutAll();
 							GameObject asteroidInfoWindow = UIManager.Instance.ShowPanel(PanelDefinition.ID.AsteroidInfo);

@@ -25,7 +25,7 @@ public class ModuleInstance
 	public void Update()
 	{
 		if (definition.type == ModuleDefinition.Type.Active)  {
-			if (target != null) {
+			if (target != null && RytUtil.IsAlive(target.gameObject)) {
 				if (Vector2.Distance(ship.pos.Get(), target.pos.Get()) < definition.range) {
 					DrawWorldLine.Draw(ship.pos.UniverseToUnity(), target.pos.UniverseToUnity(), Color.red);
 				}

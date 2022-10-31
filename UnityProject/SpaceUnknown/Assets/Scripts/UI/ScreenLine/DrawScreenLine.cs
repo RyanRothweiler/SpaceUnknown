@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DrawScreenLine : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class DrawScreenLine : MonoBehaviour
 	public class Line
 	{
 		public Vector2 start, end;
+		public Color color;
 	};
 
 	private static List<Line> linesToDraw = new List<Line>();
@@ -32,25 +34,28 @@ public class DrawScreenLine : MonoBehaviour
 			    (line.start.x + line.end.x) * 0.5f,
 			    (line.start.y + line.end.y) * 0.5f
 			);
-			//center = line.start;
 			rtrans.anchoredPosition = center;
-
 
 			Vector2 dir = (line.start - line.end).normalized;
 			rtrans.right = dir;
 
 			Vector2 sd = rtrans.sizeDelta;
 			sd.x = Vector2.Distance(line.start, line.end);;
-			//sd.x = 1.0f;
 			rtrans.sizeDelta = sd;
+
+			fab.GetComponent<Image>().color = line.color;
 		}
 	}
 
-	public static void Draw(Vector2 start, Vector2 end)
+	// 0,0 is bottom left of screen, Screen.Width,Screen.Height is top right
+	public static void Draw(Vector2 start, Vector2 end, Color color)
 	{
+		Vector2 halfScreen = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+
 		Line line = new Line();
-		line.start = start;
-		line.end = end;
+		line.start = start - halfScreen;
+		line.end = end - halfScreen;
+		line.color = color;
 		linesToDraw.Add(line);
 	}
 }

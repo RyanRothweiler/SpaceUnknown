@@ -14,5 +14,9 @@ public class AsteroidInfoWindow : MonoBehaviour
 
 		dataLine.title.text = "Venigen";
 		dataLine.data.text = "x" + asteroid.contentsAmount;
+
+		if (!asteroid.gameObject.activeInHierarchy) {
+			UIManager.Instance.Back();
+		}
 	}
 }

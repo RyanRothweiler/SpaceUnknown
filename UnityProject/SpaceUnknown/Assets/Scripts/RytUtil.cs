@@ -4,9 +4,14 @@ using UnityEngine;
 
 public static class RytUtil
 {
-
 	public static void GetIfNeed<T>(ref T component, MonoBehaviour self)
 	{
 		if (component == null) { component = self.GetComponent<T>(); }
 	}
+
+	public static bool IsAlive(GameObject target)
+	{
+		return target != null && target.activeInHierarchy;
+	}
+
 }

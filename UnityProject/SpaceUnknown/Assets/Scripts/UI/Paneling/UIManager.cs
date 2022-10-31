@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
 	public List<PanelDefinition> allPanels;
 	public GameObject safeArea;
 	public GameObject edgeGradientFab;
+	public ThemeColorStyle selectionLineColor;
 
 	private class PanelInstance
 	{
@@ -76,7 +77,7 @@ public class UIManager : MonoBehaviour
 	public void Back()
 	{
 		if (breadcrumb.Count > 0) {
-			Debug.Log("PM: Going back");
+			Debug.Log("PM: Back");
 
 			PanelInstance current = breadcrumb[breadcrumb.Count - 1];
 			current.inst.SetActive(false);
@@ -100,10 +101,11 @@ public class UIManager : MonoBehaviour
 		windowTrans.GetWorldCorners(corners);
 
 		Vector3 screenPoint = Camera.main.WorldToScreenPoint(corners[2]);
+		Vector2 start = new Vector2(screenPoint.x, screenPoint.y);
 
-		//Vector2 topRight = new Vector2(screenPoint.x - (Screen.width * 0.5f), screenPoint.y - (Screen.height * 0.5f));
+		Vector3 objScreenPoint = Camera.main.WorldToScreenPoint(target.transform.position);
+		Vector2 end = new Vector2(objScreenPoint.x, objScreenPoint.y);
 
-		Vector2 topRight = new Vector2(Input.mousePosition.x - (Screen.width * 0.5f), Input.mousePosition.y - (Screen.height * 0.5f));
-		DrawScreenLine.Draw(topRight, new Vector2(0, 0));
+		DrawScreenLine.Draw(start, end, selectionLineColor.color);
 	}
 }
