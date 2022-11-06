@@ -130,7 +130,7 @@ public class Ship : MonoBehaviour, IActor
 	{
 		// Ship movement
 		if (hasTarget) {
-			hasTarget = SimulateMovement(ref physics, def, TotalMass(), targetPosition);
+			hasTarget = SimulateMovement(ref physics, def, TotalMass(), targetPosition, time);
 		}
 
 		// Update modules
@@ -140,7 +140,7 @@ public class Ship : MonoBehaviour, IActor
 	}
 
 	// Returns if at target
-	public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, UniversalPosition targetPosition)
+	public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, UniversalPosition targetPosition, float time)
 	{
 		float gallonsUsed = def.fuelRateGallonsPerMinute;
 		physics.fuelGallons -= gallonsUsed;
@@ -178,7 +178,7 @@ public class Ship : MonoBehaviour, IActor
 		Vector2 acceleration = force / mass;
 		physics.velocity = physics.velocity + acceleration;
 
-		Vector3 newPos = physics.pos.Get() + physics.velocity;
+		Vector3 newPos = physics.pos.Get() + (physics.velocity * time);
 		physics.pos.Set(newPos);
 
 		return true;

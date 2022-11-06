@@ -25,14 +25,14 @@ public class GameManager : MonoBehaviour
 
 	void Update()
 	{
-		StepAll();
+		StepAll(Time.deltaTime);
 
 #if UNITY_EDITOR
-		// time skip editing tools. These times are in real world time
+		// time skip editing tools
 		{
 			int stepsToDo = 0;
 
-			int oneMinuteOfSteps = 60 * 60;
+			int oneMinuteOfSteps = Application.targetFrameRate * 60;
 
 			// one real world minute
 			if (Input.GetKeyDown(KeyCode.Alpha1)) {
@@ -55,19 +55,19 @@ public class GameManager : MonoBehaviour
 			}
 
 			for (int i = 0; i < stepsToDo; i++) {
-				StepAll();
+				StepAll(1.0f / Application.targetFrameRate);
 			}
 		}
 #endif
 	}
 
-	public void StepAll()
+	public void StepAll(float deltaTime)
 	{
 		stepTime++;
 
 		// One step is one minute of world time
 		for (int i = 0; i < simulationActors.Count; i++) {
-			simulationActors[i].Step(1.0f);
+			simulationActors[i].Step(deltaTime);
 		}
 	}
 

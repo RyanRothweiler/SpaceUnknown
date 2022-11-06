@@ -51,7 +51,7 @@ public class IssueMovementWindow : MonoBehaviour
 		distance.gameObject.SetActive(true);
 
 		// Calculate datas
-		distanceMiles = Vector2.Distance(ship.physics.pos.Get(), destination.Get());
+		distanceMiles = Vector2.Distance(ship.physics.pos.Get(), destination.Get()) * Units.UnityToMiles;
 		distance.Set(distanceMiles.ToString("0.0"), "mi");
 
 		/*
