@@ -44,6 +44,7 @@ public class IssueMovementWindow : MonoBehaviour
 
 	public void SetDestination(UniversalPosition uniPos)
 	{
+
 		hasDestination = true;
 		destination = uniPos;
 

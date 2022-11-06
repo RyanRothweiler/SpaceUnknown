@@ -24,7 +24,7 @@ public class ShipInfoWindow : MonoBehaviour
 	void Update()
 	{
 		storageDisplay.Set(ship.CurrentStorageTons(), ship.def.storageTons, "t");
-		fuelDisplay.Set(ship.fuelGallons, ship.def.fuelTankGallons, "gal");
+		fuelDisplay.Set(ship.physics.fuelGallons, ship.def.fuelTankGallons, "gal");
 
 		UIManager.Instance.DrawSelectionLine(ship.gameObject);
 	}
