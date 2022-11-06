@@ -69,4 +69,11 @@ public class ShipInfoWindow : MonoBehaviour
 
 		currentLines.Add(cargoLine.gameObject);
 	}
+
+	public void IssueMovementWindow()
+	{
+		GameObject issueWindowObj = UIManager.Instance.ShowPanel(PanelDefinition.ID.IssueMovement);
+		IssueMovementWindow imw = issueWindowObj.GetComponent<IssueMovementWindow>();
+		imw.ship = ship;
+	}
 }

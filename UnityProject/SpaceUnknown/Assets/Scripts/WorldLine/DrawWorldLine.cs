@@ -57,4 +57,9 @@ public class DrawWorldLine : MonoBehaviour
 		line.color = color;
 		linesToDraw.Add(line);
 	}
+
+	public static void Draw(UniversalPosition start, UniversalPosition end, Color color)
+	{
+		Draw(start.UniverseToUnity(), end.UniverseToUnity(), color);
+	}
 }

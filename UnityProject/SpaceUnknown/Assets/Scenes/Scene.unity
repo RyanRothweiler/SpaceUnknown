@@ -2430,6 +2430,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 139b225a51e46b049a99eac1d2d9c475, type: 2}
   - {fileID: 11400000, guid: 19b280e1b92c7434ca1a9945b8efda0c, type: 2}
   - {fileID: 11400000, guid: 8feacde93b8393c4ca0aee5088eb6cab, type: 2}
+  - {fileID: 11400000, guid: 7285c469367f74d42a7f33fac0a9fb60, type: 2}
   safeArea: {fileID: 1233729208}
   edgeGradientFab: {fileID: 5896536277291155293, guid: fccf8623ac9c7ef42b9fda05b4127910, type: 3}
   selectionLineColor: {fileID: 11400000, guid: 1e4c1a1049c4c5540812dcf5dccd6052, type: 2}

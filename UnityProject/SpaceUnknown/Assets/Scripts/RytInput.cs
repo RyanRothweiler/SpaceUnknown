@@ -19,7 +19,17 @@ public class RytInput : MonoBehaviour
 		public Vector2 prevPos;
 		public Vector2 startPos;
 		public Vector2 currentPos;
-	};
+
+		public UniversalPosition GetCurrentUniversal()
+		{
+			UniversalPosition ret = new UniversalPosition();
+
+			Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(leftTouch.currentPos.x, leftTouch.currentPos.y, Camera.main.transform.position.z * -1));
+			UniversalPosition.UnityToUniverse(ret, worldPos);
+
+			return ret;
+		}
+	}
 
 	//public static Touch[] touches;
 	public static float scrollAmount;
@@ -140,10 +150,12 @@ public class RytInput : MonoBehaviour
 			}
 
 			// ship movement
+			/*
 			if (shipSelected != null && rightTouch.onUp && !rightTouch.moved) {
 				Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(leftTouch.currentPos.x, leftTouch.currentPos.y, Camera.main.transform.position.z * -1));
 				shipSelected.SetTargetPosition(worldPos);
 			}
+			*/
 		}
 	}
 

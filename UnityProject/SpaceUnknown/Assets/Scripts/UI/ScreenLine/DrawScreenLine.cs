@@ -68,4 +68,11 @@ public class DrawScreenLine : MonoBehaviour
 		line.color = color;
 		linesToDraw.Add(line);
 	}
+
+	public static void Draw(UniversalPosition start, UniversalPosition end, Color color)
+	{
+		Vector3 startScreen = Camera.main.WorldToScreenPoint(start.UniverseToUnity());
+		Vector3 endScreen = Camera.main.WorldToScreenPoint(end.UniverseToUnity());
+		Draw(startScreen, endScreen, color);
+	}
 }

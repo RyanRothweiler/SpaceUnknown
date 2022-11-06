@@ -6,7 +6,7 @@ using UnityEngine;
 [Serializable]
 public class UniversalPosition
 {
-	// Units here are just made up, not related to anything in the real world
+	// Units here are miles, but don't take that too seriously
 	public double x;
 	public double y;
 

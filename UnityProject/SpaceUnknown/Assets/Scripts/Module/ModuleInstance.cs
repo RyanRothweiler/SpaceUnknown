@@ -26,8 +26,8 @@ public class ModuleInstance
 	{
 		if (definition.type == ModuleDefinition.Type.Active)  {
 			if (target != null && RytUtil.IsAlive(target.gameObject)) {
-				if (Vector2.Distance(ship.pos.Get(), target.pos.Get()) < definition.range) {
-					DrawWorldLine.Draw(ship.pos.UniverseToUnity(), target.pos.UniverseToUnity(), Color.red);
+				if (Vector2.Distance(ship.physics.pos.Get(), target.pos.Get()) < definition.range) {
+					DrawWorldLine.Draw(ship.physics.pos.UniverseToUnity(), target.pos.UniverseToUnity(), Color.red);
 				}
 			}
 		}
@@ -42,7 +42,7 @@ public class ModuleInstance
 
 			if (target != null) {
 
-				if (Vector2.Distance(ship.pos.Get(), target.pos.Get()) < definition.range) {
+				if (Vector2.Distance(ship.physics.pos.Get(), target.pos.Get()) < definition.range) {
 
 					currentActivationMinutes += time;
 					while (currentActivationMinutes >= definition.activationTimeWorldMinutes) {
@@ -60,7 +60,7 @@ public class ModuleInstance
 
 				// Find target
 				foreach (AsteroidInstance asteroid in GameManager.Instance.asteroids) {
-					if (Vector2.Distance(asteroid.pos.Get(), ship.pos.Get()) < definition.range) {
+					if (Vector2.Distance(asteroid.pos.Get(), ship.physics.pos.Get()) < definition.range) {
 						target = asteroid;
 						break;
 					}

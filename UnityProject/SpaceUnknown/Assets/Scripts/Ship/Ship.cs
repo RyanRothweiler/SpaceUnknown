@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class Ship : MonoBehaviour, IActor
 {
+	[System.Serializable]
+	public struct Physics {
+		public Vector2 velocity;
+		public UniversalPosition pos;
+	};
+
 	public ShipDefinition def;
 	public ModuleDefinition testModuleDef;
-	public UniversalPosition pos;
 
 	private bool hasTarget;
 	private UniversalPosition targetPosition = new UniversalPosition();
+	public Physics physics;
 
 	public List<ModuleInstance> modules;
 	public List<ItemInstance> cargo;
@@ -20,18 +26,18 @@ public class Ship : MonoBehaviour, IActor
 	//private float fuelConservation;
 
 	public float fuelGallons;
-	private Vector2 velocity;
 
 	private const float fuelForcePerGallon = 1.0f;
 
 	private List<float> currentFlightPlanForce;
 	public ShipInfoWindow shipInfoWindow;
 
+
 	public void Awake()
 	{
 		GameManager.RegisterActor(this);
 
-		pos = this.GetComponent<UniversalPositionMono>().pos;
+		physics.pos = this.GetComponent<UniversalPositionMono>().pos;
 
 		pathLine = this.GetComponent<LineRenderer>();
 		pathLine.positionCount = 0;
@@ -134,42 +140,47 @@ public class Ship : MonoBehaviour, IActor
 
 			float maxAcceleration = (1 / TotalMass()) * fuelForce;
 
-			float maxStepsNeededToStop = velocity.magnitude / maxAcceleration;
-			float distToTarget = Vector2.Distance(pos.Get(), targetPosition.Get());
-			float stepsToTarget = distToTarget / velocity.magnitude;
+			float maxStepsNeededToStop = physics.velocity.magnitude / maxAcceleration;
+			float distToTarget = Vector2.Distance(physics.pos.Get(), targetPosition.Get());
+			float stepsToTarget = distToTarget / physics.velocity.magnitude;
 
 			// close enough
 			if (distToTarget < 0.01f) {
 				hasTarget = false;
-				velocity = new Vector2(0, 0);
+				physics.velocity = new Vector2(0, 0);
 				return;
 			}
 
 			Vector2 force = new Vector2();
 			if (maxStepsNeededToStop > stepsToTarget) {
 				// slow down, apply opposite force
-				force = velocity.normalized * -1 * fuelForce;
+				force = physics.velocity.normalized * -1 * fuelForce;
 			} else if (maxStepsNeededToStop > stepsToTarget - 2) {
 				// coast, apply no force
 				force = new Vector2(0, 0);
 			} else {
 				// push towards target
-				force = (targetPosition.Get() - pos.Get()).normalized * fuelForce;
+				force = (targetPosition.Get() - physics.pos.Get()).normalized * fuelForce;
 			}
 
 			//Debug.DrawRay(pos.UniverseToUnity(), force, Color.red, 0.1f);
 			//Debug.DrawRay(pos.UniverseToUnity(), velocity, Color.green, 0.1f);
 
 			Vector2 acceleration = force / TotalMass();
-			velocity = velocity + acceleration;
+			physics.velocity = physics.velocity + acceleration;
 
-			Vector3 newPos = pos.Get() + velocity;
-			pos.Set(newPos);
+			Vector3 newPos = physics.pos.Get() + physics.velocity;
+			physics.pos.Set(newPos);
 		}
 
 		// Update modules
 		for (int i = 0; i < modules.Count; i++) {
 			modules[i].Step(time);
 		}
+	}
+
+	public void SimulateMovement()
+	{
+
 	}
 }
