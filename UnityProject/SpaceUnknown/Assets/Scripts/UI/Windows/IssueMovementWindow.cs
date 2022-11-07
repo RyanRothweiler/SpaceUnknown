@@ -21,7 +21,7 @@ public class IssueMovementWindow : MonoBehaviour
 	void Update()
 	{
 		if (RytInput.leftTouch.onUp && !RytInput.leftTouch.moved) {
-			SetDestination(RytInput.leftTouch.GetCurrentUniversal());
+			StartCoroutine(SetDestination(RytInput.leftTouch.GetCurrentUniversal()));
 		}
 
 		if (hasDestination) {
@@ -39,8 +39,10 @@ public class IssueMovementWindow : MonoBehaviour
 		distance.gameObject.SetActive(false);
 	}
 
-	public void SetDestination(UniversalPosition uniPos)
+	public IEnumerator SetDestination(UniversalPosition uniPos)
 	{
+		yield return null;
+
 		hasDestination = true;
 		destination = uniPos;
 
@@ -50,19 +52,34 @@ public class IssueMovementWindow : MonoBehaviour
 		time.gameObject.SetActive(true);
 		distance.gameObject.SetActive(true);
 
-		// Calculate datas
+		// distance
 		distanceMiles = Vector2.Distance(ship.physics.pos.Get(), destination.Get()) * Units.UnityToMiles;
 		distance.Set(distanceMiles.ToString("0.0"), "mi");
 
-		/*
 		fuel.data.text = "";
 
-		float dataTime = 0;
-		Ship.Physics physics = ship.physics;
-		while (Ship.SimulateMovement(ref physics, ship.def, ship.TotalMass(), destination)) {
-			dataTime++;
+		// time and fuel
+		{
+			float dataTime = 0;
+			float stepSeconds = 1.0f / Application.targetFrameRate;
+
+			Ship.Physics physics = new Ship.Physics();
+			physics.pos = new UniversalPosition();
+			physics.pos.x = ship.physics.pos.x;
+			physics.pos.y = ship.physics.pos.y;
+
+			int c = 0;
+			while (Ship.SimulateMovement(ref physics, ship.def, ship.TotalMass(), destination, stepSeconds)) {
+				c++;
+				//if (c > 10000) break;
+				dataTime += stepSeconds;
+
+				//float distToTarget = Vector2.Distance(physics.pos.Get(), destination.Get());
+				//Debug.Log(physics.velocity + " dist " + distToTarget);
+
+				//yield return null;
+			}
+			time.Set(string.Format("{0:0,0.0}", dataTime), "s");
 		}
-		time.Set(dataTime.ToString("0.0", "s"));
-		*/
 	}
 }

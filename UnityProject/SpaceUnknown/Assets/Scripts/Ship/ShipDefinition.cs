@@ -8,5 +8,5 @@ public class ShipDefinition : ScriptableObject
 	public float massTons;
 	public float storageTons;
 	public float fuelTankGallons;
-	public float fuelRateGallonsPerMinute;
+	public float fuelRateGallonsPerSecond;
 }

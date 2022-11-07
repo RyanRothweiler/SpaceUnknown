@@ -15,4 +15,4 @@ MonoBehaviour:
   massTons: 2250
   storageTons: 100
   fuelTankGallons: 1000
-  fuelRateGallonsPerMinute: 0.5
+  fuelRateGallonsPerSecond: 0.5

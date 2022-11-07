@@ -26,7 +26,7 @@ public class Ship : MonoBehaviour, IActor
 	// 0 means no conservation, boost all the way until counter boost.
 	//private float fuelConservation;
 
-	private const float fuelForcePerGallon = 1.0f;
+	private const float fuelForcePerGallon = 1000.0f;
 
 	private List<float> currentFlightPlanForce;
 	public ShipInfoWindow shipInfoWindow;
@@ -139,10 +139,10 @@ public class Ship : MonoBehaviour, IActor
 		}
 	}
 
-	// Returns if at target
+	// Returns if is still moving
 	public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, UniversalPosition targetPosition, float time)
 	{
-		float gallonsUsed = def.fuelRateGallonsPerMinute;
+		float gallonsUsed = def.fuelRateGallonsPerSecond * time;
 		physics.fuelGallons -= gallonsUsed;
 
 		// how much push the fuel provides

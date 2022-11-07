@@ -41,7 +41,7 @@ public class RytInput : MonoBehaviour
 
 	private float pcScrollRate = 2.0f;
 
-	private const float distForMove = 5.0f;
+	private const float distForMove = 8.0f;
 
 	void Start()
 	{
@@ -149,8 +149,8 @@ public class RytInput : MonoBehaviour
 				*/
 			}
 
-			// ship movement
 			/*
+			// ship movement
 			if (shipSelected != null && rightTouch.onUp && !rightTouch.moved) {
 				Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(leftTouch.currentPos.x, leftTouch.currentPos.y, Camera.main.transform.position.z * -1));
 				shipSelected.SetTargetPosition(worldPos);
