@@ -82,4 +82,9 @@ public class IssueMovementWindow : MonoBehaviour
 			time.Set(string.Format("{0:0,0.0}", dataTime), "s");
 		}
 	}
+
+	public void Submit()
+	{
+		ship.SetTargetPosition(destination);
+	}
 }

@@ -12,7 +12,7 @@ public class UniversalPositionMono : MonoBehaviour
 
 	void Awake()
 	{
-		UniversalPosition.UnityToUniverse(pos, this.transform.position);
+		pos = UniversalPosition.UnityToUniverse(this.transform.position);
 		origScale = this.transform.localScale;
 
 		allUniversals.Add(this);

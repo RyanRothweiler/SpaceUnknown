@@ -21,7 +21,7 @@ public class Ship : MonoBehaviour, IActor
 	public List<ModuleInstance> modules;
 	public List<ItemInstance> cargo;
 
-	private LineRenderer pathLine;
+	//private LineRenderer pathLine;
 
 	// 0 means no conservation, boost all the way until counter boost.
 	//private float fuelConservation;
@@ -31,15 +31,11 @@ public class Ship : MonoBehaviour, IActor
 	private List<float> currentFlightPlanForce;
 	public ShipInfoWindow shipInfoWindow;
 
-
 	public void Awake()
 	{
 		GameManager.RegisterActor(this);
 
 		physics.pos = this.GetComponent<UniversalPositionMono>().pos;
-
-		pathLine = this.GetComponent<LineRenderer>();
-		pathLine.positionCount = 0;
 
 		modules = new List<ModuleInstance>();
 		modules.Add(new ModuleInstance(testModuleDef, this));
@@ -51,17 +47,20 @@ public class Ship : MonoBehaviour, IActor
 
 	void Update()
 	{
+		/*
 		if (hasTarget) {
-			pathLine.positionCount = 2;
 
-			Vector3[] positions = new Vector3[2];
-			positions[0] = this.transform.position;
-			positions[1] = targetPosition.UniverseToUnity();
-			pathLine.SetPositions(positions);
+		pathLine.positionCount = 2;
+
+		Vector3[] positions = new Vector3[2];
+		positions[0] = this.transform.position;
+		positions[1] = targetPosition.UniverseToUnity();
+		pathLine.SetPositions(positions);
 
 		} else {
-			pathLine.positionCount = 0;
+		pathLine.positionCount = 0;
 		}
+		*/
 
 		// Render modules
 		for (int i = 0; i < modules.Count; i++) {
@@ -109,7 +108,13 @@ public class Ship : MonoBehaviour, IActor
 	public void SetTargetPosition(Vector2 unityPos)
 	{
 		hasTarget = true;
-		UniversalPosition.UnityToUniverse(targetPosition, unityPos);
+		targetPosition = UniversalPosition.UnityToUniverse(unityPos);
+	}
+
+	public void SetTargetPosition(UniversalPosition pos)
+	{
+		hasTarget = true;
+		targetPosition = pos;
 	}
 
 	public float CurrentStorageTons()

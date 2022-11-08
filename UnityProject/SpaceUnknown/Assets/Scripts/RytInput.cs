@@ -22,12 +22,8 @@ public class RytInput : MonoBehaviour
 
 		public UniversalPosition GetCurrentUniversal()
 		{
-			UniversalPosition ret = new UniversalPosition();
-
 			Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(leftTouch.currentPos.x, leftTouch.currentPos.y, Camera.main.transform.position.z * -1));
-			UniversalPosition.UnityToUniverse(ret, worldPos);
-
-			return ret;
+			return UniversalPosition.UnityToUniverse(worldPos);
 		}
 	}
 

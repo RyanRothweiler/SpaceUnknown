@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class UniversalPosition
-{
+public struct UniversalPosition {
 	// Units here are miles, but don't take that too seriously
 	public double x;
 	public double y;
@@ -31,10 +30,12 @@ public class UniversalPosition
 		return pos;
 	}
 
-	public static void UnityToUniverse(UniversalPosition dest, Vector3 pos)
+	public static UniversalPosition UnityToUniverse(Vector3 pos)
 	{
-		dest.x = pos.x * CameraControls.unityUnitsToGameUnits;
-		dest.y = pos.y * CameraControls.unityUnitsToGameUnits;
+		UniversalPosition ret = new UniversalPosition();
+		ret.x = pos.x * CameraControls.unityUnitsToGameUnits;
+		ret.y = pos.y * CameraControls.unityUnitsToGameUnits;
+		return ret;
 	}
 
 }
