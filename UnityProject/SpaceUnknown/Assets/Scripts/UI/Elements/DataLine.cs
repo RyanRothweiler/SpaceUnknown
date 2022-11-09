@@ -10,7 +10,10 @@ public class DataLine : MonoBehaviour
 
 	public void Set(string value, string units)
 	{
-		data.text = $"{value}({units})";
+		string unitsDisp = "";
+		if (!string.IsNullOrEmpty(units)) {
+			unitsDisp = $"<size=80%>({units})</size>";
+		}
+		data.text = $"{value} {unitsDisp}";
 	}
-
 }

@@ -878,6 +878,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeDisplay: {fileID: 605458383}
+  seconds: 0
 --- !u!1 &641069136
 GameObject:
   m_ObjectHideFlags: 0
@@ -974,9 +975,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce598e467f312234cbc6e19d279e91c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pos:
-    x: 0
-    y: 0
+  x: 0
+  y: 0
 --- !u!4 &641069140
 Transform:
   m_ObjectHideFlags: 0
@@ -1595,9 +1595,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce598e467f312234cbc6e19d279e91c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pos:
-    x: 0
-    y: 0
+  x: 0
+  y: 0
 --- !u!212 &1455109134
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1879,7 +1878,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1849329104}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.22, y: 4.13, z: 0}
+  m_LocalPosition: {x: -4.79, y: 7.87, z: 0}
   m_LocalScale: {x: 0.04667011, y: 0.04667011, z: 0.04667011}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1900,10 +1899,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   def: {fileID: 11400000, guid: f3b010be45e060f4abe5b80b8823ff56, type: 2}
   testModuleDef: {fileID: 11400000, guid: f1754c713b9420544ab8dfe01c423ca3, type: 2}
-  pos:
-    x: 0
-    y: 0
-  fuelGallons: 0
+  hasTarget: 0
+  physics:
+    velocity: {x: 0, y: 0}
+    pos: {fileID: 0}
+    fuelGallons: 0
   shipInfoWindow: {fileID: 0}
 --- !u!65 &1849329108
 BoxCollider:
@@ -2027,9 +2027,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce598e467f312234cbc6e19d279e91c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pos:
-    x: 5
-    y: 0
+  x: 0
+  y: 0
 --- !u!1001 &1893734942
 PrefabInstance:
   m_ObjectHideFlags: 0

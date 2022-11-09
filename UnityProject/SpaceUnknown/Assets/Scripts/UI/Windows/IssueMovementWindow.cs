@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -63,30 +64,44 @@ public class IssueMovementWindow : MonoBehaviour
 
 		// time and fuel
 		{
-			float dataTime = 0;
+			float dataTimeSeconds = 0;
 			float stepSeconds = 1.0f / Application.targetFrameRate;
 
 			Vector2 startPos = ship.physics.pos.Get();
+			float fuelStart = ship.physics.fuelGallons;
 
-			int c = 0;
 			while (Ship.SimulateMovement(ref ship.physics, ship.def, ship.TotalMass(), destination, stepSeconds)) {
-				c++;
-				//if (c > 10000) break;
-				dataTime += stepSeconds;
-
-				//float distToTarget = Vector2.Distance(physics.pos.Get(), destination.Get());
-				//Debug.Log(physics.velocity + " dist " + distToTarget);
-
-				//yield return null;
+				dataTimeSeconds += stepSeconds;
 			}
-			time.Set(string.Format("{0:0,0.0}", dataTime), "s");
+
+			float fuelUsed = fuelStart - ship.physics.fuelGallons;
+			fuel.Set(string.Format("{0:0,0.0}", fuelUsed), "gal");
+
+			TimeSpan timeSpan = new TimeSpan(0, 0, (int)dataTimeSeconds);
+			time.Set(ToReadableString(timeSpan), "");
 
 			ship.physics.pos.Set(startPos);
+			ship.physics.fuelGallons = fuelStart;
 		}
 	}
 
 	public void Submit()
 	{
 		ship.SetTargetPosition(destination);
+	}
+
+	public static string ToReadableString(TimeSpan span)
+	{
+		string formatted = string.Format("{0}{1}{2}{3}",
+		                                 span.Duration().Days > 0 ? string.Format("{0:0} d, ", span.Days) : string.Empty,
+		                                 span.Duration().Hours > 0 ? string.Format("{0:0} h, ", span.Hours) : string.Empty,
+		                                 span.Duration().Minutes > 0 ? string.Format("{0:0} m, ", span.Minutes) : string.Empty,
+		                                 span.Duration().Seconds > 0 ? string.Format("{0:0} s", span.Seconds) : string.Empty);
+
+		if (formatted.EndsWith(", ")) formatted = formatted.Substring(0, formatted.Length - 2);
+
+		if (string.IsNullOrEmpty(formatted)) formatted = "0 seconds";
+
+		return formatted;
 	}
 }
