@@ -10,7 +10,7 @@ public class AsteroidInstance : MonoBehaviour
 
 	public void Awake()
 	{
-		pos = this.GetComponent<UniversalPositionMono>().pos;
+		pos = this.GetComponent<UniversalPosition>();
 	}
 
 	public void OnEnable()

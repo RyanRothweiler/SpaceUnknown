@@ -14,8 +14,8 @@ public class Ship : MonoBehaviour, IActor
 	public ShipDefinition def;
 	public ModuleDefinition testModuleDef;
 
-	private bool hasTarget;
-	private UniversalPosition targetPosition = new UniversalPosition();
+	private Vector2 targetPosition;
+	public bool hasTarget;
 	public Physics physics;
 
 	public List<ModuleInstance> modules;
@@ -35,7 +35,7 @@ public class Ship : MonoBehaviour, IActor
 	{
 		GameManager.RegisterActor(this);
 
-		physics.pos = this.GetComponent<UniversalPositionMono>().pos;
+		physics.pos = this.GetComponent<UniversalPosition>();
 
 		modules = new List<ModuleInstance>();
 		modules.Add(new ModuleInstance(testModuleDef, this));
@@ -111,12 +111,6 @@ public class Ship : MonoBehaviour, IActor
 		targetPosition = UniversalPosition.UnityToUniverse(unityPos);
 	}
 
-	public void SetTargetPosition(UniversalPosition pos)
-	{
-		hasTarget = true;
-		targetPosition = pos;
-	}
-
 	public float CurrentStorageTons()
 	{
 		float ret = 0;
@@ -145,7 +139,7 @@ public class Ship : MonoBehaviour, IActor
 	}
 
 	// Returns if is still moving
-	public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, UniversalPosition targetPosition, float time)
+	public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, Vector2 targetPosition, float time)
 	{
 		float gallonsUsed = def.fuelRateGallonsPerSecond * time;
 		physics.fuelGallons -= gallonsUsed;
@@ -156,7 +150,7 @@ public class Ship : MonoBehaviour, IActor
 		float maxAcceleration = (1 / mass) * fuelForce;
 
 		float maxStepsNeededToStop = physics.velocity.magnitude / maxAcceleration;
-		float distToTarget = Vector2.Distance(physics.pos.Get(), targetPosition.Get());
+		float distToTarget = Vector2.Distance(physics.pos.Get(), targetPosition);
 		float stepsToTarget = distToTarget / physics.velocity.magnitude;
 
 		// close enough
@@ -174,7 +168,7 @@ public class Ship : MonoBehaviour, IActor
 			force = new Vector2(0, 0);
 		} else {
 			// push towards target
-			force = (targetPosition.Get() - physics.pos.Get()).normalized * fuelForce;
+			force = (targetPosition - physics.pos.Get()).normalized * fuelForce;
 		}
 
 		//Debug.DrawRay(pos.UniverseToUnity(), force, Color.red, 0.1f);

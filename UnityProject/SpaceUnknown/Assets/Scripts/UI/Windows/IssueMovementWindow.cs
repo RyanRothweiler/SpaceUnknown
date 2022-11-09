@@ -13,7 +13,7 @@ public class IssueMovementWindow : MonoBehaviour
 	public DataLine distance;
 
 	private bool hasDestination;
-	private UniversalPosition destination;
+	private Vector2 destination;
 
 	private float distanceMiles;
 	private float dataTime;
@@ -25,7 +25,10 @@ public class IssueMovementWindow : MonoBehaviour
 		}
 
 		if (hasDestination) {
-			DrawScreenLine.Draw(ship.physics.pos, destination, Color.green);
+			DrawScreenLine.DrawFromWorld(
+			    UniversalPosition.UniverseToUnity(ship.physics.pos),
+			    UniversalPosition.UniverseToUnity(destination),
+			    Color.green);
 		}
 	}
 
@@ -39,12 +42,12 @@ public class IssueMovementWindow : MonoBehaviour
 		distance.gameObject.SetActive(false);
 	}
 
-	public IEnumerator SetDestination(UniversalPosition uniPos)
+	public IEnumerator SetDestination(Vector2 dest)
 	{
 		yield return null;
 
 		hasDestination = true;
-		destination = uniPos;
+		destination = dest;
 
 		selectDestinationText.SetActive(false);
 
@@ -53,7 +56,7 @@ public class IssueMovementWindow : MonoBehaviour
 		distance.gameObject.SetActive(true);
 
 		// distance
-		distanceMiles = Vector2.Distance(ship.physics.pos.Get(), destination.Get()) * Units.UnityToMiles;
+		distanceMiles = Vector2.Distance(ship.physics.pos.Get(), destination) * Units.UnityToMiles;
 		distance.Set(distanceMiles.ToString("0.0"), "mi");
 
 		fuel.data.text = "";
@@ -63,13 +66,10 @@ public class IssueMovementWindow : MonoBehaviour
 			float dataTime = 0;
 			float stepSeconds = 1.0f / Application.targetFrameRate;
 
-			Ship.Physics physics = new Ship.Physics();
-			physics.pos = new UniversalPosition();
-			physics.pos.x = ship.physics.pos.x;
-			physics.pos.y = ship.physics.pos.y;
+			Vector2 startPos = ship.physics.pos.Get();
 
 			int c = 0;
-			while (Ship.SimulateMovement(ref physics, ship.def, ship.TotalMass(), destination, stepSeconds)) {
+			while (Ship.SimulateMovement(ref ship.physics, ship.def, ship.TotalMass(), destination, stepSeconds)) {
 				c++;
 				//if (c > 10000) break;
 				dataTime += stepSeconds;
@@ -80,6 +80,8 @@ public class IssueMovementWindow : MonoBehaviour
 				//yield return null;
 			}
 			time.Set(string.Format("{0:0,0.0}", dataTime), "s");
+
+			ship.physics.pos.Set(startPos);
 		}
 	}
 

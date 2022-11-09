@@ -12,6 +12,7 @@ public class ShipInfoWindow : MonoBehaviour
 	public ModuleLine moduleLinePrefab;
 	public GameObject marginHolder;
 	public GameObject modulesHeader;
+	public GameObject movingStatusDisplay;
 
 	public CargoItemLine cargoItemPrefab;
 	public GameObject cargoGridLayout;
@@ -27,6 +28,8 @@ public class ShipInfoWindow : MonoBehaviour
 		fuelDisplay.Set(ship.physics.fuelGallons, ship.def.fuelTankGallons, "gal");
 
 		UIManager.Instance.DrawSelectionLine(ship.gameObject);
+
+		movingStatusDisplay.SetActive(ship.hasTarget);
 	}
 
 	public void Show(Ship ship)

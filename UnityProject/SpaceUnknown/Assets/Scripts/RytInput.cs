@@ -20,7 +20,7 @@ public class RytInput : MonoBehaviour
 		public Vector2 startPos;
 		public Vector2 currentPos;
 
-		public UniversalPosition GetCurrentUniversal()
+		public Vector2 GetCurrentUniversal()
 		{
 			Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(leftTouch.currentPos.x, leftTouch.currentPos.y, Camera.main.transform.position.z * -1));
 			return UniversalPosition.UnityToUniverse(worldPos);

@@ -10,11 +10,11 @@ public class AsteroidSpawner : MonoBehaviour, IActor
 	public float realtimeMinutesUntilAsteroid;
 	public float randomWindow;
 
-	private UniversalPositionMono mpos;
+	private UniversalPosition pos;
 
 	private class SpawnPosition
 	{
-		public UniversalPositionMono pos;
+		public UniversalPosition pos;
 		public GameObject currentObj;
 	};
 
@@ -29,9 +29,9 @@ public class AsteroidSpawner : MonoBehaviour, IActor
 		GameManager.RegisterActor(this);
 		Pooler.Setup(poolID, fabs, 0, null);
 
-		mpos = this.GetComponent<UniversalPositionMono>();
+		pos = this.GetComponent<UniversalPosition>();
 
-		UniversalPositionMono[] comps = this.GetComponentsInChildren<UniversalPositionMono>();
+		UniversalPosition[] comps = this.GetComponentsInChildren<UniversalPosition>();
 		for (int x = 0; x < comps.Length; x++) {
 			SpawnPosition sp = new SpawnPosition();
 			sp.pos = comps[x];
@@ -67,16 +67,16 @@ public class AsteroidSpawner : MonoBehaviour, IActor
 		// pick one position randomly to spawn on
 		if (availablePositions.Count > 0) {
 			int choice = UnityEngine.Random.Range(0, availablePositions.Count - 1);
-			UniversalPositionMono destMono = availablePositions[choice].pos;
+			UniversalPosition destMono = availablePositions[choice].pos;
 
 			GameObject roid = Pooler.Get(poolID);
 			availablePositions[choice].currentObj = roid;
 
 			roid.transform.localEulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(0, 360));
-			UniversalPosition roidPos = roid.GetComponent<UniversalPositionMono>().pos;
+			UniversalPosition roidPos = roid.GetComponent<UniversalPosition>();
 
-			roidPos.x = destMono.pos.x;
-			roidPos.y = destMono.pos.y;
+			roidPos.x = destMono.x;
+			roidPos.y = destMono.y;
 
 			roid.GetComponent<AsteroidInstance>().contentsAmount = 2;
 		}

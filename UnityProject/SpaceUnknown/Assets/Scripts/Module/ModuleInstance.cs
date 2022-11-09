@@ -27,7 +27,7 @@ public class ModuleInstance
 		if (definition.type == ModuleDefinition.Type.Active)  {
 			if (target != null && RytUtil.IsAlive(target.gameObject)) {
 				if (Vector2.Distance(ship.physics.pos.Get(), target.pos.Get()) < definition.range) {
-					DrawWorldLine.Draw(ship.physics.pos.UniverseToUnity(), target.pos.UniverseToUnity(), Color.red);
+					DrawWorldLine.Draw(UniversalPosition.UniverseToUnity(ship.physics.pos), UniversalPosition.UniverseToUnity(target.pos), Color.red);
 				}
 			}
 		}
