@@ -58,7 +58,7 @@ public class IssueMovementWindow : MonoBehaviour
 
 		// distance
 		distanceMiles = Vector2.Distance(ship.physics.pos.Get(), destination) * Units.UnityToMiles;
-		distance.Set(string.Format("{0:0,0.0}", distanceMiles), "mi");
+		distance.Set(distanceMiles, "mi");
 
 		fuel.data.text = "";
 
@@ -75,7 +75,7 @@ public class IssueMovementWindow : MonoBehaviour
 			}
 
 			float fuelUsed = fuelStart - ship.physics.fuelGallons;
-			fuel.Set(string.Format("{0:0,0.0}", fuelUsed), "gal");
+			fuel.Set(fuelUsed, "gal");
 
 			TimeSpan timeSpan = new TimeSpan(0, 0, (int)dataTimeSeconds);
 			time.Set(ToReadableString(timeSpan), "");

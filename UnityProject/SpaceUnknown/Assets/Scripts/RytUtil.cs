@@ -14,4 +14,8 @@ public static class RytUtil
 		return target != null && target.activeInHierarchy;
 	}
 
+	public static string HumanFloat(float value)
+	{
+		return string.Format("{0:0,0.0}", value);
+	}
 }

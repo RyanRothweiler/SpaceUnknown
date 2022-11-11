@@ -8,6 +8,11 @@ public class DataLine : MonoBehaviour
 	public TMP_Text title;
 	public TMP_Text data;
 
+	public void Set(float value, string units)
+	{
+		Set(RytUtil.HumanFloat(value), units);
+	}
+
 	public void Set(string value, string units)
 	{
 		string unitsDisp = "";
