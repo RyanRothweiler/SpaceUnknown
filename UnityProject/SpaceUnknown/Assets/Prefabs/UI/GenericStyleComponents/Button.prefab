@@ -145,8 +145,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: This is a button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 43e9bd31744e45442bf934e7b4e3eb4a, type: 2}
-  m_sharedMaterial: {fileID: 8065905509454148754, guid: 43e9bd31744e45442bf934e7b4e3eb4a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b02094ac0e1e5e74693ebb833bf39231, type: 2}
+  m_sharedMaterial: {fileID: -5120156140324079476, guid: b02094ac0e1e5e74693ebb833bf39231, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -170,8 +170,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 35
+  m_fontSizeBase: 35
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: -34.15
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -350,6 +350,7 @@ GameObject:
   - component: {fileID: 1979699137614821215}
   - component: {fileID: 1979699137614821025}
   - component: {fileID: 1979699137614821214}
+  - component: {fileID: 8653893794625249453}
   m_Layer: 5
   m_Name: Outline
   m_TagString: Untagged
@@ -415,3 +416,16 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 3
+--- !u!114 &8653893794625249453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979699137614821212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c10dba7b282263a41849125bc4dd76ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  style: {fileID: 11400000, guid: 1e4c1a1049c4c5540812dcf5dccd6052, type: 2}

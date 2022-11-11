@@ -8,7 +8,8 @@ public class IssueMovementWindow : MonoBehaviour
 {
 	public Ship ship;
 
-	public GameObject selectDestinationText;
+	public WarningTicker problemDisplay;
+	public GameObject submitButton;
 	public DataLine fuel;
 	public DataLine time;
 	public DataLine distance;
@@ -22,7 +23,7 @@ public class IssueMovementWindow : MonoBehaviour
 	void Update()
 	{
 		if (RytInput.leftTouch.onUp && !RytInput.leftTouch.moved) {
-			StartCoroutine(SetDestination(RytInput.leftTouch.GetCurrentUniversal()));
+			SetDestination(RytInput.leftTouch.GetCurrentUniversal());
 		}
 
 		if (hasDestination) {
@@ -36,21 +37,20 @@ public class IssueMovementWindow : MonoBehaviour
 	void OnEnable()
 	{
 		hasDestination = false;
-		selectDestinationText.SetActive(true);
+		problemDisplay.Display("No target destination. \n Tap to set target destination.");
 
 		fuel.gameObject.SetActive(false);
 		time.gameObject.SetActive(false);
 		distance.gameObject.SetActive(false);
+		submitButton.SetActive(false);
 	}
 
-	public IEnumerator SetDestination(Vector2 dest)
+	public void SetDestination(Vector2 dest)
 	{
-		yield return null;
-
 		hasDestination = true;
 		destination = dest;
 
-		selectDestinationText.SetActive(false);
+		problemDisplay.Clear();
 
 		fuel.gameObject.SetActive(true);
 		time.gameObject.SetActive(true);
@@ -58,7 +58,7 @@ public class IssueMovementWindow : MonoBehaviour
 
 		// distance
 		distanceMiles = Vector2.Distance(ship.physics.pos.Get(), destination) * Units.UnityToMiles;
-		distance.Set(distanceMiles.ToString("0.0"), "mi");
+		distance.Set(string.Format("{0:0,0.0}", distanceMiles), "mi");
 
 		fuel.data.text = "";
 
@@ -82,6 +82,13 @@ public class IssueMovementWindow : MonoBehaviour
 
 			ship.physics.pos.Set(startPos);
 			ship.physics.fuelGallons = fuelStart;
+
+			if (ship.physics.fuelGallons < fuelUsed) {
+				problemDisplay.Display("Not enough fuel for journey");
+				submitButton.SetActive(false);
+			} else {
+				submitButton.SetActive(true);
+			}
 		}
 	}
 
