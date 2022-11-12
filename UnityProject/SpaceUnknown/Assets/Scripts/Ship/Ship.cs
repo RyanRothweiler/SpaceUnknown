@@ -14,7 +14,7 @@ public class Ship : MonoBehaviour, IActor
 	public ShipDefinition def;
 	public ModuleDefinition testModuleDef;
 
-	private Vector2 targetPosition;
+	public Vector2 targetPosition;
 	public bool hasTarget;
 	public Physics physics;
 
@@ -26,7 +26,7 @@ public class Ship : MonoBehaviour, IActor
 	// 0 means no conservation, boost all the way until counter boost.
 	//private float fuelConservation;
 
-	private const float fuelForcePerGallon = 1000.0f;
+	private const float fuelForcePerGallon = 10000.0f;
 
 	private List<float> currentFlightPlanForce;
 	public ShipInfoWindow shipInfoWindow;
@@ -107,8 +107,13 @@ public class Ship : MonoBehaviour, IActor
 
 	public void SetTargetPosition(Vector2 unityPos)
 	{
+		Debug.Log("Setting target position");
 		hasTarget = true;
+
 		targetPosition = UniversalPosition.UnityToUniverse(unityPos);
+
+		testSettings.startPos = physics.pos.Get();
+		testSettings.distFromSidesToCoast = Vector2.Distance(physics.pos.Get(), targetPosition) * 0.5f * 0.5f;
 	}
 
 	public float CurrentStorageTons()
@@ -129,7 +134,7 @@ public class Ship : MonoBehaviour, IActor
 	{
 		// Ship movement
 		if (hasTarget) {
-			hasTarget = SimulateMovement(ref physics, def, TotalMass(), targetPosition, time);
+			hasTarget = SimulateMovement(ref physics, def, TotalMass(), targetPosition, time, new Ship.JourneySettings());
 		}
 
 		// Update modules
@@ -138,41 +143,45 @@ public class Ship : MonoBehaviour, IActor
 		}
 	}
 
+	// Efficiency of 1.0 means using fuel for the entirety of the journey. 0.0 means use fuel for only 10% of the journey, 5% speeding up, 5% slowingdown.
+	public struct JourneySettings {
+		public Vector3 startPos;
+		public float distFromSidesToCoast;
+	};
+
+	static JourneySettings testSettings;
+
 	// Returns if is still moving
-	public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, Vector2 targetPosition, float time)
+	public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, Vector2 targetPosition, float time, JourneySettings settings)
 	{
-		float gallonsUsed = def.fuelRateGallonsPerSecond * time;
-		physics.fuelGallons -= gallonsUsed;
-
-		// how much push the fuel provides
-		float fuelForce = gallonsUsed * fuelForcePerGallon;
-
-		float maxAcceleration = (1 / mass) * fuelForce;
-
-		float maxStepsNeededToStop = physics.velocity.magnitude / maxAcceleration;
-		float distToTarget = Vector2.Distance(physics.pos.Get(), targetPosition);
-		float stepsToTarget = distToTarget / physics.velocity.magnitude;
+		float fuelToUse = def.fuelRateGallonsPerSecond * time;
+		float fuelForce = fuelToUse * fuelForcePerGallon;
 
 		// close enough
-		if (distToTarget < 0.01f) {
+		if (Vector2.Distance(physics.pos.Get(), targetPosition) < 0.01f) {
 			physics.velocity = new Vector2(0, 0);
 			return false;
 		}
 
 		Vector2 force = new Vector2();
-		if (maxStepsNeededToStop > stepsToTarget) {
-			// slow down, apply opposite force
-			force = physics.velocity.normalized * -1 * fuelForce;
-		} else if (maxStepsNeededToStop > stepsToTarget - 2) {
-			// coast, apply no force
-			force = new Vector2(0, 0);
-		} else {
-			// push towards target
+
+		// Speed up
+		if (Vector2.Distance(physics.pos.Get(), testSettings.startPos) < testSettings.distFromSidesToCoast) {
+			physics.fuelGallons -= fuelToUse;
 			force = (targetPosition - physics.pos.Get()).normalized * fuelForce;
 		}
 
-		//Debug.DrawRay(pos.UniverseToUnity(), force, Color.red, 0.1f);
-		//Debug.DrawRay(pos.UniverseToUnity(), velocity, Color.green, 0.1f);
+		// Slow down
+		if (Vector2.Distance(physics.pos.Get(), targetPosition) < testSettings.distFromSidesToCoast) {
+			physics.fuelGallons -= fuelToUse;
+			force = (targetPosition - physics.pos.Get()).normalized * fuelForce * -1;
+
+			// slow enough
+			if (physics.velocity.magnitude < 0.1f) {
+				physics.velocity = new Vector2(0, 0);
+				return false;
+			}
+		}
 
 		Vector2 acceleration = force / mass;
 		physics.velocity = physics.velocity + acceleration;

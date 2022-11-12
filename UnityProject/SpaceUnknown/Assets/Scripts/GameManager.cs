@@ -28,6 +28,20 @@ public class GameManager : MonoBehaviour
 		StepAll(Time.deltaTime);
 
 #if UNITY_EDITOR
+
+		// framerate testing
+		{
+			if (Input.GetKeyDown(KeyCode.O)) {
+				Debug.Log("Setting fps to 30");
+				Application.targetFrameRate = 30;
+			}
+
+			if (Input.GetKeyDown(KeyCode.P)) {
+				Debug.Log("Setting fps to 60");
+				Application.targetFrameRate = 60;
+			}
+		}
+
 		// time skip editing tools
 		{
 			int stepsToDo = 0;

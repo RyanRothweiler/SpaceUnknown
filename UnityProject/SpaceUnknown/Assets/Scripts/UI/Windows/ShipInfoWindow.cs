@@ -10,9 +10,9 @@ public class ShipInfoWindow : MonoBehaviour
 	public GameObject windowBG;
 
 	public ModuleLine moduleLinePrefab;
+	public DataLine speedDisplay;
 	public GameObject marginHolder;
 	public GameObject modulesHeader;
-	public GameObject movingStatusDisplay;
 
 	public CargoItemLine cargoItemPrefab;
 	public GameObject cargoGridLayout;
@@ -29,7 +29,15 @@ public class ShipInfoWindow : MonoBehaviour
 
 		UIManager.Instance.DrawSelectionLine(ship.gameObject);
 
-		movingStatusDisplay.SetActive(ship.hasTarget);
+		if (ship.hasTarget) {
+			DrawScreenLine.DrawFromWorld(
+			    UniversalPosition.UniverseToUnity(ship.physics.pos),
+			    UniversalPosition.UniverseToUnity(ship.targetPosition),
+			    Color.green);
+		}
+
+		speedDisplay.Set(ship.physics.velocity.magnitude * 1000.0f, "mi/s");
+		//movingStatusDisplay.SetActive(ship.hasTarget);
 	}
 
 	public void Show(Ship ship)

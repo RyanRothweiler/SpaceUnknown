@@ -70,7 +70,7 @@ public class IssueMovementWindow : MonoBehaviour
 			Vector2 startPos = ship.physics.pos.Get();
 			float fuelStart = ship.physics.fuelGallons;
 
-			while (Ship.SimulateMovement(ref ship.physics, ship.def, ship.TotalMass(), destination, stepSeconds)) {
+			while (Ship.SimulateMovement(ref ship.physics, ship.def, ship.TotalMass(), destination, stepSeconds, new Ship.JourneySettings())) {
 				dataTimeSeconds += stepSeconds;
 			}
 
