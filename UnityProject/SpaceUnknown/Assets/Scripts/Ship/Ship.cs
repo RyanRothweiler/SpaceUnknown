@@ -5,6 +5,12 @@ using UnityEngine;
 public class Ship : MonoBehaviour, IActor
 {
 	[System.Serializable]
+	public struct JourneySettings {
+		public Vector3 startPos;
+		public float distFromSidesToCoast;
+	};
+
+	[System.Serializable]
 	public struct Physics {
 		public Vector2 velocity;
 		public UniversalPosition pos;
@@ -20,6 +26,8 @@ public class Ship : MonoBehaviour, IActor
 
 	public List<ModuleInstance> modules;
 	public List<ItemInstance> cargo;
+
+	private JourneySettings journeySettings;
 
 	//private LineRenderer pathLine;
 
@@ -105,15 +113,19 @@ public class Ship : MonoBehaviour, IActor
 		}
 	}
 
-	public void SetTargetPosition(Vector2 unityPos)
+	// EdgeRatio of 1.0 means using fuel for the entirety of the journey. 0.0 means use fuel for only 10% of the journey, 5% speeding up, 5% slowingdown.
+	public void SetTargetPosition(Vector2 unityPos, float edgeRatio)
 	{
-		Debug.Log("Setting target position");
+		if (edgeRatio <= 0.0f) {
+			Debug.LogError("Edge ratio cannot be zero. Ship won't move at all. Setting to 0.1");
+			edgeRatio = 0.1f;
+		}
+		edgeRatio = Mathf.Clamp(edgeRatio, 0.0f, 1.0f);
+
 		hasTarget = true;
 
 		targetPosition = UniversalPosition.UnityToUniverse(unityPos);
-
-		testSettings.startPos = physics.pos.Get();
-		testSettings.distFromSidesToCoast = Vector2.Distance(physics.pos.Get(), targetPosition) * 0.5f * 0.5f;
+		journeySettings = GetJourneySettings(this, edgeRatio, unityPos);
 	}
 
 	public float CurrentStorageTons()
@@ -134,7 +146,7 @@ public class Ship : MonoBehaviour, IActor
 	{
 		// Ship movement
 		if (hasTarget) {
-			hasTarget = SimulateMovement(ref physics, def, TotalMass(), targetPosition, time, new Ship.JourneySettings());
+			hasTarget = SimulateMovement(ref physics, def, TotalMass(), targetPosition, time, journeySettings);
 		}
 
 		// Update modules
@@ -143,13 +155,15 @@ public class Ship : MonoBehaviour, IActor
 		}
 	}
 
-	// Efficiency of 1.0 means using fuel for the entirety of the journey. 0.0 means use fuel for only 10% of the journey, 5% speeding up, 5% slowingdown.
-	public struct JourneySettings {
-		public Vector3 startPos;
-		public float distFromSidesToCoast;
-	};
+	public static JourneySettings GetJourneySettings(Ship ship, float edgeRatio, Vector2 targetUnityPos)
+	{
+		JourneySettings ret = new JourneySettings();
+		Vector2 tp = UniversalPosition.UnityToUniverse(targetUnityPos);
 
-	static JourneySettings testSettings;
+		ret.startPos = ship.physics.pos.Get();
+		ret.distFromSidesToCoast = Vector2.Distance(ship.physics.pos.Get(), tp) * 0.5f * edgeRatio;
+		return ret;
+	}
 
 	// Returns if is still moving
 	public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, Vector2 targetPosition, float time, JourneySettings settings)
@@ -166,13 +180,13 @@ public class Ship : MonoBehaviour, IActor
 		Vector2 force = new Vector2();
 
 		// Speed up
-		if (Vector2.Distance(physics.pos.Get(), testSettings.startPos) < testSettings.distFromSidesToCoast) {
+		if (Vector2.Distance(physics.pos.Get(), settings.startPos) < settings.distFromSidesToCoast) {
 			physics.fuelGallons -= fuelToUse;
 			force = (targetPosition - physics.pos.Get()).normalized * fuelForce;
 		}
 
 		// Slow down
-		if (Vector2.Distance(physics.pos.Get(), targetPosition) < testSettings.distFromSidesToCoast) {
+		if (Vector2.Distance(physics.pos.Get(), targetPosition) < settings.distFromSidesToCoast) {
 			physics.fuelGallons -= fuelToUse;
 			force = (targetPosition - physics.pos.Get()).normalized * fuelForce * -1;
 

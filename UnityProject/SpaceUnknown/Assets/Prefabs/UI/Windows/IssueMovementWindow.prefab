@@ -52,6 +52,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ship: {fileID: 0}
+  effeciencySlider: {fileID: 8510919658096553205}
   problemDisplay: {fileID: 1716855717216495016}
   submitButton: {fileID: 7874378058654144881}
   fuel: {fileID: 8828162009821451623}
@@ -548,12 +549,60 @@ PrefabInstance:
       value: 13.95
       objectReference: {fileID: 0}
     - target: {fileID: 7053310512937818873, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7053310512937818873, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7053310512937818873, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7053310512937818873, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 5.899597
       objectReference: {fileID: 0}
     - target: {fileID: 8093668008473237491, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8289417182972296675, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+      propertyPath: m_Value
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8289417182972296675, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+      propertyPath: m_MinValue
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8289417182972296675, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8289417182972296675, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8289417182972296675, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2212672187013170085}
+    - target: {fileID: 8289417182972296675, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8289417182972296675, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SliderChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 8289417182972296675, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: IssueMovementWindow, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8289417182972296675, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
@@ -562,6 +611,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2348069475967150291, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
   m_PrefabInstance: {fileID: 366253182330786070}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8510919658096553205 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8289417182972296675, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+  m_PrefabInstance: {fileID: 366253182330786070}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &744764943749962510
 PrefabInstance:
   m_ObjectHideFlags: 0

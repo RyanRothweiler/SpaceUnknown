@@ -8,6 +8,7 @@ public class IssueMovementWindow : MonoBehaviour
 {
 	public Ship ship;
 
+	public Slider effeciencySlider;
 	public WarningTicker problemDisplay;
 	public GameObject submitButton;
 	public DataLine fuel;
@@ -45,6 +46,13 @@ public class IssueMovementWindow : MonoBehaviour
 		submitButton.SetActive(false);
 	}
 
+	public void SliderChanged()
+	{
+		if (hasDestination) {
+			SetDestination(destination);
+		}
+	}
+
 	public void SetDestination(Vector2 dest)
 	{
 		hasDestination = true;
@@ -70,7 +78,8 @@ public class IssueMovementWindow : MonoBehaviour
 			Vector2 startPos = ship.physics.pos.Get();
 			float fuelStart = ship.physics.fuelGallons;
 
-			while (Ship.SimulateMovement(ref ship.physics, ship.def, ship.TotalMass(), destination, stepSeconds, new Ship.JourneySettings())) {
+			Ship.JourneySettings settings = Ship.GetJourneySettings(ship, effeciencySlider.value, destination);
+			while (Ship.SimulateMovement(ref ship.physics, ship.def, ship.TotalMass(), destination, stepSeconds, settings)) {
 				dataTimeSeconds += stepSeconds;
 			}
 
@@ -94,7 +103,7 @@ public class IssueMovementWindow : MonoBehaviour
 
 	public void Submit()
 	{
-		ship.SetTargetPosition(destination);
+		ship.SetTargetPosition(destination, 1.0f);
 	}
 
 	public static string ToReadableString(TimeSpan span)

@@ -148,7 +148,7 @@ public class RytInput : MonoBehaviour
 			// ship movement
 			if (shipSelected != null && rightTouch.onUp && !rightTouch.moved) {
 				Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(leftTouch.currentPos.x, leftTouch.currentPos.y, Camera.main.transform.position.z * -1));
-				shipSelected.SetTargetPosition(worldPos);
+				shipSelected.SetTargetPosition(worldPos, 1.0f);
 			}
 		}
 	}
