@@ -91,11 +91,13 @@ public class IssueMovementWindow : MonoBehaviour
 			while (Ship.SimulateMovement(ref ship.physics, ship.def, ship.TotalMass(), destinationUniverse, stepSeconds, settings)) {
 				dataTimeSeconds += stepSeconds;
 
+				/*
 				counter++;
 				if (counter > 10000) {
 					Debug.LogError("Error calculating movement");
 					break;
 				}
+				*/
 			}
 
 			float fuelUsed = fuelStart - ship.physics.fuelGallons;

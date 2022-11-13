@@ -34,7 +34,7 @@ public class Ship : MonoBehaviour, IActor
 	// 0 means no conservation, boost all the way until counter boost.
 	//private float fuelConservation;
 
-	private const float fuelForcePerGallon = 10000.0f;
+	private const float fuelForcePerGallon = 10.0f;
 
 	private List<float> currentFlightPlanForce;
 	public ShipInfoWindow shipInfoWindow;
@@ -182,6 +182,7 @@ public class Ship : MonoBehaviour, IActor
 		// close enough
 		if (Vector2.Distance(physics.pos.Get(), targetPositionUniverse) < 0.01f) {
 			physics.velocity = new Vector2(0, 0);
+			//Debug.Log("Stoping, close enough");
 			return false;
 		}
 
@@ -192,6 +193,7 @@ public class Ship : MonoBehaviour, IActor
 		    <
 		    (Vector2.Distance(physics.pos.Get(), targetPositionUniverse) + Vector2.Distance(physics.pos.Get(), settings.startPos))
 		) {
+			//Debug.Log("Stoping, past destination");
 			physics.velocity = new Vector2(0, 0);
 			return false;
 		}
