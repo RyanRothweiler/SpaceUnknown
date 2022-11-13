@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ship: {fileID: 0}
-  effeciencySlider: {fileID: 8510919658096553205}
+  effeciencySlider: {fileID: 7659403111251339378}
   problemDisplay: {fileID: 1716855717216495016}
   submitButton: {fileID: 7874378058654144881}
   fuel: {fileID: 8828162009821451623}
@@ -631,15 +631,15 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2348069475967150291, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
   m_PrefabInstance: {fileID: 366253182330786070}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8510919658096553205 stripped
+--- !u!114 &7659403111251339378 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8289417182972296675, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8025022939294775652, guid: 8c704c48b3a4d6f45b5482d1c68c0840, type: 3}
   m_PrefabInstance: {fileID: 366253182330786070}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Script: {fileID: 11500000, guid: 55f5b679a03fcaa40839ea46f34a9c91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &744764943749962510

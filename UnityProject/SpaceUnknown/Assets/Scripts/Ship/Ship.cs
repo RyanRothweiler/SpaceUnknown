@@ -155,6 +155,11 @@ public class Ship : MonoBehaviour, IActor
 		}
 	}
 
+	public bool IsMoving()
+	{
+		return hasTarget;
+	}
+
 	public static JourneySettings GetJourneySettings(Ship ship, float edgeRatio, Vector2 targetUnityPos)
 	{
 		JourneySettings ret = new JourneySettings();

@@ -25,4 +25,9 @@ public class RytSlider : MonoBehaviour
 		data.text = val + "%";
 		OnsValueChanged.Invoke();
 	}
+
+	public float Value()
+	{
+		return slider.value;
+	}
 }

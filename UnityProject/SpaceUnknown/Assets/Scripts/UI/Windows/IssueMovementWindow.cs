@@ -8,7 +8,7 @@ public class IssueMovementWindow : MonoBehaviour
 {
 	public Ship ship;
 
-	public Slider effeciencySlider;
+	public RytSlider effeciencySlider;
 	public WarningTicker problemDisplay;
 	public GameObject submitButton;
 	public DataLine fuel;
@@ -23,23 +23,29 @@ public class IssueMovementWindow : MonoBehaviour
 
 	void Update()
 	{
-		if (RytInput.leftTouch.onUp && !RytInput.leftTouch.moved) {
-			SetDestination(RytInput.leftTouch.GetCurrentUniversal());
-		}
+		if (!ship.IsMoving()) {
+			if (RytInput.leftTouch.onUp && !RytInput.leftTouch.moved) {
+				SetDestination(RytInput.leftTouch.GetCurrentUniversal());
+			}
 
-		if (hasDestination) {
-			DrawScreenLine.DrawFromWorld(
-			    UniversalPosition.UniverseToUnity(ship.physics.pos),
-			    UniversalPosition.UniverseToUnity(destination),
-			    Color.green);
+			if (hasDestination) {
+				DrawScreenLine.DrawFromWorld(
+				    UniversalPosition.UniverseToUnity(ship.physics.pos),
+				    UniversalPosition.UniverseToUnity(destination),
+				    Color.green);
+			} else {
+				problemDisplay.Display("No target destination. \n Tap to set target destination.");
+			}
+		} else {
+			problemDisplay.Display("Cannot issue movment command while ship is moving.");
 		}
 	}
 
 	void OnEnable()
 	{
 		hasDestination = false;
-		problemDisplay.Display("No target destination. \n Tap to set target destination.");
 
+		effeciencySlider.gameObject.SetActive(false);
 		fuel.gameObject.SetActive(false);
 		time.gameObject.SetActive(false);
 		distance.gameObject.SetActive(false);
@@ -58,9 +64,9 @@ public class IssueMovementWindow : MonoBehaviour
 		hasDestination = true;
 		destination = dest;
 
-
 		problemDisplay.Clear();
 
+		effeciencySlider.gameObject.SetActive(true);
 		fuel.gameObject.SetActive(true);
 		time.gameObject.SetActive(true);
 		distance.gameObject.SetActive(true);
@@ -81,7 +87,7 @@ public class IssueMovementWindow : MonoBehaviour
 
 			int counter = 0;
 
-			Ship.JourneySettings settings = Ship.GetJourneySettings(ship, effeciencySlider.value, UniversalPosition.UniverseToUnity(destination));
+			Ship.JourneySettings settings = Ship.GetJourneySettings(ship, effeciencySlider.Value(), UniversalPosition.UniverseToUnity(destination));
 			while (Ship.SimulateMovement(ref ship.physics, ship.def, ship.TotalMass(), destination, stepSeconds, settings)) {
 				dataTimeSeconds += stepSeconds;
 
@@ -113,6 +119,14 @@ public class IssueMovementWindow : MonoBehaviour
 
 	public void Submit()
 	{
+		effeciencySlider.gameObject.SetActive(false);
+		fuel.gameObject.SetActive(false);
+		time.gameObject.SetActive(false);
+		distance.gameObject.SetActive(false);
+		submitButton.SetActive(false);
+
+		hasDestination = false;
+
 		ship.SetTargetPosition(destination, 1.0f);
 	}
 
