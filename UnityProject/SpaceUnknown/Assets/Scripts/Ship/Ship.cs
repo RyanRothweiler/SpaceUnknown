@@ -126,6 +126,9 @@ public class Ship : MonoBehaviour, IActor
 
 		targetPosition = UniversalPosition.UnityToUniverse(unityPos);
 		journeySettings = GetJourneySettings(this, edgeRatio, unityPos);
+
+		Vector2 dir = (targetPosition - physics.pos.Get()).normalized;
+		this.transform.up = dir;
 	}
 
 	public float CurrentStorageTons()
@@ -183,6 +186,7 @@ public class Ship : MonoBehaviour, IActor
 		}
 
 		// past target
+		// Need a 0.1 buffer here because the two distances are equal during the journey, but not always exactly because of rounding errors
 		if (
 		    Vector2.Distance(settings.startPos, targetPositionUniverse) + 0.1f
 		    <
