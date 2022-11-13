@@ -166,13 +166,23 @@ public class Ship : MonoBehaviour, IActor
 	}
 
 	// Returns if is still moving
-	public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, Vector2 targetPosition, float time, JourneySettings settings)
+	public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, Vector2 targetPositionUniverse, float time, JourneySettings settings)
 	{
 		float fuelToUse = def.fuelRateGallonsPerSecond * time;
 		float fuelForce = fuelToUse * fuelForcePerGallon;
 
 		// close enough
-		if (Vector2.Distance(physics.pos.Get(), targetPosition) < 0.01f) {
+		if (Vector2.Distance(physics.pos.Get(), targetPositionUniverse) < 0.01f) {
+			physics.velocity = new Vector2(0, 0);
+			return false;
+		}
+
+		// past target
+		if (
+		    Vector2.Distance(settings.startPos, targetPositionUniverse) + 0.1f
+		    <
+		    (Vector2.Distance(physics.pos.Get(), targetPositionUniverse) + Vector2.Distance(physics.pos.Get(), settings.startPos))
+		) {
 			physics.velocity = new Vector2(0, 0);
 			return false;
 		}
@@ -182,13 +192,13 @@ public class Ship : MonoBehaviour, IActor
 		// Speed up
 		if (Vector2.Distance(physics.pos.Get(), settings.startPos) < settings.distFromSidesToCoast) {
 			physics.fuelGallons -= fuelToUse;
-			force = (targetPosition - physics.pos.Get()).normalized * fuelForce;
+			force = (targetPositionUniverse - physics.pos.Get()).normalized * fuelForce;
 		}
 
 		// Slow down
-		if (Vector2.Distance(physics.pos.Get(), targetPosition) < settings.distFromSidesToCoast) {
+		if (Vector2.Distance(physics.pos.Get(), targetPositionUniverse) < settings.distFromSidesToCoast) {
 			physics.fuelGallons -= fuelToUse;
-			force = (targetPosition - physics.pos.Get()).normalized * fuelForce * -1;
+			force = (targetPositionUniverse - physics.pos.Get()).normalized * fuelForce * -1;
 
 			// slow enough
 			if (physics.velocity.magnitude < 0.1f) {

@@ -58,6 +58,7 @@ public class IssueMovementWindow : MonoBehaviour
 		hasDestination = true;
 		destination = dest;
 
+
 		problemDisplay.Clear();
 
 		fuel.gameObject.SetActive(true);
@@ -78,19 +79,28 @@ public class IssueMovementWindow : MonoBehaviour
 			Vector2 startPos = ship.physics.pos.Get();
 			float fuelStart = ship.physics.fuelGallons;
 
-			Ship.JourneySettings settings = Ship.GetJourneySettings(ship, effeciencySlider.value, destination);
+			int counter = 0;
+
+			Ship.JourneySettings settings = Ship.GetJourneySettings(ship, effeciencySlider.value, UniversalPosition.UniverseToUnity(destination));
 			while (Ship.SimulateMovement(ref ship.physics, ship.def, ship.TotalMass(), destination, stepSeconds, settings)) {
 				dataTimeSeconds += stepSeconds;
+
+				counter++;
+				if (counter > 10000) {
+					Debug.LogError("Error calculating movement");
+					break;
+				}
 			}
 
 			float fuelUsed = fuelStart - ship.physics.fuelGallons;
 			fuel.Set(fuelUsed, "gal");
 
-			TimeSpan timeSpan = new TimeSpan(0, 0, (int)dataTimeSeconds);
+			TimeSpan timeSpan = TimeSpan.FromSeconds(dataTimeSeconds);
 			time.Set(ToReadableString(timeSpan), "");
 
 			ship.physics.pos.Set(startPos);
 			ship.physics.fuelGallons = fuelStart;
+			ship.physics.velocity = new Vector2();
 
 			if (ship.physics.fuelGallons < fuelUsed) {
 				problemDisplay.Display("Not enough fuel for journey");
