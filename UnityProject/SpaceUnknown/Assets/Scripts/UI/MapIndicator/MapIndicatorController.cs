@@ -11,7 +11,7 @@ public class MapIndicatorController : MonoBehaviour
 	public MapIndicator mapIndicatorFab;
 
 	private RectTransform rootCanvasRect;
-	private Dictionary<UniversalPosition, RectTransform> createdIndicator = new Dictionary<UniversalPosition, RectTransform>();
+	private Dictionary<UniversalPositionApply, RectTransform> createdIndicator = new Dictionary<UniversalPositionApply, RectTransform>();
 
 	private const string indicatorPool = "MapIndicator";
 
@@ -28,8 +28,8 @@ public class MapIndicatorController : MonoBehaviour
 		mapIndicatorFab.gameObject.SetActive(false);
 
 		// Create / destroy indicators
-		for (int i = 0; i < UniversalPosition.allUniversals.Count; i++) {
-			UniversalPosition uniPos = UniversalPosition.allUniversals[i];
+		for (int i = 0; i < UniversalPositionApply.allUniversals.Count; i++) {
+			UniversalPositionApply uniPos = UniversalPositionApply.allUniversals[i];
 			if (uniPos.transform.localScale.x < 0.01f) {
 				if (!createdIndicator.ContainsKey(uniPos)) {
 					createdIndicator[uniPos] = mapIndicatorFab.gameObject.GetComponent<RectTransform>();

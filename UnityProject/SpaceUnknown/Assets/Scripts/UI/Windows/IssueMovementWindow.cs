@@ -16,7 +16,7 @@ public class IssueMovementWindow : MonoBehaviour
 	public DataLine distance;
 
 	private bool hasDestination;
-	private Vector2 destinationUniverse;
+	private UniversalPosition destination;
 
 	private float distanceMiles;
 	private float dataTime;
@@ -31,7 +31,7 @@ public class IssueMovementWindow : MonoBehaviour
 			if (hasDestination) {
 				DrawScreenLine.DrawFromWorld(
 				    UniversalPosition.UniverseToUnity(ship.physics.pos),
-				    UniversalPosition.UniverseToUnity(destinationUniverse),
+				    UniversalPosition.UniverseToUnity(destination),
 				    Color.green);
 			} else {
 				problemDisplay.Display("No target destination. \n Tap to set target destination.");
@@ -55,14 +55,14 @@ public class IssueMovementWindow : MonoBehaviour
 	public void SliderChanged()
 	{
 		if (hasDestination) {
-			SetDestination(destinationUniverse);
+			SetDestination(destination);
 		}
 	}
 
-	public void SetDestination(Vector2 dest)
+	public void SetDestination(UniversalPosition dest)
 	{
 		hasDestination = true;
-		destinationUniverse = dest;
+		destination = dest;
 
 		problemDisplay.Clear();
 
@@ -72,7 +72,7 @@ public class IssueMovementWindow : MonoBehaviour
 		distance.gameObject.SetActive(true);
 
 		// distance
-		distanceMiles = Vector2.Distance(ship.physics.pos.Get(), destinationUniverse) * Units.UnityToMiles;
+		distanceMiles = Vector2.Distance(ship.physics.pos.Get(), destination.Get()) * Units.UnityToMiles;
 		distance.Set(distanceMiles, "mi");
 
 		fuel.data.text = "";
@@ -85,10 +85,10 @@ public class IssueMovementWindow : MonoBehaviour
 			Vector2 startPos = ship.physics.pos.Get();
 			float fuelStart = ship.physics.fuelGallons;
 
-			int counter = 0;
+			//int counter = 0;
 
-			Ship.JourneySettings settings = Ship.GetJourneySettings(ship, effeciencySlider.Value(), UniversalPosition.UniverseToUnity(destinationUniverse));
-			while (Ship.SimulateMovement(ref ship.physics, ship.def, ship.TotalMass(), destinationUniverse, stepSeconds, settings)) {
+			Ship.JourneySettings settings = Ship.GetJourneySettings(ship, effeciencySlider.Value(), destination);
+			while (Ship.SimulateMovement(ref ship.physics, ship.def, ship.TotalMass(), destination, stepSeconds, settings)) {
 				dataTimeSeconds += stepSeconds;
 
 				/*
@@ -129,7 +129,7 @@ public class IssueMovementWindow : MonoBehaviour
 
 		hasDestination = false;
 
-		ship.SetTargetPosition(UniversalPosition.UniverseToUnity(destinationUniverse), 1.0f);
+		ship.SetTargetPosition(destination, 1.0f);
 	}
 
 	public static string ToReadableString(TimeSpan span)

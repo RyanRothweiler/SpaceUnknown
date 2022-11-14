@@ -60,6 +60,6 @@ public class DrawWorldLine : MonoBehaviour
 
 	public static void Draw(UniversalPosition start, UniversalPosition end, Color color)
 	{
-		Draw(UniversalPosition.UniverseToUnity(start), UniversalPosition.UniverseToUnity(end), color);
+		Draw(start.ToUnity(), end.ToUnity(), color);
 	}
 }

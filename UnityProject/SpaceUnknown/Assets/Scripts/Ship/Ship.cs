@@ -6,7 +6,7 @@ public class Ship : MonoBehaviour, IActor
 {
 	[System.Serializable]
 	public struct JourneySettings {
-		public Vector3 startPos;
+		public UniversalPosition startPos;
 		public float distFromSidesToCoast;
 	};
 
@@ -20,7 +20,7 @@ public class Ship : MonoBehaviour, IActor
 	public ShipDefinition def;
 	public ModuleDefinition testModuleDef;
 
-	public Vector2 targetPosition;
+	public UniversalPosition targetPosition;
 	public bool hasTarget;
 	public Physics physics;
 
@@ -34,7 +34,8 @@ public class Ship : MonoBehaviour, IActor
 	// 0 means no conservation, boost all the way until counter boost.
 	//private float fuelConservation;
 
-	private const float fuelForcePerGallon = 10.0f;
+	//private const float fuelForcePerGallon = 10.0f;
+	private const float fuelForcePerGallon = 10000.0f;
 
 	private List<float> currentFlightPlanForce;
 	public ShipInfoWindow shipInfoWindow;
@@ -43,14 +44,17 @@ public class Ship : MonoBehaviour, IActor
 	{
 		GameManager.RegisterActor(this);
 
-		physics.pos = this.GetComponent<UniversalPosition>();
-
 		modules = new List<ModuleInstance>();
 		modules.Add(new ModuleInstance(testModuleDef, this));
 
 		cargo = new List<ItemInstance>();
 
 		physics.fuelGallons = def.fuelTankGallons;
+	}
+
+	public void Start()
+	{
+		physics.pos = this.GetComponent<UniversalPositionApply>().univPos;
 	}
 
 	void Update()
@@ -114,7 +118,7 @@ public class Ship : MonoBehaviour, IActor
 	}
 
 	// EdgeRatio of 1.0 means using fuel for the entirety of the journey. 0.0 means use fuel for only 10% of the journey, 5% speeding up, 5% slowingdown.
-	public void SetTargetPosition(Vector2 unityPos, float edgeRatio)
+	public void SetTargetPosition(UniversalPosition univPos, float edgeRatio)
 	{
 		if (edgeRatio <= 0.0f) {
 			Debug.LogError("Edge ratio cannot be zero. Ship won't move at all. Setting to 0.1");
@@ -124,10 +128,10 @@ public class Ship : MonoBehaviour, IActor
 
 		hasTarget = true;
 
-		targetPosition = UniversalPosition.UnityToUniverse(unityPos);
-		journeySettings = GetJourneySettings(this, edgeRatio, unityPos);
+		targetPosition = univPos;
+		journeySettings = GetJourneySettings(this, edgeRatio, univPos);
 
-		Vector2 dir = (targetPosition - physics.pos.Get()).normalized;
+		Vector2 dir = (targetPosition.Get() - physics.pos.Get()).normalized;
 		this.transform.up = dir;
 	}
 
@@ -163,24 +167,25 @@ public class Ship : MonoBehaviour, IActor
 		return hasTarget;
 	}
 
-	public static JourneySettings GetJourneySettings(Ship ship, float edgeRatio, Vector2 targetUnityPos)
+	public static JourneySettings GetJourneySettings(Ship ship, float edgeRatio, UniversalPosition univPos)
 	{
 		JourneySettings ret = new JourneySettings();
-		Vector2 tp = UniversalPosition.UnityToUniverse(targetUnityPos);
 
-		ret.startPos = ship.physics.pos.Get();
-		ret.distFromSidesToCoast = Vector2.Distance(ship.physics.pos.Get(), tp) * 0.5f * edgeRatio;
+		ret.startPos = new UniversalPosition();
+		ret.startPos.x = ship.physics.pos.x;
+		ret.startPos.y = ship.physics.pos.y;
+		ret.distFromSidesToCoast = Vector2.Distance(ship.physics.pos.Get(), univPos.Get()) * 0.5f * edgeRatio;
 		return ret;
 	}
 
 	// Returns if is still moving
-	public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, Vector2 targetPositionUniverse, float time, JourneySettings settings)
+	public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, UniversalPosition targetPositionUniverse, float time, JourneySettings settings)
 	{
 		float fuelToUse = def.fuelRateGallonsPerSecond * time;
 		float fuelForce = fuelToUse * fuelForcePerGallon;
 
 		// close enough
-		if (Vector2.Distance(physics.pos.Get(), targetPositionUniverse) < 0.01f) {
+		if (Vector2.Distance(physics.pos.Get(), targetPositionUniverse.Get()) < 0.01f) {
 			physics.velocity = new Vector2(0, 0);
 			//Debug.Log("Stoping, close enough");
 			return false;
@@ -189,9 +194,9 @@ public class Ship : MonoBehaviour, IActor
 		// past target
 		// Need a 0.1 buffer here because the two distances are equal during the journey, but not always exactly because of rounding errors
 		if (
-		    Vector2.Distance(settings.startPos, targetPositionUniverse) + 0.1f
+		    Vector2.Distance(settings.startPos.Get(), targetPositionUniverse.Get()) + 0.1f
 		    <
-		    (Vector2.Distance(physics.pos.Get(), targetPositionUniverse) + Vector2.Distance(physics.pos.Get(), settings.startPos))
+		    (Vector2.Distance(physics.pos.Get(), targetPositionUniverse.Get()) + Vector2.Distance(physics.pos.Get(), settings.startPos.Get()))
 		) {
 			//Debug.Log("Stoping, past destination");
 			physics.velocity = new Vector2(0, 0);
@@ -201,15 +206,15 @@ public class Ship : MonoBehaviour, IActor
 		Vector2 force = new Vector2();
 
 		// Speed up
-		if (Vector2.Distance(physics.pos.Get(), settings.startPos) < settings.distFromSidesToCoast) {
+		if (Vector2.Distance(physics.pos.Get(), settings.startPos.Get()) < settings.distFromSidesToCoast) {
 			physics.fuelGallons -= fuelToUse;
-			force = (targetPositionUniverse - physics.pos.Get()).normalized * fuelForce;
+			force = (targetPositionUniverse.Get() - physics.pos.Get()).normalized * fuelForce;
 		}
 
 		// Slow down
-		if (Vector2.Distance(physics.pos.Get(), targetPositionUniverse) < settings.distFromSidesToCoast) {
+		if (Vector2.Distance(physics.pos.Get(), targetPositionUniverse.Get()) < settings.distFromSidesToCoast) {
 			physics.fuelGallons -= fuelToUse;
-			force = (targetPositionUniverse - physics.pos.Get()).normalized * fuelForce * -1;
+			force = (targetPositionUniverse.Get() - physics.pos.Get()).normalized * fuelForce * -1;
 
 			// slow enough
 			if (physics.velocity.magnitude < 0.1f) {

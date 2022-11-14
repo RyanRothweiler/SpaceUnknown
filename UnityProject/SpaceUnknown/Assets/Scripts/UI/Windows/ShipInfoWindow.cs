@@ -31,8 +31,8 @@ public class ShipInfoWindow : MonoBehaviour
 
 		if (ship.hasTarget) {
 			DrawScreenLine.DrawFromWorld(
-			    UniversalPosition.UniverseToUnity(ship.physics.pos),
-			    UniversalPosition.UniverseToUnity(ship.targetPosition),
+			    ship.physics.pos.ToUnity(),
+			    ship.targetPosition.ToUnity(),
 			    Color.green);
 		}
 

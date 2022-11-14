@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class AsteroidInstance : MonoBehaviour
 {
-	public UniversalPosition pos;
+	public UniversalPositionApply pos;
 
 	public int contentsAmount;
 
 	public void Awake()
 	{
-		pos = this.GetComponent<UniversalPosition>();
+		pos = this.GetComponent<UniversalPositionApply>();
 	}
 
 	public void OnEnable()
