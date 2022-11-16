@@ -1,0 +1,2 @@
+cd T:\AndroidProject\app\build\outputs\bundle\release
+jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore KEYSTORE_PATH -storepass "PASSWORD" -keypass "PASSWORD" app-release.aab Poemon

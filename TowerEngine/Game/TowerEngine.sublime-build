@@ -1,0 +1,4 @@
+{
+    "shell_cmd": "Platforms/Win32/build_win32.bat",
+    "file_regex": "^ *([A-z]:.*)[(]([0-9]+)[)]"
+}

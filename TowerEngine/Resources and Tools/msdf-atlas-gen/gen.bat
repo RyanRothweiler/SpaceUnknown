@@ -1,0 +1,11 @@
+set PX_RANGE=10
+set DIM_X=1024
+set DIM_Y=1024
+
+msdf-atlas-gen -pxrange %PX_RANGE% -format png -dimensions %DIM_X% %DIM_Y% -imageout "T:\Game\assets\Fonts\OpenSans\OpenSans_Bold.png" -csv "T:\Game\assets\Fonts\OpenSans\OpenSans_Bold.csv" -json "T:\Game\assets\Fonts\OpenSans\OpenSans_Bold.json" -font "T:\Resources and Tools\Fonts\Open_Sans\static\OpenSans\OpenSans-Bold.ttf"
+msdf-atlas-gen -pxrange %PX_RANGE% -format png -dimensions %DIM_X% %DIM_Y% -imageout "T:\Game\assets\Fonts\OpenSans\OpenSans_Regular.png" -csv "T:\Game\assets\Fonts\OpenSans\OpenSans_Regular.csv" -json "T:\Game\assets\Fonts\OpenSans\OpenSans_Regular.json" -font "T:\Resources and Tools\Fonts\Open_Sans\static\OpenSans\OpenSans-Regular.ttf"
+msdf-atlas-gen -pxrange %PX_RANGE% -format png -dimensions %DIM_X% %DIM_Y% -imageout "T:\Game\assets\Fonts\Rajdhani\Rajdhani_Bold.png" -csv "T:\Game\assets\Fonts\Rajdhani\Rajdhani_Bold.csv" -json "T:\Game\assets\Fonts\Rajdhani\Rajdhani_Bold.json" -font "T:\Resources and Tools\Fonts\Rajdhani\Rajdhani-Bold.ttf"
+msdf-atlas-gen -pxrange %PX_RANGE% -format png -dimensions %DIM_X% %DIM_Y% -imageout "T:\Game\assets\Fonts\Rajdhani\Rajdhani_Light.png" -csv "T:\Game\assets\Fonts\Rajdhani\Rajdhani_Light.csv" -json "T:\Game\assets\Fonts\Rajdhani\Rajdhani_Light.json" -font "T:\Resources and Tools\Fonts\Rajdhani\Rajdhani-Light.ttf"
+msdf-atlas-gen -pxrange %PX_RANGE% -format png -dimensions %DIM_X% %DIM_Y% -imageout "T:\Game\assets\Fonts\Rajdhani\Rajdhani_Medium.png" -csv "T:\Game\assets\Fonts\Rajdhani\Rajdhani_Medium.csv" -json "T:\Game\assets\Fonts\Rajdhani\Rajdhani_Medium.json" -font "T:\Resources and Tools\Fonts\Rajdhani\Rajdhani-Medium.ttf"
+msdf-atlas-gen -pxrange %PX_RANGE% -format png -dimensions %DIM_X% %DIM_Y% -imageout "T:\Game\assets\Fonts\Rajdhani\Rajdhani_Regular.png" -csv "T:\Game\assets\Fonts\Rajdhani\Rajdhani_Regular.csv" -json "T:\Game\assets\Fonts\Rajdhani\Rajdhani_Regular.json" -font "T:\Resources and Tools\Fonts\Rajdhani\Rajdhani-Regular.ttf"
+msdf-atlas-gen -pxrange %PX_RANGE% -format png -dimensions %DIM_X% %DIM_Y% -imageout "T:\Game\assets\Fonts\Rajdhani\Rajdhani_SemiBold.png" -csv "T:\Game\assets\Fonts\Rajdhani\Rajdhani_SemiBold.csv" -json "T:\Game\assets\Fonts\Rajdhani\Rajdhani_SemiBold.json" -font "T:\Resources and Tools\Fonts\Rajdhani\Rajdhani-SemiBold.ttf"

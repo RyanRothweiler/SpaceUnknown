@@ -1,0 +1,20 @@
+// Preprocessor defines
+#define MetaStruct
+#define MetaMethod
+
+#define MetaMethod_Ability
+#define MetaMethod_AbilityImmediateAfterDamage
+#define MetaMethod_AbilityAllocate
+#define MetaMethod_AbilityWasDamaged
+#define MetaMethod_AbilityModifyStats
+#define MetaMethod_AbilityModifyDamage
+#define MetaMethod_AbilityUsed
+#define MetaMethod_AbilitySetup
+#define MetaMethod_AbilityOnDeath
+
+#define MetaMethod_StatusEffectAllocate
+#define MetaMethod_StatusEffectUpdate
+#define MetaMethod_StatusEffectRenderUI
+
+#define MetaMethod_AbilityTestRun
+#define MetaMethod_AbilityTestUpdate

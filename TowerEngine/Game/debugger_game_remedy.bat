@@ -1,0 +1,1 @@
+C:\remedybg_0_3_7_1\remedybg.exe T:\Game\build\Windows\Platform_win32.exe
