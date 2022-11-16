@@ -584,8 +584,25 @@ void GameLoop(game_memory * Memory, game_input * GameInput, window_info * Window
 		Globals->DebugUIRenderer = &GameState->DebugUIRenderer;
 
 		// Setup and Load game data
-		SetupWork = PlatformApi.ThreadAddWork(GameSetupThread, 0);
-		//GameSetup();
+		// Load stuff
+		{
+			//SetupWork = PlatformApi.ThreadAddWork(GameSetupThread, 0);
+			GameSetup();
+
+			BakeIBL();
+
+			// Compile shaders
+			for (int i = 0; i < Globals->AssetsList.ShadersCount; i++) {
+
+				ConsoleLog("Compiling shader");
+				shader* Shader = &Globals->AssetsList.Shaders[i].Shader;
+
+				RenderApi.MakeProgram(Shader);
+			}
+
+			assets::UploadAllQueuedImages(&Globals->AssetsList, GlobalTransMem);
+			assets::UploadAllQueuedEntities(&Globals->AssetsList);
+		}
 
 		//PanelStackPush(panel_id::home, &State->PanelStack, State);
 
@@ -619,183 +636,6 @@ void GameLoop(game_memory * Memory, game_input * GameInput, window_info * Window
 	// Update camera matricies
 	State->ActiveCam->UpdateMatricies();
 	State->UICam.UpdateMatricies();
-
-	// Initial Loading
-	{
-		static bool32 IsLoading = true;
-		static int32 LoadingStage = 0;
-
-		static string StageTitleString = "";
-		static string StageProgressString = "";
-
-		static real32 StageProgress;
-
-		static bool32 StageEnter[100] = {};
-		static char* StageTitles[100] = {
-			"Loading Data",
-			"Baking IBL",
-			"Compiling Shaders",
-			"Uploading Images",
-			"Uploading Entities",
-		};
-		static int32 LoadingStagesTotal = 5;
-
-		struct local {
-			static void HandleStageEnter()
-			{
-				if (!StageEnter[LoadingStage]) {
-					StageEnter[LoadingStage] = true;
-
-					ConsoleLog(StageTitleString);
-					StageProgress = 0.0f;
-				}
-			}
-
-			static void AdvanceStage()
-			{
-				LoadingStage++;
-				StageProgress = 0.0f;
-
-				if (LoadingStage >= LoadingStagesTotal) {
-					IsLoading = false;
-				} else {
-					assets::CurrentLoadingStepDisplay = "";
-					StageProgressString = "";
-					StageTitleString = StageTitles[LoadingStage];
-				}
-			}
-		};
-
-		if (IsLoading && SetupWork != GameNull) {
-
-			switch (LoadingStage) {
-
-				case 0: {
-
-					local::HandleStageEnter();
-
-					StageProgress = (real32)assets::CurrentLoadingStep / (real32)assets::KnownLoadingSteps;
-					StageProgressString = assets::CurrentLoadingStepDisplay;
-
-					if (SetupWork->Status == work_status::finished) {
-						local::AdvanceStage();
-					}
-				}
-				break;
-
-				case 1: {
-					local::HandleStageEnter();
-
-					BakeIBL();
-
-					local::AdvanceStage();
-				}
-				break;
-
-				case 2: {
-					local::HandleStageEnter();
-
-					static int Index = 0;
-
-					if (Index < Globals->AssetsList.ShadersCount) {
-						StageProgress = (real32)Index / (real32)Globals->AssetsList.ShadersCount;
-
-						ConsoleLog("Compiling shader");
-						shader* Shader = &Globals->AssetsList.Shaders[Index].Shader;
-						StageProgressString = Shader->VertPath + " / " + Shader->FragPath;
-
-						RenderApi.MakeProgram(Shader);
-
-						Index++;
-					} else {
-						local::AdvanceStage();
-					}
-				}
-				break;
-
-				case 3: {
-					local::HandleStageEnter();
-
-					static int32 TotalCount = Globals->AssetsList.ImagesToLoadCount;
-
-					if (Globals->AssetsList.ImagesToLoadCount > 0) {
-						StageProgress = 1.0f - ((real32)Globals->AssetsList.ImagesToLoadCount / (real32)TotalCount);
-
-						loaded_image* Image = Globals->AssetsList.ImagesToLoad[Globals->AssetsList.ImagesToLoadCount - 1];
-						StageProgressString = Image->FilePath;
-
-						assets::UploadOneImage(&Globals->AssetsList, GlobalTransMem);
-					} else {
-						local::AdvanceStage();
-					}
-				}
-				break;
-
-				case 4: {
-					local::HandleStageEnter();
-
-					static int32 TotalCount = Globals->AssetsList.EntitiesToUploadCount;
-
-					if (Globals->AssetsList.EntitiesToUploadCount > 0) {
-						StageProgress = 1.0f - ((real32)Globals->AssetsList.EntitiesToUploadCount / (real32)TotalCount);
-
-						entity* Entity = Globals->AssetsList.EntitiesToUpload[Globals->AssetsList.EntitiesToUploadCount - 1];
-						StageProgressString = Entity->Name;
-
-						assets::UploadOneEntity(&Globals->AssetsList);
-					} else {
-						local::AdvanceStage();
-					}
-				}
-				break;
-			};
-
-			// Render progress bar
-			{
-				real32 StepMin = (real32)LoadingStage / (real32)LoadingStagesTotal;
-				real32 StepMax = (real32)(LoadingStage + 1) / (real32)LoadingStagesTotal;
-
-				real32 StepAmount = 1.0f / LoadingStagesTotal;
-				real32 TotalProgress = StepMin + (StepAmount * StageProgress);
-
-				rect LoadingBar = {};
-				LoadingBar.BottomRight.X = WindowInfo->Width * TotalProgress;
-				LoadingBar.BottomRight.Y = WindowInfo->Height;
-				color BarCol = Icon_BlueDark;
-				BarCol.A = 0.3f;
-				RenderRect(LoadingBar, BarCol, 0, Globals->UIRenderer);
-
-				real32 Left = 10;
-
-				color DescriptionColor = COLOR_ORANGE;
-				DescriptionColor.A = 0.5f;
-				FontRenderString(&Globals->AssetsList.EngineResources.DefaultFontStyle, "LOADING",
-				                 vector2{Left, WindowInfo->Height * 0.25f},
-				                 DescriptionColor, 0, Globals->UIRenderer);
-
-				FontRenderString(Globals->AssetsList.EngineResources.DefaultFontStyle.Font,
-				                 StageTitleString,
-				                 vector2{Left, (WindowInfo->Height * 0.6666f) + 100.0f},
-				                 20.0f, COLOR_ORANGE, 0, Globals->UIRenderer);
-
-				FontRenderString(Globals->AssetsList.EngineResources.DefaultFontStyle.Font,
-				                 StageProgressString,
-				                 vector2{Left, WindowInfo->Height * 0.6666f},
-				                 10.0f, DescriptionColor, 0, Globals->UIRenderer);
-
-				real32 DispProg = (TotalProgress * 100.0f);
-				string ProgressDisp = DispProg + string{"%"};
-				//string ProgressDisp = "50%";
-				FontRenderString(Globals->AssetsList.EngineResources.DefaultFontStyle.Font,
-				                 ProgressDisp,
-				                 vector2{Left, WindowInfo->Height * 0.5f},
-				                 60.0f, COLOR_ORANGE, 0, Globals->UIRenderer);
-			}
-
-			return;
-		}
-	}
-
 
 	if (Memory->HotReloaded) {
 		Globals->UIPanels->Setup();

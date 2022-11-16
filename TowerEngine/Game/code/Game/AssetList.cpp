@@ -421,26 +421,6 @@ namespace assets {
 		PlatformApi.GetPathsForFileType(".entity", AssetRootDir.Array(), TransMemory, &EntityPaths);
 		KnownLoadingSteps += EntityPaths.GetCount();
 
-		path_list AbilityDefinitionPaths = {};
-		PlatformApi.GetPathsForFileType(".abilitydefinition", AssetRootDir.Array(), TransMemory, &AbilityDefinitionPaths);
-		KnownLoadingSteps += AbilityDefinitionPaths.GetCount();
-
-		path_list BattleTestPaths = {};
-		PlatformApi.GetPathsForFileType(".battletest", AssetRootDir.Array(), TransMemory, &BattleTestPaths);
-		KnownLoadingSteps += BattleTestPaths.GetCount();
-
-		path_list MonsterDefinitionPaths = {};
-		PlatformApi.GetPathsForFileType(".monsterdefinition", AssetRootDir.Array(), TransMemory, &MonsterDefinitionPaths);
-		KnownLoadingSteps += MonsterDefinitionPaths.GetCount();
-
-		path_list StatusEffectPaths = {};
-		PlatformApi.GetPathsForFileType(".statuseffectdefinition", AssetRootDir.Array(), TransMemory, &StatusEffectPaths);
-		KnownLoadingSteps += StatusEffectPaths.GetCount();
-
-		path_list MisisonDefinitionPaths = {};
-		PlatformApi.GetPathsForFileType(".missiondefinition", AssetRootDir.Array(), TransMemory, &MisisonDefinitionPaths);
-		KnownLoadingSteps += MisisonDefinitionPaths.GetCount();
-
 		CurrentLoadingStep = 0;
 
 		// Images
