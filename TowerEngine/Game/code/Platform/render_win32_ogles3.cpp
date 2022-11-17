@@ -245,7 +245,7 @@ void EnableSeamlessCubeMap()
 #include "../Engine/EngineCore.h"
 #include "../Engine/Renderer/ogles3.cpp"
 
-render::api Init(window_info WindowInfo, platform::api* PlatApi, profiler_data* ProfilerData, memory_arena* PermMem, memory_arena* TransMem)
+WIN_EXPORT render::api Init(window_info WindowInfo, platform::api* PlatApi, profiler_data* ProfilerData, memory_arena* PermMem, memory_arena* TransMem)
 {
 	glGenVertexArrays = 			(gl_gen_vertex_arrays*)				PlatApi->GetProcAddress("glGenVertexArrays");
 	glDeleteVertexArrays = 			(gl_delete_vertex_arrays*)			PlatApi->GetProcAddress("glDeleteVertexArrays");

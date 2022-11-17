@@ -392,7 +392,7 @@ void GameSetupThread(void* Params, int32 ThreadID)
 	GameSetup();
 }
 
-void GameLoop(game_memory * Memory, game_input * GameInput, window_info * WindowInfo, game_audio_output_buffer * AudioBuffer, char* RootAssetPath)
+WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_info * WindowInfo, game_audio_output_buffer * AudioBuffer, char* RootAssetPath)
 {
 	Assert(sizeof(game_state) <= Memory->PermanentMemory.Size);
 	game_state *GameState = (game_state *)Memory->PermanentMemory.Memory;

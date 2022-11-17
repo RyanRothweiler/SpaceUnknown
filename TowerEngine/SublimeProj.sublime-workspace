@@ -520,54 +520,20 @@
 	"buffers":
 	[
 		{
-			"file": "Game/code/Engine/Editor.cpp",
+			"file": "Game/build_scripts/cmake_build.bat",
 			"settings":
 			{
-				"buffer_size": 85979,
+				"buffer_size": 65,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "Game/code/Engine/Collision.cpp",
+			"file": "Game/code/Platform/render_win32_ogles3.cpp",
 			"settings":
 			{
-				"buffer_size": 3073,
+				"buffer_size": 15929,
 				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Game/code/Engine/Math.cpp",
-			"settings":
-			{
-				"buffer_size": 30115,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Game/code/Game/AssetList.cpp",
-			"settings":
-			{
-				"buffer_size": 44118,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Game/code/Engine/String.cpp",
-			"settings":
-			{
-				"buffer_size": 16889,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Game/code/Engine/Generated.h",
-			"settings":
-			{
-				"buffer_size": 41877,
 				"line_ending": "Windows"
 			}
 		},
@@ -575,7 +541,15 @@
 			"file": "Game/code/Engine/EngineCore.h",
 			"settings":
 			{
-				"buffer_size": 15236,
+				"buffer_size": 13252,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/code/Engine/Types.cpp",
+			"settings":
+			{
+				"buffer_size": 1081,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -584,34 +558,33 @@
 			"file": "Game/code/Engine/EngineCore.cpp",
 			"settings":
 			{
-				"buffer_size": 75097,
+				"buffer_size": 34354,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Passthrough/OVRPassthroughLayerHelper.cs",
+			"file": "Game/code/Platform/platform_win32.cpp",
 			"settings":
 			{
-				"buffer_size": 3135,
-				"encoding": "UTF-8 with BOM",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/Users/perma/Desktop/sounds.txt",
-			"settings":
-			{
-				"buffer_size": 123,
+				"buffer_size": 40130,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/Featured/MainMenuFeatured.cs",
+			"file": "Game/build_scripts/build_win32.bat",
 			"settings":
 			{
-				"buffer_size": 2370,
+				"buffer_size": 2410,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/debugger_game.bat",
+			"settings":
+			{
+				"buffer_size": 214,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -730,8 +703,53 @@
 	],
 	"file_history":
 	[
-		"/T/Game/code/Engine/imgui/imgui_demo.cpp",
+		"/T/Game/CMakeLists.txt",
+		"/C/Sublime/Data/Packages/User/TowerEngine_game_win32.sublime-build",
+		"/T/Game/build/CMakeOut/Renderer.dir/Debug/Renderer.tlog/CL.command.1.tlog",
+		"/T/Game/build_scripts/build_win32.bat",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Analytics/AnalyticsManager.cs",
+		"/E/tripp-client - android/Assets/Scripts/Analytics/BQAnalytics.cs",
+		"/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/BottomNavigation.cs",
+		"/E/tripp-client - android/Assets/Art/ARTISTS/Dmitri/Drift/_Scripts/Helpers/DriftElementSO.cs",
+		"/E/tripp-client - android/Assets/Art/ARTISTS/Dmitri/Drift/_Scripts/Runtime/UI/DriftSelection.cs",
+		"/E/tripp-client - android/Assets/Art/ARTISTS/Dmitri/Drift/_Scripts/Helpers/DriftElementListSO.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Util/GlobalTuning.cs",
+		"/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/Featured/MainMenuFeatured.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Passthrough/OVRPassthroughLayerHelper.cs",
+		"/t/game/code/engine/editor.h",
+		"/T/Game/code/Engine/ui/UiPanel.h",
+		"/T/Game/code/Engine/ui/UiPanel.cpp",
+		"/T/readme.txt",
+		"/T/Game/build_scripts/cmake_build.bat",
+		"/T/Game/code/Engine/Editor.cpp",
+		"/T/Game/code/Engine/Collision.cpp",
+		"/T/Game/code/Engine/Math.cpp",
+		"/T/Game/code/Game/AssetList.cpp",
+		"/T/Game/code/Engine/String.cpp",
+		"/T/Game/code/Engine/Generated.h",
+		"/T/Game/code/Engine/EngineCore.h",
+		"/t/game/code/game/assetlist.h",
+		"/T/Game/code/Engine/EngineCore.cpp",
+		"/T/Game/build/CMakeOut/CMakeFiles/TargetDirectories.txt",
+		"/T/Game/build/CMakeOut/cmake_install.cmake",
+		"/T/Game/build/CMakeOut/CMakeCache.txt",
+		"/T/Game/build_scripts/cmake.bat",
+		"/T/Game/version.txt",
+		"/T/Game/assets/Tests/focus_laser.battletest",
+		"/T/Game/debugger_game_remedy.bat",
+		"/T/.gitignore",
+		"/T/todo.todo",
+		"/T/Game/code/Engine/Tile.cpp",
+		"/T/Game/code/Engine/SkillTree.cpp",
+		"/T/Game/code/Engine/RandomTable.cpp",
+		"/T/Game/code/Engine/Item.cpp",
+		"/T/Game/code/Engine/GameSpecificData.cpp",
+		"/T/Game/code/Engine/GameConstants.cpp",
+		"/T/Game/code/Engine/GameBehaviors.cpp",
 		"/T/Game/code/Game/Missions.cpp",
+		"/T/Game/code/Engine/mapper/mapper.cpp",
+		"/C/Users/perma/Desktop/sounds.txt",
+		"/T/Game/code/Engine/imgui/imgui_demo.cpp",
 		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/SerenityGarden/RewardEnergyData.cs",
 		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/SerenityGarden/Placeables/PlaceableProgressionController.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Engine/ExperienceController.cs",
@@ -743,21 +761,14 @@
 		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/GardenGlobalInventory.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Analytics/Analytics.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Analytics/AnalyticsEvent.cs",
-		"/E/tripp-client - android/Assets/Scripts/Analytics/BQAnalytics.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Analytics/AnalyticsManager.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Networking/TrippNetworkManager.cs",
 		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/HandController.cs",
 		"/C/Users/perma/AppData/LocalLow/TRIPP/TRIPP/EventsBuffer/4a3fb02b-1a81-4127-b305-7d4993f0dbc8.json",
 		"/E/tripp-client-audio - android/Assets/Scripts/TRIPP/Engine/AssetManagement/TeachingVOExpression.cs",
 		"/T/Game/code/Engine/Json.cpp",
-		"/T/Game/code/Engine/Generated.h",
 		"/T/Game/code/Engine/imguiHelper.cpp",
-		"/T/Game/code/Engine/Editor.cpp",
-		"/T/Game/code/Engine/EngineCore.h",
-		"/T/Game/code/Engine/EngineCore.cpp",
 		"/t/game/code/engine/battle/battle.cpp",
 		"/T/Game/code/Game/AssetList.h",
-		"/T/Game/code/Game/AssetList.cpp",
 		"/T/Game/assets/Missions/fifth_mission.missiondefinition",
 		"/T/Game/assets/Missions/first_mission.missiondefinition",
 		"/T/Game/assets/Missions/fourth_mission.missiondefinition",
@@ -769,7 +780,6 @@
 		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/ExperienceController.cs",
 		"/C/Users/perma/Desktop/v20todo.txt",
 		"/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/LayoutCarousel.cs",
-		"/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/Featured/MainMenuFeatured.cs",
 		"/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/Featured/MainMenuFeaturedCard.cs",
 		"/T/Game/code/Engine/Editor.h",
 		"/T/Game/code/Engine/gizmos.cpp",
@@ -805,59 +815,22 @@
 		"/C/Digital Archive/Game Development/Active/MeepMorp/Game/assets/MonsterShards/Rare/MonsterShardRare.entity",
 		"/T/Game/code/Engine/battle/battle.cpp",
 		"/T/Game/code/Engine/Item.h",
-		"/T/Game/code/Engine/Item.cpp",
 		"/C/Digital Archive/Game Development/Active/MeepMorp/Game/assets/MonsterShards/Epic/MonsterShardEpic.entity",
 		"/C/Digital Archive/Game Development/Active/MeepMorp/Game/assets/MonsterShards/Legendary/MonsterShardLegendary.entity",
 		"/C/Digital Archive/Game Development/Active/MeepMorp/Game/assets/MonsterShards/Legendary/MonsterShardEpic.entity",
 		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/HavenBubble.cs",
 		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/GardenGlobal.cs",
-		"/T/Game/code/Engine/ui/UiPanel.cpp",
 		"/E/tripp-client - ps4/tripp-client - ps4/ProjectSettings/TagManager.asset",
 		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/TRIPP/Engine/Sound/SongMixerGroupLevels.cs",
 		"/T/Game/assets/Abilities/Destabalize.abilitydefinition",
 		"/T/Game/assets/Gears/Gears.entity",
-		"/T/Game/code/Engine/String.cpp",
 		"/T/Game/code/Engine/scene/scene.cpp",
 		"/T/Game/code/Engine/Font.h",
 		"/T/Game/code/Engine/Font.cpp",
 		"/T/Game/code/Engine/Ability/ability.h",
 		"/C/Digital Archive/Game Development/Active/MeepMorp/Game/assets/Ability/Support/SupportAbility.entity",
 		"/T/Game/assets/Tiles/Hallway/Hallway.entity",
-		"/T/Game/code/Engine/monster/monster.cpp",
-		"/T/Game/code/Engine/battle/battle.h",
-		"/T/Game/build_scripts/build_android.bat",
-		"/T/Game/code/preprocessor.cpp",
-		"/T/Game/code/preprocessor.h",
-		"/t/game/code/engine/savedata.cpp",
-		"/T/Game/code/Engine/Math.cpp",
-		"/T/Game/code/Engine/Renderer/Renderer.h",
-		"/t/game/code/engine/ui/uipanel.cpp",
-		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/MainMenuUserBar.cs",
-		"/t/game/code/game/abilities/ability_medical_assistant.cpp",
-		"/t/game/code/game/abilities/ability_replicate.cpp",
-		"/t/game/code/engine/editor.cpp",
-		"/T/Game/assets/Monsters/SpikeBall/SpikeBall.entity",
-		"/t/game/code/engine/item.cpp",
-		"/C/Digital Archive/Game Development/Active/MeepMorp/Game/assets/Ability/Active/ActiveAbility.entity",
-		"/C/Digital Archive/Game Development/DevGifs/21-05-22.gif",
-		"/C/Digital Archive/Game Development/DevGifs/21-05-17.PNG",
-		"/C/Digital Archive/Game Development/DevGifs/21-06-19.gif",
-		"/C/Digital Archive/Game Development/DevGifs/20-05-29.gif",
-		"/C/Users/perma/Desktop/gears.png",
-		"/T/Game/assets/BounceAnim/BounceAnim.entity",
-		"/T/Game/build_scripts/build_win32.bat",
-		"/T/Game/assets/BounceAnim/Bullet.entity",
-		"/C/Users/perma/Desktop/rightnowtodo.txt",
-		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/PanelSystem/PanelGroup.cs",
-		"/T/Game/assets/Abilities/Sapper.abilitydefinition",
-		"/T/Game/assets/Abilities/Thrash.abilitydefinition",
-		"/T/Game/assets/Abilities/Taunt.abilitydefinition",
-		"/T/Game/code/Game/abilities/ability_sacrifice.cpp",
-		"/T/Game/assets/Abilities/Sacrifice.abilitydefinition",
-		"/T/Game/assets/Abilities/Smite.abilitydefinition",
-		"/T/Game/assets/Abilities/PoisonSpray.abilitydefinition",
-		"/T/Game/assets/Abilities/PoisonSting.abilitydefinition",
-		"/T/Game/code/Engine/Ability/ability.cpp"
+		"/T/Game/code/Engine/monster/monster.cpp"
 	],
 	"find":
 	{
@@ -1003,6 +976,18 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"rendercode.dll",
+			"rendercode.dll = ",
+			"rendercode.dll.path",
+			"extern",
+			"rendercode",
+			"dreamscapeList",
+			"AddAnalyticsPackage",
+			"imagestoload",
+			"shaderscount",
+			"GameSetup",
+			"gamesetup",
+			"tile",
 			"CreateBackground",
 			"LaunchDrift",
 			"PreLaunchExperience",
@@ -1118,19 +1103,7 @@
 			"rewards = ",
 			"nextProgressionStep",
 			"giveitem",
-			"fetchnextrewards",
-			"AddEarnedItem",
-			"monster_rarity",
-			"notification",
-			"icon",
-			"}\n",
-			"item",
-			"Source",
-			"preview",
-			"item::",
-			"rotate",
-			"m4y4",
-			"rotate"
+			"fetchnextrewards"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1193,326 +1166,235 @@
 	"groups":
 	[
 		{
-			"selected": 7,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "Game/code/Engine/Editor.cpp",
+					"file": "Game/build_scripts/cmake_build.bat",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 85979,
+						"buffer_size": 65,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								29836,
-								29836
+								65,
+								65
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/Batch File/Batch File.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 12028.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "Game/code/Engine/Collision.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3073,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1392,
-								1433
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 360.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "Game/code/Engine/Math.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 30115,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								29719,
-								29719
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 19470.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "Game/code/Game/AssetList.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 44118,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								38694,
-								38694
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 17280.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "Game/code/Engine/String.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 16889,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1866,
-								1866
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": -0.0,
-						"translation.y": 806.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "Game/code/Engine/Generated.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 41877,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 6309.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "Game/code/Engine/EngineCore.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 15236,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								11274,
-								11274
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 7376.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "Game/code/Engine/EngineCore.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 75097,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								26174,
-								26174
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 11070.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
-					"file": "/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Passthrough/OVRPassthroughLayerHelper.cs",
+					"buffer": 1,
+					"file": "Game/code/Platform/render_win32_ogles3.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3135,
+						"buffer_size": 15929,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								954,
-								954
+								11326,
+								11326
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C#/C#.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "/C/Users/perma/Desktop/sounds.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 123,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								123,
-								123
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2880.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
-					"file": "/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/Featured/MainMenuFeatured.cs",
+					"buffer": 2,
+					"file": "Game/code/Engine/EngineCore.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2370,
+						"buffer_size": 13252,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								324,
-								324
+								1036,
+								1044
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C#/C#.sublime-syntax",
+							"syntax": "Packages/C++/C++.sublime-syntax",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Game/code/Engine/Types.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1081,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1040,
+								1030
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "Game/code/Engine/EngineCore.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 34354,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12269,
+								12268
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 5160.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "Game/code/Platform/platform_win32.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 40130,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								24719,
+								24725
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 12135.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "Game/build_scripts/build_win32.bat",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2410,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1890,
+								1890
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Batch File/Batch File.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "Game/debugger_game.bat",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 214,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								214,
+								214
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Batch File/Batch File.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
 					"type": "text"
 				}
 			]
@@ -1555,7 +1437,7 @@
 	},
 	"output.exec":
 	{
-		"height": 565.0
+		"height": 385.0
 	},
 	"output.find_results":
 	{
@@ -1565,7 +1447,7 @@
 	{
 		"height": 98.0
 	},
-	"pinned_build_system": "Packages/User/TowerEngine_game_android_debugAPK.sublime-build",
+	"pinned_build_system": "Packages/User/TowerEngine_game_win32.sublime-build",
 	"project": "SublimeProj.sublime-project",
 	"replace":
 	{
@@ -1579,8 +1461,64 @@
 		"selected_items":
 		[
 			[
+				"",
+				"Game\\CMakeLists.txt"
+			],
+			[
+				"win",
+				"Game\\code\\Platform\\platform_win32.cpp"
+			],
+			[
+				"build",
+				"Game\\build_scripts\\build_win32.bat"
+			],
+			[
 				"engine",
 				"Game\\code\\Engine\\EngineCore.cpp"
+			],
+			[
+				"types",
+				"Game\\code\\Engine\\Types.cpp"
+			],
+			[
+				"plat",
+				"Game\\code\\Platform\\platform_win32.cpp"
+			],
+			[
+				"buidl",
+				"Game\\build_scripts\\build_win32.bat"
+			],
+			[
+				"eng",
+				"Game\\code\\Engine\\EngineCore.cpp"
+			],
+			[
+				"ogles",
+				"Game\\code\\Platform\\render_win32_ogles3.cpp"
+			],
+			[
+				"pla",
+				"Game\\code\\Platform\\platform_win32.cpp"
+			],
+			[
+				"gloal",
+				"E:\\tripp-client - android\\Assets\\Scripts\\TRIPP\\Core\\Util\\GlobalTuning.cs"
+			],
+			[
+				"global",
+				"E:\\tripp-client - android\\Assets\\Scripts\\TRIPP\\Core\\Util\\GlobalTuning.cs"
+			],
+			[
+				"asset",
+				"Game\\code\\Game\\AssetList.cpp"
+			],
+			[
+				"uip",
+				"Game\\code\\Engine\\ui\\UiPanel.cpp"
+			],
+			[
+				"mapper",
+				"Game\\code\\Engine\\mapper\\mapper.cpp"
 			],
 			[
 				"main",
@@ -1593,10 +1531,6 @@
 			[
 				"colli",
 				"Game\\code\\Engine\\Collision.cpp"
-			],
-			[
-				"asset",
-				"Game\\code\\Game\\AssetList.cpp"
 			],
 			[
 				"collisin",
@@ -1679,10 +1613,6 @@
 				"Game\\code\\Engine\\gizmos.cpp"
 			],
 			[
-				"plat",
-				"Game\\code\\Platform\\platform_win32.cpp"
-			],
-			[
 				"camb",
 				"C:\\Users\\perma\\Desktop\\CambriaPushNotes.txt"
 			],
@@ -1699,10 +1629,6 @@
 				"E:\\tripp-client - android\\Assets\\Scripts\\TRIPP\\Engine\\Util\\TrippSceneManager.cs"
 			],
 			[
-				"",
-				"C:\\Users\\perma\\Desktop\\CambriaPushNotes.txt"
-			],
-			[
 				"trippscene",
 				"E:\\tripp-client - android\\Assets\\Scripts\\TRIPP\\Engine\\Util\\TrippSceneManager.cs"
 			],
@@ -1717,10 +1643,6 @@
 			[
 				"util",
 				"E:\\tripp-client - android\\Assets\\Editor\\EditorUtil.cs"
-			],
-			[
-				"global",
-				"E:\\tripp-client - android\\Assets\\_SerenityGarden\\Scripts\\GardenGlobalInventory.cs"
 			],
 			[
 				"gift",
@@ -1763,10 +1685,6 @@
 				"Game\\code\\Engine\\monster\\monster.h"
 			],
 			[
-				"uip",
-				"Game\\code\\Engine\\ui\\UiPanel.cpp"
-			],
-			[
 				"engin",
 				"Game\\code\\Engine\\EngineCore.cpp"
 			],
@@ -1805,10 +1723,6 @@
 			[
 				"en",
 				"Game\\code\\Engine\\EngineCore.cpp"
-			],
-			[
-				"build",
-				"Game\\build_scripts\\build_win32.bat"
 			],
 			[
 				"spike",
@@ -1987,10 +1901,6 @@
 				"Game\\code\\Engine\\ui\\PanelStack.cpp"
 			],
 			[
-				"mapper",
-				"Game\\code\\Engine\\mapper\\mapper.cpp"
-			],
-			[
 				"engien",
 				"Game\\code\\Engine\\EngineCore.cpp"
 			],
@@ -2031,10 +1941,6 @@
 				"Game\\code\\Engine\\Profiler.h"
 			],
 			[
-				"win",
-				"Game\\code\\Platform\\platform_win32.cpp"
-			],
-			[
 				"ogl",
 				"Game\\code\\Engine\\Renderer\\ogles3.cpp"
 			],
@@ -2045,10 +1951,6 @@
 			[
 				"rect",
 				"Game\\code\\Engine\\Rect.h"
-			],
-			[
-				"ogles",
-				"Game\\code\\Engine\\Renderer\\ogles3.cpp"
 			],
 			[
 				"cross",
@@ -2069,26 +1971,6 @@
 			[
 				"screendraw",
 				"Game\\assets\\Shaders\\ScreenDraw.fs"
-			],
-			[
-				"uipa",
-				"Game\\code\\Engine\\ui\\UiPanel.cpp"
-			],
-			[
-				"stack",
-				"Game\\code\\Engine\\ui\\PanelStack.cpp"
-			],
-			[
-				"elec",
-				"Game\\code\\Game\\abilities\\ability_electric_shock.cpp"
-			],
-			[
-				"obj",
-				"Game\\code\\Engine\\ModelLoading\\obj.cpp"
-			],
-			[
-				"abilit",
-				"Game\\code\\Engine\\Ability\\ability.cpp"
 			]
 		],
 		"width": 0.0
