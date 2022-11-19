@@ -1312,7 +1312,7 @@ bool RayIntersectsTriangle(vector3 rayOrigin,
                            vector3 vertex0, vector3 vertex1, vector3 vertex2,
                            vector3* outIntersectionPoint)
 {
-	const float EPSILON = 0.0000001;
+	const double EPSILON = 0.0000001;
 
 	vector3 edge1, edge2, h, s, q;
 	real64 a, f, u, v;

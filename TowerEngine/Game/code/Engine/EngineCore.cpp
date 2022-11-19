@@ -868,8 +868,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 			State->ActiveCam->EulerRotation.Y += GameInput->MouseDelta.Y * MouseSpeed;
 			State->ActiveCam->EulerRotation.X += GameInput->MouseDelta.X * MouseSpeed;
 
-			real32 Bottom = (-PI / 2.0f) + 0.01f;
-			real32 Top = -Bottom;
+			real64 Bottom = (-PI / 2.0f) + 0.01f;
+			real64 Top = -Bottom;
 			State->ActiveCam->EulerRotation.Y = ClampValue(Bottom, Top, State->ActiveCam->EulerRotation.Y);
 
 			editor::SwitchToEditorCam(GameState);
