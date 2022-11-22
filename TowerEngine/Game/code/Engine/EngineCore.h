@@ -17,7 +17,9 @@
 
 
 //#if DEBUG
-#define Assert(Expression) if (!(Expression)) {LOG("ASSERT"); LOG(#Expression); LOG(AT); *(int *)0 = 0;}
+//#define Assert(Expression) if (!(Expression)) {LOG("ASSERT"); LOG(#Expression); LOG(AT); *(int *)0 = 0;}
+#define Assert(Expression) if (!(Expression)) {LOG("ASSERT"); LOG(#Expression); LOG(AT); __builtin_trap(); }
+
 //#define Assert(Expression) if (!(Expression)) { LOG(":: ASSERT "); LOG(#Expression); LOG("\n:: LINE "); LOG(ID_LINE); LOG(":: FILE "); LOG(ID_FILE); LOG("\n:: FUNC "); LOG(ID_METHOD); LOG("\n"); *(int *)0 = 0; }
 //#define Assert(Expression) if (!(Expression)) { LOG(":: ASSERT "); LOG(#Expression); LOG("\n:: LINE "); LOG(":: FILE "); LOG(ID_FILE); LOG("\n:: FUNC "); LOG(ID_METHOD); LOG("\n"); *(int *)0 = 0; }
 //#else
