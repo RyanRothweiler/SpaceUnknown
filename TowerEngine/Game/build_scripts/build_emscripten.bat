@@ -16,5 +16,7 @@ set WarningsIgnored=-Wno-writable-strings
 emcc ^
  T:/Game/code/Platform/platform_emscripten.cpp ^
  -o T:/Game/build/Emscripten/output.html ^
+ --preload-file T:\Game\assets ^
  -sALLOW_MEMORY_GROWTH ^
+ -g ^
  %WarningsIgnored%
