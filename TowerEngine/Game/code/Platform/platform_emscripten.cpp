@@ -4,8 +4,10 @@
 #include <time.h>
 #include <emscripten.h>
 #include <sys/time.h>
-#include <ftw.h>
-#include <fnmatch.h>
+//#include <ftw.h>
+//#include <fnmatch.h>
+//#include <dirent.h>
+#include <filesystem>
 
 #include "T:/Game/code/Engine/EngineCore.h"
 
@@ -145,48 +147,56 @@ void* GetProcAddress(char* ProcName)
 }
 
 string FileTypeDesired;
-static int explore(const char *fpath, const struct stat *sb, int typeflag)
+static int Explore(const char *fpath, const struct stat *sb, int typeflag)
 {
+	/*
+	printf("Getting paths for %s \n", fpath);
+	printf("File type %s \n", FileTypeDesired.Array());
+
 	if (typeflag == FTW_F) {
-		if (fnmatch("*.txt", fpath, FNM_CASEFOLD) == 0) { ///< it's a .txt file
-			std::cout << "found txt file: " << fpath << std::endl;
+		if (fnmatch(FileTypeDesired.Array(), fpath, FNM_CASEFOLD) == 0) {
+			printf("Found file %s \n", fpath);
+			//std::cout << "found txt file: " << fpath << std::endl;
 		}
 	}
+	*/
 	return 0;
 }
 
 // This is recursive and will include all child files also.
 // Returns the end of the list
-path_list* GetPathsForFileType(char* FileTypeChar, char* RootDir, memory_arena* Memory, path_list* PathList)
+path_list* GetPathsForFileType(char* FileTypeChar, const char* RootDir, memory_arena* Memory, path_list* PathList)
 {
-	FileTypeDesired = "*" + FileTypeChar;
+	//printf("Getting Paths For Type %s \n", RootDir);
 
-	/*
 	path_list* NextPath = PathList;
 
-	HANDLE hFind = {};
-	WIN32_FIND_DATA FileData = {};
+	std::string path = RootDir;
+	for (const auto & entry : std::filesystem::directory_iterator(path)) {
 
-	string Path = Root + "*";
-	hFind = FindFirstFileA(Path.CharArray, &FileData);
+		std::string Path = entry.path().string();
 
-	do {
-		if ((FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && FileData.cFileName[0] != '.') {
-			string P = Root + FileData.cFileName + "/";
-			NextPath = GetPathsForFileType(FileType.Array(), P.Array(), Memory, NextPath);
+		if (entry.is_directory()) {
+			//printf("Do Directory %s \n", Path.c_str());
+			NextPath = GetPathsForFileType(FileTypeChar, Path.c_str(), Memory, NextPath);
 		} else {
-			if (StringEndsWith(FileData.cFileName, FileType)) {
-				NextPath->Path = Root + FileData.cFileName;
+			printf("File %s \n", Path.c_str());
+
+			string MyStr = Path.c_str();
+			if (StringEndsWith(MyStr, FileTypeChar)) {
+				NextPath->Path = Path.c_str();
 				NextPath->Next = (path_list*)ArenaAllocate(Memory, sizeof(path_list));
+
+				//int32 Count = PathListCount(NextPaths);
+				//int Count = NextPath->GetCount();
+				printf("		adding file to path %s\n", NextPath->Path.Array());
+
 				NextPath = NextPath->Next;
 			}
-
 		}
-	} while (FindNextFileA(hFind, &FileData) != 0);
+	}
 
-	FindClose(hFind);
 	return NextPath;
-	*/
 }
 
 int main()
@@ -239,8 +249,7 @@ int main()
 	PlatformEm.Print = &Print;
 	PlatformEm.GetFileWriteTime = &GetFileWriteTime;
 	PlatformEm.GetProcAddress = &GetProcAddress;
-
-	//PlatformEm.GetPathsForFileType = &GetPathsForFileType;
+	PlatformEm.GetPathsForFileType = &GetPathsForFileType;
 
 	PlatformEm.ScreenDPI = 100;
 	PlatformEm.ScreenDPICo = 1.0f;

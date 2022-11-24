@@ -68,6 +68,17 @@ IntToCharArray(int64 Input, char *Output)
 }
 
 int32
+CharArrayLength(const char *String)
+{
+	int Count = 0;
+	while (*String++) {
+		Count++;
+	}
+	return (Count);
+}
+
+
+int32
 CharArrayLength(char *String)
 {
 	int Count = 0;
@@ -130,6 +141,20 @@ struct string {
 	}
 
 	string(char *Input)
+	{
+		uint32 StringCount = CharArrayLength(Input);
+		Assert(StringCount < MAX_STRING_SIZE);
+		if (StringCount < MAX_STRING_SIZE) {
+			for (uint32 Index = 0;
+			        Index < StringCount;
+			        Index++) {
+				CharArray[Index] = Input[Index];
+			}
+			CharArray[StringCount] = '\0';
+		}
+	}
+
+	string(const char *Input)
 	{
 		uint32 StringCount = CharArrayLength(Input);
 		Assert(StringCount < MAX_STRING_SIZE);

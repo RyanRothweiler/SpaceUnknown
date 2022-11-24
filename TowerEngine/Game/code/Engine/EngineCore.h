@@ -91,7 +91,7 @@ namespace platform {
 		uint64(*GetFileWriteTime)(char* File);
 		void*(*GetProcAddress)(char* Name);
 		void(*OpenFileExternal)(char* File);
-		path_list*(*GetPathsForFileType)(char* FileType, char* Root, memory_arena* Memory, path_list* PathList);
+		path_list*(*GetPathsForFileType)(char* FileType, const char* Root, memory_arena* Memory, path_list* PathList);
 		void(*OpenFileDialogue)(char* Path, int32 MaxPathLength);
 		thread_work*(*ThreadAddWork)(game_thread_proc WorkMethod, void* WorkParams);
 
@@ -199,24 +199,20 @@ struct loaded_image {
 struct path_list {
 	string Path;
 	path_list* Next;
-
-	int32 GetCount()
-	{
-		int32 Count = 0;
-
-		if (Next != GameNull) {
-			Count++;
-			path_list* P = Next;
-
-			while (P->Next != GameNull) {
-				Count++;
-				P = P->Next;
-			}
-		}
-
-		return Count;
-	}
 };
+
+int32 PathListCount(path_list* Curr)
+{
+	int Val = 0;
+	if (!StringIsEmpty(Curr->Path)) {
+		Val++;
+	}
+
+	if (Curr->Next != GameNull) {
+		Val += PathListCount(Curr->Next);
+	}
+	return Val;
+}
 
 #include "FixedAllocator.cpp"
 

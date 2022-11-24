@@ -1,6 +1,16 @@
 set EM_PATH="C:\emsdk-main\emsdk-main"
 set EMSDK_QUIET=1
 
+:: Run preprocessor
+pushd T:\Game\build\Preprocessor
+
+:: Preprocessor build. Uncocmment below to compile preprocessor.
+::if exist "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\amd64\vcvars64.bat" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\amd64\vcvars64.bat"
+::if exist "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat" 
+::cl %CommonCompilerFlags% ..\..\code\preprocessor.cpp
+Preprocessor > ..\..\code\Engine\Generated.h
+popd
+
 :: setup emscripen build variables / environment
 pushd %EM_PATH%
 call "emsdk_env.bat"
