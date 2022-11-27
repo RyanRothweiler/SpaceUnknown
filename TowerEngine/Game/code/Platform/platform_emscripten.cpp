@@ -1,3 +1,5 @@
+#define EM_LOG_C_STACK 1
+
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,6 +7,7 @@
 #include <emscripten.h>
 #include <sys/time.h>
 #include <filesystem>
+#include <chrono>
 
 #define KEY_ESC 0
 #define KEY_TAB 0
@@ -200,7 +203,7 @@ path_list* GetPathsForFileType(char* FileTypeChar, const char* RootDir, memory_a
 			//printf("Do Directory %s \n", Path.c_str());
 			NextPath = GetPathsForFileType(FileTypeChar, Path.c_str(), Memory, NextPath);
 		} else {
-			printf("File %s \n", Path.c_str());
+			//printf("File %s \n", Path.c_str());
 
 			string MyStr = Path.c_str();
 			if (StringEndsWith(MyStr, FileTypeChar)) {
@@ -209,7 +212,7 @@ path_list* GetPathsForFileType(char* FileTypeChar, const char* RootDir, memory_a
 
 				//int32 Count = PathListCount(NextPaths);
 				//int Count = NextPath->GetCount();
-				printf("		adding file to path %s\n", NextPath->Path.Array());
+				//printf("		adding file to path %s\n", NextPath->Path.Array());
 
 				NextPath = NextPath->Next;
 			}
@@ -302,9 +305,18 @@ game_input GameInput = {};
 game_audio_output_buffer GameAudio = {};
 window_info WindowInfo = {};
 
+std::chrono::time_point<std::chrono::high_resolution_clock> PrevClock;
+
 void MainLoop()
 {
 	GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
+
+	auto CurrClock = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<float> ClockDiff = CurrClock - PrevClock;
+	PrevClock = CurrClock;
+
+	float FPS = 1.0f / (ClockDiff.count());
+	printf("FPS %f \n", FPS);
 }
 
 int main()
@@ -383,8 +395,32 @@ int main()
 	RenderApi.RenderCameraToBuffer = &RenderCameraToBuffer;
 	GameMemory.RenderApi = RenderApi;
 
-	emscripten_set_main_loop(&MainLoop, 60.0f, true);
+	PrevClock = std::chrono::high_resolution_clock::now();
+	emscripten_set_main_loop(&MainLoop, 0, true);
 
+	// use -ASYNCIFY with this
+	/*
+	float TargetFPS = 60.0f;
+	float TargetFrameSec = 1.0f / TargetFPS;
+
+	while (true) {
+		GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
+
+		auto CurrClock = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<float> WorkDiff = CurrClock - PrevClock;
+
+		if (WorkDiff.count() > TargetFrameSec) {
+			float SleepLen = WorkDiff.count() - TargetFrameSec;
+			emscripten_sleep(SleepLen);
+		}
+
+		std::chrono::duration<float> TotalFrameDiff = CurrClock - PrevClock;
+		float FPS = 1.0f / (TotalFrameDiff.count());
+		printf("FPS %f \n", FPS);
+
+		PrevClock = CurrClock;
+	}
+	*/
 
 
 	return 0;
