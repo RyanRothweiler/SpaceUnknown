@@ -579,6 +579,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 			assets::UploadAllQueuedImages(&Globals->AssetsList, GlobalTransMem);
 		}
 
+
+
 		GameState->GameRenderer.Camera = &State->GameCamera;
 		GameState->DebugUIRenderer.Camera = &State->UICam;
 		GameState->UIRenderer.Camera = &State->UICam;

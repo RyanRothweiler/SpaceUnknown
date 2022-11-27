@@ -11,7 +11,7 @@
 #include <chrono>
 
 #define KEY_ESC 0
-#define KEY_TAB 0
+#define KEY_TAB 0x09
 #define KEY_BACK 0
 #define KEY_LEFT 0
 #define KEY_RIGHT 0
@@ -311,6 +311,7 @@ std::chrono::time_point<std::chrono::high_resolution_clock> PrevClock;
 bool32 MouseLeftState = false;
 bool32 MouseRightState = false;
 bool32 MouseMiddleState = false;
+bool32 KeyboardState[256] = {};
 
 void
 ProcessInputState(input_state *ButtonProcessing, bool32 NewState)
@@ -335,6 +336,91 @@ ProcessInputState(input_state *ButtonProcessing, bool32 NewState)
 			ButtonProcessing->OnDown = false;
 		}
 	}
+}
+
+EM_BOOL KeyCallback(int eventType, const EmscriptenKeyboardEvent *e, void *userData)
+{
+	printf("Keyboard event %i button %s\n", eventType, e->key);
+
+	if (std::strlen(e->key) == 1) {
+		if (eventType == EMSCRIPTEN_EVENT_KEYDOWN) {
+			if (e->key[0] == 'a') { KeyboardState['a'] = true; } 	if (e->key[0] == 'A') { KeyboardState['A'] = true; }
+			if (e->key[0] == 'b') { KeyboardState['b'] = true; } 	if (e->key[0] == 'B') { KeyboardState['B'] = true; }
+			if (e->key[0] == 'c') { KeyboardState['c'] = true; } 	if (e->key[0] == 'C') { KeyboardState['C'] = true; }
+			if (e->key[0] == 'd') { KeyboardState['d'] = true; } 	if (e->key[0] == 'D') { KeyboardState['D'] = true; }
+			if (e->key[0] == 'e') { KeyboardState['e'] = true; } 	if (e->key[0] == 'E') { KeyboardState['E'] = true; }
+			if (e->key[0] == 'f') { KeyboardState['f'] = true; } 	if (e->key[0] == 'F') { KeyboardState['F'] = true; }
+			if (e->key[0] == 'g') { KeyboardState['g'] = true; } 	if (e->key[0] == 'G') { KeyboardState['G'] = true; }
+			if (e->key[0] == 'h') { KeyboardState['h'] = true; } 	if (e->key[0] == 'H') { KeyboardState['H'] = true; }
+			if (e->key[0] == 'i') { KeyboardState['i'] = true; } 	if (e->key[0] == 'I') { KeyboardState['I'] = true; }
+			if (e->key[0] == 'j') { KeyboardState['j'] = true; } 	if (e->key[0] == 'J') { KeyboardState['J'] = true; }
+			if (e->key[0] == 'k') { KeyboardState['k'] = true; } 	if (e->key[0] == 'K') { KeyboardState['K'] = true; }
+			if (e->key[0] == 'l') { KeyboardState['l'] = true; } 	if (e->key[0] == 'L') { KeyboardState['L'] = true; }
+			if (e->key[0] == 'm') { KeyboardState['m'] = true; } 	if (e->key[0] == 'M') { KeyboardState['M'] = true; }
+			if (e->key[0] == 'n') { KeyboardState['n'] = true; } 	if (e->key[0] == 'N') { KeyboardState['N'] = true; }
+			if (e->key[0] == 'o') { KeyboardState['o'] = true; } 	if (e->key[0] == 'O') { KeyboardState['O'] = true; }
+			if (e->key[0] == 'p') { KeyboardState['p'] = true; } 	if (e->key[0] == 'P') { KeyboardState['P'] = true; }
+			if (e->key[0] == 'q') { KeyboardState['q'] = true; } 	if (e->key[0] == 'Q') { KeyboardState['Q'] = true; }
+			if (e->key[0] == 'r') { KeyboardState['r'] = true; } 	if (e->key[0] == 'R') { KeyboardState['R'] = true; }
+			if (e->key[0] == 's') { KeyboardState['s'] = true; } 	if (e->key[0] == 'S') { KeyboardState['S'] = true; }
+			if (e->key[0] == 't') { KeyboardState['t'] = true; } 	if (e->key[0] == 'T') { KeyboardState['T'] = true; }
+			if (e->key[0] == 'u') { KeyboardState['u'] = true; } 	if (e->key[0] == 'U') { KeyboardState['U'] = true; }
+			if (e->key[0] == 'v') { KeyboardState['v'] = true; } 	if (e->key[0] == 'V') { KeyboardState['V'] = true; }
+			if (e->key[0] == 'w') { KeyboardState['w'] = true; } 	if (e->key[0] == 'W') { KeyboardState['W'] = true; }
+			if (e->key[0] == 'x') { KeyboardState['x'] = true; } 	if (e->key[0] == 'X') { KeyboardState['X'] = true; }
+			if (e->key[0] == 'y') { KeyboardState['y'] = true; } 	if (e->key[0] == 'Y') { KeyboardState['Y'] = true; }
+			if (e->key[0] == 'z') { KeyboardState['z'] = true; } 	if (e->key[0] == 'Z') { KeyboardState['Z'] = true; }
+
+
+
+		} else if (eventType == EMSCRIPTEN_EVENT_KEYUP) {
+			if (e->key[0] == 'a') { KeyboardState['a'] = false; }  	if (e->key[0] == 'A') { KeyboardState['A'] = false; }
+			if (e->key[0] == 'b') { KeyboardState['b'] = false; }  	if (e->key[0] == 'B') { KeyboardState['B'] = false; }
+			if (e->key[0] == 'c') { KeyboardState['c'] = false; }  	if (e->key[0] == 'C') { KeyboardState['C'] = false; }
+			if (e->key[0] == 'd') { KeyboardState['d'] = false; }  	if (e->key[0] == 'D') { KeyboardState['D'] = false; }
+			if (e->key[0] == 'e') { KeyboardState['e'] = false; }  	if (e->key[0] == 'E') { KeyboardState['E'] = false; }
+			if (e->key[0] == 'f') { KeyboardState['f'] = false; }  	if (e->key[0] == 'F') { KeyboardState['F'] = false; }
+			if (e->key[0] == 'g') { KeyboardState['g'] = false; }  	if (e->key[0] == 'G') { KeyboardState['G'] = false; }
+			if (e->key[0] == 'h') { KeyboardState['h'] = false; }  	if (e->key[0] == 'H') { KeyboardState['H'] = false; }
+			if (e->key[0] == 'i') { KeyboardState['i'] = false; }  	if (e->key[0] == 'I') { KeyboardState['I'] = false; }
+			if (e->key[0] == 'j') { KeyboardState['j'] = false; }  	if (e->key[0] == 'J') { KeyboardState['J'] = false; }
+			if (e->key[0] == 'k') { KeyboardState['k'] = false; }  	if (e->key[0] == 'K') { KeyboardState['K'] = false; }
+			if (e->key[0] == 'l') { KeyboardState['l'] = false; }  	if (e->key[0] == 'L') { KeyboardState['L'] = false; }
+			if (e->key[0] == 'm') { KeyboardState['m'] = false; }  	if (e->key[0] == 'M') { KeyboardState['M'] = false; }
+			if (e->key[0] == 'n') { KeyboardState['n'] = false; }  	if (e->key[0] == 'N') { KeyboardState['N'] = false; }
+			if (e->key[0] == 'o') { KeyboardState['o'] = false; }  	if (e->key[0] == 'O') { KeyboardState['O'] = false; }
+			if (e->key[0] == 'p') { KeyboardState['p'] = false; }  	if (e->key[0] == 'P') { KeyboardState['P'] = false; }
+			if (e->key[0] == 'q') { KeyboardState['q'] = false; }  	if (e->key[0] == 'Q') { KeyboardState['Q'] = false; }
+			if (e->key[0] == 'r') { KeyboardState['r'] = false; }  	if (e->key[0] == 'R') { KeyboardState['R'] = false; }
+			if (e->key[0] == 's') { KeyboardState['s'] = false; }  	if (e->key[0] == 'S') { KeyboardState['S'] = false; }
+			if (e->key[0] == 't') { KeyboardState['t'] = false; }  	if (e->key[0] == 'T') { KeyboardState['T'] = false; }
+			if (e->key[0] == 'u') { KeyboardState['u'] = false; }  	if (e->key[0] == 'U') { KeyboardState['U'] = false; }
+			if (e->key[0] == 'v') { KeyboardState['v'] = false; }  	if (e->key[0] == 'V') { KeyboardState['V'] = false; }
+			if (e->key[0] == 'w') { KeyboardState['w'] = false; }  	if (e->key[0] == 'W') { KeyboardState['W'] = false; }
+			if (e->key[0] == 'x') { KeyboardState['x'] = false; }  	if (e->key[0] == 'X') { KeyboardState['X'] = false; }
+			if (e->key[0] == 'y') { KeyboardState['y'] = false; }  	if (e->key[0] == 'Y') { KeyboardState['Y'] = false; }
+			if (e->key[0] == 'z') { KeyboardState['z'] = false; }  	if (e->key[0] == 'Z') { KeyboardState['Z'] = false; }
+		}
+	} else {
+		string Key = e->key;
+
+		if (Key == string{"Tab"}) {
+			KeyboardState[KEY_TAB] = (eventType == EMSCRIPTEN_EVENT_KEYDOWN);
+		}
+	}
+
+	/*
+	if (ArrayCount(KeyboardState) > (int)e->key) {
+		if (eventType == EMSCRIPTEN_EVENT_KEYDOWN) {
+			KeyboardState[(int)e->key] = true;
+		} else if (eventType == EMSCRIPTEN_EVENT_KEYDOWN) {
+			KeyboardState[(int)e->key] = false;
+		}
+	} else {
+		printf("Unknown key %s \n", e->key);
+	}
+	*/
+	return true;
 }
 
 EM_BOOL MouseCallback(int eventType, const EmscriptenMouseEvent *e, void *userData)
@@ -366,6 +452,9 @@ void MainLoop()
 	ProcessInputState(&GameInput.MouseLeft, MouseLeftState);
 	ProcessInputState(&GameInput.MouseMiddle, MouseMiddleState);
 	ProcessInputState(&GameInput.MouseRight, MouseRightState);
+	for (int index = 0; index < ArrayCount(GameInput.KeyboardInput); index++) {
+		ProcessInputState(&GameInput.KeyboardInput[index], KeyboardState[index]);
+	}
 
 	GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
 
@@ -458,6 +547,8 @@ int main()
 	emscripten_set_mousedown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
 	emscripten_set_mouseup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
 	emscripten_set_dblclick_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
+	emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
+	emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
 
 	emscripten_set_canvas_element_size("#canvas", 1000, 400);
 	emscripten_set_main_loop(&MainLoop, 0, true);
