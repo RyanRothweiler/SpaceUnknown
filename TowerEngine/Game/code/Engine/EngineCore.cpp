@@ -453,7 +453,6 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	}
 	*/
 
-
 	// Initialization
 	if (!Memory->IsInitialized) {
 		string AssetRootDir = RootAssetPath;
@@ -674,11 +673,13 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		} else {
 
 			// Disable mouse input
+			/*
 			Globals->Input->MouseLeft.OnDown = false;
 			Globals->Input->MouseLeft.IsDown = false;
 			Globals->Input->MouseRight.OnDown = false;
 			Globals->Input->MouseRight.IsDown = false;
 			Globals->Input->MousePos = vector2{ -1, -1};
+			*/
 		}
 	}
 
@@ -844,8 +845,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 	// Prevent mouse clicks for game if imgui captures mouse
 	if (ImGui::GetIO().WantCaptureMouse) {
-		GameInput->MouseLeft.IsDown = false;
-		GameInput->MouseLeft.OnDown = false;
+		//GameInput->MouseLeft.IsDown = false;
+		//GameInput->MouseLeft.OnDown = false;
 		//GameInput->MouseRight.OnDown = false;
 		//GameInput->MouseRight.IsDown = false;
 	}

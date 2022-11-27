@@ -712,7 +712,6 @@ namespace assets {
 
 		// General
 		{
-			SetupImage(&Assets->BlueprintIcon, AssetRootDir + "items/wax-tablet.png", gl_blend_type::linear, correct_gamma::no, Assets);
 		}
 	}
 

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <emscripten.h>
+#include <emscripten/html5.h>
 #include <sys/time.h>
 #include <filesystem>
 #include <chrono>
@@ -307,8 +308,65 @@ window_info WindowInfo = {};
 
 std::chrono::time_point<std::chrono::high_resolution_clock> PrevClock;
 
+bool32 MouseLeftState = false;
+bool32 MouseRightState = false;
+bool32 MouseMiddleState = false;
+
+void
+ProcessInputState(input_state *ButtonProcessing, bool32 NewState)
+{
+	if (NewState) {
+		if (ButtonProcessing->IsDown) {
+			ButtonProcessing->OnDown = false;
+		} else {
+			ButtonProcessing->IsDown = true;
+			ButtonProcessing->OnDown = true;
+			ButtonProcessing->IsUp = false;
+			ButtonProcessing->OnUp = false;
+		}
+	} else {
+		if (ButtonProcessing->IsUp) {
+			ButtonProcessing->OnUp = false;
+		} else {
+			ButtonProcessing->Claimed = false;
+			ButtonProcessing->IsUp = true;
+			ButtonProcessing->OnUp = true;
+			ButtonProcessing->IsDown = false;
+			ButtonProcessing->OnDown = false;
+		}
+	}
+}
+
+EM_BOOL MouseCallback(int eventType, const EmscriptenMouseEvent *e, void *userData)
+{
+	//printf("Mouse event %i button %i\n", eventType, e->button);
+	if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN) {
+		if (e->button == 0) {
+			MouseLeftState = true;
+		} else if (e->button == 1) {
+			MouseMiddleState = true;
+		} else if (e->button == 2) {
+			MouseRightState = true;
+		}
+	} else if (eventType == EMSCRIPTEN_EVENT_MOUSEUP) {
+		if (e->button == 0) {
+			MouseLeftState = false;
+		} else if (e->button == 1) {
+			MouseMiddleState = false;
+		} else if (e->button == 2) {
+			MouseRightState = false;
+		}
+	}
+	return true;
+}
+
 void MainLoop()
 {
+	//printf("Mouse Left %i \n", MouseLeftState);
+	ProcessInputState(&GameInput.MouseLeft, MouseLeftState);
+	ProcessInputState(&GameInput.MouseMiddle, MouseMiddleState);
+	ProcessInputState(&GameInput.MouseRight, MouseRightState);
+
 	GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
 
 	auto CurrClock = std::chrono::high_resolution_clock::now();
@@ -316,7 +374,7 @@ void MainLoop()
 	PrevClock = CurrClock;
 
 	float FPS = 1.0f / (ClockDiff.count());
-	printf("FPS %f \n", FPS);
+	//printf("FPS %f \n", FPS);
 }
 
 int main()
@@ -374,7 +432,6 @@ int main()
 
 	GameMemory.PlatformApi = PlatformEm;
 
-
 	WindowInfo.Width = 512;
 	WindowInfo.Height = 512;
 
@@ -396,6 +453,13 @@ int main()
 	GameMemory.RenderApi = RenderApi;
 
 	PrevClock = std::chrono::high_resolution_clock::now();
+
+	emscripten_set_click_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
+	emscripten_set_mousedown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
+	emscripten_set_mouseup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
+	emscripten_set_dblclick_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
+
+	emscripten_set_canvas_element_size("#canvas", 1000, 400);
 	emscripten_set_main_loop(&MainLoop, 0, true);
 
 	// use -ASYNCIFY with this
