@@ -4,17 +4,37 @@
 #include <time.h>
 #include <emscripten.h>
 #include <sys/time.h>
-//#include <ftw.h>
-//#include <fnmatch.h>
-//#include <dirent.h>
 #include <filesystem>
 
+#define KEY_ESC 0
+#define KEY_TAB 0
+#define KEY_BACK 0
+#define KEY_LEFT 0
+#define KEY_RIGHT 0
+#define KEY_UP 0
+#define KEY_DOWN 0
+#define KEY_PRIOR 0
+#define KEY_NEXT 0
+#define KEY_HOME 0
+#define KEY_END 0
+#define KEY_INSERT 0
+#define KEY_DELETE 0
+#define KEY_SPACE 0
+#define KEY_RETURN 0
+#define KEY_ESCAPE 0
+#define KEY_SHIFT 0
+
+#define WIN_EXPORT
+
 #include "T:/Game/code/Engine/EngineCore.h"
+#include "T:/Game/code/Engine/EngineCore.cpp"
+
 
 void Print(char* Message)
 {
 	printf("%s", Message);
 	printf("\n");
+	//fflush();
 }
 
 real64 RandomFloat()
@@ -135,13 +155,13 @@ GetWallClock()
 
 uint32 GetGUID()
 {
-	Print("GetGUID - UNSUPPORTED \n");
+	Print("GetGUID - UNSUPPORTED");
 	return 0;
 }
 
 void* GetProcAddress(char* ProcName)
 {
-	Print("GetProcAddress - UNSUPPORTED \n");
+	Print("GetProcAddress - UNSUPPORTED");
 	void* Ret;
 	return Ret;
 }
@@ -199,14 +219,100 @@ path_list* GetPathsForFileType(char* FileTypeChar, const char* RootDir, memory_a
 	return NextPath;
 }
 
+bool GlobalRunning = true;
+
+void MakeProgram(shader* Shader)
+{
+	Print("OGL Make program");
+}
+
+void MakeTexture(loaded_image *Image, uint32 *BitmapPixels, bool32 CorrectGamma)
+{
+	Print("OGL Make Texture");
+}
+
+void MakeCubeMap(cube_map* CubeMap, int32 SideWidth, int32 SideHeight, bitmap_pixels* Sides)
+{
+	Print("OGL make cube map");
+}
+
+void MakeHDRTexture(loaded_image* Image, float* Data, int32 Width, int32 Height)
+{
+	Print("OGL make cubemap");
+}
+
+void GetFramebufferCubeMap(camera* Cam, bool32 GenerateMips, bool32 Trilinear)
+{
+	Print("OGL GetFramebufferCubeMap");
+}
+
+void GetFramebufferDepth(camera* Cam, uint32 Width, uint32 Height)
+{
+	Print("OGL GetFramebufferDepth");
+}
+
+void GetFramebuffer(camera* Cam, int32 ColorElementsCount)
+{
+	Print("OGL GetFramebuffer");
+}
+
+void Render (render::api * API,
+             camera * ActiveCam, camera * ShadowCam, window_info * WindowInfo,
+             renderer * DebugUIRenderer, renderer* UIRenderer, renderer * GameRenderer, shader * GaussianBlurShader
+            )
+{
+	Print("OLG Render");
+}
+
+vao CreateVAO()
+{
+	Print("OGL create VAOs");
+	vao VAO = {};
+	return VAO;
+}
+
+void VAOBind_v2(vao* VAO, v2* Data, uint32 DataCount, int32 Location)
+{
+	Print("OGL VAOBind_v2");
+}
+
+void VAOBind_v3(vao* VAO, v3* Data, uint32 DataCount, int32 Location)
+{
+	Print("OGL VAOBind_v3");
+}
+
+int32 DoPickRender(camera* Camera, vector2 MousePos, window_info WindowInfo)
+{
+	Print("OGL DoPickRender");
+	return 0;
+}
+
+void BakeIBL(renderer* EquiRenderer, renderer* ConvRenderer, renderer* PreFilterRenderer, window_info* WindowInfo)
+{
+	Print("OGL bakeibl");
+}
+
+void RenderCameraToBuffer(camera * Camera, renderer * Renderer, window_info WindowInfo)
+{
+	Print("OGL Render camera to buffer");
+}
+
+game_memory GameMemory = {};
+game_input GameInput = {};
+game_audio_output_buffer GameAudio = {};
+window_info WindowInfo = {};
+
+void MainLoop()
+{
+	GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
+}
+
 int main()
 {
-
 	Print("Starting");
 
 	// Limit is 2.14 gigs I guess
 	Print("Allocating Memory");
-	game_memory GameMemory = {};
 	GameMemory.PermanentMemory.Size = Megabytes(512);
 	GameMemory.TransientMemory.Size = Megabytes(512);
 	GameMemory.ThreadTransientMemory.Size = Megabytes(10);
@@ -255,6 +361,31 @@ int main()
 	PlatformEm.ScreenDPICo = 1.0f;
 
 	GameMemory.PlatformApi = PlatformEm;
+
+
+	WindowInfo.Width = 512;
+	WindowInfo.Height = 512;
+
+	render::api RenderApi = {};
+	RenderApi.MakeProgram = &MakeProgram;
+	RenderApi.MakeTexture = &MakeTexture;
+	RenderApi.MakeCubeMap = &MakeCubeMap;
+	RenderApi.MakeHDRTexture = &MakeHDRTexture;
+	RenderApi.GetFramebuffer = &GetFramebuffer;
+	RenderApi.GetFramebufferDepth = &GetFramebufferDepth;
+	RenderApi.GetFramebufferCubeMap = &GetFramebufferCubeMap;
+	RenderApi.Render = &Render;
+	RenderApi.CreateVAO = &CreateVAO;
+	RenderApi.VAOBind_v2 = &VAOBind_v2;
+	RenderApi.VAOBind_v3 = &VAOBind_v3;
+	RenderApi.DoPickRender = &DoPickRender;
+	RenderApi.BakeIBL = &BakeIBL;
+	RenderApi.RenderCameraToBuffer = &RenderCameraToBuffer;
+	GameMemory.RenderApi = RenderApi;
+
+	emscripten_set_main_loop(&MainLoop, 60.0f, true);
+
+
 
 	return 0;
 }

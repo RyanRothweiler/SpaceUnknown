@@ -568,7 +568,7 @@ namespace editor {
 				}
 			}
 
-			if (Globals->Input->KeyboardInput[VK_ESCAPE].OnDown) {
+			if (Globals->Input->KeyboardInput[KEY_ESC].OnDown) {
 				MovingState = moving_state::none;
 				Globals->EditorData.TransformSelected = GameNull;
 				Globals->EditorData.EntitySelected = GameNull;
@@ -1309,7 +1309,7 @@ namespace editor {
 					}
 				}
 
-				if (Globals->Input->KeyboardInput[VK_ESCAPE].OnDown) {
+				if (Globals->Input->KeyboardInput[KEY_ESC].OnDown) {
 					MovingState = moving_state::none;
 					Globals->EditorData.TransformSelected = GameNull;
 					Globals->EditorData.EntitySelected = GameNull;

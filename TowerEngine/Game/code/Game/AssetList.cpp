@@ -419,7 +419,7 @@ namespace assets {
 
 		path_list EntityPaths = {};
 		PlatformApi.GetPathsForFileType(".entity", AssetRootDir.Array(), TransMemory, &EntityPaths);
-		KnownLoadingSteps += EntityPaths.GetCount();
+		KnownLoadingSteps += PathListCount(&EntityPaths);
 
 		CurrentLoadingStep = 0;
 

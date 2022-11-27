@@ -33,6 +33,6 @@ int32 				typedef bool32;
 float 				typedef real32;
 double 				typedef real64;
 
-#define WIN_EXPORT extern "C" __declspec(dllexport)
+//#define WIN_EXPORT extern "C" __declspec(dllexport)
 
 #endif

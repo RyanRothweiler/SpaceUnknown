@@ -230,14 +230,19 @@ void BakeIBL()
 
 	// Cubemaps
 	{
-		// NOTE we get dangling warning here when compiling android. Is that true? Is this an issue?
+		string Right = (Globals->AssetRootDir + "Skybox/space/right.png");
+		string Left = (Globals->AssetRootDir + "Skybox/space/left.png");
+		string Top = (Globals->AssetRootDir + "Skybox/space/top.png");
+		string Bottom = (Globals->AssetRootDir + "Skybox/space/bottom.png");
+		string Front = (Globals->AssetRootDir + "Skybox/space/front.png");
+		string Back = (Globals->AssetRootDir + "Skybox/space/back.png");
 		char* Files[6] = {
-			(Globals->AssetRootDir + "Skybox/space/right.png").CharArray,
-			(Globals->AssetRootDir + "Skybox/space/left.png").CharArray,
-			(Globals->AssetRootDir + "Skybox/space/top.png").CharArray,
-			(Globals->AssetRootDir + "Skybox/space/bottom.png").CharArray,
-			(Globals->AssetRootDir + "Skybox/space/front.png").CharArray,
-			(Globals->AssetRootDir + "Skybox/space/back.png").CharArray
+			Right.CharArray,
+			Left.CharArray,
+			Top.CharArray,
+			Bottom.CharArray,
+			Front.CharArray,
+			Back.CharArray,
 		};
 		Globals->AssetsList.SpaceCubeMap = assets::GLLoadCubeMap(Files, GlobalTransMem);
 	}
@@ -646,7 +651,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	{
 		// Toggle on / off
 		bool EditorPrev = Globals->EditorData.EditorMode;
-		if (Globals->Input->KeyboardInput[VK_TAB].OnDown) {
+		if (Globals->Input->KeyboardInput[KEY_TAB].OnDown) {
 			Globals->EditorData.EditorMode = !Globals->EditorData.EditorMode;
 		}
 
@@ -704,21 +709,21 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 		// Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array that we will update during the application lifetime.
 		// Removed for android. ImGui doesn't do anything on android, so what do?
-		io.KeyMap[ImGuiKey_Backspace] = VK_BACK;
-		io.KeyMap[ImGuiKey_Tab] = VK_TAB;
-		io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
-		io.KeyMap[ImGuiKey_RightArrow] = VK_RIGHT;
-		io.KeyMap[ImGuiKey_UpArrow] = VK_UP;
-		io.KeyMap[ImGuiKey_DownArrow] = VK_DOWN;
-		io.KeyMap[ImGuiKey_PageUp] = VK_PRIOR;
-		io.KeyMap[ImGuiKey_PageDown] = VK_NEXT;
-		io.KeyMap[ImGuiKey_Home] = VK_HOME;
-		io.KeyMap[ImGuiKey_End] = VK_END;
-		io.KeyMap[ImGuiKey_Insert] = VK_INSERT;
-		io.KeyMap[ImGuiKey_Delete] = VK_DELETE;
-		io.KeyMap[ImGuiKey_Space] = VK_SPACE;
-		io.KeyMap[ImGuiKey_Enter] = VK_RETURN;
-		io.KeyMap[ImGuiKey_Escape] = VK_ESCAPE;
+		io.KeyMap[ImGuiKey_Backspace] = KEY_BACK;
+		io.KeyMap[ImGuiKey_Tab] = KEY_TAB;
+		io.KeyMap[ImGuiKey_LeftArrow] = KEY_LEFT;
+		io.KeyMap[ImGuiKey_RightArrow] = KEY_RIGHT;
+		io.KeyMap[ImGuiKey_UpArrow] = KEY_UP;
+		io.KeyMap[ImGuiKey_DownArrow] = KEY_DOWN;
+		io.KeyMap[ImGuiKey_PageUp] = KEY_PRIOR;
+		io.KeyMap[ImGuiKey_PageDown] = KEY_NEXT;
+		io.KeyMap[ImGuiKey_Home] = KEY_HOME;
+		io.KeyMap[ImGuiKey_End] = KEY_END;
+		io.KeyMap[ImGuiKey_Insert] = KEY_INSERT;
+		io.KeyMap[ImGuiKey_Delete] = KEY_DELETE;
+		io.KeyMap[ImGuiKey_Space] = KEY_SPACE;
+		io.KeyMap[ImGuiKey_Enter] = KEY_RETURN;
+		io.KeyMap[ImGuiKey_Escape] = KEY_ESCAPE;
 
 
 		// ImGui create font texture
@@ -887,7 +892,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 			//real64 KeyboardSpeed = 3;
 			real64 KeyboardSpeed = 1;
-			if (GameInput->KeyboardInput[VK_SHIFT].IsDown) {
+			if (GameInput->KeyboardInput[KEY_SHIFT].IsDown) {
 				//KeyboardSpeed = 1.5f;
 			}
 
