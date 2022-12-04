@@ -28,5 +28,6 @@ emcc ^
  -o T:/Game/build/Emscripten/output.html ^
  --preload-file T:\Game\assets ^
  -sALLOW_MEMORY_GROWTH ^
+ -sMAX_WEBGL_VERSION=2 ^
  -g ^
  %WarningsIgnored%

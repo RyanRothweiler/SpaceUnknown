@@ -10,35 +10,17 @@
 #include <filesystem>
 #include <chrono>
 
-#define KEY_ESC 0
-#define KEY_TAB 0x09
-#define KEY_BACK 0
-#define KEY_LEFT 0
-#define KEY_RIGHT 0
-#define KEY_UP 0
-#define KEY_DOWN 0
-#define KEY_PRIOR 0
-#define KEY_NEXT 0
-#define KEY_HOME 0
-#define KEY_END 0
-#define KEY_INSERT 0
-#define KEY_DELETE 0
-#define KEY_SPACE 0
-#define KEY_RETURN 0
-#define KEY_ESCAPE 0
-#define KEY_SHIFT 0
-
 #define WIN_EXPORT
+#define CRASH __builtin_trap();
 
 #include "T:/Game/code/Engine/EngineCore.h"
 #include "T:/Game/code/Engine/EngineCore.cpp"
-
+#include "T:/Game/code/Platform/render_emscripten_ogles3.cpp"
 
 void Print(char* Message)
 {
 	printf("%s", Message);
 	printf("\n");
-	//fflush();
 }
 
 real64 RandomFloat()
@@ -340,7 +322,7 @@ ProcessInputState(input_state *ButtonProcessing, bool32 NewState)
 
 EM_BOOL KeyCallback(int eventType, const EmscriptenKeyboardEvent *e, void *userData)
 {
-	printf("Keyboard event %i button %s\n", eventType, e->key);
+	//printf("Keyboard event %i button %s\n", eventType, e->key);
 
 	if (std::strlen(e->key) == 1) {
 		if (eventType == EMSCRIPTEN_EVENT_KEYDOWN) {
@@ -420,7 +402,8 @@ EM_BOOL KeyCallback(int eventType, const EmscriptenKeyboardEvent *e, void *userD
 		printf("Unknown key %s \n", e->key);
 	}
 	*/
-	return true;
+
+	return false;
 }
 
 EM_BOOL MouseCallback(int eventType, const EmscriptenMouseEvent *e, void *userData)
@@ -443,7 +426,8 @@ EM_BOOL MouseCallback(int eventType, const EmscriptenMouseEvent *e, void *userDa
 			MouseRightState = false;
 		}
 	}
-	return true;
+
+	return false;
 }
 
 void MainLoop()
@@ -458,6 +442,10 @@ void MainLoop()
 
 	GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
 
+	game_state *GameStateFromMemory = (game_state *)GameMemory.PermanentMemory.Memory;
+	state_to_serialize* State = &GameStateFromMemory->StateSerializing;
+	GameMemory.RenderApi.Render(&GameMemory.RenderApi, State->ActiveCam, &State->Light.Cam, &WindowInfo, &GameStateFromMemory->DebugUIRenderer, &GameStateFromMemory->UIRenderer, &GameStateFromMemory->GameRenderer, &GameStateFromMemory->Assets->GaussianBlurShader);
+
 	auto CurrClock = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<float> ClockDiff = CurrClock - PrevClock;
 	PrevClock = CurrClock;
@@ -466,9 +454,23 @@ void MainLoop()
 	//printf("FPS %f \n", FPS);
 }
 
+// https://github.com/emscripten-core/emscripten/blob/main/test/third_party/glbook/Common/esUtil.h
+// esCreateWindow flag - RGB color buffer
+#define ES_WINDOW_RGB           0
+// esCreateWindow flag - ALPHA color buffer
+#define ES_WINDOW_ALPHA         1
+// esCreateWindow flag - depth buffer
+#define ES_WINDOW_DEPTH         2
+// esCreateWindow flag - stencil buffer
+#define ES_WINDOW_STENCIL       4
+// esCreateWindow flat - multi-sample buffer
+#define ES_WINDOW_MULTISAMPLE   8
+
+
 int main()
 {
 	Print("Starting");
+
 
 	// Limit is 2.14 gigs I guess
 	Print("Allocating Memory");
@@ -520,9 +522,10 @@ int main()
 	PlatformEm.ScreenDPICo = 1.0f;
 
 	GameMemory.PlatformApi = PlatformEm;
+	PlatformApi = GameMemory.PlatformApi;
 
-	WindowInfo.Width = 512;
-	WindowInfo.Height = 512;
+	WindowInfo.Width = 1000;
+	WindowInfo.Height = 400;
 
 	render::api RenderApi = {};
 	RenderApi.MakeProgram = &MakeProgram;
@@ -550,7 +553,126 @@ int main()
 	emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
 	emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
 
-	emscripten_set_canvas_element_size("#canvas", 1000, 400);
+	EGLNativeWindowType ESWindow = {};
+	// Create window
+	{
+		static Display* XDisp = {};
+
+		XDisp = XOpenDisplay(NULL);
+		Assert(XDisp != NULL);
+
+		Window Root = DefaultRootWindow(XDisp);
+
+		XSetWindowAttributes swa = {};
+		swa.event_mask  =  ExposureMask | PointerMotionMask | KeyPressMask;
+		Window win = XCreateWindow(
+		                 XDisp, Root,
+		                 0, 0, WindowInfo.Width, WindowInfo.Height, 0,
+		                 CopyFromParent, InputOutput,
+		                 CopyFromParent, CWEventMask,
+		                 &swa );
+
+		XSetWindowAttributes xattr = {};
+		xattr.override_redirect = false;
+		XChangeWindowAttributes ( XDisp, win, CWOverrideRedirect, &xattr );
+
+		XWMHints hints = {};
+		hints.input = true;
+		hints.flags = InputHint;
+		XSetWMHints(XDisp, win, &hints);
+
+		// make the window visible on the screen
+		XMapWindow (XDisp, win);
+		XStoreName (XDisp, win, "Title Here");
+
+		// get identifiers for the provided atom name strings
+		Atom wm_state = XInternAtom (XDisp, "_NET_WM_STATE", false);
+
+		XEvent xev = {};
+		memset ( &xev, 0, sizeof(xev) );
+		xev.type                 = ClientMessage;
+		xev.xclient.window       = win;
+		xev.xclient.message_type = wm_state;
+		xev.xclient.format       = 32;
+		xev.xclient.data.l[0]    = 1;
+		xev.xclient.data.l[1]    = false;
+		XSendEvent (
+		    XDisp,
+		    DefaultRootWindow(XDisp),
+		    false,
+		    SubstructureNotifyMask,
+		    &xev );
+
+		ESWindow = (EGLNativeWindowType) win;
+
+		Print("Created x11 window");
+	}
+
+	// Create egl context
+	{
+
+		GLuint Flags = ES_WINDOW_RGB;
+		EGLint AttribList[] = {
+			EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+			EGL_RED_SIZE,       5,
+			EGL_GREEN_SIZE,     6,
+			EGL_BLUE_SIZE,      5,
+			EGL_ALPHA_SIZE,     (Flags & ES_WINDOW_ALPHA) ? 8 : EGL_DONT_CARE,
+			EGL_DEPTH_SIZE,     (Flags & ES_WINDOW_DEPTH) ? 8 : EGL_DONT_CARE,
+			EGL_STENCIL_SIZE,   (Flags & ES_WINDOW_STENCIL) ? 8 : EGL_DONT_CARE,
+			EGL_SAMPLE_BUFFERS, (Flags & ES_WINDOW_MULTISAMPLE) ? 1 : 0,
+			EGL_NONE
+		};
+
+		// Get Display
+		EGLDisplay Display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+		Assert(Display != EGL_NO_DISPLAY); //eglGetDisplay no display
+
+		// Initialize EGL
+		EGLint MajorVersion;
+		EGLint MinorVersion;
+		if (!eglInitialize(Display, &MajorVersion, &MinorVersion) ) {
+			Assert(false); //eglInitialize failed
+		}
+
+		// Get configs
+		EGLint NumConfigs;
+		if (!eglGetConfigs(Display, NULL, 0, &NumConfigs) ) {
+			Assert(false); //eglGetConfigs
+		}
+
+		// Choose config
+		EGLConfig Config;
+		if (!eglChooseConfig(Display, AttribList, &Config, 1, &NumConfigs) ) {
+			Assert(false); //eglChooseConfig
+		}
+
+		// Create a surface
+		EGLSurface Surface = eglCreateWindowSurface(Display, Config, ESWindow, NULL);
+		Assert(Surface != EGL_NO_SURFACE);
+
+		// Create a GL context
+		EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE, EGL_NONE };
+		EGLContext Context = eglCreateContext(Display, Config, EGL_NO_CONTEXT, contextAttribs );
+		Assert(Context != EGL_NO_CONTEXT);
+
+		// Make the context current
+		if ( !eglMakeCurrent(Display, Surface, Surface, Context) ) {
+			Assert(false); //eglMakeCurrent
+		}
+
+		// Verify info
+		auto opengl_info = {GL_VENDOR, GL_RENDERER, GL_VERSION, GL_EXTENSIONS};
+		for (auto name : opengl_info) {
+			auto info = glGetString(name);
+			printf("OpenGL Info: %s \n", info);
+		}
+		Print("Created ogl context");
+	}
+
+	game_state *GameStateFromMemory = (game_state *)GameMemory.PermanentMemory.Memory;
+	GameMemory.RenderApi = ogles3::Initialize(WindowInfo, &GameStateFromMemory->OGLProfilerData, &GameMemory.PermanentMemory, &GameMemory.TransientMemory);
+
 	emscripten_set_main_loop(&MainLoop, 0, true);
 
 	// use -ASYNCIFY with this

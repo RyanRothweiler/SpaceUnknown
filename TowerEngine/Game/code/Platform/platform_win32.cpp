@@ -400,7 +400,7 @@ LoadState(char *FileName, game_memory *GameMemory)
 
 // This is recursive and will include all child files also.
 // Returns the end of the list
-path_list* GetPathsForFileType(char* FileTypeChar, char* RootChar, memory_arena* Memory, path_list* PathList)
+path_list* GetPathsForFileType(char* FileTypeChar, const char* RootChar, memory_arena* Memory, path_list* PathList)
 {
 	string FileType = FileTypeChar;
 	string Root = RootChar;

@@ -15,10 +15,31 @@
 #define TOSTRING(x) STRINGIFY(x)
 #define AT __FILE__ ":" TOSTRING(__LINE__)
 
+#if PLATFORM_WINDOWS
+	#define CRASH *(int *)0 = 0;
+	#define WIN_EXPORT extern "C" __declspec(dllexport)
+#endif
 
-//#if DEBUG
-//#define Assert(Expression) if (!(Expression)) {LOG("ASSERT"); LOG(#Expression); LOG(AT); *(int *)0 = 0;}
-#define Assert(Expression) if (!(Expression)) {LOG("ASSERT"); LOG(#Expression); LOG(AT); __builtin_trap(); }
+#define Assert(Expression) if (!(Expression)) {LOG("!!! ASSERT !!! "); LOG(#Expression); LOG(AT); LOG("!!! end !!!"); CRASH; }
+
+#define KEY_ESC 0
+#define KEY_TAB 0x09
+#define KEY_BACK 0
+#define KEY_LEFT 0
+#define KEY_RIGHT 0
+#define KEY_UP 0
+#define KEY_DOWN 0
+#define KEY_PRIOR 0
+#define KEY_NEXT 0
+#define KEY_HOME 0
+#define KEY_END 0
+#define KEY_INSERT 0
+#define KEY_DELETE 0
+#define KEY_SPACE 0
+#define KEY_RETURN 0
+#define KEY_ESCAPE 0
+#define KEY_SHIFT 0
+
 
 //#define Assert(Expression) if (!(Expression)) { LOG(":: ASSERT "); LOG(#Expression); LOG("\n:: LINE "); LOG(ID_LINE); LOG(":: FILE "); LOG(ID_FILE); LOG("\n:: FUNC "); LOG(ID_METHOD); LOG("\n"); *(int *)0 = 0; }
 //#define Assert(Expression) if (!(Expression)) { LOG(":: ASSERT "); LOG(#Expression); LOG("\n:: LINE "); LOG(":: FILE "); LOG(ID_FILE); LOG("\n:: FUNC "); LOG(ID_METHOD); LOG("\n"); *(int *)0 = 0; }
