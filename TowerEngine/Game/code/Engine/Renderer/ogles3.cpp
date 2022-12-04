@@ -206,9 +206,11 @@ namespace ogles3 {
 			glBindTexture(GL_TEXTURE_2D, Cam->TextureColorbuffers[i]);
 
 			if (ColorElementsCount == 0) {
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, Width, Height, 0, GL_RGBA, GL_FLOAT, NULL);
+				//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, Width, Height, 0, GL_RGBA, GL_FLOAT, NULL);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 			} else {
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, Width, Height, 0, GL_RG, GL_FLOAT, NULL);
+				Assert(false);
+				//glTexImage2D(GL_TEXTURE_2D, 0, GL_RG8, Width, Height, 0, GL_RG, GL_FLOAT, NULL);
 			}
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

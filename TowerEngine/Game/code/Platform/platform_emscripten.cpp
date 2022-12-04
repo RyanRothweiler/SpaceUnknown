@@ -430,6 +430,9 @@ EM_BOOL MouseCallback(int eventType, const EmscriptenMouseEvent *e, void *userDa
 	return false;
 }
 
+EGLDisplay GLDisplay = {};
+EGLSurface GLSurface = {};
+
 void MainLoop()
 {
 	//printf("Mouse Left %i \n", MouseLeftState);
@@ -445,6 +448,7 @@ void MainLoop()
 	game_state *GameStateFromMemory = (game_state *)GameMemory.PermanentMemory.Memory;
 	state_to_serialize* State = &GameStateFromMemory->StateSerializing;
 	GameMemory.RenderApi.Render(&GameMemory.RenderApi, State->ActiveCam, &State->Light.Cam, &WindowInfo, &GameStateFromMemory->DebugUIRenderer, &GameStateFromMemory->UIRenderer, &GameStateFromMemory->GameRenderer, &GameStateFromMemory->Assets->GaussianBlurShader);
+	eglSwapBuffers(GLDisplay, GLSurface);
 
 	auto CurrClock = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<float> ClockDiff = CurrClock - PrevClock;
@@ -613,51 +617,53 @@ int main()
 
 		GLuint Flags = ES_WINDOW_RGB;
 		EGLint AttribList[] = {
+			EGL_DEPTH_SIZE, 24,
 			EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
-			EGL_RED_SIZE,       5,
-			EGL_GREEN_SIZE,     6,
-			EGL_BLUE_SIZE,      5,
-			EGL_ALPHA_SIZE,     (Flags & ES_WINDOW_ALPHA) ? 8 : EGL_DONT_CARE,
-			EGL_DEPTH_SIZE,     (Flags & ES_WINDOW_DEPTH) ? 8 : EGL_DONT_CARE,
-			EGL_STENCIL_SIZE,   (Flags & ES_WINDOW_STENCIL) ? 8 : EGL_DONT_CARE,
-			EGL_SAMPLE_BUFFERS, (Flags & ES_WINDOW_MULTISAMPLE) ? 1 : 0,
+
+			//EGL_RED_SIZE,       5,
+			//EGL_GREEN_SIZE,     6,
+			//EGL_BLUE_SIZE,      5,
+			//EGL_ALPHA_SIZE,     (Flags & ES_WINDOW_ALPHA) ? 8 : EGL_DONT_CARE,
+			//EGL_DEPTH_SIZE,     (Flags & ES_WINDOW_DEPTH) ? 8 : EGL_DONT_CARE,
+			//EGL_STENCIL_SIZE,   (Flags & ES_WINDOW_STENCIL) ? 8 : EGL_DONT_CARE,
+			//EGL_SAMPLE_BUFFERS, (Flags & ES_WINDOW_MULTISAMPLE) ? 1 : 0,
 			EGL_NONE
 		};
 
 		// Get Display
-		EGLDisplay Display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-		Assert(Display != EGL_NO_DISPLAY); //eglGetDisplay no display
+		GLDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+		Assert(GLDisplay != EGL_NO_DISPLAY); //eglGetDisplay no display
 
 		// Initialize EGL
 		EGLint MajorVersion;
 		EGLint MinorVersion;
-		if (!eglInitialize(Display, &MajorVersion, &MinorVersion) ) {
+		if (!eglInitialize(GLDisplay, &MajorVersion, &MinorVersion) ) {
 			Assert(false); //eglInitialize failed
 		}
 
 		// Get configs
 		EGLint NumConfigs;
-		if (!eglGetConfigs(Display, NULL, 0, &NumConfigs) ) {
+		if (!eglGetConfigs(GLDisplay, NULL, 0, &NumConfigs) ) {
 			Assert(false); //eglGetConfigs
 		}
 
 		// Choose config
 		EGLConfig Config;
-		if (!eglChooseConfig(Display, AttribList, &Config, 1, &NumConfigs) ) {
+		if (!eglChooseConfig(GLDisplay, AttribList, &Config, 1, &NumConfigs) ) {
 			Assert(false); //eglChooseConfig
 		}
 
 		// Create a surface
-		EGLSurface Surface = eglCreateWindowSurface(Display, Config, ESWindow, NULL);
-		Assert(Surface != EGL_NO_SURFACE);
+		GLSurface = eglCreateWindowSurface(GLDisplay, Config, ESWindow, NULL);
+		Assert(GLSurface != EGL_NO_SURFACE);
 
 		// Create a GL context
 		EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE, EGL_NONE };
-		EGLContext Context = eglCreateContext(Display, Config, EGL_NO_CONTEXT, contextAttribs );
+		EGLContext Context = eglCreateContext(GLDisplay, Config, EGL_NO_CONTEXT, contextAttribs );
 		Assert(Context != EGL_NO_CONTEXT);
 
 		// Make the context current
-		if ( !eglMakeCurrent(Display, Surface, Surface, Context) ) {
+		if ( !eglMakeCurrent(GLDisplay, GLSurface, GLSurface, Context) ) {
 			Assert(false); //eglMakeCurrent
 		}
 
