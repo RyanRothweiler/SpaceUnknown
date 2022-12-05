@@ -16,6 +16,11 @@ namespace ogles3 {
 		}
 	}
 
+	int32 GetAttribLocation(shader* Shader, char* Attribute)
+	{
+		return glGetAttribLocation(Shader->Program, Attribute);
+	}
+
 	void MakeProgram(shader* Shader)
 	{
 		// Delete old shader info if it exists
@@ -37,7 +42,7 @@ namespace ogles3 {
 		Shader->FragError = false;
 
 		char* GLSLVersion =
-		    "#version 300 es\n"
+		    "#version 100\n"
 		    "#define LightType_Point 0\n"
 		    "#define LightType_Directional 1\n"
 		    "#define Expose\n";
@@ -66,6 +71,8 @@ namespace ogles3 {
 			Shader->VertError = true;
 
 			//LOGI("Vertex Error \n%s", Shader->ErrorInfo);
+			PlatformApi.Print("Vertex Shader Error");
+			PlatformApi.Print(Shader->ErrorInfo);
 
 			free(Vert);
 			free(Frag);
@@ -84,6 +91,8 @@ namespace ogles3 {
 			Shader->FragError = true;
 
 			//LOGI("Fragment Error \n%s", Shader->ErrorInfo);
+			PlatformApi.Print("Fragment Shader Error");
+			PlatformApi.Print(Shader->ErrorInfo);
 
 			free(Vert);
 			free(Frag);
@@ -102,6 +111,8 @@ namespace ogles3 {
 			Shader->Valid = false;
 
 			//LOGI("Link Error %s\n", Shader->ErrorInfo);
+			PlatformApi.Print("Linking Shader Error");
+			PlatformApi.Print(Shader->ErrorInfo);
 
 			free(Vert);
 			free(Frag);
@@ -120,6 +131,8 @@ namespace ogles3 {
 		}
 
 
+		//PlatformApi.Print("Shader compiled and linked successfully");
+
 		free(Vert);
 		free(Frag);
 
@@ -137,13 +150,14 @@ namespace ogles3 {
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, (uint32)Cam->Resolution.X, (uint32)Cam->Resolution.Y);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
-
 		glGenTextures(1, &Cam->TextureColorbuffers[0]);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, Cam->TextureColorbuffers[0]);
 		for (unsigned int i = 0; i < 6; ++i) {
 			// note that we store each face with 16 bit floating point values
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-			             (uint32)Cam->Resolution.X, (uint32)Cam->Resolution.Y, 0, GL_RGB, GL_FLOAT, nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA8,
+			             (uint32)Cam->Resolution.X, (uint32)Cam->Resolution.Y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+
+			//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		}
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -160,7 +174,6 @@ namespace ogles3 {
 		if (GenerateMips) {
 			glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 		}
-
 	}
 
 	void GetFramebufferDepth(camera* Cam, uint32 Width, uint32 Height)
@@ -193,6 +206,8 @@ namespace ogles3 {
 	// Cam is modified. Results of this are put into Cam
 	void GetFramebuffer(camera* Cam, int32 ColorElementsCount)
 	{
+		return;
+
 		int32 Height = (int32)Cam->Resolution.Y;
 		int32 Width = (int32)Cam->Resolution.X;
 
@@ -226,7 +241,7 @@ namespace ogles3 {
 		unsigned int rbo;
 		glGenRenderbuffers(1, &rbo);
 		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, Width, Height);
+		//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, Width, Height);
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
@@ -916,6 +931,8 @@ namespace ogles3 {
 		Ret.DoPickRender = &DoPickRender;
 		Ret.BakeIBL = &BakeIBL;
 		Ret.RenderCameraToBuffer = &RenderCameraToBuffer;
+		Ret.GetAttribLocation = &GetAttribLocation;
+
 
 		// This must happen after all TIME_BEGIN calls so that COUNTER is exactly the number of TIME_BEGIN calls
 		// COPIED FROM ENGINE

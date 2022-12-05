@@ -15,7 +15,7 @@ private:
 	};
 
 	enum class token_type {
-		uniform, layout
+		uniform, layout, attribute
 	};
 
 	struct token {
@@ -216,6 +216,45 @@ private:
 
 				ExposeNext = true;
 				Tokenizer->Curr += 6;
+
+			} else if (
+			    Tokenizer->Curr[0] == 'a' &&
+			    Tokenizer->Curr[1] == 't' &&
+			    Tokenizer->Curr[2] == 't' &&
+			    Tokenizer->Curr[3] == 'r' &&
+			    Tokenizer->Curr[4] == 'i' &&
+			    Tokenizer->Curr[5] == 'b' &&
+			    Tokenizer->Curr[6] == 'u' &&
+			    Tokenizer->Curr[7] == 't' &&
+			    Tokenizer->Curr[8] == 'e') {
+				// Layout
+
+				Token.Type = token_type::layout;
+
+				// attribute
+				Tokenizer->Curr += 9;
+
+				// space
+				Tokenizer->Curr++;
+
+				Token.Layout.Type = GetGLSLType(&Tokenizer->Curr[0]);
+				while (Tokenizer->Curr[0] != ' ') { Tokenizer->Curr++; }
+				Tokenizer->Curr++;
+
+				// Pull name
+				{
+					char* Start = Tokenizer->Curr;
+					int Count = 0;
+					while (Tokenizer->Curr[0] != ';') {
+						Tokenizer->Curr++;
+						Count++;
+					}
+
+					Token.Layout.Name = BuildString(Start, Count);
+				}
+
+				Token.Valid = true;
+				return Token;
 
 			} else if (Tokenizer->Curr[0] == 'l' && Tokenizer->Curr[1] == 'a' && Tokenizer->Curr[2] == 'y' && Tokenizer->Curr[3] == 'o' && Tokenizer->Curr[4] == 'u' && Tokenizer->Curr[5] == 't') {
 				// Layout

@@ -895,6 +895,7 @@ namespace render {
 		void (*MakeHDRTexture)(loaded_image* Image, float* Data, int32 Width, int32 Height);
 		void (*BakeIBL)(renderer* EquiRenderer, renderer* ConvRenderer, renderer* PreFilterRenderer, window_info* WindowInfo);
 		void (*RenderCameraToBuffer)(camera * Camera, renderer * Renderer, window_info WindowInfo);
+		int32 (*GetAttribLocation)(shader* Shader, char* Attribute);
 	};
 
 

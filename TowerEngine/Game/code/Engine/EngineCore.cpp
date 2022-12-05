@@ -488,6 +488,13 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 			// Engine resource shaders
 			{
+				Globals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.ScreenDrawShader,
+				                           AssetRootDir + "Shaders/ScreenDraw.vs",
+				                           AssetRootDir + "Shaders/ScreenDraw.fs",
+				                           GlobalTransMem);
+				RenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ScreenDrawShader);
+
+				/*
 				Globals->ShaderLoader.Load(&GameState->Assets->GaussianBlurShader,
 				                           AssetRootDir + "Shaders/GaussianBlur.vs",
 				                           AssetRootDir + "Shaders/GaussianBlur.fs",
@@ -500,17 +507,12 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 				                           GlobalTransMem);
 				RenderApi.MakeProgram(&GameState->Assets->CamBasicShader);
 
-				Globals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.ScreenDrawShader,
-				                           AssetRootDir + "Shaders/ScreenDraw.vs",
-				                           AssetRootDir + "Shaders/ScreenDraw.fs",
-				                           GlobalTransMem);
-				RenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ScreenDrawShader);
-
 				Globals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.ScreenDrawTextureShader,
 				                           AssetRootDir + "Shaders/ScreenDrawTexture.vs",
 				                           AssetRootDir + "Shaders/ScreenDrawTexture.fs",
 				                           GlobalTransMem);
 				RenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ScreenDrawTextureShader);
+
 
 				Globals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.FontSDFShader,
 				                           AssetRootDir + "Shaders/FontSDF.vs",
@@ -522,6 +524,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 				Globals->AssetsList.EngineResources.DefaultFont.LineHeight = 1.361f;
 				Globals->AssetsList.EngineResources.DefaultFontStyle.Font = &Globals->AssetsList.EngineResources.DefaultFont;
 				Globals->AssetsList.EngineResources.DefaultFontStyle.SizePoints = 15.0f;
+				*/
 			}
 
 			// Create default white image for renderer
@@ -595,7 +598,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 			//SetupWork = PlatformApi.ThreadAddWork(GameSetupThread, 0);
 			GameSetup();
 
-			BakeIBL();
+			//BakeIBL();
 
 			// Compile shaders
 			for (int i = 0; i < Globals->AssetsList.ShadersCount; i++) {
@@ -607,7 +610,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 			}
 
 			assets::UploadAllQueuedImages(&Globals->AssetsList, GlobalTransMem);
-			assets::UploadAllQueuedEntities(&Globals->AssetsList);
+			//assets::UploadAllQueuedEntities(&Globals->AssetsList);
 		}
 
 		//PanelStackPush(panel_id::home, &State->PanelStack, State);
@@ -963,6 +966,13 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	}
 
 
+	RenderRectangle(
+	    vector2{WindowInfo->Width * 0.5f, WindowInfo->Height * 0.5f},
+	    vector2{(real64)WindowInfo->Width, 50},
+	    COLOR_RED, 0, Globals->UIRenderer);
+
+
+
 	State->Light.Cam.Forward = vector3{0.013f, 0.542f, 0.83f};
 	State->Light.Cam.UpdateMatricies();
 
@@ -1005,7 +1015,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 
 	// Render imgui
-	{
+	ImGui::EndFrame();
+	if (false) {
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		style.Alpha = 0.25f;
@@ -1013,8 +1024,6 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 			style.Alpha = 1.0f;
 		}
 
-
-		ImGui::EndFrame();
 
 		if (!BuildVarRelease) {
 			ImGui::Render();

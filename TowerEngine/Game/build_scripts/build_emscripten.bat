@@ -29,5 +29,6 @@ emcc ^
  --preload-file T:\Game\assets ^
  -sALLOW_MEMORY_GROWTH ^
  -sMAX_WEBGL_VERSION=2 ^
+ -sFULL_ES3 ^
  -g ^
  %WarningsIgnored%

@@ -149,6 +149,10 @@ void RenderRectangle(vector2 Center, vector2 Size, color Color, real64 RenderOrd
 
 	// Vertices
 	layout_data* VertexLayout = RendCommand.GetLayout();
+
+	// Get location
+	//Token.Loc = RenderApi.GetAttribLoc
+
 	VertexLayout->Allocate(Shader->GetLayout(render::ShaderVertID), RendCommand.BufferCapacity, GlobalTransMem);
 	VertexLayout->Data.Vec3[0] = TopRight;
 	VertexLayout->Data.Vec3[1] = BottomRight;

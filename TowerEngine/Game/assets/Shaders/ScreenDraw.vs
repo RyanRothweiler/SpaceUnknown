@@ -1,4 +1,4 @@
-layout (location = 0) in vec3 vertexPos;
+attribute vec3 vertexPos;
 
 uniform mat4 view;
 uniform mat4 projection;

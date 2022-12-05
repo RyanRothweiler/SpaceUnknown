@@ -67,6 +67,7 @@ typedef void gl_draw_buffers (GLsizei n, const GLenum *bufs);
 typedef void gl_uniform_3fv (GLint location, GLsizei count, const GLfloat *value);
 typedef void gl_tex_storage_2d (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
 typedef void gl_generate_mipmap (GLenum target);
+typedef GLint gl_get_attrib_location (GLuint program, const GLchar *name);
 
 gl_gen_vertex_arrays* glGenVertexArrays;
 gl_delete_vertex_arrays* glDeleteVertexArrays;
@@ -114,6 +115,7 @@ gl_draw_buffers* glDrawBuffers;
 gl_uniform_3fv* glUniform3fv;
 gl_tex_storage_2d* glTexStorage2D;
 gl_generate_mipmap* glGenerateMipmap;
+gl_get_attrib_location* glGetAttribLocation;
 
 #define GL_TEXTURE_WRAP_R                 0x8072
 #define GL_TEXTURE_CUBE_MAP_SEAMLESS      0x884F
@@ -293,6 +295,7 @@ WIN_EXPORT render::api Init(window_info WindowInfo, platform::api* PlatApi, prof
 	glUniform3fv = 					(gl_uniform_3fv*) 					PlatApi->GetProcAddress("glUniform3fv");
 	glTexStorage2D = 				(gl_tex_storage_2d*) 				PlatApi->GetProcAddress("glTexStorage2D");
 	glGenerateMipmap = 				(gl_generate_mipmap*) 				PlatApi->GetProcAddress("glGenerateMipmap");
+	glGetAttribLocation = 			(gl_get_attrib_location*) 			PlatApi->GetProcAddress("glGetAttribLocation");
 
 	return ogles3::Initialize(WindowInfo, ProfilerData, PermMem, TransMem);
 }

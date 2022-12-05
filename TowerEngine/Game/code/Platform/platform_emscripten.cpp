@@ -558,6 +558,8 @@ int main()
 	emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
 
 	EGLNativeWindowType ESWindow = {};
+
+	/*
 	// Create window
 	{
 		static Display* XDisp = {};
@@ -611,6 +613,7 @@ int main()
 
 		Print("Created x11 window");
 	}
+	*/
 
 	// Create egl context
 	{
@@ -654,11 +657,11 @@ int main()
 		}
 
 		// Create a surface
-		GLSurface = eglCreateWindowSurface(GLDisplay, Config, ESWindow, NULL);
+		GLSurface = eglCreateWindowSurface(GLDisplay, Config, NULL, NULL);
 		Assert(GLSurface != EGL_NO_SURFACE);
 
 		// Create a GL context
-		EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE, EGL_NONE };
+		EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE };
 		EGLContext Context = eglCreateContext(GLDisplay, Config, EGL_NO_CONTEXT, contextAttribs );
 		Assert(Context != EGL_NO_CONTEXT);
 
@@ -668,7 +671,7 @@ int main()
 		}
 
 		// Verify info
-		auto opengl_info = {GL_VENDOR, GL_RENDERER, GL_VERSION, GL_EXTENSIONS};
+		auto opengl_info = {GL_VENDOR, GL_RENDERER, GL_VERSION, GL_EXTENSIONS, GL_SHADING_LANGUAGE_VERSION };
 		for (auto name : opengl_info) {
 			auto info = glGetString(name);
 			printf("OpenGL Info: %s \n", info);

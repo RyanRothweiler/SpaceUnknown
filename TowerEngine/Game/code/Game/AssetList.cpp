@@ -375,8 +375,11 @@ namespace assets {
 
 		asset_shader Shaders[] = {
 			//{"ScreenDrawTexture",	"Shaders/ScreenDrawTexture.vs",		"Shaders/ScreenDrawTexture.fs"},
+			{"ScreenDraw",	"Shaders/ScreenDraw.vs",		"Shaders/ScreenDraw.fs"},
 			//{"FontSDF",				"Shaders/FontSDF.vs",				"Shaders/FontSDF.fs"},
-			{"PBR", 				"Shaders/PBR.vs", 					"Shaders/PBR.fs"},
+			//{"PBR", 				"Shaders/PBR.vs", 					"Shaders/PBR.fs"},
+
+			/*
 			{"PBR_Skeletal", 		"Shaders/PBR_Skeletal.vs", 			"Shaders/PBR.fs"},
 			{"BasicSkeletal", 		"Shaders/BasicSkeletal.vs", 		"Shaders/BasicSkeletal.fs"},
 			{"GaussianBlur", 		"Shaders/GaussianBlur.vs", 			"Shaders/GaussianBlur.fs"},
@@ -393,6 +396,7 @@ namespace assets {
 			{"EquiToCube", 			"Shaders/EquiToCube.vs", 			"Shaders/EquiToCube.fs"},
 			{"BRDF", 				"Shaders/BRDF.vs", 					"Shaders/BRDF.fs"},
 			{"PreFilter", 			"Shaders/PreFilter.vs", 			"Shaders/PreFilter.fs"},
+			*/
 		};
 		KnownLoadingSteps += ArrayCount(Shaders);
 
@@ -457,7 +461,7 @@ namespace assets {
 		{
 			Assets->Materials = CreateList(GlobalPermMem, sizeof(asset_material));
 
-			for (int x = 0; x < ArrayCount(Materials); x++) {
+			for (int x = 0; x < 0; x++) {
 
 				string Dest = AssetRootDir + MATERIAL_DIR + Materials[x] + ".material";
 				read_file_result File = PlatformApi.ReadFile(&Dest.CharArray[0], GlobalPermMem);
