@@ -216,7 +216,7 @@ namespace assets {
 			RenderApi.MakeTexture(Image, (uint32*)Data, Image->CorrectGamma);
 			Image->Valid = true;
 		} else {
-			string Error = "Could not find iamge " + Image->FilePath;
+			string Error = "Could not find image " + Image->FilePath;
 			ConsoleLog(Error);
 			Image->Valid = false;
 		}
@@ -361,12 +361,6 @@ namespace assets {
 		KnownLoadingSteps = 0;
 
 		asset_image Images[] = {
-			{"AsphaltColor", 		"asphalt_albedo.png", 				gl_blend_type::linear, correct_gamma::yes},
-			{"AsphaltNormal", 		"asphalt_normal.png", 				gl_blend_type::linear, correct_gamma::yes},
-			{"SpikeTexture", 		"Monsters/SpikeBall/Tex.png", 		gl_blend_type::linear, correct_gamma::yes},
-			{"SpikeNormal", 		"Monsters/SpikeBall/Normal.png", 	gl_blend_type::linear, correct_gamma::yes},
-			{"ShieldTexture", 		"Monsters/Shieldo/Tex.png", 		gl_blend_type::linear, correct_gamma::yes},
-			{"PassiveAbilityBar", 	"AbilityBars/Passive.png", 			gl_blend_type::linear, correct_gamma::yes},
 			{"Gizmo_Circle", 		"EngineResources/Circle.png", 		gl_blend_type::linear, correct_gamma::no},
 			{"Lock", 				"padlock.png", 						gl_blend_type::linear, correct_gamma::no},
 			{"CheckMark", 			"check-mark.png", 					gl_blend_type::linear, correct_gamma::no},
@@ -374,8 +368,9 @@ namespace assets {
 		KnownLoadingSteps += ArrayCount(Images);
 
 		asset_shader Shaders[] = {
-			//{"ScreenDrawTexture",	"Shaders/ScreenDrawTexture.vs",		"Shaders/ScreenDrawTexture.fs"},
-			{"ScreenDraw",	"Shaders/ScreenDraw.vs",		"Shaders/ScreenDraw.fs"},
+			{"ScreenDrawTexture",	"Shaders/ScreenDrawTexture.vs",		"Shaders/ScreenDrawTexture.fs"},
+			//{"ScreenDraw",			"Shaders/ScreenDraw.vs",			"Shaders/ScreenDraw.fs"},
+
 			//{"FontSDF",				"Shaders/FontSDF.vs",				"Shaders/FontSDF.fs"},
 			//{"PBR", 				"Shaders/PBR.vs", 					"Shaders/PBR.fs"},
 

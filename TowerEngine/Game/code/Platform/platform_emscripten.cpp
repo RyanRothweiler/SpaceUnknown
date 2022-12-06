@@ -557,10 +557,9 @@ int main()
 	emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
 	emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
 
-	EGLNativeWindowType ESWindow = {};
 
-	/*
 	// Create window
+	// This is necessary just to set the window size??
 	{
 		static Display* XDisp = {};
 
@@ -609,11 +608,8 @@ int main()
 		    SubstructureNotifyMask,
 		    &xev );
 
-		ESWindow = (EGLNativeWindowType) win;
-
 		Print("Created x11 window");
 	}
-	*/
 
 	// Create egl context
 	{

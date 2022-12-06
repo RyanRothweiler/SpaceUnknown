@@ -494,6 +494,13 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 				                           GlobalTransMem);
 				RenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ScreenDrawShader);
 
+				Globals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.ScreenDrawTextureShader,
+				                           AssetRootDir + "Shaders/ScreenDrawTexture.vs",
+				                           AssetRootDir + "Shaders/ScreenDrawTexture.fs",
+				                           GlobalTransMem);
+				RenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ScreenDrawTextureShader);
+
+
 				/*
 				Globals->ShaderLoader.Load(&GameState->Assets->GaussianBlurShader,
 				                           AssetRootDir + "Shaders/GaussianBlur.vs",
@@ -506,12 +513,6 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 				                           AssetRootDir + "Shaders/CamBasic.fs",
 				                           GlobalTransMem);
 				RenderApi.MakeProgram(&GameState->Assets->CamBasicShader);
-
-				Globals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.ScreenDrawTextureShader,
-				                           AssetRootDir + "Shaders/ScreenDrawTexture.vs",
-				                           AssetRootDir + "Shaders/ScreenDrawTexture.fs",
-				                           GlobalTransMem);
-				RenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ScreenDrawTextureShader);
 
 
 				Globals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.FontSDFShader,
@@ -660,18 +661,18 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		}
 
 		// Do mouse touch emulation
+		editor::SwitchToEditorCam(GameState);
+
+		static int GLID = assets::GetImage("Gizmo_Circle")->GLID;
+		RenderTextureCenter(Globals->Input->MousePos,
+		                    vector2{8, 8},
+		                    color{1, 0, 0, 1},
+		                    vector2{}, vector2{1, 1},
+		                    GLID,
+		                    0,
+		                    Globals->DebugUIRenderer);
+
 		if (Globals->EditorData.EditorMode) {
-			editor::SwitchToEditorCam(GameState);
-
-			static int GLID = assets::GetImage("Gizmo_Circle")->GLID;
-			RenderTextureCenter(Globals->Input->MousePos,
-			                    vector2{8, 8},
-			                    color{1, 0, 0, 1},
-			                    vector2{}, vector2{1, 1},
-			                    GLID,
-			                    0,
-			                    Globals->DebugUIRenderer);
-
 			// Disable touch input
 			Globals->Input->TouchStatus[0].OnDown = false;
 			Globals->Input->TouchStatus[0].IsDown = false;
@@ -966,10 +967,22 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	}
 
 
-	RenderRectangle(
-	    vector2{WindowInfo->Width * 0.5f, WindowInfo->Height * 0.5f},
-	    vector2{(real64)WindowInfo->Width, 50},
-	    COLOR_RED, 0, Globals->UIRenderer);
+	{
+		static int GLID = assets::GetImage("Gizmo_Circle")->GLID;
+		RenderTextureAll(
+		    vector2{WindowInfo->Width * 0.5f, WindowInfo->Height * 0.5f},
+		    vector2{100, 100},
+		    COLOR_BLUE,
+		    GLID,
+		    0,
+		    Globals->UIRenderer
+		);
+
+		RenderRectangle(
+		    vector2{WindowInfo->Width * 0.5f, WindowInfo->Height * 0.5f},
+		    vector2{50, 50},
+		    COLOR_RED, 0, Globals->UIRenderer);
+	}
 
 
 

@@ -199,6 +199,7 @@ void RenderTextureCenter(vector2 CenterPosition,
 	// Vertices
 	layout_data* VertexLayout = Command.GetLayout();
 	VertexLayout->Allocate(Shader->GetLayout(render::ShaderVertID), Command.BufferCapacity, GlobalTransMem);
+	VertexLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderVertID);
 	VertexLayout->Data.Vec3[0] = TopRight;
 	VertexLayout->Data.Vec3[1] = BottomRight;
 	VertexLayout->Data.Vec3[2] = BottomLeft;
@@ -209,6 +210,7 @@ void RenderTextureCenter(vector2 CenterPosition,
 	// Texture coords
 	layout_data* TextureLayout = Command.GetLayout();
 	TextureLayout->Allocate(Shader->GetLayout(render::ShaderTextureCoordsID), Command.BufferCapacity, GlobalTransMem);
+	TextureLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderTextureCoordsID);
 	TextureLayout->Data.Vec2[0] = v2{(real32)UVBottomLeft.X, (real32)UVBottomLeft.Y};
 	TextureLayout->Data.Vec2[1] = v2{(real32)UVTopRight.X, (real32)UVBottomLeft.Y};
 	TextureLayout->Data.Vec2[2] = v2{(real32)UVTopRight.X, (real32)UVTopRight.Y};
