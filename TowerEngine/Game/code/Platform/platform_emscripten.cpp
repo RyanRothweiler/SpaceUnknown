@@ -408,7 +408,7 @@ EM_BOOL KeyCallback(int eventType, const EmscriptenKeyboardEvent *e, void *userD
 
 EM_BOOL MouseCallback(int eventType, const EmscriptenMouseEvent *e, void *userData)
 {
-	//printf("Mouse event %i button %i\n", eventType, e->button);
+	printf("Mouse event %i button %i x:%i y:%i \n", eventType, e->button, (int)e->clientX, (int)e->clientY);
 	if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN) {
 		if (e->button == 0) {
 			MouseLeftState = true;
@@ -425,6 +425,8 @@ EM_BOOL MouseCallback(int eventType, const EmscriptenMouseEvent *e, void *userDa
 		} else if (e->button == 2) {
 			MouseRightState = false;
 		}
+	} else if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE) {
+		GameInput.MousePos = vector2{(real64)e->clientX, (real64)e->clientY};
 	}
 
 	return false;
@@ -475,8 +477,6 @@ int main()
 {
 	Print("Starting");
 
-
-	// Limit is 2.14 gigs I guess
 	Print("Allocating Memory");
 	GameMemory.PermanentMemory.Size = Megabytes(512);
 	GameMemory.TransientMemory.Size = Megabytes(512);
@@ -528,8 +528,6 @@ int main()
 	GameMemory.PlatformApi = PlatformEm;
 	PlatformApi = GameMemory.PlatformApi;
 
-	WindowInfo.Width = 1000;
-	WindowInfo.Height = 400;
 
 	render::api RenderApi = {};
 	RenderApi.MakeProgram = &MakeProgram;
@@ -551,12 +549,28 @@ int main()
 	PrevClock = std::chrono::high_resolution_clock::now();
 
 	emscripten_set_click_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
+	emscripten_set_mousemove_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
 	emscripten_set_mousedown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
 	emscripten_set_mouseup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
 	emscripten_set_dblclick_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
 	emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
 	emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
 
+	{
+		EmscriptenFullscreenStrategy s;
+		memset(&s, 0, sizeof(s));
+		s.scaleMode = EMSCRIPTEN_FULLSCREEN_SCALE_STRETCH;
+		s.canvasResolutionScaleMode = EMSCRIPTEN_FULLSCREEN_CANVAS_SCALE_STDDEF;
+		s.filteringMode = EMSCRIPTEN_FULLSCREEN_FILTERING_DEFAULT;
+		//s.canvasResizedCallback = on_canvassize_changed;
+		emscripten_enter_soft_fullscreen("canvas", &s);
+	}
+
+	double width, height;
+	emscripten_get_element_css_size("canvas", &width, &height);
+
+	WindowInfo.Width = (int)width;
+	WindowInfo.Height = (int)height;
 
 	// Create window
 	// This is necessary just to set the window size??

@@ -368,7 +368,9 @@ namespace assets {
 		KnownLoadingSteps += ArrayCount(Images);
 
 		asset_shader Shaders[] = {
-			{"ScreenDrawTexture",	"Shaders/ScreenDrawTexture.vs",		"Shaders/ScreenDrawTexture.fs"},
+			{"ImGui", 				"Shaders/ImGui.vs", 				"Shaders/ImGui.fs"},
+
+			//{"ScreenDrawTexture",	"Shaders/ScreenDrawTexture.vs",		"Shaders/ScreenDrawTexture.fs"},
 			//{"ScreenDraw",			"Shaders/ScreenDraw.vs",			"Shaders/ScreenDraw.fs"},
 
 			//{"FontSDF",				"Shaders/FontSDF.vs",				"Shaders/FontSDF.fs"},
@@ -380,7 +382,6 @@ namespace assets {
 			{"GaussianBlur", 		"Shaders/GaussianBlur.vs", 			"Shaders/GaussianBlur.fs"},
 			{"DepthDisplay", 		"Shaders/DepthDisplay.vs", 			"Shaders/DepthDisplay.fs"},
 			{"BasicTex", 			"Shaders/Basic_Tex.vs", 			"Shaders/Basic_Tex.fs"},
-			{"ImGui", 				"Shaders/ImGui.vs", 				"Shaders/ImGui.fs"},
 			//{"CamBasic", 			"Shaders/CamBasic.vs", 				"Shaders/CamBasic.fs"},
 			{"Light", 				"Shaders/Light.vs", 				"Shaders/Light.fs"},
 			{"Skybox", 				"Shaders/Skybox.vs", 				"Shaders/Skybox.fs"},

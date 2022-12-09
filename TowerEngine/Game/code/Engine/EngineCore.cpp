@@ -732,6 +732,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		io.KeyMap[ImGuiKey_Enter] = KEY_RETURN;
 		io.KeyMap[ImGuiKey_Escape] = KEY_ESCAPE;
 
+		io.IniFilename = NULL;
 
 		// ImGui create font texture
 		unsigned char* pixels;
@@ -741,8 +742,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		loaded_image Result = {};
 		Result.Width = width;
 		Result.Height = height;
-		RenderApi.MakeTexture(&Result, (uint32*)pixels, true);
-		io.Fonts->TexID = (void *)(intptr_t)Result.GLID;
+		RenderApi.MakeTexture(&Result, (uint32*)pixels, false);
+		io.Fonts->SetTexID((ImTextureID)(intptr_t)Result.GLID);
 
 		ImGui::StyleColorsDark();
 	}
@@ -958,6 +959,12 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	}
 
 
+	ImGui::Begin("Window!!");
+	if (ImGui::Button("button")) {
+		PlatformApi.Print("Fucker!");
+	}
+	ImGui::End();
+
 
 	if (Globals->EditorData.GodMode) {
 		SceneUpdate(&State->DebugScene, &GameState->GameRenderer);
@@ -1028,15 +1035,14 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 
 	// Render imgui
-	ImGui::EndFrame();
-	if (false) {
-
+	{
 		ImGuiStyle& style = ImGui::GetStyle();
-		style.Alpha = 0.25f;
+		//style.Alpha = 0.25f;
 		if (Globals->EditorData.EditorMode) {
-			style.Alpha = 1.0f;
 		}
+		style.Alpha = 1.0f;
 
+		ImGui::EndFrame();
 
 		if (!BuildVarRelease) {
 			ImGui::Render();
@@ -1062,10 +1068,15 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 					layout_data* VertexLayout = RendCommand.GetLayout();
 					VertexLayout->Allocate(Shader->GetLayout(render::ShaderVertID), RendCommand.BufferCapacity, GlobalTransMem);
+					VertexLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderVertID);
+
 					layout_data* TextureLayout = RendCommand.GetLayout();
 					TextureLayout->Allocate(Shader->GetLayout(render::ShaderTextureCoordsID), RendCommand.BufferCapacity, GlobalTransMem);
+					TextureLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderTextureCoordsID);
+
 					layout_data* ColorLayout = RendCommand.GetLayout();
 					ColorLayout->Allocate(Shader->GetLayout(render::ShaderColorID), RendCommand.BufferCapacity, GlobalTransMem);
+					ColorLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderColorID);
 
 					RendCommand.ClipRect = vector4{pcmd->ClipRect.x, pcmd->ClipRect.y, pcmd->ClipRect.z, pcmd->ClipRect.w};
 
@@ -1091,6 +1102,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 					RendCommand.Uniforms.SetMat4("projection", m4y4Transpose(GameState->DebugUIRenderer.Camera->ProjectionMatrix));
 					RendCommand.Uniforms.SetMat4("view", m4y4Transpose(GameState->DebugUIRenderer.Camera->ViewMatrix));
 
+					//Assert(false);
 					InsertRenderCommand(&GameState->DebugUIRenderer, &RendCommand);
 				}
 			}

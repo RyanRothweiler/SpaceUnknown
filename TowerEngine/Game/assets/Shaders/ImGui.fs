@@ -1,13 +1,12 @@
 precision mediump float;
 
-in vec4 vColor;
-in vec2 vTexCoords;
-
-out vec4 FragColor;
+varying vec4 vColor;
+varying vec2 vTexCoords;
 
 uniform sampler2D diffuseTex;
 
 void main() 
 {
-	FragColor = vColor * texture(diffuseTex, vTexCoords);
+	gl_FragColor = vColor * texture2D(diffuseTex, vTexCoords);
+	//gl_FragColor = vColor;
 }
