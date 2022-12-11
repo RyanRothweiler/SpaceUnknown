@@ -867,6 +867,8 @@ namespace ogles3 {
 	             renderer * DebugUIRenderer, renderer* UIRenderer, renderer * GameRenderer, shader * GaussianBlurShader
 	            )
 	{
+		glViewport(0, 0, WindowInfo->Width, WindowInfo->Height);
+
 		glScissor(0, 0, (int)WindowInfo->Width, (int)WindowInfo->Height);
 		glClearStencil(0x00);
 
