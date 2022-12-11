@@ -12,7 +12,7 @@ set WarningsIgnored=-wd4201 -wd4100 -wd4127 -wd4189 -wd4505 -wd4065 -wd4700 -wd4
 set CommonCompilerFlags=-MTd -nologo -fp:fast -Gm- -GR- -EHa- -Od -Oi -WX -W4 %WarningsIgnored% -FC -Zi
 set CommonLinkerFlags= -incremental:no -opt:ref user32.lib gdi32.lib opengl32.lib Rpcrt4.lib shcore.lib winmm.lib Comdlg32.lib
 
-set BuildVariables= -DDEBUG=1 -DDEBUG_AUDIO=0 -DUNIT_TESTING=1 -DWINDOWS=1 -DAUTOMATED_TESTING=%1 -DRELEASE=0
+set BuildVariables= -DDEBUG=1 -DDEBUG_AUDIO=0 -DUNIT_TESTING=1 -DWINDOWS=1 -DAUTOMATED_TESTING=0 -DRELEASE=0 -DPLATFORM_WINDOWS=1
 ::set BuildVariables= -DDEBUG=1 -DDEBUG_AUDIO=0 -DUNIT_TESTING=1 -DWINDOWS=1 -DAUTOMATED_TESTING=1
 
 
@@ -35,7 +35,7 @@ popd
 pushd T:\Game\build\Windows
 
 :: 64-bit build
-IF %2 equ 1 (set MultiThread= start /B)
+::IF %2 equ 1 (set MultiThread= start /B)
 
 del *.pdb > NUL 2> NUL
 %MultiThread% cl /Fdwin32.PDB  %BuildVariables% %CommonCompilerFlags% T:\Game\code\Platform\Platform_win32.cpp /EHsc /F 10000000 /link %CommonLinkerFlags% Shell32.lib
