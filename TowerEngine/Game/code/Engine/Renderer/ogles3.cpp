@@ -18,6 +18,8 @@ namespace ogles3 {
 
 	int32 GetAttribLocation(shader* Shader, char* Attribute)
 	{
+		//PlatformApi.Print("GetAttribLocation");
+		//PlatformApi.Print(Shader->VertPath.Array());
 		return glGetAttribLocation(Shader->Program, Attribute);
 	}
 

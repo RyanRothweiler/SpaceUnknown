@@ -974,7 +974,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 					render_command RendCommand = {};
 					InitRenderCommand(&RendCommand, pcmd->ElemCount);
 
-					shader* Shader = &Globals->AssetsList.EngineResources.ImGuiShader;
+					shader* Shader = assets::GetShader("ImGui");
+					if (Shader == GameNull) continue;
 
 					RendCommand.Shader = *Shader;
 

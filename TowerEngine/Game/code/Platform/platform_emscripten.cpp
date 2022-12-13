@@ -408,7 +408,7 @@ EM_BOOL KeyCallback(int eventType, const EmscriptenKeyboardEvent *e, void *userD
 
 EM_BOOL MouseCallback(int eventType, const EmscriptenMouseEvent *e, void *userData)
 {
-	printf("Mouse event %i button %i x:%i y:%i \n", eventType, e->button, (int)e->clientX, (int)e->clientY);
+	//printf("Mouse event %i button %i x:%i y:%i \n", eventType, e->button, (int)e->clientX, (int)e->clientY);
 	if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN) {
 		if (e->button == 0) {
 			MouseLeftState = true;
