@@ -85,7 +85,7 @@ struct globals {
 
 	// Here for loading thread. Better way to do this than make them globals??
 	string AssetRootDir;
-	game_state* GameState;
+	engine_state* GameState;
 
 	window_info* Window;
 
@@ -166,6 +166,7 @@ void ProgressBar(vector2 TopLeft,
 
 #include "imguiHelper.cpp"
 #include "Profiler.cpp"
+
 #include "../Game/Game.cpp"
 
 entity* CheckSceneSelection(scene * Scene, renderer * GameRenderer, camera * Cam, window_info * WindowInfo)
@@ -209,7 +210,7 @@ void PollModelReload(game_memory * Memory, game_assets * Assets)
 
 void BakeIBL()
 {
-	game_state* GameState = Globals->GameState;
+	engine_state* GameState = Globals->GameState;
 	state_to_serialize * State = &GameState->StateSerializing;
 
 	/*
@@ -379,7 +380,7 @@ void BakeIBL()
 // Initial setup, from loading assets to initializing data
 void GameSetup()
 {
-	game_state* GameState = Globals->GameState;
+	engine_state* GameState = Globals->GameState;
 	state_to_serialize * State = &GameState->StateSerializing;
 
 	GlobalThreadTransMem->Head = (uint8 *)GlobalThreadTransMem->Memory;
@@ -399,8 +400,8 @@ void GameSetupThread(void* Params, int32 ThreadID)
 
 WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_info * WindowInfo, game_audio_output_buffer * AudioBuffer, char* RootAssetPath)
 {
-	Assert(sizeof(game_state) <= Memory->PermanentMemory.Size);
-	game_state *GameState = (game_state *)Memory->PermanentMemory.Memory;
+	Assert(sizeof(engine_state) <= Memory->PermanentMemory.Size);
+	engine_state *GameState = (engine_state *)Memory->PermanentMemory.Memory;
 	state_to_serialize* State = &GameState->StateSerializing;
 	Assert(GameState);
 
@@ -432,26 +433,6 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	State->TimeRunningMS += (uint64)GameState->DeltaTimeMS;
 
 	static thread_work* SetupWork = {};
-
-	/*
-	{
-		//https://httpbin.org/#/HTTP_Methods/get_get
-
-		httplib::Client cli("http://httpbin.org/get");
-
-		httplib::Headers headers = {
-			{ "content-type", "application/json" }
-		};
-		if (auto res = cli.Get("/hi")) {
-			if (res->status == 200) {
-				std::cout << res->body << std::endl;
-			}
-		} else {
-			auto err = res.error();
-			std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
-		}
-	}
-	*/
 
 	// Initialization
 	if (!Memory->IsInitialized) {
@@ -661,6 +642,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		}
 
 		// Do mouse touch emulation
+		/*
 		editor::SwitchToEditorCam(GameState);
 
 		static int GLID = assets::GetImage("Gizmo_Circle")->GLID;
@@ -671,6 +653,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		                    GLID,
 		                    0,
 		                    Globals->DebugUIRenderer);
+		*/
 
 		if (Globals->EditorData.EditorMode) {
 			// Disable touch input
@@ -958,14 +941,6 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 	}
 
-
-	ImGui::Begin("Window!!");
-	if (ImGui::Button("button")) {
-		PlatformApi.Print("Fucker!");
-	}
-	ImGui::End();
-
-
 	if (Globals->EditorData.GodMode) {
 		SceneUpdate(&State->DebugScene, &GameState->GameRenderer);
 	}
@@ -974,28 +949,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	}
 
 
-	{
-		static int GLID = assets::GetImage("Gizmo_Circle")->GLID;
-		RenderTextureAll(
-		    vector2{WindowInfo->Width * 0.5f, WindowInfo->Height * 0.5f},
-		    vector2{100, 100},
-		    COLOR_BLUE,
-		    GLID,
-		    0,
-		    Globals->UIRenderer
-		);
-
-		RenderRectangle(
-		    vector2{WindowInfo->Width * 0.5f, WindowInfo->Height * 0.5f},
-		    vector2{50, 50},
-		    COLOR_RED, 0, Globals->UIRenderer);
-	}
-
-
-
 	State->Light.Cam.Forward = vector3{0.013f, 0.542f, 0.83f};
 	State->Light.Cam.UpdateMatricies();
-
 
 	if (Globals->UIPanels == GameNull) {
 		ConsoleLog("Missing panels!!");
@@ -1023,6 +978,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	}
 	*/
 
+	game::Loop(GameState);
+
 	// Scenes
 	SceneUpdate(&State->GalaxyScene, &GameState->GameRenderer);
 
@@ -1037,10 +994,10 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	// Render imgui
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
-		//style.Alpha = 0.25f;
+		style.Alpha = 0.25f;
 		if (Globals->EditorData.EditorMode) {
+			style.Alpha = 1.0f;
 		}
-		style.Alpha = 1.0f;
 
 		ImGui::EndFrame();
 

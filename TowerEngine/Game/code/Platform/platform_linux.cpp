@@ -793,7 +793,7 @@ int main(void)
 		// 			GameAudio.BytesPerSample = SoundOutput.BytesPerSample;
 		// 		}
 
-		game_state *GameStateFromMemory = (game_state *)GameMemory.PermanentMemory.Memory;
+		engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
 
 
 		// #if DEBUG_AUDIO
@@ -846,7 +846,7 @@ int main(void)
 		// FillSoundOutput(&GameAudio, &SoundOutput, ByteToLock, BytesToWrite, SoundSecondaryBuffer);
 
 
-		GameStateFromMemory = (game_state *)GameMemory.PermanentMemory.Memory;
+		GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
 		char *EmptyChar = "";
 		if (GameStateFromMemory->DebugOutput &&
 		    GameStateFromMemory->DebugOutput != EmptyChar)

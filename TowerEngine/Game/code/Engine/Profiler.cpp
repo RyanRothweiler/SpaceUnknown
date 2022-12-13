@@ -17,7 +17,7 @@ namespace profiler {
 		Data->DrawCallCount = 0;
 	}
 
-	void ImguiBlockInfo(accum_method* Accum, graph_data* Graph, game_state* GameState, int id)
+	void ImguiBlockInfo(accum_method* Accum, graph_data* Graph, engine_state* GameState, int id)
 	{
 		if (Accum->TotalCycles > 0) {
 			ImGui::PushID(id);
@@ -63,7 +63,7 @@ namespace profiler {
 		}
 	}
 
-	void ImGuiProfiler(game_state* GameState, game_memory* Memory,
+	void ImGuiProfiler(engine_state* GameState, game_memory* Memory,
 	                   profiler_data* GameTimes,
 	                   profiler_data* RendererTimes
 	                  )

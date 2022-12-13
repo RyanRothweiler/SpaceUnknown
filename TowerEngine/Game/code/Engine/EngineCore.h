@@ -562,11 +562,14 @@ struct state_to_serialize {
 
 struct globals;
 
-struct game_state {
+#include "../Game/Game.h"
+
+struct engine_state {
 	shader BackupShader;
 
 	game_assets* Assets;
 	state_to_serialize StateSerializing;
+	game::state GameState;
 
 	// TODO move ClearColor into renderer
 	color ClearColor;

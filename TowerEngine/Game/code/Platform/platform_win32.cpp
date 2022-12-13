@@ -670,7 +670,7 @@ void CheckAllDLLs(game_memory* GameMemory, window_info WindowInfo, platform::api
 		if (RenderCode.DLL.ProcsNeedLink) {
 			RenderCode.DLL.ProcsNeedLink = false;
 
-			game_state *GameStateFromMemory = (game_state *)GameMemory->PermanentMemory.Memory;
+			engine_state *GameStateFromMemory = (engine_state *)GameMemory->PermanentMemory.Memory;
 
 			RenderCode.Init = (render::api(*)(window_info WindowInfo, platform::api * PlatApi, profiler_data*, memory_arena*, memory_arena*))GetProcAddress(RenderCode.DLL.CurrentDLL, "Init");
 			GameMemory->RenderApi = RenderCode.Init(WindowInfo, PlatformWin, &GameStateFromMemory->OGLProfilerData, &GameMemory->PermanentMemory, &GameMemory->TransientMemory);
@@ -810,7 +810,7 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 	GameMemory.ThreadTransientMemory.EndOfMemory = (uint8 *)GameMemory.ThreadTransientMemory.Memory + GameMemory.ThreadTransientMemory.Size;
 	GameMemory.PermanentMemory.EndOfMemory = (uint8 *)GameMemory.PermanentMemory.Memory + GameMemory.PermanentMemory.Size;
 
-	GameMemory.PermanentMemory.Head = (uint8 *)GameMemory.PermanentMemory.Memory + sizeof(game_state);
+	GameMemory.PermanentMemory.Head = (uint8 *)GameMemory.PermanentMemory.Memory + sizeof(engine_state);
 
 
 	platform::api PlatformWin = {};
@@ -1055,7 +1055,7 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 		}
 		*/
 
-		game_state *GameStateFromMemory = (game_state *)GameMemory.PermanentMemory.Memory;
+		engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
 
 		// Getting mouse position
 		if (Window != GameNull) {
@@ -1111,7 +1111,7 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 		GameCode.GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/Assets/");
 
 		// FillSoundOutput(&GameAudio, &SoundOutput, ByteToLock, BytesToWrite, SoundSecondaryBuffer);
-		//GameStateFromMemory = (game_state *)GameMemory.PermanentMemory.Memory;
+		//GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
 		GameStateFromMemory->LogicCycles = __rdtsc() - LogicCyclesBegin;
 		GameMemory.HotReloaded = false;
 

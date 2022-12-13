@@ -1158,7 +1158,7 @@ ColorSliders(editor_window* ParentWindow, string Title, color CurrColor,
 void
 ParticleSystemComponentEditor(editor_window* Window,
                               particle_system_component* Component, range RandomRange,
-                              game_state* GameState, game_input* GameInput, game_memory* Memory)
+                              engine_state* GameState, game_input* GameInput, game_memory* Memory)
 {
 	BeginLayout(Window, Layout_HorizontalFit);
 	{
@@ -1275,7 +1275,7 @@ ParticleSystemComponentEditor(editor_window* Window,
 
 void
 ParticleSystemEditor(particle_system* System, editor_window* Window,
-                     game_state* GameState, game_input* GameInput, game_memory* Memory, string RootAssetPath)
+                     engine_state* GameState, game_input* GameInput, game_memory* Memory, string RootAssetPath)
 {
 	ResizeWindow(Window, &GameState->Assets->RightTriImage, GameInput, GameState->RenderObjects);
 

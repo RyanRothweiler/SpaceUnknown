@@ -745,7 +745,7 @@ void android_main(struct android_app * state)
 	GameMemory.TransientMemory.EndOfMemory = (uint8 *)GameMemory.TransientMemory.Memory + GameMemory.TransientMemory.Size;
 	GameMemory.ThreadTransientMemory.EndOfMemory = (uint8 *)GameMemory.ThreadTransientMemory.Memory + GameMemory.ThreadTransientMemory.Size;
 	GameMemory.PermanentMemory.EndOfMemory = (uint8 *)GameMemory.PermanentMemory.Memory + GameMemory.PermanentMemory.Size;
-	GameMemory.PermanentMemory.Head = (uint8 *)GameMemory.PermanentMemory.Memory + sizeof(game_state);
+	GameMemory.PermanentMemory.Head = (uint8 *)GameMemory.PermanentMemory.Memory + sizeof(engine_state);
 
 	// Create threads
 	worker_thread_info ThreadInfos[4] = {};
@@ -910,7 +910,7 @@ void android_main(struct android_app * state)
 			 */
 
 
-			game_state *GameStateFromMemory = (game_state *)GameMemory.PermanentMemory.Memory;
+			engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
 
 			WindowInfo.Width = ANativeWindow_getWidth(state->window);
 			WindowInfo.Height = ANativeWindow_getHeight(state->window);

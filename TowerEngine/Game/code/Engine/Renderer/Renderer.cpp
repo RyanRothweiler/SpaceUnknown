@@ -919,7 +919,7 @@ void RenderLight(light* Light, model* DisplayMesh, renderer* Renderer, memory_ar
 	//RenderObj(DisplayMesh, Renderer, TempMem);
 }
 
-void RenderBone(bone* Bone, m4y4 ParentTrans, game_state* GameState, game_memory* Memory)
+void RenderBone(bone* Bone, m4y4 ParentTrans, engine_state* GameState, game_memory* Memory)
 {
 	vector3 End = {};
 
@@ -957,7 +957,7 @@ void RenderBone(bone* Bone, m4y4 ParentTrans, game_state* GameState, game_memory
 	}
 }
 
-void RenderArmature(armature* Armature, vector3 Pos, game_state* GameState, game_memory* Memory)
+void RenderArmature(armature* Armature, vector3 Pos, engine_state* GameState, game_memory* Memory)
 {
 	camera LightCam = {};
 	Pos = Apply4y4(Armature->Transform, Pos);

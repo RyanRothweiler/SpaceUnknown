@@ -447,7 +447,7 @@ void MainLoop()
 
 	GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
 
-	game_state *GameStateFromMemory = (game_state *)GameMemory.PermanentMemory.Memory;
+	engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
 	state_to_serialize* State = &GameStateFromMemory->StateSerializing;
 	GameMemory.RenderApi.Render(&GameMemory.RenderApi, State->ActiveCam, &State->Light.Cam, &WindowInfo, &GameStateFromMemory->DebugUIRenderer, &GameStateFromMemory->UIRenderer, &GameStateFromMemory->GameRenderer, &GameStateFromMemory->Assets->GaussianBlurShader);
 	eglSwapBuffers(GLDisplay, GLSurface);
@@ -498,7 +498,7 @@ int main()
 	GameMemory.ThreadTransientMemory.EndOfMemory = (uint8 *)GameMemory.ThreadTransientMemory.Memory + GameMemory.ThreadTransientMemory.Size;
 	GameMemory.PermanentMemory.EndOfMemory = (uint8 *)GameMemory.PermanentMemory.Memory + GameMemory.PermanentMemory.Size;
 
-	GameMemory.PermanentMemory.Head = (uint8 *)GameMemory.PermanentMemory.Memory + sizeof(game_state);
+	GameMemory.PermanentMemory.Head = (uint8 *)GameMemory.PermanentMemory.Memory + sizeof(engine_state);
 	Print("Memory Allocated");
 
 	platform::api PlatformEm = {};
@@ -689,7 +689,7 @@ int main()
 		Print("Created ogl context");
 	}
 
-	game_state *GameStateFromMemory = (game_state *)GameMemory.PermanentMemory.Memory;
+	engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
 	GameMemory.RenderApi = ogles3::Initialize(WindowInfo, &GameStateFromMemory->OGLProfilerData, &GameMemory.PermanentMemory, &GameMemory.TransientMemory);
 
 	emscripten_set_main_loop(&MainLoop, 0, true);

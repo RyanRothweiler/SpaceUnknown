@@ -20,7 +20,7 @@ namespace editor {
 		return P.Point;
 	}
 
-	void RenderAABB(entity * Entity, game_state * GameState, color Col = COLOR_RED)
+	void RenderAABB(entity * Entity, engine_state * GameState, color Col = COLOR_RED)
 	{
 		real64 Thickness = 0.01f;
 		GizmoPushColor(Col);
@@ -87,7 +87,7 @@ namespace editor {
 		GizmoPopColor();
 	}
 
-	void SwitchToEditorCam(game_state* GameState)
+	void SwitchToEditorCam(engine_state* GameState)
 	{
 		if (GameState->StateSerializing.ActiveCam != &GameState->StateSerializing.EditorCamera) {
 
@@ -98,7 +98,7 @@ namespace editor {
 		}
 	}
 
-	void RenderCube(color Color, vector3 Pos, vector3 Size, game_state* GameState, uint32 ID)
+	void RenderCube(color Color, vector3 Pos, vector3 Size, engine_state* GameState, uint32 ID)
 	{
 		Globals->UnitCube->Transform.LocalPos = Pos;
 		Globals->UnitCube->Transform.LocalScale = Size;
@@ -111,7 +111,7 @@ namespace editor {
 		RenderEntity(Globals->UnitCube, &GameState->GameRenderer, ID);
 	}
 
-	void UseEditorCam(game_state* GameState)
+	void UseEditorCam(engine_state* GameState)
 	{
 		editor::data* Data = &Globals->EditorData;
 		state_to_serialize* State = &GameState->StateSerializing;
@@ -600,7 +600,7 @@ namespace editor {
 
 	}
 
-	void Update(game_state* GameState, window_info* WindowInfo)
+	void Update(engine_state* GameState, window_info* WindowInfo)
 	{
 		uint32 ConnectionsIDStart = 1000;
 		uint32 MapIDStart = 2000;
