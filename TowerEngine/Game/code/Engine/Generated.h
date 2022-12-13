@@ -3,16 +3,7 @@
  
 char* AssetsFolderStructure[] { 
 "EngineResources/",
-"Fonts/",
-"Fonts/OpenSans/",
-"Fonts/Rajdhani/",
-"Materials/",
-"PBRBall/",
-"PlayerEntity/",
 "Shaders/",
-"Skybox/",
-"Skybox/space/",
-"Stone/",
 }; 
 
 string glsl_type_NAME[] { 

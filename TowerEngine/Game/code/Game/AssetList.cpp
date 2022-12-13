@@ -4,10 +4,6 @@
 
 namespace assets {
 
-	int32 KnownLoadingSteps;
-	int32 CurrentLoadingStep;
-	char* CurrentLoadingStepDisplay = "loading";
-
 	entity* GetEntity(string ID)
 	{
 		for (int x = 0; x < Globals->AssetsList.EntitiesCount; x++) {
@@ -357,71 +353,15 @@ namespace assets {
 	{
 		Assets->AssetRootDir = AssetRootDir;
 
-		// Setup lists to load first, so that we know how much loading tasks will be done for the loading displays
-		KnownLoadingSteps = 0;
-
 		asset_image Images[] = {
 			{"Gizmo_Circle", 		"EngineResources/Circle.png", 		gl_blend_type::linear, correct_gamma::no},
 			{"Lock", 				"padlock.png", 						gl_blend_type::linear, correct_gamma::no},
 			{"CheckMark", 			"check-mark.png", 					gl_blend_type::linear, correct_gamma::no},
 		};
-		KnownLoadingSteps += ArrayCount(Images);
 
 		asset_shader Shaders[] = {
 			{"ImGui", 				"Shaders/ImGui.vs", 				"Shaders/ImGui.fs"},
-
-			//{"ScreenDrawTexture",	"Shaders/ScreenDrawTexture.vs",		"Shaders/ScreenDrawTexture.fs"},
-			//{"ScreenDraw",			"Shaders/ScreenDraw.vs",			"Shaders/ScreenDraw.fs"},
-
-			//{"FontSDF",				"Shaders/FontSDF.vs",				"Shaders/FontSDF.fs"},
-			//{"PBR", 				"Shaders/PBR.vs", 					"Shaders/PBR.fs"},
-
-			/*
-			{"PBR_Skeletal", 		"Shaders/PBR_Skeletal.vs", 			"Shaders/PBR.fs"},
-			{"BasicSkeletal", 		"Shaders/BasicSkeletal.vs", 		"Shaders/BasicSkeletal.fs"},
-			{"GaussianBlur", 		"Shaders/GaussianBlur.vs", 			"Shaders/GaussianBlur.fs"},
-			{"DepthDisplay", 		"Shaders/DepthDisplay.vs", 			"Shaders/DepthDisplay.fs"},
-			{"BasicTex", 			"Shaders/Basic_Tex.vs", 			"Shaders/Basic_Tex.fs"},
-			//{"CamBasic", 			"Shaders/CamBasic.vs", 				"Shaders/CamBasic.fs"},
-			{"Light", 				"Shaders/Light.vs", 				"Shaders/Light.fs"},
-			{"Skybox", 				"Shaders/Skybox.vs", 				"Shaders/Skybox.fs"},
-			{"IBLConv", 			"Shaders/IBLConv.vs", 				"Shaders/IBLConv.fs"},
-			{"Gizmo", 				"Shaders/Gizmo.vs", 				"Shaders/Gizmo.fs"},
-			//{"ScreenDraw", 			"Shaders/ScreenDraw.vs", 			"Shaders/ScreenDraw.fs"},
-			{"Basic", 				"Shaders/Basic.vs", 				"Shaders/Basic.fs"},
-			{"EquiToCube", 			"Shaders/EquiToCube.vs", 			"Shaders/EquiToCube.fs"},
-			{"BRDF", 				"Shaders/BRDF.vs", 					"Shaders/BRDF.fs"},
-			{"PreFilter", 			"Shaders/PreFilter.vs", 			"Shaders/PreFilter.fs"},
-			*/
 		};
-		KnownLoadingSteps += ArrayCount(Shaders);
-
-		char* Materials[] = {
-			"Gizmo",
-			"Basic",
-		};
-		KnownLoadingSteps += ArrayCount(Materials);
-
-		asset_entity Entities[] = {
-			//{"SPIKE", 						"Enemies/Atom/Atom.dae",							"Gizmo"},
-			//{"SPIKE", 						"Monsters/SpikeBall/SpikeBall.dae",					"Gizmo"},
-
-			{"UnitCube", 					"UnitCube.dae",										"Gizmo"},
-			{"Engine_Arrow", 				"EngineResources/Arrow.dae",						"Gizmo"},
-			{"Engine_Circle", 				"EngineResources/Circle.dae",						"Gizmo"},
-			{"Engine_Camera", 				"EngineResources/Camera.dae",						"Gizmo"},
-			{"Engine_Plane", 				"EngineResources/Plane.dae",						"Gizmo"},
-			{"Engine_Sphere", 				"EngineResources/Sphere.dae",						"Gizmo"},
-			{"Engine_LightDirectional", 	"EngineResources/Light_Directional.dae",			"Gizmo"},
-			{"Engine_LightPoint", 			"EngineResources/Light_Point.dae",					"Gizmo"},
-		};
-		KnownLoadingSteps += ArrayCount(Entities);
-
-		path_list EntityPaths = {};
-		PlatformApi.GetPathsForFileType(".entity", AssetRootDir.Array(), TransMemory, &EntityPaths);
-		KnownLoadingSteps += PathListCount(&EntityPaths);
-
-		CurrentLoadingStep = 0;
 
 		// Images
 		{
@@ -431,9 +371,6 @@ namespace assets {
 			for (int x = 0; x < ArrayCount(Images); x++) {
 				Assets->Images[x] = Images[x];
 				SetupImage(&Assets->Images[x].LoadedImage, AssetRootDir + Assets->Images[x].FilePath, gl_blend_type::linear, Assets->Images[x].GammaCorrect, Assets);
-
-				CurrentLoadingStepDisplay = Assets->Images[x].FilePath.Array();
-				CurrentLoadingStep++;
 			}
 		}
 
@@ -446,272 +383,7 @@ namespace assets {
 				Assets->Shaders[x] = Shaders[x];
 				Globals->ShaderLoader.Load(&Assets->Shaders[x].Shader, AssetRootDir + Shaders[x].VertFilePath, AssetRootDir + Shaders[x].FragFilePath, TransMemory);
 				Globals->ShaderLoader.SetAutoReloadShader(&Assets->Shaders[x].Shader);
-
-				CurrentLoadingStepDisplay = Shaders[x].VertFilePath.Array();
-				CurrentLoadingStep++;
 			}
-		}
-
-
-		// Materials
-		{
-			Assets->Materials = CreateList(GlobalPermMem, sizeof(asset_material));
-
-			for (int x = 0; x < 0; x++) {
-
-				string Dest = AssetRootDir + MATERIAL_DIR + Materials[x] + ".material";
-				read_file_result File = PlatformApi.ReadFile(&Dest.CharArray[0], GlobalPermMem);
-
-				if (File.ContentsSize > 0) {
-					CurrentLoadingStep++;
-					CurrentLoadingStepDisplay = Dest.Array();
-
-					int32 Version = *(int32*)(File.Contents);
-
-					if (Version == 1) {
-
-						asset_material* Mat = (asset_material*)File.Contents;
-						Mat->Version = MATERIAL_VERSION;
-
-						// Link shader and reconcile the file and shader uniforms. Maybe the shader changed.
-						Mat->Material.Create(GetShader(Mat->ShaderID), GlobalPermMem);
-
-						// Update the values in the material using the file uniforms
-						// The order of the uniforms might have changed
-						for (int y = 0; y < Mat->UniformsCount; y++) {
-							asset_material_uniform* FileAssetUni = &Mat->Uniforms[y];
-
-							// Find the uniform from the shader
-							for (int z = 0; z < Mat->Material.Uniforms.Count; z++) {
-								if (Mat->Material.Uniforms.Array[z]->Expose) {
-
-									if (Mat->Material.Uniforms.Array[z]->Name == FileAssetUni->Name) {
-
-										switch (FileAssetUni->Type) {
-
-											case glsl_type::gl_samplerCube: {
-												// Find image and save the name
-											} break;
-
-											case glsl_type::gl_sampler2D: {
-												for (int i = 0; i < Globals->AssetsList.ImagesCount; i++) {
-													if (Globals->AssetsList.Images[i].ID == FileAssetUni->Data.ImageName) {
-														Mat->Material.Uniforms.Array[z]->Data.ImageID = Globals->AssetsList.Images[i].LoadedImage.GLID;
-														break;
-													}
-												}
-											} break;
-
-											case glsl_type::gl_float: {
-												Mat->Material.Uniforms.Array[z]->Data.Float = FileAssetUni->Data.Float;
-											} break;
-
-											case glsl_type::gl_mat4: {
-												Mat->Material.Uniforms.Array[z]->Data.Float = FileAssetUni->Data.Float;
-											} break;
-
-											case glsl_type::gl_vec3: {
-												Mat->Material.Uniforms.Array[z]->Data.Vec3 = FileAssetUni->Data.Vec3;
-											} break;
-
-											default: {
-												// Unsupported glsl type
-												Assert(0);
-											} break;
-										}
-
-										break;
-									}
-								}
-							}
-						}
-
-						asset_material* MatLink = (asset_material*)AddLink(Globals->AssetsList.Materials, (void*)Mat, GlobalPermMem);
-						Globals->ShaderLoader.SetAutoReloadMaterial(&MatLink->Material);
-
-					} else {
-						// Invalid material version
-						Assert(0);
-					}
-				} else {
-					ConsoleLog("Could not find material file");
-					ConsoleLog(Dest);
-				}
-			}
-		}
-
-		// Entities
-		{
-			Assets->LoadedEntities = fixed_allocator::Create(sizeof(entity), Thousand(10));
-
-			// TODO this count can be gathered during GetPathsForFileType. Just pass as pointer
-			int32 EntitiesCount = 0;
-			{
-				path_list* P = &EntityPaths;
-				while (StringLength(P->Path) > 0) {
-					EntitiesCount++;
-					P = P->Next;
-				}
-			}
-
-			Assets->Entities = (asset_entity*)ArenaAllocate(GlobalPermMem, (ArrayCount(Entities) + EntitiesCount) * sizeof(asset_entity));
-			Assets->EntitiesCount = ArrayCount(Entities);
-
-			for (int x = 0; x < ArrayCount(Entities); x++) {
-				CurrentLoadingStep++;
-				CurrentLoadingStepDisplay = Entities[x].ID.Array();
-
-				Assets->Entities[x] = Entities[x];
-
-				// Load model
-				Dae::Load(&Assets->Entities[x].Entity, AssetRootDir + Entities[x].ModelPath, true, TransMemory);
-
-				// Set material
-				Assets->Entities[x].Entity.MaterialID = Entities[x].MaterialName;
-				Assets->Entities[x].Entity.Material = assets::GetMaterial(Entities[x].MaterialName);
-
-				// Upload to gpu
-				SetupEntityUpload(&Assets->Entities[x].Entity, Assets);
-			}
-
-			// Also load entity definition files
-			{
-				path_list* P = &EntityPaths;
-				while (StringLength(P->Path) > 0) {
-					CurrentLoadingStep++;
-
-					ConsoleLog("Loading Entity");
-					CurrentLoadingStepDisplay = P->Path.Array();
-					ConsoleLog(P->Path);
-
-					asset_entity* AE = &Assets->Entities[Assets->EntitiesCount];
-					Assets->EntitiesCount++;
-					// Don't need an assert here since we know this will always be smaller than the array size
-
-					// Get json data
-					json::json_data json = json::LoadFile(P->Path, TransMemory);
-
-					AE->ID = json::GetString("name", &json);
-					entity* Entity = &AE->Entity;
-
-					// Load model
-					Dae::Load(Entity, AssetRootDir + json::GetString("model", &json), true, TransMemory);
-
-					// Create and set material
-					string ShaderID = json::GetString("shader", &json);
-
-					material* Material = (material*)ArenaAllocate(GlobalPermMem, sizeof(material));
-					Material->Create(GetShader(ShaderID), GlobalPermMem);
-
-					// Get the uniforms from the enetity def
-					for (int y = 0; y < Material->Uniforms.Count; y++) {
-						shader_uniform* Uni = Material->Uniforms.Array[y];
-
-						if (Uni->Expose) {
-							switch (Uni->Type) {
-
-								case glsl_type::gl_float: {
-									string Key = "uniforms." + Uni->Name + ".data";
-									string Data = json::GetData(Key, &json);
-									if (Data != EmptyString) {
-										Uni->Data.Float = (float)StringToReal64(Data);
-									} else {
-										ConsoleLog("Missing uniform float.");
-										ConsoleLog(Key);
-									}
-								} break;
-
-								case glsl_type::gl_sampler2D: {
-
-									string ImageKey = "uniforms." + Uni->Name + ".data";
-									string GammaKey = "uniforms." + Uni->Name + ".gamma_correct";
-
-									// Default is not to gamma correct
-									correct_gamma GC = correct_gamma::no;
-									string Data = json::GetData(GammaKey, &json);
-									if (Data != EmptyString) {
-										if (json::GetBool(GammaKey, &json)) {
-											GC = correct_gamma::yes;
-										}
-									}
-
-									string ImagePath = json::GetData(ImageKey, &json);
-									if (ImagePath != EmptyString) {
-
-										SetupImage(&Assets->EntityTextures[Assets->EntityTexturesCount], AssetRootDir + ImagePath, gl_blend_type::linear, GC, Assets);
-										Uni->EntityImage = &Assets->EntityTextures[Assets->EntityTexturesCount];
-
-										Assets->EntityTexturesCount++;
-										Assert(Assets->EntityTexturesCount < ArrayCount(Assets->EntityTextures));
-
-									} else {
-										ConsoleLog("Missing uniform image.");
-										ConsoleLog(ImageKey);
-									}
-								} break;
-
-								default: {
-									// Unsupported glsl type
-									// Not sure we would evet want to support more??
-								} break;
-							}
-						}
-					}
-
-					Globals->ShaderLoader.SetAutoReloadMaterial(Material);
-
-					Entity->MaterialID = "what to put here?? idk";
-					Entity->Material = Material;
-
-					SetupEntityUpload(Entity, Assets);
-
-					P = P->Next;
-				}
-			}
-		}
-
-		// Fonts
-		{
-			LoadFontMSDF(&Globals->RajMedium, AssetRootDir + "Fonts/Rajdhani/Rajdhani_Medium", TransMemory, Assets);
-			Globals->RajMedium.LineHeight = 1.276f;
-
-			LoadFontMSDF(&Globals->RajBold, AssetRootDir + "Fonts/Rajdhani/Rajdhani_Bold", TransMemory, Assets);
-			Globals->RajBold.LineHeight = 1.276f;
-
-			LoadFontMSDF(&Globals->RajSemiBold, AssetRootDir + "Fonts/Rajdhani/Rajdhani_SemiBold", TransMemory, Assets);
-			Globals->RajSemiBold.LineHeight = 1.276f;
-
-			LoadFontMSDF(&Globals->OpenSansRegular, AssetRootDir + "Fonts/OpenSans/OpenSans_Regular", TransMemory, Assets);
-			Globals->OpenSansRegular.LineHeight = 1.361f;
-
-			LoadFontMSDF(&Globals->OpenSansBold, AssetRootDir + "Fonts/OpenSans/OpenSans_Bold", TransMemory, Assets);
-			Globals->OpenSansBold.LineHeight = 1.361f;
-
-			// setup font styles
-			{
-				Globals->FontStyleH1.Font = &Globals->RajBold;
-				Globals->FontStyleH1.SizePoints = 35.0f;
-
-				Globals->FontStyleH2.Font = &Globals->RajSemiBold;
-				Globals->FontStyleH2.SizePoints = 25.0f;
-
-				Globals->FontStyleH3.Font = &Globals->OpenSansBold;
-				Globals->FontStyleH3.SizePoints = 11.0f;
-
-				Globals->FontStyleButton.Font = &Globals->RajSemiBold;
-				Globals->FontStyleButton.SizePoints = 18.0f;
-
-				Globals->FontStyleP.Font = &Globals->OpenSansRegular;
-				Globals->FontStyleP.SizePoints = 14.0f;
-
-				Globals->FontStyleDropInfo.Font = &Globals->OpenSansBold;
-				Globals->FontStyleDropInfo.SizePoints = 8.0f;
-
-			}
-		}
-
-		// General
-		{
 		}
 	}
 

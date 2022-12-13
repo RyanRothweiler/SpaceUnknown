@@ -40,7 +40,6 @@ struct asset_material_uniform {
 	} Data;
 };
 
-
 struct asset_entity {
 	string ID;
 	string ModelPath;
@@ -68,6 +67,7 @@ struct assets_list {
 
 	// Engine resources
 	struct engine_resources {
+		shader ImGuiShader;
 		shader ScreenDrawShader;
 		shader ScreenDrawTextureShader;
 		shader FontSDFShader;

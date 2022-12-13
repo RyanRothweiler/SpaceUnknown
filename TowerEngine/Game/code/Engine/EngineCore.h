@@ -481,7 +481,6 @@ game_input EmptyInput = {};
 
 struct game_assets {
 
-	// Engine resources
 	shader GaussianBlurShader;
 	shader CamBasicShader;
 

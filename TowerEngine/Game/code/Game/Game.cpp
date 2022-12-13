@@ -18,7 +18,6 @@ namespace game {
 		}
 	}
 
-
 	void Initialize()
 	{
 

@@ -380,9 +380,6 @@ void BakeIBL()
 // Initial setup, from loading assets to initializing data
 void GameSetup()
 {
-	engine_state* GameState = Globals->GameState;
-	state_to_serialize * State = &GameState->StateSerializing;
-
 	GlobalThreadTransMem->Head = (uint8 *)GlobalThreadTransMem->Memory;
 
 	assets::LoadAssets(&Globals->AssetsList, Globals->AssetRootDir, GlobalThreadTransMem);
@@ -482,31 +479,11 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 				RenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ScreenDrawTextureShader);
 
 
-				/*
-				Globals->ShaderLoader.Load(&GameState->Assets->GaussianBlurShader,
-				                           AssetRootDir + "Shaders/GaussianBlur.vs",
-				                           AssetRootDir + "Shaders/GaussianBlur.fs",
+				Globals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.ImGuiShader,
+				                           AssetRootDir + "Shaders/ImGui.vs",
+				                           AssetRootDir + "Shaders/imGui.fs",
 				                           GlobalTransMem);
-				RenderApi.MakeProgram(&GameState->Assets->GaussianBlurShader);
-
-				Globals->ShaderLoader.Load(&GameState->Assets->CamBasicShader,
-				                           AssetRootDir + "Shaders/CamBasic.vs",
-				                           AssetRootDir + "Shaders/CamBasic.fs",
-				                           GlobalTransMem);
-				RenderApi.MakeProgram(&GameState->Assets->CamBasicShader);
-
-
-				Globals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.FontSDFShader,
-				                           AssetRootDir + "Shaders/FontSDF.vs",
-				                           AssetRootDir + "Shaders/FontSDF.fs",
-				                           GlobalTransMem);
-				RenderApi.MakeProgram(&Globals->AssetsList.EngineResources.FontSDFShader);
-
-				assets::LoadFontMSDF(&Globals->AssetsList.EngineResources.DefaultFont, AssetRootDir + "Fonts/OpenSans/OpenSans_Bold", GlobalTransMem, &Globals->AssetsList);
-				Globals->AssetsList.EngineResources.DefaultFont.LineHeight = 1.361f;
-				Globals->AssetsList.EngineResources.DefaultFontStyle.Font = &Globals->AssetsList.EngineResources.DefaultFont;
-				Globals->AssetsList.EngineResources.DefaultFontStyle.SizePoints = 15.0f;
-				*/
+				RenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ImGuiShader);
 			}
 
 			// Create default white image for renderer
@@ -552,19 +529,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 				}
 			}
 
-			// Setup renderer backup shader
-			/*
-			{
-				BackupShader = {};
-				RenderApi.MakeProgram(&BackupShader, BackupVertexShader, BackupFragmentShader, GlobalThreadTransMem);
-				Assert(BackupShader.Valid);
-			}
-			*/
-
 			assets::UploadAllQueuedImages(&Globals->AssetsList, GlobalTransMem);
 		}
-
-
 
 		GameState->GameRenderer.Camera = &State->GameCamera;
 		GameState->DebugUIRenderer.Camera = &State->UICam;
@@ -578,9 +544,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		// Load stuff
 		{
 			//SetupWork = PlatformApi.ThreadAddWork(GameSetupThread, 0);
-			GameSetup();
-
-			//BakeIBL();
+			//GameSetup();
+			assets::LoadAssets(&Globals->AssetsList, Globals->AssetRootDir, GlobalTransMem);
 
 			// Compile shaders
 			for (int i = 0; i < Globals->AssetsList.ShadersCount; i++) {
@@ -675,15 +640,6 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	if (BuildVarAutomatedTesting) {
 		State->TestingDone = true;
 		ConsoleLog("Running!!");
-	}
-
-	// Render skybox
-	{
-		vector3 VecRot = vector3{0, 0, 0};
-		quat QuatRot = {};
-		QuatRot.FromEuler(VecRot);
-		m4y4 Rot = QuatRot.ToMatrix();
-		RenderSkybox(GameState->Assets->UnitCube.Children[0]->Model, &State->SkyboxMaterial, &GameState->GameRenderer, &GameState->Assets->UnitCube.VAO, Rot);
 	}
 
 	ui::NextAnimState = 0;
@@ -1018,8 +974,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 					render_command RendCommand = {};
 					InitRenderCommand(&RendCommand, pcmd->ElemCount);
 
-					shader* Shader = assets::GetShader("ImGui");
-					if (Shader == GameNull) continue;
+					shader* Shader = &Globals->AssetsList.EngineResources.ImGuiShader;
 
 					RendCommand.Shader = *Shader;
 
