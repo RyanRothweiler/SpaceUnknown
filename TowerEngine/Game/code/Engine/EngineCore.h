@@ -541,9 +541,6 @@ struct state_to_serialize {
 	camera BattleCam;
 	camera* ActiveCam;
 
-	scene GalaxyScene;
-	scene DebugScene;
-
 	// TODO this scene should probably just be removed / phased out
 	scene Scene;
 

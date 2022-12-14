@@ -227,6 +227,8 @@ gl_get_attrib_location* glGetAttribLocation;
 #define GL_DEPTH_COMPONENT16              0x81A5
 #define GL_DEPTH_COMPONENT24              0x81A6
 #define GL_DEPTH_COMPONENT32              0x81A7
+
+#define GL_MULTISAMPLE                    0x809D
 // -----------------------------------------------------------------------------
 
 void SetWireframeFillMode()

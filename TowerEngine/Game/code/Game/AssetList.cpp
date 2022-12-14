@@ -355,8 +355,7 @@ namespace assets {
 
 		asset_image Images[] = {
 			{"Gizmo_Circle", 		"EngineResources/Circle.png", 		gl_blend_type::linear, correct_gamma::no},
-			{"Lock", 				"padlock.png", 						gl_blend_type::linear, correct_gamma::no},
-			{"CheckMark", 			"check-mark.png", 					gl_blend_type::linear, correct_gamma::no},
+			{"Ship", 				"FirstShip.png", 					gl_blend_type::linear, correct_gamma::no},
 		};
 
 		asset_shader Shaders[] = {

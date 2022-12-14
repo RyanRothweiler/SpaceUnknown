@@ -395,6 +395,138 @@ void GameSetupThread(void* Params, int32 ThreadID)
 	GameSetup();
 }
 
+void ImGuiSetEditorTheme()
+{
+	ImVec4* colors = ImGui::GetStyle().Colors;
+	colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+	colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+	colors[ImGuiCol_WindowBg]               = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
+	colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_PopupBg]                = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
+	colors[ImGuiCol_Border]                 = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
+	colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_FrameBg]                = ImVec4(0.16f, 0.29f, 0.48f, 0.54f);
+	colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);
+	colors[ImGuiCol_FrameBgActive]          = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
+	colors[ImGuiCol_TitleBg]                = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+	colors[ImGuiCol_TitleBgActive]          = ImVec4(0.16f, 0.29f, 0.48f, 1.00f);
+	colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
+	colors[ImGuiCol_MenuBarBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
+	colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
+	colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
+	colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
+	colors[ImGuiCol_CheckMark]              = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+	colors[ImGuiCol_SliderGrab]             = ImVec4(0.24f, 0.52f, 0.88f, 1.00f);
+	colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+	colors[ImGuiCol_Button]                 = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);
+	colors[ImGuiCol_ButtonHovered]          = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+	colors[ImGuiCol_ButtonActive]           = ImVec4(0.06f, 0.53f, 0.98f, 1.00f);
+	colors[ImGuiCol_Header]                 = ImVec4(0.26f, 0.59f, 0.98f, 0.31f);
+	colors[ImGuiCol_HeaderHovered]          = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
+	colors[ImGuiCol_HeaderActive]           = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+	colors[ImGuiCol_Separator]              = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
+	colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.10f, 0.40f, 0.75f, 0.78f);
+	colors[ImGuiCol_SeparatorActive]        = ImVec4(0.10f, 0.40f, 0.75f, 1.00f);
+	colors[ImGuiCol_ResizeGrip]             = ImVec4(0.26f, 0.59f, 0.98f, 0.25f);
+	colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
+	colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
+	colors[ImGuiCol_Tab]                    = ImVec4(0.18f, 0.35f, 0.58f, 0.86f);
+	colors[ImGuiCol_TabHovered]             = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
+	colors[ImGuiCol_TabActive]              = ImVec4(0.20f, 0.41f, 0.68f, 1.00f);
+	colors[ImGuiCol_TabUnfocused]           = ImVec4(0.07f, 0.10f, 0.15f, 0.97f);
+	colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.14f, 0.26f, 0.42f, 1.00f);
+	colors[ImGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+	colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
+	colors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+	colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
+	colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
+	colors[ImGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+	colors[ImGuiCol_NavHighlight]           = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+	colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+	colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+	colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+}
+
+void ImGuiSetGameTheme()
+{
+	ImVec4* colors = ImGui::GetStyle().Colors;
+	colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+	colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+	colors[ImGuiCol_WindowBg]               = ImVec4(0.11f, 0.11f, 0.11f, 1.00f);
+	colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_PopupBg]                = ImVec4(0.19f, 0.19f, 0.19f, 0.92f);
+	colors[ImGuiCol_Border]                 = ImVec4(0.19f, 0.19f, 0.19f, 0.29f);
+	colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.24f);
+	colors[ImGuiCol_FrameBg]                = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
+	colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
+	colors[ImGuiCol_FrameBgActive]          = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
+	colors[ImGuiCol_TitleBg]                = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_TitleBgActive]          = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
+	colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_MenuBarBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
+	colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
+	colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.40f, 0.40f, 0.40f, 0.54f);
+	colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
+	colors[ImGuiCol_CheckMark]              = ImVec4(0.76f, 0.19f, 0.15f, 1.00f);
+	colors[ImGuiCol_SliderGrab]             = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
+	colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
+	colors[ImGuiCol_Button]                 = ImVec4(0.76f, 0.19f, 0.12f, 0.54f);
+	colors[ImGuiCol_ButtonHovered]          = ImVec4(0.44f, 0.10f, 0.07f, 0.54f);
+	colors[ImGuiCol_ButtonActive]           = ImVec4(0.76f, 0.19f, 0.12f, 1.00f);
+	colors[ImGuiCol_Header]                 = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+	colors[ImGuiCol_HeaderHovered]          = ImVec4(0.00f, 0.00f, 0.00f, 0.36f);
+	colors[ImGuiCol_HeaderActive]           = ImVec4(0.20f, 0.22f, 0.23f, 0.33f);
+	colors[ImGuiCol_Separator]              = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
+	colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
+	colors[ImGuiCol_SeparatorActive]        = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
+	colors[ImGuiCol_ResizeGrip]             = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
+	colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
+	colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
+	colors[ImGuiCol_Tab]                    = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+	colors[ImGuiCol_TabHovered]             = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	colors[ImGuiCol_TabActive]              = ImVec4(0.20f, 0.20f, 0.20f, 0.36f);
+	colors[ImGuiCol_TabUnfocused]           = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+	colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	colors[ImGuiCol_PlotLines]              = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_PlotHistogram]          = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
+	colors[ImGuiCol_DragDropTarget]         = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
+	colors[ImGuiCol_NavHighlight]           = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 0.00f, 0.00f, 0.70f);
+	colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(1.00f, 0.00f, 0.00f, 0.20f);
+	colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
+
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.WindowPadding                     = ImVec2(8.00f, 5.00f);
+	style.FramePadding                      = ImVec2(3.00f, 2.00f);
+	//style.CellPadding                       = ImVec2(6.00f, 6.00f);
+	style.ItemSpacing                       = ImVec2(6.00f, 3.00f);
+	style.ItemInnerSpacing                  = ImVec2(3.00f, 3.00f);
+	style.TouchExtraPadding                 = ImVec2(0.00f, 0.00f);
+	style.IndentSpacing                     = 17;
+	style.ScrollbarSize                     = 14;
+	style.GrabMinSize                       = 10;
+	style.WindowBorderSize                  = 0;
+	style.ChildBorderSize                   = 0;
+	style.PopupBorderSize                   = 0;
+	style.FrameBorderSize                   = 0;
+	style.TabBorderSize                     = 0;
+
+	style.WindowRounding                    = 0;
+	style.ChildRounding                     = 0;
+	style.FrameRounding                     = 0;
+	style.PopupRounding                     = 0;
+	style.ScrollbarRounding                 = 0;
+	style.GrabRounding                      = 0;
+	//style.LogSliderDeadzone                 = 0;
+	style.TabRounding                       = 0;
+}
+
 WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_info * WindowInfo, game_audio_output_buffer * AudioBuffer, char* RootAssetPath)
 {
 	Assert(sizeof(engine_state) <= Memory->PermanentMemory.Size);
@@ -495,6 +627,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 				InitCamera(&State->GameCamera, &GameState->Assets->CamBasicShader,
 				           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::perspective, 0,
 				           0.1f, 500.0f);
+				State->GameCamera.EulerRotation = vector3{0, -1.57, 0};
 
 				InitCamera(&State->UICam, &GameState->Assets->CamBasicShader,
 				           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::brokenui, 0,
@@ -561,6 +694,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		}
 
 		//PanelStackPush(panel_id::home, &State->PanelStack, State);
+		game::Start(GameState);
 
 #if UNIT_TESTING
 		LinkedListUnitTests(&Memory->TransientMemory);
@@ -606,8 +740,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 			Globals->EditorData.EditorMode = !Globals->EditorData.EditorMode;
 		}
 
-		// Do mouse touch emulation
 		/*
+		// Do mouse touch emulation
 		editor::SwitchToEditorCam(GameState);
 
 		static int GLID = assets::GetImage("Gizmo_Circle")->GLID;
@@ -683,8 +817,6 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		Result.Height = height;
 		RenderApi.MakeTexture(&Result, (uint32*)pixels, false);
 		io.Fonts->SetTexID((ImTextureID)(intptr_t)Result.GLID);
-
-		ImGui::StyleColorsDark();
 	}
 
 	// imgui each frame
@@ -779,15 +911,22 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 	// Editor things
 	{
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (!Globals->EditorData.EditorMode) {
+			style.Alpha = 0.25f;
+		}
+
 		// TODO Don't compile on release builds
 		editor::Update(GameState, WindowInfo);
+
+		style.Alpha = 1.0f;
 	}
 
 	Globals->ShaderLoader.PollReload();
 	PollModelReload(Memory, GameState->Assets);
 
 	static bool DemoShowing = true;
-	//ImGui::ShowDemoWindow(&DemoShowing);
+	ImGui::ShowDemoWindow(&DemoShowing);
 
 	// Prevent mouse clicks for game if imgui captures mouse
 	if (ImGui::GetIO().WantCaptureMouse) {
@@ -798,7 +937,9 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	}
 
 	// Camera
-	{
+	if (Globals->EditorData.EditorMode) {
+		editor::SwitchToEditorCam(GameState);
+
 		static bool MouseControlling = false;
 		if (GameInput->MouseRight.OnDown) {
 			MouseControlling = true;
@@ -824,7 +965,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 			real64 Top = -Bottom;
 			State->ActiveCam->EulerRotation.Y = ClampValue(Bottom, Top, State->ActiveCam->EulerRotation.Y);
 
-			editor::SwitchToEditorCam(GameState);
+			//Globals->EditorData.EditorMode = !Globals->EditorData.EditorMode;
 		}
 
 		if (GameInput->MouseRight.OnDown) {
@@ -894,22 +1035,12 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 				editor::SwitchToEditorCam(GameState);
 			}
 		}
-
+	} else {
+		State->ActiveCam = &State->GameCamera;
 	}
 
-	if (Globals->EditorData.GodMode) {
-		SceneUpdate(&State->DebugScene, &GameState->GameRenderer);
-	}
 	if (GameInput->KeyboardInput['B'].OnDown) {
 		Globals->EditorData.GodMode = !Globals->EditorData.GodMode;
-	}
-
-
-	State->Light.Cam.Forward = vector3{0.013f, 0.542f, 0.83f};
-	State->Light.Cam.UpdateMatricies();
-
-	if (Globals->UIPanels == GameNull) {
-		ConsoleLog("Missing panels!!");
 	}
 
 	// Panel stuff
@@ -934,10 +1065,9 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	}
 	*/
 
+	ImGuiSetGameTheme();
 	game::Loop(GameState);
-
-	// Scenes
-	SceneUpdate(&State->GalaxyScene, &GameState->GameRenderer);
+	ImGuiSetEditorTheme();
 
 	// Keep at the end, so it reports correctly on the frame
 	if (Globals->EditorData.ProfilerWindowOpen) {
@@ -946,15 +1076,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	profiler::InitProfiler(&GameState->ProfilerData);
 	profiler::InitProfiler(&GameState->OGLProfilerData);
 
-
 	// Render imgui
 	{
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.Alpha = 0.25f;
-		if (Globals->EditorData.EditorMode) {
-			style.Alpha = 1.0f;
-		}
-
 		ImGui::EndFrame();
 
 		if (!BuildVarRelease) {

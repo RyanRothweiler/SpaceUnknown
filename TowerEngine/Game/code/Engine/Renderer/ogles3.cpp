@@ -876,30 +876,12 @@ namespace ogles3 {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		// Render shadowmap
-		if (false) {
-			glBindFramebuffer(GL_FRAMEBUFFER, ShadowCam->Framebuffer);
-
-			// make sure we clear the framebuffer's content
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			glCullFace(GL_FRONT);
-			RenderCamera(ShadowCam, GameRenderer, *WindowInfo, false, true);
-			glCullFace(GL_BACK);
-		}
-
 		// Render scene
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 			// make sure we clear the framebuffer's content
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			// Render skybox
-			glDepthMask(GL_FALSE);
-			RenderRenderCommand(ActiveCam, &GameRenderer->SkyboxCommand, &GameRenderer->SkyboxCommand.Shader, *WindowInfo, true);
-			glDepthMask(GL_TRUE);
 
 			RenderCamera(ActiveCam, GameRenderer, *WindowInfo, false, true);
 		}
