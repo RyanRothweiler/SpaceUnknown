@@ -666,10 +666,6 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 			}
 		}
 
-		if (ImGui::GetIO().WantCaptureMouse) {
-			GameInput->MouseScrollDelta = {};
-		}
-
 		//char KeyboardState[256] = {};
 		// PBYTE KeyboardStatePointer = (PBYTE)(&KeyboardState);
 		//GetKeyboardState((char*)&KeyboardState);
@@ -682,7 +678,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		mousePos.y = (float)GameInput->MousePos.Y;
 		io.MousePos = mousePos;
 		io.MouseDown[0] = GameInput->MouseLeft.IsDown != 0;
-		// io.MouseDown[1] = GameInput->MouseRight.IsDown != 0;
+		io.MouseDown[1] = GameInput->MouseRight.IsDown != 0;
 	}
 
 	ImGui::NewFrame();
@@ -754,10 +750,12 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 	// Prevent mouse clicks for game if imgui captures mouse
 	if (ImGui::GetIO().WantCaptureMouse) {
-		//GameInput->MouseLeft.IsDown = false;
-		//GameInput->MouseLeft.OnDown = false;
-		//GameInput->MouseRight.OnDown = false;
-		//GameInput->MouseRight.IsDown = false;
+		GameInput->MouseScrollDelta = {};
+
+		GameInput->MouseLeft.IsDown = false;
+		GameInput->MouseLeft.OnDown = false;
+		GameInput->MouseRight.OnDown = false;
+		GameInput->MouseRight.IsDown = false;
 	}
 
 	// Camera

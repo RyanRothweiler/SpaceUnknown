@@ -131,6 +131,56 @@ void RenderRectangleOutline(rect Rect, real64 OutlineSize, color Color, real64 R
 	InsertRenderCommand(UIRenderer, &RendCommand);
 }
 
+void RenderCircle(vector2 Center, vector2 Size, color Color, real64 RenderOrder, renderer* UIRenderer)
+{
+	static shader* Shader = assets::GetShader("ScreenDrawCircle");
+
+	render_command RendCommand = {};
+	InitRenderCommand(&RendCommand, 6);
+	InitIndexBuffer(&RendCommand);
+	RendCommand.Shader = *Shader;
+
+	vector2 HalfSize = vector2{Size.X * 0.5f, Size.Y * 0.5f};
+
+	v3 TopLeft = 		v3{(real32)Center.X - (real32)HalfSize.X, (real32)Center.Y - (real32)HalfSize.Y, (real32)RenderOrder};
+	v3 TopRight = 		v3{(real32)Center.X - (real32)HalfSize.X, (real32)Center.Y + (real32)HalfSize.Y, (real32)RenderOrder};
+	v3 BottomRight = 	v3{(real32)Center.X + (real32)HalfSize.X, (real32)Center.Y + (real32)HalfSize.Y, (real32)RenderOrder};
+	v3 BottomLeft = 	v3{(real32)Center.X + (real32)HalfSize.X, (real32)Center.Y - (real32)HalfSize.Y, (real32)RenderOrder};
+
+	// Vertices
+	layout_data* VertexLayout = RendCommand.GetLayout();
+
+	// Texture coords
+	vector2 UVTopRight = vector2{1, 1};
+	vector2 UVBottomLeft = vector2{ -1, -1};
+
+	layout_data* TextureLayout = RendCommand.GetLayout();
+	TextureLayout->Allocate(Shader->GetLayout(render::ShaderTextureCoordsID), RendCommand.BufferCapacity, GlobalTransMem);
+	TextureLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderTextureCoordsID);
+	TextureLayout->Data.Vec2[0] = v2{(real32)UVBottomLeft.X, (real32)UVBottomLeft.Y};
+	TextureLayout->Data.Vec2[1] = v2{(real32)UVTopRight.X, (real32)UVBottomLeft.Y};
+	TextureLayout->Data.Vec2[2] = v2{(real32)UVTopRight.X, (real32)UVTopRight.Y};
+	TextureLayout->Data.Vec2[3] = v2{(real32)UVBottomLeft.X, (real32)UVBottomLeft.Y};
+	TextureLayout->Data.Vec2[4] = v2{(real32)UVTopRight.X, (real32)UVTopRight.Y};
+	TextureLayout->Data.Vec2[5] = v2{(real32)UVBottomLeft.X, (real32)UVTopRight.Y};
+
+	VertexLayout->Allocate(Shader->GetLayout(render::ShaderVertID), RendCommand.BufferCapacity, GlobalTransMem);
+	VertexLayout->Data.Vec3[0] = TopRight;
+	VertexLayout->Data.Vec3[1] = BottomRight;
+	VertexLayout->Data.Vec3[2] = BottomLeft;
+	VertexLayout->Data.Vec3[3] = TopRight;
+	VertexLayout->Data.Vec3[4] = BottomLeft;
+	VertexLayout->Data.Vec3[5] = TopLeft;
+
+	RendCommand.Uniforms = RendCommand.Shader.Uniforms.Copy(GlobalTransMem);
+	RendCommand.Uniforms.SetVec4("color", v4{Color.R, Color.G, Color.B, Color.A});
+	RendCommand.Uniforms.SetMat4("model", m4y4Identity());
+	RendCommand.Uniforms.SetMat4("projection", m4y4Transpose(UIRenderer->Camera->ProjectionMatrix));
+	RendCommand.Uniforms.SetMat4("view", m4y4Transpose(UIRenderer->Camera->ViewMatrix));
+
+	InsertRenderCommand(UIRenderer, &RendCommand);
+}
+
 void RenderRectangle(vector2 Center, vector2 Size, color Color, real64 RenderOrder, renderer* UIRenderer)
 {
 	shader* Shader = &Globals->AssetsList.EngineResources.ScreenDrawShader;
@@ -149,9 +199,6 @@ void RenderRectangle(vector2 Center, vector2 Size, color Color, real64 RenderOrd
 
 	// Vertices
 	layout_data* VertexLayout = RendCommand.GetLayout();
-
-	// Get location
-	//Token.Loc = RenderApi.GetAttribLoc
 
 	VertexLayout->Allocate(Shader->GetLayout(render::ShaderVertID), RendCommand.BufferCapacity, GlobalTransMem);
 	VertexLayout->Data.Vec3[0] = TopRight;

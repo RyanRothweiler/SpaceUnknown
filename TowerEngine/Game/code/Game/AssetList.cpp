@@ -360,6 +360,7 @@ namespace assets {
 
 		asset_shader Shaders[] = {
 			{"ImGui", 				"Shaders/ImGui.vs", 				"Shaders/ImGui.fs"},
+			{"ScreenDrawCircle", 	"Shaders/ScreenDrawCircle.vs", 		"Shaders/ScreenDrawCircle.fs"},
 		};
 
 		// Images

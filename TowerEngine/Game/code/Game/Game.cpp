@@ -7,27 +7,34 @@
 
 namespace game {
 
-	void SetupShip(game::state* State, vector2 Pos)
+	game::ship* SetupShip(game::state* State, vector2 Pos)
 	{
 		for (int i = 0; i < ArrayCount(State->Ships); i++) {
 			ship* Ship = &State->Ships[i];
 			if (!Ship->Using) {
 				Ship->Using = true;
 				Ship->Pos = Pos;
+				return Ship;
 			}
 		}
+
+		return GameNull;
 	}
 
 	void Start(engine_state* EngineState)
 	{
 		game::state* GameState = &EngineState->GameState;
+		GameState->Zoom = 1.0f;
 
-		SetupShip(GameState, vector2{});
+		SetupShip(GameState, vector2{5, 5});
 	}
 
 	void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 	{
 		game::state* State = &EngineState->GameState;
+
+		real32 RenderLayer = -10;
+		real32 ZoomCo = 1.0f / State->Zoom;
 
 		// zoom window
 		{
@@ -36,7 +43,7 @@ namespace game {
 			ImGui::SetNextWindowPos(ImVec2(Window->Width * 0.5f, 10.0f));
 			//ImGui::SetNextWindowSize(ImVec2(demo_window_size_x, demo_window_size_y));
 			ImGui::Begin("Zoom", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
-			ImGui::SliderFloat("Zoom", &State->Zoom, 0.0f, 100.0f, "%.3f", 2.0f);
+			ImGui::SliderFloat("Zoom", &State->Zoom, 1.0f, 200.0f, "%.3f", 2.0f);
 			ImGui::End();
 		}
 
@@ -47,34 +54,42 @@ namespace game {
 
 			// Keyboard
 			vector2 CamMoveDir = vector2{0, 0};
-			if (Input->KeyboardInput['A'].IsDown) { CamMoveDir.X = -1; }
-			if (Input->KeyboardInput['D'].IsDown) { CamMoveDir.X =  1; }
-			if (Input->KeyboardInput['W'].IsDown) { CamMoveDir.Y = -1; }
-			if (Input->KeyboardInput['S'].IsDown) { CamMoveDir.Y =  1; }
+			if (Input->KeyboardInput['A'].IsDown) { CamMoveDir.X = 1; }
+			if (Input->KeyboardInput['D'].IsDown) { CamMoveDir.X = -1; }
+			if (Input->KeyboardInput['W'].IsDown) { CamMoveDir.Y = 1; }
+			if (Input->KeyboardInput['S'].IsDown) { CamMoveDir.Y = -1; }
 			CamMoveDir = Vector2Normalize(CamMoveDir);
-			EngineState->GameCamera.Center.X += CamMoveDir.X * KeyboardSpeed;
-			EngineState->GameCamera.Center.Y += CamMoveDir.Y * KeyboardSpeed;
+			State->CamPos.X += CamMoveDir.X * KeyboardSpeed * (State->Zoom);
+			State->CamPos.Y += CamMoveDir.Y * KeyboardSpeed * (State->Zoom);
 
 			// Mouse
 			static vector2 MouseStart;
-			static vector3 CamStart;
+			static vector2 CamStart;
 			if (Input->MouseLeft.OnDown) {
 				MouseStart = Input->MousePos;
-				CamStart = EngineState->GameCamera.Center;
+				CamStart = State->CamPos;
 			}
 			if (Input->MouseLeft.IsDown) {
-				vector2 Offset = MouseStart - Input->MousePos;
-				EngineState->GameCamera.Center = CamStart + vector3{Offset.X * MouseSpeed, Offset.Y * MouseSpeed, 0.0f};
+				vector2 Offset = Input->MousePos - MouseStart;
+				State->CamPos = CamStart + (Offset * MouseSpeed * State->Zoom);
 			}
 		}
+
+		RenderCircle(
+		    (State->CamPos + vector2{200, 200}) * ZoomCo,
+		    vector2{500, 500} * ZoomCo,
+		    COLOR_RED, -11, Globals->GameRenderer);
 
 		// Render ships
 		for (int i = 0; i < ArrayCount(State->Ships); i++) {
 			ship* Ship = &State->Ships[i];
 			if (Ship->Using) {
 				static loaded_image* ShipImage = assets::GetImage("Ship");
-				RenderTextureAll(Ship->Pos, vector2{1, 1}, COLOR_WHITE,
-				                 ShipImage->GLID, -10, Globals->GameRenderer);
+				RenderTextureAll(
+				    (State->CamPos + Ship->Pos) * ZoomCo,
+				    vector2{1, 1} * ZoomCo,
+				    COLOR_WHITE,
+				    ShipImage->GLID, RenderLayer, Globals->GameRenderer);
 			}
 		}
 	}

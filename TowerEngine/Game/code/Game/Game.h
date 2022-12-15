@@ -13,7 +13,8 @@ namespace game {
 	struct state {
 		ship Ships[100];
 
-		real32 Zoom = 0;
+		real32 Zoom = 1.0f;
+		vector2 CamPos;
 	};
 };
 
