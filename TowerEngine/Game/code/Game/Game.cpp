@@ -26,7 +26,7 @@ namespace game {
 		game::state* GameState = &EngineState->GameState;
 		GameState->Zoom = 1.0f;
 
-		SetupShip(GameState, vector2{5, 5});
+		SetupShip(GameState, vector2{0, 0});
 	}
 
 	void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
@@ -41,8 +41,8 @@ namespace game {
 			static bool Open = true;
 
 			ImGui::SetNextWindowPos(ImVec2(Window->Width * 0.5f, 10.0f));
-			//ImGui::SetNextWindowSize(ImVec2(demo_window_size_x, demo_window_size_y));
-			ImGui::Begin("Zoom", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
+			ImGui::SetNextWindowSize(ImVec2(500, -1));
+			ImGui::Begin("Zoom", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 			ImGui::SliderFloat("Zoom", &State->Zoom, 1.0f, 200.0f, "%.3f", 2.0f);
 			ImGui::End();
 		}
