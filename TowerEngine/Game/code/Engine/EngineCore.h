@@ -536,7 +536,6 @@ struct state_to_serialize {
 	bool32 ShowingBackpack;
 
 	camera EditorCamera;
-	camera GameCamera;
 	camera UICam;
 	camera BattleCam;
 	camera* ActiveCam;
@@ -575,8 +574,7 @@ struct engine_state {
 	renderer DebugUIRenderer;
 	renderer MonsterPreviewRenderer;
 
-	// ibl
-	loaded_image BRDFlut;
+	camera GameCamera;
 
 	// gif recording
 	bool32 IsGifRecording;

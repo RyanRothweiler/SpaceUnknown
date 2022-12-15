@@ -763,12 +763,12 @@ namespace editor {
 		}
 
 		if (Globals->EditorData.RenderCameraObjects) {
-			if (&State->GameCamera != State->ActiveCam) {
-				GizmoCamera(&State->GameCamera);
-				GizmoArrow(State->GameCamera.Center, State->GameCamera.Forward * -1, 0.1f);
+			if (&GameState->GameCamera != State->ActiveCam) {
+				GizmoCamera(&GameState->GameCamera);
+				GizmoArrow(GameState->GameCamera.Center, GameState->GameCamera.Forward * -1, 0.1f);
 
-				vector3 Right = Vector3Normalize(Vector3Cross(vector3{0, 0, 1}, State->GameCamera.Forward));
-				GizmoArrow(State->GameCamera.Center, Right * -1, 0.1f, 0, COLOR_GREEN);
+				vector3 Right = Vector3Normalize(Vector3Cross(vector3{0, 0, 1}, GameState->GameCamera.Forward));
+				GizmoArrow(GameState->GameCamera.Center, Right * -1, 0.1f, 0, COLOR_GREEN);
 			}
 		}
 

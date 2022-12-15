@@ -208,186 +208,11 @@ void PollModelReload(game_memory * Memory, game_assets * Assets)
 	}
 }
 
-void BakeIBL()
-{
-	engine_state* GameState = Globals->GameState;
-	state_to_serialize * State = &GameState->StateSerializing;
-
-	/*
-	// Load cubemap
-	{
-		// NOTE we get dangling warning here when compiling android. Is that true? Is this an issue?
-		char* Files[6] = {
-			(AssetRootDir + "Skybox/space/right.png").CharArray,
-			(AssetRootDir + "Skybox/space/left.png").CharArray,
-			(AssetRootDir + "Skybox/space/top.png").CharArray,
-			(AssetRootDir + "Skybox/space/bottom.png").CharArray,
-			(AssetRootDir + "Skybox/space/front.png").CharArray,
-			(AssetRootDir + "Skybox/space/back.png").CharArray
-		};
-		Assets->SpaceCubeMap = GLLoadCubeMap(Files, TransMemory);
-	}
-	*/
-
-	// Cubemaps
-	{
-		string Right = (Globals->AssetRootDir + "Skybox/space/right.png");
-		string Left = (Globals->AssetRootDir + "Skybox/space/left.png");
-		string Top = (Globals->AssetRootDir + "Skybox/space/top.png");
-		string Bottom = (Globals->AssetRootDir + "Skybox/space/bottom.png");
-		string Front = (Globals->AssetRootDir + "Skybox/space/front.png");
-		string Back = (Globals->AssetRootDir + "Skybox/space/back.png");
-		char* Files[6] = {
-			Right.CharArray,
-			Left.CharArray,
-			Top.CharArray,
-			Bottom.CharArray,
-			Front.CharArray,
-			Back.CharArray,
-		};
-		Globals->AssetsList.SpaceCubeMap = assets::GLLoadCubeMap(Files, GlobalTransMem);
-	}
-
-	// HDR
-	{
-		Globals->AssetsList.HDRImage = assets::GLLoadHDRTexture((Globals->AssetRootDir + "HDR_IBL/Arches_E_PineTree/Arches_E_PineTree_3k.hdr").CharArray);
-		//Assets->HDRImage = GLLoadHDRTexture((AssetRootDir + "HDR_IBL/Ditch_River/Ditch-River_2k.hdr").CharArray);
-		//Assets->HDRImage = GLLoadHDRTexture((AssetRootDir + "HDR_IBL/Theatre_Seating/Theatre-Side_2k.hdr").CharArray);
-	}
-
-	// load brdf lut
-	GameState->BRDFlut = assets::GLLoadPNG(Globals->AssetRootDir + "ibl_brdf_lut.png", gl_blend_type::linear, correct_gamma::no, GlobalTransMem);
-
-	// Setup Cameras
-	camera EquiCam = {};
-	camera DiffuseConvCam = {};
-	camera SpecularConvCam = {};
-
-	InitCamera(&EquiCam, 			GameNull, vector2{512, 512}, 	projection::perspective, 90, 0.1f, 1200.0f);
-	InitCamera(&DiffuseConvCam, 	GameNull, vector2{32, 32}, 		projection::perspective, 90, 0.1f, 1200.0f);
-	InitCamera(&SpecularConvCam, 	GameNull, vector2{128, 128}, 	projection::perspective, 90, 0.1f, 1200.0f);
-
-	renderer EquiRenderer = {};
-	renderer ConvRenderer = {};
-	renderer PreFilterRenderer = {};
-
-	RenderApi.GetFramebufferCubeMap(&EquiCam, false, true);
-	RenderApi.GetFramebufferCubeMap(&DiffuseConvCam, false, false);
-	RenderApi.GetFramebufferCubeMap(&SpecularConvCam, true, true);
-
-	// Create materials
-	material EquiMat = {};
-	material IBLConvMat = {};
-	material PreFilterMat = {};
-
-	EquiMat.Create(assets::GetShader("EquiToCube"), GlobalPermMem);
-	EquiMat.Uniforms.SetImage("equirectangularMap", Globals->AssetsList.HDRImage.GLID);
-
-	IBLConvMat.Create(assets::GetShader("IBLConv"), GlobalPermMem);
-	//IBLConvMat.Uniforms.SetImage("envMap", EquiCam.TextureColorbuffers[0]);
-	IBLConvMat.Uniforms.SetImage("envMap", Globals->AssetsList.SpaceCubeMap.GLID);
-
-	PreFilterMat.Create(assets::GetShader("PreFilter"), GlobalPermMem);
-	PreFilterMat.Uniforms.SetImage("environmentMap", Globals->AssetsList.SpaceCubeMap.GLID);
-
-	// Load models
-	entity EquiToCubemapCube = {};
-	entity IBLConvCube = {};
-	entity PreFilterCube = {};
-
-	Dae::Load(&EquiToCubemapCube, Globals->AssetRootDir + "UnitCube.dae", true, GlobalTransMem);
-	Dae::Load(&IBLConvCube, Globals->AssetRootDir + "UnitCube.dae", true, GlobalTransMem);
-	Dae::Load(&PreFilterCube, Globals->AssetRootDir + "UnitCube.dae", true, GlobalTransMem);
-
-	// Set material
-	EquiToCubemapCube.Material = &EquiMat;
-	IBLConvCube.Material = &IBLConvMat;
-	PreFilterCube.Material = &PreFilterMat;
-
-	// Upload to gpu
-	EquiToCubemapCube.VAO = RenderApi.CreateVAO();
-	assets::UploadEntity(&EquiToCubemapCube);
-
-	IBLConvCube.VAO = RenderApi.CreateVAO();
-	assets::UploadEntity(&IBLConvCube);
-
-	PreFilterCube.VAO = RenderApi.CreateVAO();
-	assets::UploadEntity(&PreFilterCube);
-
-	// Setup and Add entities to render list
-	{
-		// equi to cubemap
-		{
-			EquiRenderer.RenderCommands = CreateList(GlobalTransMem, sizeof(render_command));
-			EquiRenderer.Camera = &EquiCam;
-
-			EquiToCubemapCube.Transform.Update(m4y4Identity());
-			RenderEntity(&EquiToCubemapCube, &EquiRenderer, 100);
-		}
-
-		// diffuse convolude
-		{
-			ConvRenderer.RenderCommands = CreateList(GlobalTransMem, sizeof(render_command));
-			ConvRenderer.Camera = &DiffuseConvCam;
-
-			vector3 VecRot = vector3{ -PI / 2, PI, 0};
-			quat QuatRot = {};
-			QuatRot.FromEuler(VecRot);
-			m4y4 Rot = QuatRot.ToMatrix();
-
-			IBLConvCube.Transform.Update(Rot);
-			RenderEntity(&IBLConvCube, &ConvRenderer, 100);
-
-		}
-
-		// prefilter / specular convolude
-		{
-			PreFilterRenderer.RenderCommands = CreateList(GlobalTransMem, sizeof(render_command));
-			PreFilterRenderer.Camera = &SpecularConvCam;
-
-			vector3 VecRot = vector3{ -PI / 2, PI, 0};
-			quat QuatRot = {};
-			QuatRot.FromEuler(VecRot);
-			m4y4 Rot = QuatRot.ToMatrix();
-
-			PreFilterCube.Transform.Update(Rot);
-			RenderEntity(&PreFilterCube, &PreFilterRenderer, 100);
-		}
-	}
-
-	// Actually do the bake render
-	RenderApi.BakeIBL(&EquiRenderer, &ConvRenderer, &PreFilterRenderer, Globals->Window);
-
-	render::Data->IrradianceMap = ConvRenderer.Camera->TextureColorbuffers[0];
-	render::Data->PrefilterMap = PreFilterRenderer.Camera->TextureColorbuffers[0];
-	render::Data->BRDFlut = GameState->BRDFlut.GLID;
-
-	// skybox cube
-	{
-		State->SkyboxMaterial.Create(assets::GetShader("Skybox"), GlobalPermMem);
-		State->SkyboxMaterial.Uniforms.SetImage("skybox", EquiCam.TextureColorbuffers[0]);
-
-		State->SkyboxMaterial.Uniforms.SetImage("skybox", Globals->AssetsList.SpaceCubeMap.GLID);
-		//State->SkyboxMaterial.Uniforms.SetImage("skybox", State->DiffuseConvCam.TextureColorbuffers[0]);
-		//State->SkyboxMaterial.Uniforms.SetImage("skybox", State->SpecularConvCam.TextureColorbuffers[0]);
-		GameState->Assets->UnitCube.Material = &State->SkyboxMaterial;
-
-		GameState->Assets->UnitCube.VAO = RenderApi.CreateVAO();
-		assets::UploadMesh(&GameState->Assets->UnitCube.VAO, GameState->Assets->UnitCube.Children[0], assets::GetShader("Skybox"));
-	}
-}
-
 // Initial setup, from loading assets to initializing data
 void GameSetup()
 {
 	GlobalThreadTransMem->Head = (uint8 *)GlobalThreadTransMem->Memory;
-
 	assets::LoadAssets(&Globals->AssetsList, Globals->AssetRootDir, GlobalThreadTransMem);
-}
-
-void SavePlayerData()
-{
-
 }
 
 void GameSetupThread(void* Params, int32 ThreadID)
@@ -624,10 +449,10 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 			// Cameras and some lights. Not all of this is stricly engine resources
 			{
 				// Init Camera
-				InitCamera(&State->GameCamera, &GameState->Assets->CamBasicShader,
+				InitCamera(&GameState->GameCamera, &GameState->Assets->CamBasicShader,
 				           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::perspective, 0,
 				           0.1f, 500.0f);
-				State->GameCamera.EulerRotation = vector3{0, -1.57, 0};
+				GameState->GameCamera.EulerRotation = vector3{PI * -0.5f, -1.57, 0};
 
 				InitCamera(&State->UICam, &GameState->Assets->CamBasicShader,
 				           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::brokenui, 0,
@@ -644,7 +469,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 				           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::perspective, 0,
 				           0.1f, 1200.0f);
 
-				State->ActiveCam = &State->GameCamera;
+				State->ActiveCam = &GameState->GameCamera;
 
 				// Light camera
 				InitCamera(&State->Light.Cam, &GameState->Assets->CamBasicShader,
@@ -665,7 +490,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 			assets::UploadAllQueuedImages(&Globals->AssetsList, GlobalTransMem);
 		}
 
-		GameState->GameRenderer.Camera = &State->GameCamera;
+		GameState->GameRenderer.Camera = &GameState->GameCamera;
 		GameState->DebugUIRenderer.Camera = &State->UICam;
 		GameState->UIRenderer.Camera = &State->UICam;
 
@@ -805,7 +630,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		io.KeyMap[ImGuiKey_Enter] = KEY_RETURN;
 		io.KeyMap[ImGuiKey_Escape] = KEY_ESCAPE;
 
-		io.IniFilename = NULL;
+		//io.IniFilename = NULL;
 
 		// ImGui create font texture
 		unsigned char* pixels;
@@ -844,7 +669,6 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		if (ImGui::GetIO().WantCaptureMouse) {
 			GameInput->MouseScrollDelta = {};
 		}
-
 
 		//char KeyboardState[256] = {};
 		// PBYTE KeyboardStatePointer = (PBYTE)(&KeyboardState);
@@ -926,7 +750,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	PollModelReload(Memory, GameState->Assets);
 
 	static bool DemoShowing = true;
-	ImGui::ShowDemoWindow(&DemoShowing);
+	//ImGui::ShowDemoWindow(&DemoShowing);
 
 	// Prevent mouse clicks for game if imgui captures mouse
 	if (ImGui::GetIO().WantCaptureMouse) {
@@ -1036,7 +860,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 			}
 		}
 	} else {
-		State->ActiveCam = &State->GameCamera;
+		State->ActiveCam = &GameState->GameCamera;
 	}
 
 	if (GameInput->KeyboardInput['B'].OnDown) {
@@ -1066,7 +890,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	*/
 
 	ImGuiSetGameTheme();
-	game::Loop(GameState);
+	game::Loop(GameState, WindowInfo, GameInput);
 	ImGuiSetEditorTheme();
 
 	// Keep at the end, so it reports correctly on the frame

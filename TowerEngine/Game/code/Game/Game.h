@@ -12,6 +12,8 @@ namespace game {
 
 	struct state {
 		ship Ships[100];
+
+		real32 Zoom = 0;
 	};
 };
 

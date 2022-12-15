@@ -525,6 +525,10 @@ Vector2Perp(vector2 Input)
 vector2
 Vector2Normalize(vector2 Input)
 {
+	if (Input.X == 0 && Input.Y == 0) {
+		return Input;
+	}
+
 	vector2 Output = {};
 
 	real64 Length = Vector2Length(Input);
