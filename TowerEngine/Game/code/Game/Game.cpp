@@ -33,7 +33,8 @@ namespace game {
 	const real32 ZoomRealMin = 1.0f;
 	const real32 ZoomRealMax = 1000.0f;
 
-	const real32 RenderLayer = -10;
+	const real32 RenderLayerShip = -1;
+	const real32 RenderLayerPlanet = -2;
 	const real32 KeyboardPanSpeed = 0.75f;
 	const real32 MousePanSpeed = 0.015f;
 
@@ -83,14 +84,13 @@ namespace game {
 				State->CamPos = CamStart + (Offset * MousePanSpeed * ZoomReal);
 			}
 
-			ConsoleLog(string{Input->MouseScrollDelta});
 			State->ZoomTarget = (real32)ClampValue(ZoomMin, ZoomMax, State->ZoomTarget + (Input->MouseScrollDelta * MouseZoomSpeed * MouseZoomInvert));
 		}
 
 		RenderCircle(
 		    (State->CamPos + vector2{200, 200}) * ZoomCo,
 		    vector2{500, 500} * ZoomCo,
-		    COLOR_RED, -11, Globals->GameRenderer);
+		    COLOR_RED, RenderLayerPlanet, Globals->GameRenderer);
 
 		// Render ships
 		for (int i = 0; i < ArrayCount(State->Ships); i++) {
@@ -101,7 +101,7 @@ namespace game {
 				    (State->CamPos + Ship->Pos) * ZoomCo,
 				    vector2{1, 1} * ZoomCo,
 				    COLOR_WHITE,
-				    ShipImage->GLID, RenderLayer, Globals->GameRenderer);
+				    ShipImage->GLID, RenderLayerShip, Globals->GameRenderer);
 			}
 		}
 	}

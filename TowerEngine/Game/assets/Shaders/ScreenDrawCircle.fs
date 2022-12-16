@@ -10,5 +10,5 @@ void main()
 	float distance = 1.0 - length(vTexCoords);
 
 	vec3 col = vec3(smoothstep(0.0, 0.001, distance));
-	gl_FragColor = vec4(col.x, col.y, col.z, 1.0);
+	gl_FragColor = vec4(col.x, col.y, col.z, 1.0) * color;
 }

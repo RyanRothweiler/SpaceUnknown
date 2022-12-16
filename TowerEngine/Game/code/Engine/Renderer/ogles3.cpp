@@ -888,7 +888,10 @@ namespace ogles3 {
 
 		// Render UI
 		RenderCamera(UIRenderer->Camera, UIRenderer, *WindowInfo, true, true);
+
+		glDisable(GL_DEPTH_TEST);
 		RenderCamera(DebugUIRenderer->Camera, DebugUIRenderer, *WindowInfo, true, true);
+		glEnable(GL_DEPTH_TEST);
 
 		glFlush();
 		glFinish();
