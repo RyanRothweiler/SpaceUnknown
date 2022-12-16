@@ -25,16 +25,30 @@ namespace game {
 	{
 		game::state* GameState = &EngineState->GameState;
 		GameState->Zoom = 1.0f;
+		GameState->ZoomTarget = GameState->Zoom;
 
 		SetupShip(GameState, vector2{0, 0});
 	}
+
+	const real32 ZoomMin = 0.0f;
+	const real32 ZoomMax = 1.0f;
+	const real32 ZoomRealMin = 1.0f;
+	const real32 ZoomRealMax = 1000.0f;
+
+	const real32 RenderLayer = -10;
+	const real32 KeyboardPanSpeed = 0.75f;
+	const real32 MousePanSpeed = 0.015f;
+
+	const real32 MouseZoomSpeed = 0.0002f;
+	const real32 MouseZoomInvert = -1;
 
 	void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 	{
 		game::state* State = &EngineState->GameState;
 
-		real32 RenderLayer = -10;
-		real32 ZoomCo = 1.0f / State->Zoom;
+		State->Zoom = (real32)Lerp(State->Zoom, State->ZoomTarget, 0.5f);
+		real64 ZoomReal = LerpCurve(ZoomRealMin, ZoomRealMax, 4.0f, State->Zoom);;
+		real64 ZoomCo = 1.0f / ZoomReal;
 
 		// zoom window
 		{
@@ -43,15 +57,12 @@ namespace game {
 			ImGui::SetNextWindowPos(ImVec2(Window->Width * 0.5f, 10.0f));
 			ImGui::SetNextWindowSize(ImVec2(500, -1));
 			ImGui::Begin("Zoom", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-			ImGui::SliderFloat("Zoom", &State->Zoom, 1.0f, 200.0f, "%.3f", 2.0f);
+			ImGui::SliderFloat("Zoom", &State->ZoomTarget, ZoomMin, ZoomMax, "%.3f");
 			ImGui::End();
 		}
 
 		// camera controls
 		{
-			real32 KeyboardSpeed = 0.75f;
-			real32 MouseSpeed = 0.015f;
-
 			// Keyboard
 			vector2 CamMoveDir = vector2{0, 0};
 			if (Input->KeyboardInput['A'].IsDown) { CamMoveDir.X = 1; }
@@ -59,8 +70,8 @@ namespace game {
 			if (Input->KeyboardInput['W'].IsDown) { CamMoveDir.Y = 1; }
 			if (Input->KeyboardInput['S'].IsDown) { CamMoveDir.Y = -1; }
 			CamMoveDir = Vector2Normalize(CamMoveDir);
-			State->CamPos.X += CamMoveDir.X * KeyboardSpeed * (State->Zoom);
-			State->CamPos.Y += CamMoveDir.Y * KeyboardSpeed * (State->Zoom);
+			State->CamPos.X += CamMoveDir.X * KeyboardPanSpeed * (ZoomReal);
+			State->CamPos.Y += CamMoveDir.Y * KeyboardPanSpeed * (ZoomReal);
 
 			// Mouse
 			static vector2 MouseStart;
@@ -71,8 +82,10 @@ namespace game {
 			}
 			if (Input->MouseLeft.IsDown) {
 				vector2 Offset = Input->MousePos - MouseStart;
-				State->CamPos = CamStart + (Offset * MouseSpeed * State->Zoom);
+				State->CamPos = CamStart + (Offset * MousePanSpeed * ZoomReal);
 			}
+
+			State->ZoomTarget = (real32)ClampValue(ZoomMin, ZoomMax, State->ZoomTarget + (Input->MouseScrollDelta * MouseZoomSpeed * MouseZoomInvert));
 		}
 
 		RenderCircle(

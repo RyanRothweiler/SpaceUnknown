@@ -14,6 +14,7 @@ namespace game {
 		ship Ships[100];
 
 		real32 Zoom = 1.0f;
+		real32 ZoomTarget;
 		vector2 CamPos;
 	};
 };

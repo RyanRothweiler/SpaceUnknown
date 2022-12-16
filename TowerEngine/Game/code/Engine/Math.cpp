@@ -6,6 +6,8 @@
 #include <math.h>
 //#include <xmmintrin.h>
 
+#include <cmath>
+
 
 uint64
 Pow(uint64 Num, uint32 Expo)
@@ -22,6 +24,15 @@ Lerp(real64 Start, real64 End, real64 Percentage)
 {
 	return (Start + (Percentage * (End - Start)));
 }
+
+
+real64
+LerpCurve(real64 Start, real64 End, real64 CurveExp, real64 Percentage)
+{
+	real64 P = std::pow(Percentage, CurveExp);
+	return Lerp(Start, End, P);
+}
+
 
 // ----------------------------------------------------------------------------- square
 int64
