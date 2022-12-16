@@ -406,6 +406,16 @@ EM_BOOL KeyCallback(int eventType, const EmscriptenKeyboardEvent *e, void *userD
 	return false;
 }
 
+EM_BOOL MouseWheelCallback(int eventType, const EmscriptenWheelEvent  *e, void *userData)
+{
+	if (e->deltaY > 0) {
+		GameInput.MouseScrollDelta = -1;
+	} else {
+		GameInput.MouseScrollDelta = 1;
+	}
+	return false;
+}
+
 EM_BOOL MouseCallback(int eventType, const EmscriptenMouseEvent *e, void *userData)
 {
 	//printf("Mouse event %i button %i x:%i y:%i \n", eventType, e->button, (int)e->clientX, (int)e->clientY);
@@ -458,6 +468,8 @@ void MainLoop()
 
 	float FPS = 1.0f / (ClockDiff.count());
 	//printf("FPS %f \n", FPS);
+
+	GameInput.MouseScrollDelta = 0.0f;
 }
 
 // https://github.com/emscripten-core/emscripten/blob/main/test/third_party/glbook/Common/esUtil.h
@@ -553,6 +565,9 @@ int main()
 	emscripten_set_mousedown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
 	emscripten_set_mouseup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
 	emscripten_set_dblclick_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseCallback);
+
+	emscripten_set_wheel_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, MouseWheelCallback);
+
 	emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
 	emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
 

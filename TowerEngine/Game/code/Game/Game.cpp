@@ -24,8 +24,6 @@ namespace game {
 	void Start(engine_state* EngineState)
 	{
 		game::state* GameState = &EngineState->GameState;
-		GameState->Zoom = 1.0f;
-		GameState->ZoomTarget = GameState->Zoom;
 
 		SetupShip(GameState, vector2{0, 0});
 	}
@@ -39,7 +37,7 @@ namespace game {
 	const real32 KeyboardPanSpeed = 0.75f;
 	const real32 MousePanSpeed = 0.015f;
 
-	const real32 MouseZoomSpeed = 0.0002f;
+	const real32 MouseZoomSpeed = 0.03f;
 	const real32 MouseZoomInvert = -1;
 
 	void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
@@ -85,6 +83,7 @@ namespace game {
 				State->CamPos = CamStart + (Offset * MousePanSpeed * ZoomReal);
 			}
 
+			ConsoleLog(string{Input->MouseScrollDelta});
 			State->ZoomTarget = (real32)ClampValue(ZoomMin, ZoomMax, State->ZoomTarget + (Input->MouseScrollDelta * MouseZoomSpeed * MouseZoomInvert));
 		}
 

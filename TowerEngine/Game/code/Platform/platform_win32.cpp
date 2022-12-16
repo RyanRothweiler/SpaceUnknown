@@ -946,7 +946,11 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 
 					case (WM_MOUSEWHEEL): {
 						real32 ZDelta = GET_WHEEL_DELTA_WPARAM(WindowMessage.wParam);
-						GlobalScrollPos = ZDelta;
+						if (ZDelta > 0) {
+							GlobalScrollPos = 1.0f;
+						} else {
+							GlobalScrollPos = -1.0f;
+						}
 					}
 					break;
 
