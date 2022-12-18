@@ -96,12 +96,41 @@ namespace game {
 			State->ZoomTarget = (real32)ClampValue(ZoomMin, ZoomMax, State->ZoomTarget + (Input->MouseScrollDelta * MouseZoomSpeed * MouseZoomInvert));
 		}
 
-		// Ship selection
+		// Ship
 		{
-			vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, -250}, vector3{0, 0, -1}, &EngineState->GameCamera);
+			vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
 			vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
 
-			if (Input->MouseLeft.OnDown) {
+			RenderCircle(MouseWorldFlat, vector2{1, 1},
+			             COLOR_RED, -1, Globals->GameRenderer);
+
+			// Ship window
+			if (State->ShipSelected != GameNull) {
+				ImGui::Begin("Ship Info");
+				ImVec2 window_pos = ImGui::GetWindowPos();
+				ImGui::End();
+
+				vector2 Points[2] = {};
+				Points[0] = vector2{window_pos.x, window_pos.y};
+				Points[1] = WorldToScreen(vector3{State->ShipSelected->Pos.X, State->ShipSelected->Pos.Y, 0}, &EngineState->GameCamera);
+
+				render_line Line = {};
+				Line.Points = Points;
+				Line.PointsCount = ArrayCount(Points);
+				RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
+
+				if (Input->MouseLeft.OnDown) {
+					//Ship->TargetPos = MouseWorldFlat;
+					State->ShipSelected->Pos = MouseWorldFlat;
+				}
+			}
+
+			// Ship selecting
+			if (
+			    State->ShipSelected == GameNull &&
+			    Input->MouseLeft.OnDown
+			) {
+
 				State->ShipSelected = GameNull;
 				for (int i = 0; i < ArrayCount(State->Ships); i++) {
 					ship* Ship = &State->Ships[i];
@@ -119,22 +148,6 @@ namespace game {
 						}
 					}
 				}
-			}
-
-			if (State->ShipSelected != GameNull) {
-				ImGui::Begin("Ship Info");
-				ImVec2 window_pos = ImGui::GetWindowPos();
-				ImGui::End();
-
-
-				vector2 Points[2] = {};
-				Points[0] = vector2{window_pos.x, window_pos.y};
-				Points[1] = WorldToScreen(vector3{State->ShipSelected->Pos.X, State->ShipSelected->Pos.X, 0}, &EngineState->GameCamera);;
-
-				render_line Line = {};
-				Line.Points = Points;
-				Line.PointsCount = ArrayCount(Points);
-				RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
 			}
 		}
 
