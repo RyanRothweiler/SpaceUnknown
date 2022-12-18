@@ -11,4 +11,5 @@ void main()
 {
 	vTexCoords = texCoords;
     gl_Position = projection * view * vec4(vertexPos, 1.0);
+    gl_Position.z *= 0.5;
 }

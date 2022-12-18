@@ -887,11 +887,11 @@ namespace ogles3 {
 		}
 
 		// Render UI
+		glClear(GL_DEPTH_BUFFER_BIT);
 		RenderCamera(UIRenderer->Camera, UIRenderer, *WindowInfo, true, true);
 
-		glDisable(GL_DEPTH_TEST);
+		glClear(GL_DEPTH_BUFFER_BIT);
 		RenderCamera(DebugUIRenderer->Camera, DebugUIRenderer, *WindowInfo, true, true);
-		glEnable(GL_DEPTH_TEST);
 
 		glFlush();
 		glFinish();

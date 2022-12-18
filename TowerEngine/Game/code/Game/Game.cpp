@@ -101,32 +101,45 @@ namespace game {
 			vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, -250}, vector3{0, 0, -1}, &EngineState->GameCamera);
 			vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
 
-			//if (Input->MouseLeft.OnDown) {
-			State->ShipSelected = GameNull;
-			for (int i = 0; i < ArrayCount(State->Ships); i++) {
-				ship* Ship = &State->Ships[i];
-				if (Ship->Using) {
+			if (Input->MouseLeft.OnDown) {
+				State->ShipSelected = GameNull;
+				for (int i = 0; i < ArrayCount(State->Ships); i++) {
+					ship* Ship = &State->Ships[i];
+					if (Ship->Using) {
 
-					vector2 TopLeftWorld = Ship->Pos - (Ship->Size * 0.5f);
-					vector2 BottomRightWorld = Ship->Pos + (Ship->Size * 0.5f);
+						vector2 TopLeftWorld = Ship->Pos - (Ship->Size * 0.5f);
+						vector2 BottomRightWorld = Ship->Pos + (Ship->Size * 0.5f);
 
-					rect Bounds = {};
-					Bounds.TopLeft = WorldToScreen(vector3{TopLeftWorld.X, TopLeftWorld.Y, 0}, &EngineState->GameCamera);
-					Bounds.BottomRight = WorldToScreen(vector3{BottomRightWorld.X, BottomRightWorld.Y, 0}, &EngineState->GameCamera);
+						rect Bounds = {};
+						Bounds.TopLeft = WorldToScreen(vector3{TopLeftWorld.X, TopLeftWorld.Y, 0}, &EngineState->GameCamera);
+						Bounds.BottomRight = WorldToScreen(vector3{BottomRightWorld.X, BottomRightWorld.Y, 0}, &EngineState->GameCamera);
 
-					if (RectContains(Bounds, Input->MousePos)) {
-						State->ShipSelected = Ship;
+						if (RectContains(Bounds, Input->MousePos)) {
+							State->ShipSelected = Ship;
+						}
 					}
 				}
 			}
-			//}
 
 			if (State->ShipSelected != GameNull) {
+				ImGui::Begin("Ship Info");
+				ImVec2 window_pos = ImGui::GetWindowPos();
+				ImGui::End();
+
+
+				vector2 Points[2] = {};
+				Points[0] = vector2{window_pos.x, window_pos.y};
+				Points[1] = WorldToScreen(vector3{State->ShipSelected->Pos.X, State->ShipSelected->Pos.X, 0}, &EngineState->GameCamera);;
+
+				render_line Line = {};
+				Line.Points = Points;
+				Line.PointsCount = ArrayCount(Points);
+				RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
 			}
 		}
 
 		// Render planets
-		RenderCircle(vector2{700, 200}, vector2{2000, 2000},
+		RenderCircle(vector2{1200, 200}, vector2{2000, 2000},
 		             COLOR_RED, RenderLayerPlanet, Globals->GameRenderer);
 
 		// Render ships
