@@ -11,6 +11,7 @@ struct camera {
 
 	vector2 Resolution;
 	real64 FOV;
+	real32 OrthoZoom;
 
 	vector3 EulerRotation;
 	vector3 Forward;
@@ -138,16 +139,13 @@ struct camera {
 
 		} else if (Projection == projection::orthographic) {
 
-			// TODO we don't need this anymore? Remove and test. We should just be able to use resolution
-			real32 Width = (real32)Resolution.X * 0.01f;
-			real32 Height = (real32)Resolution.Y * 0.01f;
+			real32 Width = (real32)Resolution.X * OrthoZoom;
+			real32 Height = (real32)Resolution.Y * OrthoZoom;
 
 			real32 Left = Width * -0.5f;
 			real32 Right = Width * 0.5f;
 			real32 Bottom = Height * -0.5f;
 			real32 Top = Height * 0.5f;
-			//real32 Near = 0.01f;
-			//real32 Far = 50.0f;
 
 			real32 tx = -((Right + Left) / (Right - Left));
 			real32 ty = -((Top + Bottom) / (Top - Bottom));
@@ -158,6 +156,19 @@ struct camera {
 					{2 / (Right - Left), 	0, 						0, 						tx},
 					{0, 					2 / ( Top - Bottom), 	0, 						ty},
 					{0, 					0, 						-2 / (Far - Near), 		tz},
+					{0, 					0, 						0, 						1},
+				}
+			};
+
+			real32 txInv = (Left + Right) / 2;
+			real32 tyInv = (Top + Bottom) / 2;
+			real32 tzInv = (-(Far + Near)) / 2;
+
+			ProjectionMatrixInv = {
+				{
+					{(Right - Left) / 2, 	0, 						0, 						txInv},
+					{0, 					(Top - Bottom) / 2, 	0, 						tyInv},
+					{0, 					0, 						(Far - Near) / -2, 		tzInv},
 					{0, 					0, 						0, 						1},
 				}
 			};

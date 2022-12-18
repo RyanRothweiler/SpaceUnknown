@@ -3,6 +3,7 @@ void InitCamera(camera* Cam, shader* DisplayShader, vector2 Resolution, projecti
 {
 	Cam->Resolution = Resolution;
 	Cam->Projection = Projection;
+	Cam->OrthoZoom = 1.0f;
 	RenderApi.GetFramebuffer(Cam, 0);
 	//Cam->DisplayShader = assets::GetShader(DisplayShaderID);
 	Cam->DisplayShader = DisplayShader;

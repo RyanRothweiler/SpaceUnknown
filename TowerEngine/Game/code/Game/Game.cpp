@@ -12,8 +12,11 @@ namespace game {
 		for (int i = 0; i < ArrayCount(State->Ships); i++) {
 			ship* Ship = &State->Ships[i];
 			if (!Ship->Using) {
+
 				Ship->Using = true;
 				Ship->Pos = Pos;
+				Ship->Size = vector2{6, 6};
+
 				return Ship;
 			}
 		}
@@ -30,13 +33,13 @@ namespace game {
 
 	const real32 ZoomMin = 0.0f;
 	const real32 ZoomMax = 1.0f;
-	const real32 ZoomRealMin = 1.0f;
-	const real32 ZoomRealMax = 1000.0f;
+	const real32 ZoomRealMin = 0.1f;
+	const real32 ZoomRealMax = 20.0f;
 
-	const real32 RenderLayerShip = -1;
-	const real32 RenderLayerPlanet = -2;
+	const real32 RenderLayerShip = -2;
+	const real32 RenderLayerPlanet = -3;
 	const real32 KeyboardPanSpeed = 0.75f;
-	const real32 MousePanSpeed = 0.015f;
+	const real32 MousePanSpeed = 0.03f;
 
 	const real32 MouseZoomSpeed = 0.03f;
 	const real32 MouseZoomInvert = -1;
@@ -46,8 +49,10 @@ namespace game {
 		game::state* State = &EngineState->GameState;
 
 		State->Zoom = (real32)Lerp(State->Zoom, State->ZoomTarget, 0.5f);
-		real64 ZoomReal = LerpCurve(ZoomRealMin, ZoomRealMax, 4.0f, State->Zoom);;
-		real64 ZoomCo = 1.0f / ZoomReal;
+		float Curve = 3.5f;
+		EngineState->GameCamera.OrthoZoom = (real32)LerpCurve(ZoomRealMin, ZoomRealMax, Curve, State->Zoom);
+		real64 ZoomSpeedAdj = LerpCurve(4.0f, 200.0f, Curve, State->Zoom);
+
 
 		// zoom window
 		{
@@ -64,33 +69,65 @@ namespace game {
 		{
 			// Keyboard
 			vector2 CamMoveDir = vector2{0, 0};
-			if (Input->KeyboardInput['A'].IsDown) { CamMoveDir.X = 1; }
-			if (Input->KeyboardInput['D'].IsDown) { CamMoveDir.X = -1; }
-			if (Input->KeyboardInput['W'].IsDown) { CamMoveDir.Y = 1; }
-			if (Input->KeyboardInput['S'].IsDown) { CamMoveDir.Y = -1; }
+			if (Input->KeyboardInput['A'].IsDown || Input->KeyboardInput['a'].IsDown) { CamMoveDir.X = -1; }
+			if (Input->KeyboardInput['D'].IsDown || Input->KeyboardInput['d'].IsDown) { CamMoveDir.X = 1; }
+			if (Input->KeyboardInput['W'].IsDown || Input->KeyboardInput['w'].IsDown) { CamMoveDir.Y = -1; }
+			if (Input->KeyboardInput['S'].IsDown || Input->KeyboardInput['s'].IsDown) { CamMoveDir.Y = 1; }
 			CamMoveDir = Vector2Normalize(CamMoveDir);
-			State->CamPos.X += CamMoveDir.X * KeyboardPanSpeed * (ZoomReal);
-			State->CamPos.Y += CamMoveDir.Y * KeyboardPanSpeed * (ZoomReal);
+			EngineState->GameCamera.Center.X += CamMoveDir.X * KeyboardPanSpeed * (ZoomSpeedAdj);
+			EngineState->GameCamera.Center.Y += CamMoveDir.Y * KeyboardPanSpeed * (ZoomSpeedAdj);
 
 			// Mouse
 			static vector2 MouseStart;
 			static vector2 CamStart;
 			if (Input->MouseLeft.OnDown) {
 				MouseStart = Input->MousePos;
-				CamStart = State->CamPos;
+
+				CamStart.X = EngineState->GameCamera.Center.X;
+				CamStart.Y = EngineState->GameCamera.Center.Y;
 			}
 			if (Input->MouseLeft.IsDown) {
-				vector2 Offset = Input->MousePos - MouseStart;
-				State->CamPos = CamStart + (Offset * MousePanSpeed * ZoomReal);
+				vector2 Offset = MouseStart - Input->MousePos;
+				vector2 P = CamStart + (Offset * MousePanSpeed * ZoomSpeedAdj);
+				EngineState->GameCamera.Center.X = P.X;
+				EngineState->GameCamera.Center.Y = P.Y;
 			}
 
 			State->ZoomTarget = (real32)ClampValue(ZoomMin, ZoomMax, State->ZoomTarget + (Input->MouseScrollDelta * MouseZoomSpeed * MouseZoomInvert));
 		}
 
-		RenderCircle(
-		    (State->CamPos + vector2{200, 200}) * ZoomCo,
-		    vector2{500, 500} * ZoomCo,
-		    COLOR_RED, RenderLayerPlanet, Globals->GameRenderer);
+		// Ship selection
+		{
+			vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, -250}, vector3{0, 0, -1}, &EngineState->GameCamera);
+			vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
+
+			//if (Input->MouseLeft.OnDown) {
+			State->ShipSelected = GameNull;
+			for (int i = 0; i < ArrayCount(State->Ships); i++) {
+				ship* Ship = &State->Ships[i];
+				if (Ship->Using) {
+
+					vector2 TopLeftWorld = Ship->Pos - (Ship->Size * 0.5f);
+					vector2 BottomRightWorld = Ship->Pos + (Ship->Size * 0.5f);
+
+					rect Bounds = {};
+					Bounds.TopLeft = WorldToScreen(vector3{TopLeftWorld.X, TopLeftWorld.Y, 0}, &EngineState->GameCamera);
+					Bounds.BottomRight = WorldToScreen(vector3{BottomRightWorld.X, BottomRightWorld.Y, 0}, &EngineState->GameCamera);
+
+					if (RectContains(Bounds, Input->MousePos)) {
+						State->ShipSelected = Ship;
+					}
+				}
+			}
+			//}
+
+			if (State->ShipSelected != GameNull) {
+			}
+		}
+
+		// Render planets
+		RenderCircle(vector2{700, 200}, vector2{2000, 2000},
+		             COLOR_RED, RenderLayerPlanet, Globals->GameRenderer);
 
 		// Render ships
 		for (int i = 0; i < ArrayCount(State->Ships); i++) {
@@ -98,8 +135,8 @@ namespace game {
 			if (Ship->Using) {
 				static loaded_image* ShipImage = assets::GetImage("Ship");
 				RenderTextureAll(
-				    (State->CamPos + Ship->Pos) * ZoomCo,
-				    vector2{1, 1} * ZoomCo,
+				    Ship->Pos,
+				    Ship->Size,
 				    COLOR_WHITE,
 				    ShipImage->GLID, RenderLayerShip, Globals->GameRenderer);
 			}

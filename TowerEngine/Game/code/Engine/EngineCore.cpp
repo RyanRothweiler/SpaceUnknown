@@ -451,7 +451,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 				// Init Camera
 				InitCamera(&GameState->GameCamera, &GameState->Assets->CamBasicShader,
 				           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::orthographic, 0,
-				           0.1f, 500.0f);
+				           0.1f, 100.0f);
 				GameState->GameCamera.EulerRotation = vector3{PI * -0.5f, -1.57, 0};
 
 				InitCamera(&State->UICam, &GameState->Assets->CamBasicShader,
