@@ -5,13 +5,12 @@
 
 namespace game {
 
-	struct ship {
-		bool32 Using;
-		vector2 Pos;
-		vector2 Size;
-
-		vector2 TargetPos;
+	struct stepper {
+		void* SelfData;
+		void(*Step)(void* SelfData, real64 time);
 	};
+
+#include "Ship.h"
 
 	struct state {
 		ship Ships[100];
@@ -19,6 +18,9 @@ namespace game {
 
 		real32 Zoom = 1.0f;
 		real32 ZoomTarget;
+
+		stepper* Steppers[1000];
+		int32 SteppersCount;
 	};
 };
 

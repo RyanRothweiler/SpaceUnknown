@@ -7,28 +7,19 @@
 
 namespace game {
 
-	game::ship* SetupShip(game::state* State, vector2 Pos)
+	void RegisterStepper(stepper* Stepper, game::state* State)
 	{
-		for (int i = 0; i < ArrayCount(State->Ships); i++) {
-			ship* Ship = &State->Ships[i];
-			if (!Ship->Using) {
-
-				Ship->Using = true;
-				Ship->Pos = Pos;
-				Ship->Size = vector2{6, 6};
-
-				return Ship;
-			}
-		}
-
-		return GameNull;
+		Assert(State->SteppersCount < ArrayCount(State->Steppers));
+		State->Steppers[State->SteppersCount++] = Stepper;
 	}
+
+#include "Ship.cpp"
 
 	void Start(engine_state* EngineState)
 	{
 		game::state* GameState = &EngineState->GameState;
 
-		SetupShip(GameState, vector2{0, 0});
+		ShipSetup(GameState, vector2{0, 0});
 	}
 
 	const real32 ZoomMin = 0.0f;
@@ -108,11 +99,26 @@ namespace game {
 			if (State->ShipSelected != GameNull) {
 				ImGui::Begin("Ship Info");
 				ImVec2 window_pos = ImGui::GetWindowPos();
+
+				ImGui::PushID("ActiveRotaiton");
+
+				ImGui::Text("Position");
+				ImGui::Columns(2);
+
+				ImGui::Text("x");
+				ImGui::Text(string{State->ShipSelected->Position.X} .Array());
+				ImGui::NextColumn();
+				ImGui::Text("y");
+				ImGui::Text(string{State->ShipSelected->Position.Y} .Array());
+
+				ImGui::Columns(1);
+				ImGui::PopID();
+
 				ImGui::End();
 
 				vector2 Points[2] = {};
 				Points[0] = vector2{window_pos.x, window_pos.y};
-				Points[1] = WorldToScreen(vector3{State->ShipSelected->Pos.X, State->ShipSelected->Pos.Y, 0}, &EngineState->GameCamera);
+				Points[1] = WorldToScreen(vector3{State->ShipSelected->Position.X, State->ShipSelected->Position.Y, 0}, &EngineState->GameCamera);
 
 				render_line Line = {};
 				Line.Points = Points;
@@ -120,8 +126,13 @@ namespace game {
 				RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
 
 				if (Input->MouseLeft.OnDown) {
-					//Ship->TargetPos = MouseWorldFlat;
-					State->ShipSelected->Pos = MouseWorldFlat;
+					float edgeRatio = 0.5;
+
+					State->ShipSelected->JourneyStartPos = State->ShipSelected->Position;
+					State->ShipSelected->TargetPos = MouseWorldFlat;
+					State->ShipSelected->DistFromSidesToCoast =
+					    Vector2Distance(State->ShipSelected->Position, State->ShipSelected->TargetPos) * 0.5f * edgeRatio;
+					State->ShipSelected->Moving = true;
 				}
 			}
 
@@ -136,8 +147,8 @@ namespace game {
 					ship* Ship = &State->Ships[i];
 					if (Ship->Using) {
 
-						vector2 TopLeftWorld = Ship->Pos - (Ship->Size * 0.5f);
-						vector2 BottomRightWorld = Ship->Pos + (Ship->Size * 0.5f);
+						vector2 TopLeftWorld = Ship->Position - (Ship->Size * 0.5f);
+						vector2 BottomRightWorld = Ship->Position + (Ship->Size * 0.5f);
 
 						rect Bounds = {};
 						Bounds.TopLeft = WorldToScreen(vector3{TopLeftWorld.X, TopLeftWorld.Y, 0}, &EngineState->GameCamera);
@@ -151,6 +162,14 @@ namespace game {
 			}
 		}
 
+		// step universe
+		{
+			for (int i = 0; i < State->SteppersCount; i++) {
+				stepper* Stepper = State->Steppers[i];
+				Stepper->Step(Stepper->SelfData, EngineState->DeltaTimeMS);
+			}
+		}
+
 		// Render planets
 		RenderCircle(vector2{1200, 200}, vector2{2000, 2000},
 		             COLOR_RED, RenderLayerPlanet, Globals->GameRenderer);
@@ -161,7 +180,7 @@ namespace game {
 			if (Ship->Using) {
 				static loaded_image* ShipImage = assets::GetImage("Ship");
 				RenderTextureAll(
-				    Ship->Pos,
+				    Ship->Position,
 				    Ship->Size,
 				    COLOR_WHITE,
 				    ShipImage->GLID, RenderLayerShip, Globals->GameRenderer);
