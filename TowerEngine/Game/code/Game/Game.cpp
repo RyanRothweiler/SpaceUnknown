@@ -89,6 +89,8 @@ namespace game {
 
 		// Ship
 		{
+			ship* CurrentShip = State->ShipSelected;
+
 			vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
 			vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
 
@@ -96,29 +98,59 @@ namespace game {
 			             COLOR_RED, -1, Globals->GameRenderer);
 
 			// Ship window
-			if (State->ShipSelected != GameNull) {
+			if (CurrentShip != GameNull) {
 				ImGui::Begin("Ship Info");
 				ImVec2 window_pos = ImGui::GetWindowPos();
 
-				ImGui::PushID("ActiveRotaiton");
+				if (ImGui::CollapsingHeader("Info")) {
+					// Posititon
+					/*
+					{
+						ImGui::PushID("position");
+						ImGui::Text("Position");
+						ImGui::Columns(2);
 
-				ImGui::Text("Position");
-				ImGui::Columns(2);
+						ImGui::Text("x");
+						ImGui::SameLine();
+						ImGui::Text(string{CurrentShip->Position.X} .Array());
 
-				ImGui::Text("x");
-				ImGui::Text(string{State->ShipSelected->Position.X} .Array());
-				ImGui::NextColumn();
-				ImGui::Text("y");
-				ImGui::Text(string{State->ShipSelected->Position.Y} .Array());
+						ImGui::NextColumn();
 
-				ImGui::Columns(1);
-				ImGui::PopID();
+						ImGui::Text("y");
+						ImGui::SameLine();
+						ImGui::Text(string{CurrentShip->Position.Y} .Array());
+
+						ImGui::Columns(1);
+						ImGui::PopID();
+					}
+					*/
+
+					// Velocity
+					{
+						string V = Humanize((int64)(Vector2Length(CurrentShip->Velocity) * UnitToMeters * 1000.0f));
+						ImGui::Text("Velocity (kph)");
+						ImGui::SameLine();
+						ImGui::Text(V.Array());
+					}
+
+				}
+
+				if (
+				    !CurrentShip->IsMoving &&
+				    CurrentShip->CurrentJourney.EndPosition.X != 0 &&
+				    CurrentShip->CurrentJourney.EndPosition.Y != 0
+				) {
+					if (ImGui::Button("Execute Movement", ImVec2(-1.0f, 0.0f))) {
+						ShipMove(CurrentShip, CurrentShip->CurrentJourney);
+					}
+				}
 
 				ImGui::End();
 
+				// Render line
 				vector2 Points[2] = {};
 				Points[0] = vector2{window_pos.x, window_pos.y};
-				Points[1] = WorldToScreen(vector3{State->ShipSelected->Position.X, State->ShipSelected->Position.Y, 0}, &EngineState->GameCamera);
+				Points[1] = WorldToScreen(vector3{CurrentShip->Position.X, CurrentShip->Position.Y, 0}, &EngineState->GameCamera);
 
 				render_line Line = {};
 				Line.Points = Points;
@@ -126,13 +158,12 @@ namespace game {
 				RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
 
 				if (Input->MouseLeft.OnDown) {
-					float edgeRatio = 0.5;
+					float edgeRatio = 1.0;
 
-					State->ShipSelected->JourneyStartPos = State->ShipSelected->Position;
-					State->ShipSelected->TargetPos = MouseWorldFlat;
-					State->ShipSelected->DistFromSidesToCoast =
-					    Vector2Distance(State->ShipSelected->Position, State->ShipSelected->TargetPos) * 0.5f * edgeRatio;
-					State->ShipSelected->Moving = true;
+					CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;
+					CurrentShip->CurrentJourney.EndPosition = MouseWorldFlat;
+					CurrentShip->CurrentJourney.DistFromSidesToCoast =
+					    Vector2Distance(CurrentShip->Position, CurrentShip->CurrentJourney.EndPosition) * 0.5f * edgeRatio;
 				}
 			}
 

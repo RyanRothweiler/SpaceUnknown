@@ -1,5 +1,4 @@
-//const real64 fuelForcePerGallon = 10000.0f;
-const real64 fuelForcePerGallon = 0.01f;
+const real64 fuelForcePerGallon = 8.0f;
 
 struct ship_definition {
 	real64 FuelRateGallonsPerSecond;
@@ -13,10 +12,8 @@ struct ship {
 	vector2 Velocity;
 	vector2 Size;
 
-	real64 DistFromSidesToCoast;
-	vector2 JourneyStartPos;
-	vector2 TargetPos;
-	bool32 Moving;
+	bool32 IsMoving;
+	ship_journey CurrentJourney;
 
 	real64 FuelGallons;
 

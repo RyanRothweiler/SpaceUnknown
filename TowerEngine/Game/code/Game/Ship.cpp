@@ -1,7 +1,9 @@
 //public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, UniversalPosition targetPositionUniverse, float time, JourneySettings settings)
 bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 Time)
 {
-	real64 fuelToUse = Ship->Definition.FuelRateGallonsPerSecond * Time;
+	real64 TimeSeconds = Time * 0.001f;
+
+	real64 fuelToUse = Ship->Definition.FuelRateGallonsPerSecond * TimeSeconds;
 	real64 fuelForce = fuelToUse * fuelForcePerGallon;
 
 	// close enough
@@ -13,9 +15,9 @@ bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 Time)
 	// past target
 	// Need a 0.1 buffer here because the two distances are equal during the journey, but not always exactly because of rounding errors
 	if (
-	    Vector2Distance(Ship->JourneyStartPos, TargetPos) + 0.001f
+	    Vector2Distance(Ship->CurrentJourney.StartPosition, TargetPos) + 0.001f
 	    <
-	    (Vector2Distance(Ship->Position, TargetPos) + Vector2Distance(Ship->Position, Ship->JourneyStartPos))
+	    (Vector2Distance(Ship->Position, TargetPos) + Vector2Distance(Ship->Position, Ship->CurrentJourney.StartPosition))
 	) {
 		// Stopping, past destination
 		Ship->Velocity = vector2{0, 0};
@@ -25,13 +27,13 @@ bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 Time)
 	vector2 Force = {};
 
 	// Speed up
-	if (Vector2Distance(Ship->Position, Ship->JourneyStartPos) < Ship->DistFromSidesToCoast) {
+	if (Vector2Distance(Ship->Position, Ship->CurrentJourney.StartPosition) < Ship->CurrentJourney.DistFromSidesToCoast) {
 		Ship->FuelGallons -= fuelToUse;
 		Force = Vector2Normalize(TargetPos - Ship->Position) * fuelForce;
 	}
 
 	// Slow down
-	if (Vector2Distance(Ship->Position, TargetPos) < Ship->DistFromSidesToCoast) {
+	if (Vector2Distance(Ship->Position, TargetPos) < Ship->CurrentJourney.DistFromSidesToCoast) {
 		Ship->FuelGallons -= fuelToUse;
 		Force = Vector2Normalize(TargetPos - Ship->Position) * fuelForce * -1.0f;
 
@@ -46,7 +48,7 @@ bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 Time)
 
 	vector2 acceleration = Force / mass;
 	Ship->Velocity = Ship->Velocity + acceleration;
-	Ship->Position = Ship->Position + (Ship->Velocity * Time);
+	Ship->Position = Ship->Position + (Ship->Velocity * TimeSeconds);
 
 	return true;
 }
@@ -54,9 +56,19 @@ bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 Time)
 void ShipStep(void* SelfData, real64 Time)
 {
 	game::ship* Ship = (game::ship*)SelfData;
-	if (Ship->Moving) {
-		Ship->Moving = ShipSimulateMovement(Ship, Ship->TargetPos, Time);
+	if (Ship->IsMoving) {
+		Ship->IsMoving = ShipSimulateMovement(Ship, Ship->CurrentJourney.EndPosition, Time);
+
+		if (!Ship->IsMoving) {
+			Ship->CurrentJourney = {};
+		}
 	}
+}
+
+void ShipMove(ship* Ship, ship_journey Journey)
+{
+	Ship->IsMoving = true;
+	Ship->CurrentJourney = Journey;
 }
 
 game::ship* ShipSetup(game::state* State, vector2 Pos)

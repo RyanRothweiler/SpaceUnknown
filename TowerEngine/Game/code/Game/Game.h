@@ -5,6 +5,14 @@
 
 namespace game {
 
+	const real64 UnitToMeters = 10.0f;
+
+	struct ship_journey {
+		vector2 EndPosition;
+		vector2 StartPosition;
+		real64 DistFromSidesToCoast;
+	};
+
 	struct stepper {
 		void* SelfData;
 		void(*Step)(void* SelfData, real64 time);
