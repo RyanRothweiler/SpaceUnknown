@@ -737,7 +737,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		}
 
 		// TODO Don't compile on release builds
-		editor::Update(GameState, WindowInfo);
+		//editor::Update(GameState, WindowInfo);
 
 		style.Alpha = 1.0f;
 	}

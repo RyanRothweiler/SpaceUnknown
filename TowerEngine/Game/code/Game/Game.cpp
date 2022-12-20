@@ -5,21 +5,49 @@
 
 #include "Game.h"
 
+#include <chrono>
+#include <ctime>
+
 namespace game {
 
-	void RegisterStepper(stepper* Stepper, game::state* State)
+	string ChronoToString(std::chrono::seconds SecondsTotal)
+	{
+		int64 Hours = std::chrono::duration_cast<std::chrono::hours>(SecondsTotal).count();
+		int64 Minutes = std::chrono::duration_cast<std::chrono::minutes>(SecondsTotal).count() - (Hours * 24);
+		int64 Seconds = (int64)(SecondsTotal.count() - (Minutes * 60.0f));
+
+		return string{Hours} + string{"h "} + string{Minutes} + string{"m "} + string{Seconds} + string{"s "};
+	}
+
+	void RegisterStepper(stepper* Stepper,
+	                     step_func Method,
+	                     void* SelfData,
+	                     game::state* State)
 	{
 		Assert(State->SteppersCount < ArrayCount(State->Steppers));
+
+		Stepper->Step = Method;
+		Stepper->SelfData = SelfData;
+
 		State->Steppers[State->SteppersCount++] = Stepper;
 	}
+
+	void TimeStep(void* SelfData, real64 Time)
+	{
+		game::universe_time* UT = (game::universe_time*)SelfData;
+		UT->TimeMS += Time;
+	}
+
 
 #include "Ship.cpp"
 
 	void Start(engine_state* EngineState)
 	{
-		game::state* GameState = &EngineState->GameState;
+		game::state* State = &EngineState->GameState;
 
-		ShipSetup(GameState, vector2{0, 0});
+		RegisterStepper(&State->UniverseTime.Stepper, &TimeStep, (void*)(&State->UniverseTime), State);
+
+		ShipSetup(State, vector2{0, 0});
 	}
 
 	const real32 ZoomMin = 0.0f;
@@ -45,14 +73,25 @@ namespace game {
 		real64 ZoomSpeedAdj = LerpCurve(4.0f, 200.0f, Curve, State->Zoom);
 
 
-		// zoom window
+		// Main window
 		{
 			static bool Open = true;
+			ImGui::SetNextWindowPos(ImVec2(0, 0));
+			ImGui::SetNextWindowSize(ImVec2(Window->Width * 0.15f, -1));
+			ImGui::Begin("Main", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
 
-			ImGui::SetNextWindowPos(ImVec2(Window->Width * 0.5f, 10.0f));
-			ImGui::SetNextWindowSize(ImVec2(500, -1));
-			ImGui::Begin("Zoom", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+			ImGui::Text("Time");
+
+			std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>> Time = {};
+			Time += std::chrono::milliseconds((int)State->UniverseTime.TimeMS);
+			std::chrono::seconds Diff = std::chrono::duration_cast<std::chrono::seconds>(Time.time_since_epoch());
+			string Disp = ChronoToString(Diff);
+			ImGui::Text(Disp.Array());
+
+			ImGui::Separator();
+
 			ImGui::SliderFloat("Zoom", &State->ZoomTarget, ZoomMin, ZoomMax, "%.3f");
+
 			ImGui::End();
 		}
 
@@ -102,38 +141,39 @@ namespace game {
 				ImGui::Begin("Ship Info");
 				ImVec2 window_pos = ImGui::GetWindowPos();
 
-				if (ImGui::CollapsingHeader("Info")) {
-					// Posititon
-					/*
-					{
-						ImGui::PushID("position");
-						ImGui::Text("Position");
-						ImGui::Columns(2);
+				//if (ImGui::CollapsingHeader("Info")) {
+				// Posititon
+				/*
+				{
+					ImGui::PushID("position");
+					ImGui::Text("Position");
+					ImGui::Columns(2);
 
-						ImGui::Text("x");
-						ImGui::SameLine();
-						ImGui::Text(string{CurrentShip->Position.X} .Array());
+					ImGui::Text("x");
+					ImGui::SameLine();
+					ImGui::Text(string{CurrentShip->Position.X} .Array());
 
-						ImGui::NextColumn();
+					ImGui::NextColumn();
 
-						ImGui::Text("y");
-						ImGui::SameLine();
-						ImGui::Text(string{CurrentShip->Position.Y} .Array());
+					ImGui::Text("y");
+					ImGui::SameLine();
+					ImGui::Text(string{CurrentShip->Position.Y} .Array());
 
-						ImGui::Columns(1);
-						ImGui::PopID();
-					}
-					*/
-
-					// Velocity
-					{
-						string V = Humanize((int64)(Vector2Length(CurrentShip->Velocity) * UnitToMeters * 1000.0f));
-						ImGui::Text("Velocity (kph)");
-						ImGui::SameLine();
-						ImGui::Text(V.Array());
-					}
-
+					ImGui::Columns(1);
+					ImGui::PopID();
 				}
+				*/
+
+				// Velocity
+				{
+					string V = Humanize((int64)(Vector2Length(CurrentShip->Velocity) * UnitToMeters * 1000.0f));
+					ImGui::Text("Velocity (kph)");
+					ImGui::SameLine();
+					ImGui::Text(V.Array());
+				}
+				//}
+
+				ImGui::Separator();
 
 				if (
 				    !CurrentShip->IsMoving &&
@@ -157,7 +197,7 @@ namespace game {
 				Line.PointsCount = ArrayCount(Points);
 				RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
 
-				if (Input->MouseLeft.OnDown) {
+				if (Input->MouseLeft.OnDown && !CurrentShip->IsMoving) {
 					float edgeRatio = 1.0;
 
 					CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;

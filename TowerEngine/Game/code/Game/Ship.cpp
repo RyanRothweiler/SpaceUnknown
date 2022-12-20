@@ -83,9 +83,7 @@ game::ship* ShipSetup(game::state* State, vector2 Pos)
 
 			Ship->Definition.FuelRateGallonsPerSecond = 1.0f;
 
-			Ship->Stepper.Step = &ShipStep;
-			Ship->Stepper.SelfData = (void*)Ship;
-			game::RegisterStepper(&Ship->Stepper, State);
+			game::RegisterStepper(&Ship->Stepper, &ShipStep, (void*)Ship, State);
 
 			return Ship;
 		}

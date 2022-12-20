@@ -3,6 +3,9 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <ctime>
+#include <chrono>
+
 namespace game {
 
 	const real64 UnitToMeters = 10.0f;
@@ -13,14 +16,23 @@ namespace game {
 		real64 DistFromSidesToCoast;
 	};
 
+	typedef void(*step_func)(void* SelfData, real64 time);
+
 	struct stepper {
 		void* SelfData;
-		void(*Step)(void* SelfData, real64 time);
+		step_func Step;
+	};
+
+	struct universe_time {
+		stepper Stepper;
+		real64 TimeMS;
 	};
 
 #include "Ship.h"
 
 	struct state {
+		universe_time UniverseTime;
+
 		ship Ships[100];
 		ship* ShipSelected;
 
