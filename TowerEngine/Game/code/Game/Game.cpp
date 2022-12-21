@@ -38,6 +38,13 @@ namespace game {
 		UT->TimeMS += Time;
 	}
 
+	void StepUniverse(game::state* State, real64 TimeMS)
+	{
+		for (int i = 0; i < State->SteppersCount; i++) {
+			stepper* Stepper = State->Steppers[i];
+			Stepper->Step(Stepper->SelfData, TimeMS);
+		}
+	}
 
 #include "Ship.cpp"
 
@@ -89,6 +96,21 @@ namespace game {
 
 			if (EditorState->EditorMode) {
 				ImGui::Text("EDITOR MODE");
+
+				ImGui::Text("Time Boost");
+				{
+					real64 SimFPS = 60.0f;
+					real64 FrameLengthMS = (1.0f / SimFPS) * 1000.0f;
+					if (ImGui::Button("1 minute")) {
+						for (int i = 0; i < SimFPS * 60.0f; i++) { StepUniverse(State, FrameLengthMS); }
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("1 hour")) {
+						for (int i = 0; i < SimFPS * 60.0f * 60.0f; i++) { StepUniverse(State, FrameLengthMS); }
+					}
+				}
+
+				ImGui::Separator();
 			}
 
 			ImGui::Text("Time");
@@ -152,28 +174,31 @@ namespace game {
 				ImGui::Begin("Ship Info");
 				ImVec2 window_pos = ImGui::GetWindowPos();
 
-				//if (ImGui::CollapsingHeader("Info")) {
-				// Posititon
-				/*
-				{
-					ImGui::PushID("position");
-					ImGui::Text("Position");
-					ImGui::Columns(2);
+				if (EditorState->EditorMode) {
+					if (ImGui::TreeNode("Basic")) {
+						// Posititon
+						{
+							ImGui::PushID("position");
+							ImGui::Text("Position");
+							ImGui::Columns(2);
 
-					ImGui::Text("x");
-					ImGui::SameLine();
-					ImGui::Text(string{CurrentShip->Position.X} .Array());
+							ImGui::Text("x");
+							ImGui::SameLine();
+							ImGui::Text(string{CurrentShip->Position.X} .Array());
 
-					ImGui::NextColumn();
+							ImGui::NextColumn();
 
-					ImGui::Text("y");
-					ImGui::SameLine();
-					ImGui::Text(string{CurrentShip->Position.Y} .Array());
+							ImGui::Text("y");
+							ImGui::SameLine();
+							ImGui::Text(string{CurrentShip->Position.Y} .Array());
 
-					ImGui::Columns(1);
-					ImGui::PopID();
+							ImGui::Columns(1);
+							ImGui::PopID();
+						}
+						ImGui::TreePop();
+					}
 				}
-				*/
+				ImGui::Separator();
 
 				// Velocity
 				{
@@ -244,13 +269,7 @@ namespace game {
 			}
 		}
 
-		// step universe
-		{
-			for (int i = 0; i < State->SteppersCount; i++) {
-				stepper* Stepper = State->Steppers[i];
-				Stepper->Step(Stepper->SelfData, EngineState->DeltaTimeMS);
-			}
-		}
+		StepUniverse(State, EngineState->DeltaTimeMS);
 
 		// Render planets
 		RenderCircle(vector2{1200, 200}, vector2{2000, 2000},
