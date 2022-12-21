@@ -561,9 +561,6 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	{
 		// Toggle on / off
 		bool EditorPrev = Globals->EditorData.EditorMode;
-		if (Globals->Input->KeyboardInput[KEY_TAB].OnDown) {
-			Globals->EditorData.EditorMode = !Globals->EditorData.EditorMode;
-		}
 
 		/*
 		// Do mouse touch emulation

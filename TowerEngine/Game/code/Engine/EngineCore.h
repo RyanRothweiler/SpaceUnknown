@@ -464,6 +464,7 @@ struct game_input {
 	input_state MouseMiddle;
 
 	input_state KeyboardInput[256];
+	input_state FunctionKeys[10];
 
 	input_state TouchStatus[TOUCH_COUNT];
 	vector2 TouchPosition[TOUCH_COUNT];
@@ -564,7 +565,9 @@ struct engine_state {
 
 	game_assets* Assets;
 	state_to_serialize StateSerializing;
+
 	game::state GameState;
+	game::editor_state EditorState;
 
 	// TODO move ClearColor into renderer
 	color ClearColor;

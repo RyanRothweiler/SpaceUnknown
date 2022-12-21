@@ -10,6 +10,10 @@ namespace game {
 
 	const real64 UnitToMeters = 10.0f;
 
+	struct editor_state {
+		bool32 EditorMode;
+	};
+
 	struct ship_journey {
 		vector2 EndPosition;
 		vector2 StartPosition;

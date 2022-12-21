@@ -877,6 +877,7 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 	bool32 MouseMiddleDown = false;
 	bool32 MouseRightDown = false;
 	bool32 NumberKeysDown[10] = {};
+	bool32 FunctionKeysDown[10];
 
 
 	//RECT ScreenSize = {};
@@ -954,7 +955,7 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 					}
 					break;
 
-					case WM_CHAR: {
+					case (WM_CHAR): {
 						// You can also use ToAscii()+GetKeyboardState() to retrieve characters.
 						if (WindowMessage.wParam > 0 && WindowMessage.wParam < 0x10000) {
 							GameInput.InputChar = (unsigned short)WindowMessage.wParam;
@@ -970,6 +971,25 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 
 						KeyboardDown[WindowMessage.wParam] = true;
 
+						if (WindowMessage.wParam == VK_F1) {
+							FunctionKeysDown[1] = true;
+						} else if (WindowMessage.wParam == VK_F2) {
+							FunctionKeysDown[2] = true;
+						} else if (WindowMessage.wParam == VK_F3) {
+							FunctionKeysDown[3] = true;
+						} else if (WindowMessage.wParam == VK_F4) {
+							FunctionKeysDown[4] = true;
+						} else if (WindowMessage.wParam == VK_F5) {
+							FunctionKeysDown[5] = true;
+						} else if (WindowMessage.wParam == VK_F6) {
+							FunctionKeysDown[6] = true;
+						} else if (WindowMessage.wParam == VK_F7) {
+							FunctionKeysDown[7] = true;
+						} else if (WindowMessage.wParam == VK_F8) {
+							FunctionKeysDown[8] = true;
+						} else if (WindowMessage.wParam == VK_F9) {
+							FunctionKeysDown[9] = true;
+						}
 					}
 					break;
 
@@ -980,6 +1000,26 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 						DispatchMessage(&WindowMessage);
 
 						KeyboardDown[WindowMessage.wParam] = false;
+
+						if (WindowMessage.wParam == VK_F1) {
+							FunctionKeysDown[1] = false;
+						} else if (WindowMessage.wParam == VK_F2) {
+							FunctionKeysDown[2] = false;
+						} else if (WindowMessage.wParam == VK_F3) {
+							FunctionKeysDown[3] = false;
+						} else if (WindowMessage.wParam == VK_F4) {
+							FunctionKeysDown[4] = false;
+						} else if (WindowMessage.wParam == VK_F5) {
+							FunctionKeysDown[5] = false;
+						} else if (WindowMessage.wParam == VK_F6) {
+							FunctionKeysDown[6] = false;
+						} else if (WindowMessage.wParam == VK_F7) {
+							FunctionKeysDown[7] = false;
+						} else if (WindowMessage.wParam == VK_F8) {
+							FunctionKeysDown[8] = false;
+						} else if (WindowMessage.wParam == VK_F9) {
+							FunctionKeysDown[9] = false;
+						}
 					}
 					break;
 
@@ -993,6 +1033,11 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 		}
 		for (int index = 0; index < 256; index++) {
 			ProcessInputState(&GameInput.KeyboardInput[index], KeyboardDown[index]);
+		}
+
+		Assert(ArrayCount(FunctionKeysDown) == ArrayCount(GameInput.FunctionKeys));
+		for (int index = 0; index < ArrayCount(FunctionKeysDown); index++) {
+			ProcessInputState(&GameInput.FunctionKeys[index], FunctionKeysDown[index]);
 		}
 
 		ProcessInputState(&GameInput.MouseLeft, MouseLeftDown);

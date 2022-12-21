@@ -66,12 +66,19 @@ namespace game {
 	void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 	{
 		game::state* State = &EngineState->GameState;
+		game::editor_state* EditorState = &EngineState->EditorState;
 
 		State->Zoom = (real32)Lerp(State->Zoom, State->ZoomTarget, 0.5f);
 		float Curve = 3.5f;
 		EngineState->GameCamera.OrthoZoom = (real32)LerpCurve(ZoomRealMin, ZoomRealMax, Curve, State->Zoom);
 		real64 ZoomSpeedAdj = LerpCurve(4.0f, 200.0f, Curve, State->Zoom);
 
+		// Editor
+		{
+			if (Input->FunctionKeys[1].OnDown) {
+				EditorState->EditorMode = !EditorState->EditorMode;
+			}
+		}
 
 		// Main window
 		{
@@ -79,6 +86,10 @@ namespace game {
 			ImGui::SetNextWindowPos(ImVec2(0, 0));
 			ImGui::SetNextWindowSize(ImVec2(Window->Width * 0.15f, -1));
 			ImGui::Begin("Main", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+
+			if (EditorState->EditorMode) {
+				ImGui::Text("EDITOR MODE");
+			}
 
 			ImGui::Text("Time");
 
