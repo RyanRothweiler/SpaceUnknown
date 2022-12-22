@@ -386,6 +386,10 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 	State->TimeRunningMS += (uint64)GameState->DeltaTimeMS;
 
+	if (GameInput->MouseLeft.OnDown) {
+		GameInput->MousePosOnDown = GameInput->MousePos;
+	}
+
 	static thread_work* SetupWork = {};
 
 	// Initialization
@@ -751,8 +755,12 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 		GameInput->MouseLeft.IsDown = false;
 		GameInput->MouseLeft.OnDown = false;
+		GameInput->MouseLeft.IsUp = false;
+		GameInput->MouseLeft.OnUp = false;
 		GameInput->MouseRight.OnDown = false;
 		GameInput->MouseRight.IsDown = false;
+		GameInput->MouseRight.IsUp = false;
+		GameInput->MouseRight.OnUp = false;
 	}
 
 	// Camera

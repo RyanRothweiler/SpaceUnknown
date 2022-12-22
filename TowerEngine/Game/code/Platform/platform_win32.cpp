@@ -878,6 +878,7 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 	bool32 MouseRightDown = false;
 	bool32 NumberKeysDown[10] = {};
 	bool32 FunctionKeysDown[10];
+	bool32 EscapeDown = false;
 
 
 	//RECT ScreenSize = {};
@@ -989,6 +990,8 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 							FunctionKeysDown[8] = true;
 						} else if (WindowMessage.wParam == VK_F9) {
 							FunctionKeysDown[9] = true;
+						} else if (WindowMessage.wParam == VK_ESCAPE) {
+							EscapeDown = true;
 						}
 					}
 					break;
@@ -1019,6 +1022,8 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 							FunctionKeysDown[8] = false;
 						} else if (WindowMessage.wParam == VK_F9) {
 							FunctionKeysDown[9] = false;
+						} else if (WindowMessage.wParam == VK_ESCAPE) {
+							EscapeDown = false;
 						}
 					}
 					break;
@@ -1043,6 +1048,7 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 		ProcessInputState(&GameInput.MouseLeft, MouseLeftDown);
 		ProcessInputState(&GameInput.MouseRight, MouseRightDown);
 		ProcessInputState(&GameInput.MouseMiddle, MouseMiddleDown);
+		ProcessInputState(&GameInput.Escape, EscapeDown);
 
 
 		CheckAllDLLs(&GameMemory, WindowInfo, &PlatformWin, Headless);

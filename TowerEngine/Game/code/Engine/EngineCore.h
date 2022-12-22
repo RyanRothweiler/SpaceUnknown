@@ -465,11 +465,17 @@ struct game_input {
 
 	input_state KeyboardInput[256];
 	input_state FunctionKeys[10];
+	input_state Escape;
 
 	input_state TouchStatus[TOUCH_COUNT];
 	vector2 TouchPosition[TOUCH_COUNT];
 
 	touch Touches[TOUCH_COUNT]; // This is update in the game layer. Just provides easier convenience for interacting with the touch data
+
+	bool32 MouseMoved()
+	{
+		return Vector2Distance(MousePos, MousePosOnDown) > 10;
+	}
 };
 
 game_input EmptyInput = {};

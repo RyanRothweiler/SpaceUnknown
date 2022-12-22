@@ -45,6 +45,8 @@ namespace game {
 
 		stepper* Steppers[1000];
 		int32 SteppersCount;
+
+		bool ShipInfoWindowShowing;
 	};
 };
 

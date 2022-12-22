@@ -13,8 +13,8 @@ namespace game {
 	string ChronoToString(std::chrono::seconds SecondsTotal)
 	{
 		int64 Hours = std::chrono::duration_cast<std::chrono::hours>(SecondsTotal).count();
-		int64 Minutes = std::chrono::duration_cast<std::chrono::minutes>(SecondsTotal).count() - (Hours * 24);
-		int64 Seconds = (int64)(SecondsTotal.count() - (Minutes * 60.0f));
+		int64 Minutes = (int64)(std::chrono::duration_cast<std::chrono::minutes>(SecondsTotal).count() - (Hours * 60.0f));
+		int64 Seconds = (int64)(SecondsTotal.count() - (Minutes * 60.0f) - (Hours * 60.0f * 60.0f));
 
 		return string{Hours} + string{"h "} + string{Minutes} + string{"m "} + string{Seconds} + string{"s "};
 	}
@@ -47,6 +47,14 @@ namespace game {
 	}
 
 #include "Ship.cpp"
+
+	void ClearShipSelection(game::state* State)
+	{
+		if (State->ShipSelected != GameNull && !State->ShipSelected->IsMoving) {
+			State->ShipSelected->CurrentJourney = {};
+		}
+		State->ShipSelected = GameNull;
+	}
 
 	void Start(engine_state* EngineState)
 	{
@@ -170,8 +178,22 @@ namespace game {
 			             COLOR_RED, -1, Globals->GameRenderer);
 
 			// Ship window
+			if (!State->ShipInfoWindowShowing) { ClearShipSelection(State); }
 			if (CurrentShip != GameNull) {
-				ImGui::Begin("Ship Info");
+
+				// ship current movement line
+				if (CurrentShip->IsMoving) {
+					vector2 Points[2] = {};
+					Points[0] = WorldToScreen(vector3{CurrentShip->CurrentJourney.EndPosition.X, CurrentShip->CurrentJourney.EndPosition.Y, 0}, &EngineState->GameCamera);
+					Points[1] = WorldToScreen(vector3{CurrentShip->Position.X, CurrentShip->Position.Y, 0}, &EngineState->GameCamera);
+					render_line Line = {};
+					Line.Points = Points;
+					Line.PointsCount = ArrayCount(Points);
+					RenderLine(Line, 2.0f, color{56.0f / 255.0f, 255.0f / 255.0f, 248.0f / 255.0f, 0.5f}, &EngineState->UIRenderer, false);
+				}
+
+				ImGui::Begin("Ship Info", &State->ShipInfoWindowShowing);
+
 				ImVec2 window_pos = ImGui::GetWindowPos();
 
 				if (EditorState->EditorMode) {
@@ -216,6 +238,17 @@ namespace game {
 				    CurrentShip->CurrentJourney.EndPosition.X != 0 &&
 				    CurrentShip->CurrentJourney.EndPosition.Y != 0
 				) {
+
+					{
+						vector2 Points[2] = {};
+						Points[0] = WorldToScreen(vector3{CurrentShip->CurrentJourney.EndPosition.X, CurrentShip->CurrentJourney.EndPosition.Y, 0}, &EngineState->GameCamera);
+						Points[1] = WorldToScreen(vector3{CurrentShip->Position.X, CurrentShip->Position.Y, 0}, &EngineState->GameCamera);
+						render_line Line = {};
+						Line.Points = Points;
+						Line.PointsCount = ArrayCount(Points);
+						RenderLine(Line, 1.5f, color{0, 1, 0, 0.2f}, &EngineState->UIRenderer, false);
+					}
+
 					if (ImGui::Button("Execute Movement", ImVec2(-1.0f, 0.0f))) {
 						ShipMove(CurrentShip, CurrentShip->CurrentJourney);
 					}
@@ -224,16 +257,17 @@ namespace game {
 				ImGui::End();
 
 				// Render line
-				vector2 Points[2] = {};
-				Points[0] = vector2{window_pos.x, window_pos.y};
-				Points[1] = WorldToScreen(vector3{CurrentShip->Position.X, CurrentShip->Position.Y, 0}, &EngineState->GameCamera);
+				{
+					vector2 Points[2] = {};
+					Points[0] = vector2{window_pos.x, window_pos.y};
+					Points[1] = WorldToScreen(vector3{CurrentShip->Position.X, CurrentShip->Position.Y, 0}, &EngineState->GameCamera);
+					render_line Line = {};
+					Line.Points = Points;
+					Line.PointsCount = ArrayCount(Points);
+					RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
+				}
 
-				render_line Line = {};
-				Line.Points = Points;
-				Line.PointsCount = ArrayCount(Points);
-				RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
-
-				if (Input->MouseLeft.OnDown && !CurrentShip->IsMoving) {
+				if (Input->MouseLeft.OnUp && !CurrentShip->IsMoving && !Input->MouseMoved()) {
 					float edgeRatio = 1.0;
 
 					CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;
@@ -244,12 +278,9 @@ namespace game {
 			}
 
 			// Ship selecting
-			if (
-			    State->ShipSelected == GameNull &&
-			    Input->MouseLeft.OnDown
-			) {
+			if (Input->Escape.OnDown) { ClearShipSelection(State); }
+			if (State->ShipSelected == GameNull && Input->MouseLeft.OnUp && !Input->MouseMoved() ) {
 
-				State->ShipSelected = GameNull;
 				for (int i = 0; i < ArrayCount(State->Ships); i++) {
 					ship* Ship = &State->Ships[i];
 					if (Ship->Using) {
@@ -263,6 +294,7 @@ namespace game {
 
 						if (RectContains(Bounds, Input->MousePos)) {
 							State->ShipSelected = Ship;
+							State->ShipInfoWindowShowing = true;
 						}
 					}
 				}
