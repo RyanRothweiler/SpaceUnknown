@@ -216,6 +216,7 @@ void GizmoScreenCircle(vector2 Center, real32 Radius,
 	                    vector2{}, vector2{1, 1},
 	                    GLID,
 	                    0,
+	                    m4y4Identity(),
 	                    Globals->DebugUIRenderer);
 }
 

@@ -736,6 +736,9 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		if (!Globals->EditorData.EditorMode) {
 			style.Alpha = 0.25f;
 		}
+		if (Globals->Input->KeyboardInput[KEY_TAB].OnDown) {
+			Globals->EditorData.EditorMode = !Globals->EditorData.EditorMode;
+		}
 
 		// TODO Don't compile on release builds
 		//editor::Update(GameState, WindowInfo);

@@ -226,6 +226,7 @@ void RenderTextureCenter(vector2 CenterPosition,
                          vector2 Size, color Color,
                          vector2 UVTopRight, vector2 UVBottomLeft,
                          uint32 GLID, real64 RenderOrder,
+                         m4y4 Model,
                          renderer* Renderer)
 {
 	shader* Shader = &Globals->AssetsList.EngineResources.ScreenDrawTextureShader;
@@ -235,13 +236,19 @@ void RenderTextureCenter(vector2 CenterPosition,
 	InitIndexBuffer(&Command);
 	Command.Shader = *Shader;
 
-
 	vector2 HalfSize = vector2{Size.X * 0.5f, Size.Y * 0.5f};
 
+	/*
 	v3 TopLeft = 		v3{(real32)CenterPosition.X - (real32)HalfSize.X, (real32)CenterPosition.Y - (real32)HalfSize.Y, (real32)RenderOrder};
 	v3 TopRight = 		v3{(real32)CenterPosition.X - (real32)HalfSize.X, (real32)CenterPosition.Y + (real32)HalfSize.Y, (real32)RenderOrder};
 	v3 BottomRight = 	v3{(real32)CenterPosition.X + (real32)HalfSize.X, (real32)CenterPosition.Y + (real32)HalfSize.Y, (real32)RenderOrder};
 	v3 BottomLeft = 	v3{(real32)CenterPosition.X + (real32)HalfSize.X, (real32)CenterPosition.Y - (real32)HalfSize.Y, (real32)RenderOrder};
+	*/
+
+	v3 TopLeft = 		v3{ -(real32)HalfSize.X, -(real32)HalfSize.Y, (real32)RenderOrder};
+	v3 TopRight = 		v3{ -(real32)HalfSize.X, (real32)HalfSize.Y, (real32)RenderOrder};
+	v3 BottomRight = 	v3{(real32)HalfSize.X, (real32)HalfSize.Y, (real32)RenderOrder};
+	v3 BottomLeft = 	v3{(real32)HalfSize.X, -(real32)HalfSize.Y, (real32)RenderOrder};
 
 	// Vertices
 	layout_data* VertexLayout = Command.GetLayout();
@@ -265,11 +272,14 @@ void RenderTextureCenter(vector2 CenterPosition,
 	TextureLayout->Data.Vec2[4] = v2{(real32)UVTopRight.X, (real32)UVTopRight.Y};
 	TextureLayout->Data.Vec2[5] = v2{(real32)UVBottomLeft.X, (real32)UVTopRight.Y};
 
+	Model = Translate(Model, vector3{CenterPosition.X, CenterPosition.Y, 0});
+
 	Command.Uniforms = Command.Shader.Uniforms.Copy(GlobalTransMem);
 	Command.Uniforms.SetVec4("color", v4{Color.R, Color.G, Color.B, Color.A});
 	Command.Uniforms.SetImage("diffuseTex", GLID);
 	Command.Uniforms.SetMat4("projection", m4y4Transpose(Renderer->Camera->ProjectionMatrix));
 	Command.Uniforms.SetMat4("view", m4y4Transpose(Renderer->Camera->ViewMatrix));
+	Command.Uniforms.SetMat4("model", m4y4Transpose(Model));
 
 	InsertRenderCommand(Renderer, &Command);
 }
@@ -300,7 +310,7 @@ void RenderNineSlice(rect Rect, real64 Left, real32 Right, real32 Top, real32 Bo
 	                    vector2{RectWidth(RectTopLeft), RectHeight(RectTopLeft)},
 	                    COLOR_WHITE,
 	                    vector2{1.0f - Left, 0}, vector2{1.0f, Top},
-	                    GLID, 0, Globals->UIRenderer);
+	                    GLID, 0, m4y4Identity(), Globals->UIRenderer);
 
 	// Top
 	rect RectTop = {};
@@ -311,7 +321,7 @@ void RenderNineSlice(rect Rect, real64 Left, real32 Right, real32 Top, real32 Bo
 	                    vector2{RectWidth(RectTop), RectHeight(RectTop)},
 	                    COLOR_WHITE,
 	                    vector2{Left, 0}, vector2{Right, Top},
-	                    GLID, 0, Globals->UIRenderer);
+	                    GLID, 0, m4y4Identity(), Globals->UIRenderer);
 
 	// TopRight
 	rect RectTopRight = {};
@@ -322,7 +332,7 @@ void RenderNineSlice(rect Rect, real64 Left, real32 Right, real32 Top, real32 Bo
 	                    vector2{RectWidth(RectTopRight), RectHeight(RectTopRight)},
 	                    COLOR_WHITE,
 	                    vector2{0, 0}, vector2{1.0 - Right, Top},
-	                    GLID, 0, Globals->UIRenderer);
+	                    GLID, 0, m4y4Identity(), Globals->UIRenderer);
 
 	// BottomLeft
 	rect RectBottomLeft = {};
@@ -333,7 +343,7 @@ void RenderNineSlice(rect Rect, real64 Left, real32 Right, real32 Top, real32 Bo
 	                    vector2{RectWidth(RectBottomLeft), RectHeight(RectBottomLeft)},
 	                    COLOR_WHITE,
 	                    vector2{1.0f - Left, Bottom}, vector2{1.0f, 1.0f},
-	                    GLID, 0, Globals->UIRenderer);
+	                    GLID, 0, m4y4Identity(), Globals->UIRenderer);
 
 	// Bottom
 	rect RectBottom = {};
@@ -344,7 +354,7 @@ void RenderNineSlice(rect Rect, real64 Left, real32 Right, real32 Top, real32 Bo
 	                    vector2{RectWidth(RectBottom), RectHeight(RectBottom)},
 	                    COLOR_WHITE,
 	                    vector2{1.0f - Left, Bottom}, vector2{Right, 1.0f},
-	                    GLID, 0, Globals->UIRenderer);
+	                    GLID, 0, m4y4Identity(), Globals->UIRenderer);
 
 	// BottomRight
 	rect RectBottomRight = {};
@@ -355,7 +365,7 @@ void RenderNineSlice(rect Rect, real64 Left, real32 Right, real32 Top, real32 Bo
 	                    vector2{RectWidth(RectBottomRight), RectHeight(RectBottomRight)},
 	                    COLOR_WHITE,
 	                    vector2{0, Bottom}, vector2{1.0 - Right, 1.0f},
-	                    GLID, 0, Globals->UIRenderer);
+	                    GLID, 0, m4y4Identity(), Globals->UIRenderer);
 
 	// Left
 	rect RectLeft = {};
@@ -366,7 +376,7 @@ void RenderNineSlice(rect Rect, real64 Left, real32 Right, real32 Top, real32 Bo
 	                    vector2{RectWidth(RectLeft), RectHeight(RectLeft)},
 	                    COLOR_WHITE,
 	                    vector2{Left, Bottom}, vector2{0, Top},
-	                    GLID, 0, Globals->UIRenderer);
+	                    GLID, 0, m4y4Identity(), Globals->UIRenderer);
 
 	// Right
 	rect RectRight = {};
@@ -377,7 +387,7 @@ void RenderNineSlice(rect Rect, real64 Left, real32 Right, real32 Top, real32 Bo
 	                    vector2{RectWidth(RectRight), RectHeight(RectRight)},
 	                    COLOR_WHITE,
 	                    vector2{0, Bottom}, vector2{1.0 - Right, Top},
-	                    GLID, 0, Globals->UIRenderer);
+	                    GLID, 0, m4y4Identity(), Globals->UIRenderer);
 
 	// Center!!
 	// todo
@@ -398,14 +408,15 @@ void RenderNineSlice(rect Rect, real64 Left, real32 Right, real32 Top, real32 Bo
 void RenderTexture(vector2 Center, vector2 Size, color Color,
                    vector2 UVTopRight, vector2 UVBottomLeft,
                    uint32 GLID, real32 Layer,
+                   m4y4 Model,
                    renderer* Renderer)
 {
-	RenderTextureCenter(Center, Size, Color, UVTopRight, UVBottomLeft, GLID, Layer, Renderer);
+	RenderTextureCenter(Center, Size, Color, UVTopRight, UVBottomLeft, GLID, Layer, Model, Renderer);
 }
 
-void RenderTextureAll(vector2 Center, vector2 Size, color Color, uint32 GLID, real32 Layer, renderer* Renderer)
+void RenderTextureAll(vector2 Center, vector2 Size, color Color, uint32 GLID, real32 Layer, m4y4 Model, renderer* Renderer)
 {
-	RenderTexture(Center, Size, Color, vector2{1, 1}, vector2{0, 0}, GLID, Layer, Renderer);
+	RenderTexture(Center, Size, Color, vector2{1, 1}, vector2{0, 0}, GLID, Layer, Model, Renderer);
 }
 
 void RenderSprite(vector2 Center, vector2 Size, color Color,
@@ -436,7 +447,7 @@ void RenderSprite(vector2 Center, vector2 Size, color Color,
 	UVTopRight.X = (UVBottomLeft.X + SpritePercSize.X);
 	UVTopRight.Y = (UVBottomLeft.Y + SpritePercSize.Y);
 
-	RenderTexture(Center, Size, Color, UVTopRight, UVBottomLeft, Sheet->Image.GLID, Layer, Renderer);
+	RenderTexture(Center, Size, Color, UVTopRight, UVBottomLeft, Sheet->Image.GLID, Layer, m4y4Identity(), Renderer);
 }
 
 // This assumes looping
@@ -771,89 +782,6 @@ void RenderObj(model* Mesh, material* Material, m4y4 Transform, renderer* Render
 	Command.SkinController = SkinCon;
 	Command.BufferCapacity = Mesh->IndeciesCount;
 	Command.IndexBuffer = Mesh->Indecies;
-
-	// Set layouts
-	/*
-	{
-		int vertLoc = Command.Shader.GetLayoutLocation(render::ShaderVertID);
-		if (vertLoc >= 0) {
-			//RenderApi.VAOBind_v3(VAO, Mesh->Points, Mesh->IndeciesCount, vertLoc);
-
-			layout_data* Layout = Command.GetLayout();
-			Layout->Allocate(Material->Shader->GetLayout(render::ShaderVertID), Command.BufferCapacity, GlobalTransMem);
-			for (int i = 0; i < Command.BufferCapacity; i++) {
-				Layout->Data.Vec3[i] = Mesh->Points[i];
-			}
-		}
-
-		int texCoordsLoc = Command.Shader.GetLayoutLocation(render::ShaderTextureCoordsID);
-		if (texCoordsLoc >= 0) {
-			//RenderApi.VAOBind_v2(VAO, Mesh->UVs, Mesh->IndeciesCount, texCoordsLoc);
-
-			layout_data* Layout = Command.GetLayout();
-			Layout->Allocate(Material->Shader->GetLayout(render::ShaderTextureCoordsID), Command.BufferCapacity, GlobalTransMem);
-			for (int i = 0; i < Command.BufferCapacity; i++) {
-				Layout->Data.Vec2[i] = Mesh->UVs[i];
-			}
-		}
-
-
-		int normalLoc = Command.Shader.GetLayoutLocation(render::ShaderNormalID);
-		if (normalLoc >= 0) {
-			//RenderApi.VAOBind_v3(VAO, Mesh->Normals, Mesh->IndeciesCount, normalLoc);
-
-			layout_data* Layout = Command.GetLayout();
-			Layout->Allocate(Material->Shader->GetLayout(render::ShaderNormalID), Command.BufferCapacity, GlobalTransMem);
-			for (int i = 0; i < Command.BufferCapacity; i++) {
-				Layout->Data.Vec3[i] = Mesh->Normals[i];
-			}
-		}
-
-		int normalTanLoc = Command.Shader.GetLayoutLocation(render::ShaderNormalTanID);
-		if (normalTanLoc >= 0) {
-			//RenderApi.VAOBind_v3(VAO, Mesh->Normals, Mesh->IndeciesCount, normalLoc);
-
-			layout_data* Layout = Command.GetLayout();
-			Layout->Allocate(Material->Shader->GetLayout(render::ShaderNormalTanID), Command.BufferCapacity, GlobalTransMem);
-			for (int i = 0; i < Command.BufferCapacity; i++) {
-				Layout->Data.Vec3[i] = Mesh->NormalTans[i];
-			}
-		}
-
-		int normalBiTanLoc = Command.Shader.GetLayoutLocation(render::ShaderNormalBiTanID);
-		if (normalBiTanLoc >= 0) {
-			//RenderApi.VAOBind_v3(VAO, Mesh->NormalBiTans, Mesh->IndeciesCount, normalBiTanLoc);
-
-			layout_data* Layout = Command.GetLayout();
-			Layout->Allocate(Material->Shader->GetLayout(render::ShaderNormalBiTanID), Command.BufferCapacity, GlobalTransMem);
-			for (int i = 0; i < Command.BufferCapacity; i++) {
-				Layout->Data.Vec3[i] = Mesh->NormalBiTans[i];
-			}
-		}
-
-		int boneWeightsLoc = Command.Shader.GetLayoutLocation(render::ShaderBoneWeightsID);
-		if (boneWeightsLoc >= 0) {
-			//RenderApi.VAOBind_v3(VAO, Entity->SkinController.BoneWeights, Mesh->IndeciesCount, boneWeightsLoc);
-
-			layout_data* Layout = Command.GetLayout();
-			Layout->Allocate(Material->Shader->GetLayout(render::ShaderBoneWeightsID), Command.BufferCapacity, GlobalTransMem);
-			for (int i = 0; i < Command.BufferCapacity; i++) {
-				Layout->Data.Vec3[i] = SkinCon->BoneWeights[i];
-			}
-		}
-
-		int boneIndeciesLoc = Command.Shader.GetLayoutLocation(render::ShaderBoneIndeciesID);
-		if (boneIndeciesLoc >= 0) {
-			//RenderApi.VAOBind_v3(VAO, Entity->SkinController.BoneIndecies, Mesh->IndeciesCount, boneIndeciesLoc);
-
-			layout_data* Layout = Command.GetLayout();
-			Layout->Allocate(Material->Shader->GetLayout(render::ShaderBoneIndeciesID), Command.BufferCapacity, GlobalTransMem);
-			for (int i = 0; i < Command.BufferCapacity; i++) {
-				Layout->Data.Vec3[i] = SkinCon->BoneIndecies[i];
-			}
-		}
-	}
-	*/
 
 	Command.Uniforms = Material->Uniforms.Copy(GlobalTransMem);
 	Command.Uniforms.SetMat4("model", m4y4Transpose(Transform));

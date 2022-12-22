@@ -69,6 +69,11 @@ void ShipMove(ship* Ship, ship_journey Journey)
 {
 	Ship->IsMoving = true;
 	Ship->CurrentJourney = Journey;
+
+	// Update rotation
+	vector2 MoveDir = Vector2Normalize(Ship->CurrentJourney.EndPosition - Ship->Position);
+	Ship->Rotation = Vector2AngleBetween(vector2{0, 1}, MoveDir) + PI;
+	if (Ship->Position.X < Ship->CurrentJourney.EndPosition.X) { Ship->Rotation *= -1; }
 }
 
 game::ship* ShipSetup(game::state* State, vector2 Pos)

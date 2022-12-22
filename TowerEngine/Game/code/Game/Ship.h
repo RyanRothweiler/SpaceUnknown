@@ -11,6 +11,7 @@ struct ship {
 	vector2 Position;
 	vector2 Velocity;
 	vector2 Size;
+	real64 Rotation;
 
 	bool32 IsMoving;
 	ship_journey CurrentJourney;

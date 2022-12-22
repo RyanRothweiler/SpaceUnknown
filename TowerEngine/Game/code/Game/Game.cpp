@@ -311,12 +311,19 @@ namespace game {
 		for (int i = 0; i < ArrayCount(State->Ships); i++) {
 			ship* Ship = &State->Ships[i];
 			if (Ship->Using) {
+
+				m4y4 Model = m4y4Identity();
+				Model = Rotate(Model, vector3{0, 0, Ship->Rotation});
+
+				if (Ship->IsMoving) {
+				}
+
 				static loaded_image* ShipImage = assets::GetImage("Ship");
 				RenderTextureAll(
 				    Ship->Position,
 				    Ship->Size,
 				    COLOR_WHITE,
-				    ShipImage->GLID, RenderLayerShip, Globals->GameRenderer);
+				    ShipImage->GLID, RenderLayerShip, Model, Globals->GameRenderer);
 			}
 		}
 	}
