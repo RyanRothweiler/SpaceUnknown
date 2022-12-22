@@ -294,6 +294,8 @@ bool32 MouseLeftState = false;
 bool32 MouseRightState = false;
 bool32 MouseMiddleState = false;
 bool32 KeyboardState[256] = {};
+bool32 FunctionKeysDown[10];
+bool32 EscapeState = false;
 
 void
 ProcessInputState(input_state *ButtonProcessing, bool32 NewState)
@@ -322,7 +324,7 @@ ProcessInputState(input_state *ButtonProcessing, bool32 NewState)
 
 EM_BOOL KeyCallback(int eventType, const EmscriptenKeyboardEvent *e, void *userData)
 {
-	//printf("Keyboard event %i button %s\n", eventType, e->key);
+	printf("Keyboard event %i button %s\n", eventType, e->key);
 
 	if (std::strlen(e->key) == 1) {
 		if (eventType == EMSCRIPTEN_EVENT_KEYDOWN) {
@@ -388,6 +390,35 @@ EM_BOOL KeyCallback(int eventType, const EmscriptenKeyboardEvent *e, void *userD
 
 		if (Key == string{"Tab"}) {
 			KeyboardState[KEY_TAB] = (eventType == EMSCRIPTEN_EVENT_KEYDOWN);
+		} else if (Key == string{"F1"}) {
+			FunctionKeysDown[1] = (eventType == EMSCRIPTEN_EVENT_KEYDOWN);
+			return true;
+		} else if (Key == string{"F2"}) {
+			FunctionKeysDown[2] = (eventType == EMSCRIPTEN_EVENT_KEYDOWN);
+			return true;
+		} else if (Key == string{"F3"}) {
+			FunctionKeysDown[3] = (eventType == EMSCRIPTEN_EVENT_KEYDOWN);
+			return true;
+		} else if (Key == string{"F4"}) {
+			FunctionKeysDown[4] = (eventType == EMSCRIPTEN_EVENT_KEYDOWN);
+			return true;
+		} else if (Key == string{"F5"}) {
+			FunctionKeysDown[5] = (eventType == EMSCRIPTEN_EVENT_KEYDOWN);
+			return true;
+		} else if (Key == string{"F6"}) {
+			FunctionKeysDown[6] = (eventType == EMSCRIPTEN_EVENT_KEYDOWN);
+			return true;
+		} else if (Key == string{"F7"}) {
+			FunctionKeysDown[7] = (eventType == EMSCRIPTEN_EVENT_KEYDOWN);
+			return true;
+		} else if (Key == string{"F8"}) {
+			FunctionKeysDown[8] = (eventType == EMSCRIPTEN_EVENT_KEYDOWN);
+			return true;
+		} else if (Key == string{"F9"}) {
+			FunctionKeysDown[9] = (eventType == EMSCRIPTEN_EVENT_KEYDOWN);
+			return true;
+		} else if (Key == string{"Escape"}) {
+			EscapeState = (eventType == EMSCRIPTEN_EVENT_KEYDOWN);
 		}
 	}
 
@@ -447,12 +478,19 @@ EGLSurface GLSurface = {};
 
 void MainLoop()
 {
-	//printf("Mouse Left %i \n", MouseLeftState);
-	ProcessInputState(&GameInput.MouseLeft, MouseLeftState);
-	ProcessInputState(&GameInput.MouseMiddle, MouseMiddleState);
-	ProcessInputState(&GameInput.MouseRight, MouseRightState);
-	for (int index = 0; index < ArrayCount(GameInput.KeyboardInput); index++) {
-		ProcessInputState(&GameInput.KeyboardInput[index], KeyboardState[index]);
+	// Update input states
+	{
+		ProcessInputState(&GameInput.MouseLeft, MouseLeftState);
+		ProcessInputState(&GameInput.MouseMiddle, MouseMiddleState);
+		ProcessInputState(&GameInput.MouseRight, MouseRightState);
+		ProcessInputState(&GameInput.Escape, EscapeState);
+		Assert(ArrayCount(FunctionKeysDown) == ArrayCount(GameInput.FunctionKeys));
+		for (int index = 0; index < ArrayCount(FunctionKeysDown); index++) {
+			ProcessInputState(&GameInput.FunctionKeys[index], FunctionKeysDown[index]);
+		}
+		for (int index = 0; index < ArrayCount(GameInput.KeyboardInput); index++) {
+			ProcessInputState(&GameInput.KeyboardInput[index], KeyboardState[index]);
+		}
 	}
 
 	GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
