@@ -505,7 +505,8 @@ void MainLoop()
 	PrevClock = CurrClock;
 
 	float FPS = 1.0f / (ClockDiff.count());
-	//printf("FPS %f \n", FPS);
+	GameStateFromMemory->DeltaTimeMS = ClockDiff.count() * 1000.0f;
+	//printf("FPS %f Clock %f Delta %f \n", FPS, ClockDiff.count(), GameStateFromMemory->DeltaTimeMS);
 
 	GameInput.MouseScrollDelta = 0.0f;
 }
