@@ -33,6 +33,11 @@ color LerpColor(color A, color B, real64 T)
 	return Output;
 }
 
+color Color255(real32 R, real32 G, real32 B, real32 A)
+{
+	return color {R / 255.0f, G / 255.0f, B / 255.0f, A};
+}
+
 // http://www.andrewnoske.com/wiki/Code_-_heatmaps_and_color_gradients
 color HeatMapColor(real32 Input)
 {

@@ -356,6 +356,9 @@ namespace assets {
 		asset_image Images[] = {
 			{"Gizmo_Circle", 		"EngineResources/Circle.png", 		gl_blend_type::linear, correct_gamma::no},
 			{"Ship", 				"FirstShip.png", 					gl_blend_type::linear, correct_gamma::no},
+			{"Asteroid1", 			"Asteroids/Asteroid1.png", 			gl_blend_type::linear, correct_gamma::no},
+			{"Asteroid2", 			"Asteroids/Asteroid2.png", 			gl_blend_type::linear, correct_gamma::no},
+			{"Asteroid3", 			"Asteroids/Asteroid3.png", 			gl_blend_type::linear, correct_gamma::no},
 		};
 
 		asset_shader Shaders[] = {

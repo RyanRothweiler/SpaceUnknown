@@ -56,6 +56,54 @@ namespace game {
 		State->ShipSelected = GameNull;
 	}
 
+	void SpawnAsteroid(asteroid_cluster* Cluster)
+	{
+		real64 CollisionRadius = 15.0f;
+
+		int Attempts = 10;
+		while (Attempts > 0) {
+			Attempts--;
+
+			real64 r = Cluster->Radius * sqrt(RandomRangeFloat(0.0f, 1.0f));
+			real64 theta = RandomRangeFloat(0.0f, 1.0f) * 2.0f * PI;
+
+			vector2 PossiblePos = {};
+			PossiblePos.X = Cluster->Center.X + r * cos(theta);
+			PossiblePos.Y = Cluster->Center.Y + r * sin(theta);
+
+			bool32 Valid = true;
+			for (int i = 0; i < ArrayCount(Cluster->Asteroids); i++) {
+				if (Cluster->Asteroids[i].Using) {
+					real64 Dist = Vector2Distance(PossiblePos, Cluster->Asteroids[i].Position);
+					if (Dist < CollisionRadius) {
+						Valid = false;
+						break;
+					}
+				}
+			}
+
+			// Spawn asteroid
+			if (Valid) {
+				for (int i = 0; i < ArrayCount(Cluster->Asteroids); i++) {
+					if (!Cluster->Asteroids[i].Using) {
+						Cluster->Asteroids[i].Using = true;
+						Cluster->Asteroids[i].Position = PossiblePos;
+						Cluster->Asteroids[i].Size = RandomRangeFloat(5.0f, 10.0f);
+
+						real64 Rate = PI / 10.0f;
+						Cluster->Asteroids[i].RotationRate = RandomRangeFloat(-Rate, Rate);
+						Cluster->Asteroids[i].Rotation = RandomRangeFloat(-PI / 2.0f, PI / 2.0f);
+
+						return;
+					}
+				}
+
+				// No empty asteroid found
+				return;
+			}
+		}
+	}
+
 	void Start(engine_state* EngineState)
 	{
 		game::state* State = &EngineState->GameState;
@@ -63,6 +111,22 @@ namespace game {
 		RegisterStepper(&State->UniverseTime.Stepper, &TimeStep, (void*)(&State->UniverseTime), State);
 
 		ShipSetup(State, vector2{0, 0});
+
+		State->Asteroids[0].Center = {0, 0};
+		State->Asteroids[0].Radius = 30.0f;
+		SpawnAsteroid(&State->Asteroids[0]);
+		SpawnAsteroid(&State->Asteroids[0]);
+		SpawnAsteroid(&State->Asteroids[0]);
+		SpawnAsteroid(&State->Asteroids[0]);
+		SpawnAsteroid(&State->Asteroids[0]);
+		SpawnAsteroid(&State->Asteroids[0]);
+		SpawnAsteroid(&State->Asteroids[0]);
+		SpawnAsteroid(&State->Asteroids[0]);
+		SpawnAsteroid(&State->Asteroids[0]);
+		SpawnAsteroid(&State->Asteroids[0]);
+		SpawnAsteroid(&State->Asteroids[0]);
+		SpawnAsteroid(&State->Asteroids[0]);
+		State->ClustersCount++;
 	}
 
 	const real32 ZoomMin = 0.0f;
@@ -104,6 +168,17 @@ namespace game {
 
 			if (EditorState->EditorMode) {
 				ImGui::Text("EDITOR MODE");
+
+				// Mouse world position
+				{
+					vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
+					vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
+					ImGui::Text(string{MouseWorldFlat.X} .Array());
+					ImGui::SameLine();
+					ImGui::Text(string{MouseWorldFlat.Y} .Array());
+					RenderCircle(MouseWorldFlat, vector2{1, 1},
+					             COLOR_RED, -1, Globals->GameRenderer);
+				}
 
 				ImGui::Text("Time Boost");
 				{
@@ -307,6 +382,27 @@ namespace game {
 		RenderCircle(vector2{1200, 200}, vector2{2000, 2000},
 		             COLOR_RED, RenderLayerPlanet, Globals->GameRenderer);
 
+		// Render asteroids
+		for (int i = 0; i < State->ClustersCount; i++) {
+			asteroid_cluster* Clust = &State->Asteroids[i];
+			for (int a = 0; a < ArrayCount(Clust->Asteroids); a++) {
+				if (Clust->Asteroids[a].Using) {
+
+					Clust->Asteroids[a].Rotation += Clust->Asteroids[a].RotationRate * EngineState->DeltaTimeMS * 0.0002f;
+
+					m4y4 Model = m4y4Identity();
+					Model = Rotate(Model, vector3{0, 0, Clust->Asteroids[a].Rotation});
+
+					static loaded_image* AsteroidImage = assets::GetImage("Asteroid1");
+					RenderTextureAll(
+					    Clust->Asteroids[a].Position,
+					    vector2{Clust->Asteroids[a].Size, Clust->Asteroids[a].Size},
+					    Color255(79.0f, 60.0f, 48.0f, 1.0f),
+					    AsteroidImage->GLID, RenderLayerPlanet, Model, Globals->GameRenderer);
+				}
+			}
+		}
+
 		// Render ships
 		for (int i = 0; i < ArrayCount(State->Ships); i++) {
 			ship* Ship = &State->Ships[i];
@@ -314,9 +410,6 @@ namespace game {
 
 				m4y4 Model = m4y4Identity();
 				Model = Rotate(Model, vector3{0, 0, Ship->Rotation});
-
-				if (Ship->IsMoving) {
-				}
 
 				static loaded_image* ShipImage = assets::GetImage("Ship");
 				RenderTextureAll(

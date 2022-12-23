@@ -2,6 +2,7 @@
 #define GENERATED 
  
 char* AssetsFolderStructure[] { 
+"Asteroids/",
 "EngineResources/",
 "Shaders/",
 }; 
