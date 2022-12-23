@@ -20,7 +20,8 @@ namespace game {
 		real64 DistFromSidesToCoast;
 	};
 
-	typedef void(*step_func)(void* SelfData, real64 time);
+	struct state;
+	typedef void(*step_func)(void* SelfData, real64 time, game::state* State);
 
 	struct stepper {
 		void* SelfData;

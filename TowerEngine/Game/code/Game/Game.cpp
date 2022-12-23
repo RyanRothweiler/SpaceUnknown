@@ -32,18 +32,17 @@ namespace game {
 		State->Steppers[State->SteppersCount++] = Stepper;
 	}
 
-	void TimeStep(void* SelfData, real64 Time)
+	void TimeStep(void* SelfData, real64 Time, game::state* State)
 	{
 		game::universe_time* UT = (game::universe_time*)SelfData;
 		UT->TimeMS += Time;
 	}
 
-
 	void StepUniverse(game::state* State, real64 TimeMS)
 	{
 		for (int i = 0; i < State->SteppersCount; i++) {
 			stepper* Stepper = State->Steppers[i];
-			Stepper->Step(Stepper->SelfData, TimeMS);
+			Stepper->Step(Stepper->SelfData, TimeMS, State);
 		}
 	}
 
@@ -244,9 +243,18 @@ namespace game {
 					ImGui::SameLine();
 					ImGui::Text(V.Array());
 				}
-				//}
 
-				ImGui::Separator();
+				if (ImGui::CollapsingHeader("Modules")) {
+					for (int i = 0; i < CurrentShip->ModulesCount; i++) {
+						ship_module* Module = &CurrentShip->Modules[i];
+
+						ImGui::Text("Asteroid Miner");
+						float Progress = (float)(Module->ActivationTimerMS / Module->Definition.ActivationTimeMS);
+						ImGui::ProgressBar(Progress, ImVec2(-1.0f, 1.0f));
+					}
+				}
+
+
 
 				if (
 				    !CurrentShip->IsMoving &&
@@ -264,6 +272,7 @@ namespace game {
 						RenderLine(Line, 1.5f, color{0, 1, 0, 0.2f}, &EngineState->UIRenderer, false);
 					}
 
+					ImGui::Separator();
 					if (ImGui::Button("Execute Movement", ImVec2(-1.0f, 0.0f))) {
 						ShipMove(CurrentShip, CurrentShip->CurrentJourney);
 					}
@@ -358,7 +367,22 @@ namespace game {
 				    COLOR_WHITE,
 				    ShipImage->GLID, RenderLayerShip, Model, Globals->GameRenderer);
 			}
+
+			// Render ship module effects
+			for (int m = 0; m < Ship->ModulesCount; m++) {
+				ship_module* Module = &Ship->Modules[m];
+				if (Module->Target != GameNull) {
+					vector2 Points[2] = {};
+					Points[0] = WorldToScreen(vector3{Ship->Position.X, Ship->Position.Y, 0}, &EngineState->GameCamera);
+					Points[1] = WorldToScreen(vector3{Module->Target->Position.X, Module->Target->Position.Y, 0}, &EngineState->GameCamera);
+					render_line Line = {};
+					Line.Points = Points;
+					Line.PointsCount = ArrayCount(Points);
+					RenderLine(Line, 1.5f, color{1, 0, 0, 0.2f}, &EngineState->UIRenderer, false);
+				}
+			}
 		}
+
 	}
 }
 
