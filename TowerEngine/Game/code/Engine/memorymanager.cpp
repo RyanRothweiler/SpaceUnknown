@@ -50,16 +50,6 @@ void* ArenaAllocate(memory_arena *Memory, uint64 Size)
 	return (CurrMemoryPos);
 }
 
-void ThreadPushAllocate(memory_arena* Arena, uint64 Size)
-{
-
-}
-
-void ThreadPopAllocate(memory_arena* Arena, uint64 Size)
-{
-
-}
-
 void ClearMemory(uint8* Mem, uint64 Size)
 {
 	for (uint64 Index = 0; Index < Size; Index++) {

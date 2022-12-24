@@ -107,6 +107,45 @@ void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
 	}
 }
 
+void ShipGiveItem(ship* Ship, item_id ItemID, int32 Count)
+{
+	item_definition Def = GetItemDefinition(ItemID);
+
+	if (Def.Stackable) {
+		// Add to existing stack
+		for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
+			if (Ship->Cargo[i].Count > 0 && Ship->Cargo[i].Definition.ID == ItemID) {
+				Ship->Cargo[i].Count += Count;
+				return;
+			}
+		}
+
+		// Make new stack
+		for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
+			if (Ship->Cargo[i].Count <= 0) {
+				Ship->Cargo[i].Count = Count;
+				Ship->Cargo[i].Definition = Def;
+				return;
+			}
+		}
+
+		ConsoleLog("Ship cargo full");
+		return;
+	}
+
+	// Not stackable, so make new stacks
+	for (int c = 0; c < Count; c++) {
+		for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
+			if (Ship->Cargo[i].Count <= 0) {
+				Ship->Cargo[i].Count = 1;
+				Ship->Cargo[i].Definition = Def;
+				break;
+			}
+		}
+	}
+
+}
+
 game::ship* ShipSetup(game::state* State, vector2 Pos)
 {
 	for (int i = 0; i < ArrayCount(State->Ships); i++) {
@@ -116,12 +155,9 @@ game::ship* ShipSetup(game::state* State, vector2 Pos)
 			Ship->Using = true;
 			Ship->Position = Pos;
 			Ship->Size = vector2{6, 6};
+			Ship->Definition = Definition_Ship_First;
 
-			Ship->Definition.FuelRateGallonsPerSecond = 1.0f;
-			Ship->Definition.Mass = 100;
-
-			Ship->Modules[0].Definition.ActivationTimeMS = SecondsToMilliseconds(60.0f * 2.0f);
-			Ship->Modules[0].Definition.ActivationRange = 40.0f;
+			Ship->Modules[0].Definition = Definition_Module_AsteroidMiner;
 			Ship->Modules[0].Owner = Ship;
 			game::RegisterStepper(&Ship->Modules[0].Stepper, &ModuleUpdate, (void*)(&Ship->Modules[0]), State);
 			Ship->ModulesCount++;

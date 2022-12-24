@@ -1,6 +1,7 @@
 const real64 fuelForcePerGallon = 8.0f;
 
 struct ship_module_definition {
+	string DisplayName;
 	real64 ActivationTimeMS;
 	real64 ActivationRange;
 };
@@ -27,6 +28,8 @@ struct ship {
 
 	ship_module Modules[50];
 	int32 ModulesCount;
+
+	item_instance Cargo[256];
 
 	vector2 Position;
 	vector2 Velocity;

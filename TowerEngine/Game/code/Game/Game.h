@@ -34,6 +34,7 @@ namespace game {
 	};
 
 #include "Asteroid.h"
+#include "Item.h"
 #include "Ship.h"
 
 	struct state {

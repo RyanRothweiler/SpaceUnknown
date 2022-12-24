@@ -46,7 +46,9 @@ namespace game {
 		}
 	}
 
+#include "Definitions.cpp"
 #include "Asteroid.cpp"
+#include "Item.cpp"
 #include "Ship.cpp"
 
 	void ClearShipSelection(game::state* State)
@@ -60,11 +62,11 @@ namespace game {
 	void Start(engine_state* EngineState)
 	{
 		game::state* State = &EngineState->GameState;
+		CreateDefinitions();
 
 		RegisterStepper(&State->UniverseTime.Stepper, &TimeStep, (void*)(&State->UniverseTime), State);
 
 		ShipSetup(State, vector2{0, 0});
-
 		AsteroidCreateCluster(vector2{0, 0}, 30.0f, State);
 	}
 
@@ -248,13 +250,24 @@ namespace game {
 					for (int i = 0; i < CurrentShip->ModulesCount; i++) {
 						ship_module* Module = &CurrentShip->Modules[i];
 
-						ImGui::Text("Asteroid Miner");
+						ImGui::Text(Module->Definition.DisplayName.Array());
 						float Progress = (float)(Module->ActivationTimerMS / Module->Definition.ActivationTimeMS);
 						ImGui::ProgressBar(Progress, ImVec2(-1.0f, 1.0f));
 					}
 				}
 
-
+				if (ImGui::CollapsingHeader("Cargo")) {
+					for (int i = 0; i < ArrayCount(CurrentShip->Cargo); i++) {
+						item_instance* Item = &CurrentShip->Cargo[i];
+						if (Item->Count > 0) {
+							ImGui::Text(Item->Definition.DisplayName.Array());
+							ImGui::SameLine();
+							ImGui::Text("x");
+							ImGui::SameLine();
+							ImGui::Text(string{Item->Count} .Array());
+						}
+					}
+				}
 
 				if (
 				    !CurrentShip->IsMoving &&
