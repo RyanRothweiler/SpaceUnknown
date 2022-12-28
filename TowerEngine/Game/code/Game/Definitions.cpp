@@ -1,13 +1,12 @@
 void CreateDefinitions()
 {
 	Globals->AssetsList.Definition_Module_AsteroidMiner.DisplayName = "Asteroid Miner";
-	//Globals->AssetsList.Definition_Module_AsteroidMiner.ActivationTimeMS = SecondsToMilliseconds(60.0f * 2.0f);
-	Globals->AssetsList.Definition_Module_AsteroidMiner.ActivationTimeMS = SecondsToMilliseconds(0.5f);
+	Globals->AssetsList.Definition_Module_AsteroidMiner.ActivationTimeMS = SecondsToMilliseconds(60.0f * 2.0f);
 	Globals->AssetsList.Definition_Module_AsteroidMiner.ActivationRange = 40.0f;
 
 	Globals->AssetsList.Definition_Ship_First.FuelRateGallonsPerSecond = 1.0f;
 	Globals->AssetsList.Definition_Ship_First.Mass = 200;
-	Globals->AssetsList.Definition_Ship_First.CargoMassLimit = 3;
+	Globals->AssetsList.Definition_Ship_First.CargoMassLimit = 100;
 
 	Globals->AssetsList.ItemDefinitions[0].ID = item_id::venigen;
 	Globals->AssetsList.ItemDefinitions[0].DisplayName = "Venigen";
