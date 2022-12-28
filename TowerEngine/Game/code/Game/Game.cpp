@@ -291,6 +291,7 @@ namespace game {
 				    CurrentShip->CurrentJourney.EndPosition.Y != 0
 				) {
 
+					// Line to taget destination
 					{
 						vector2 Points[2] = {};
 						Points[0] = WorldToScreen(vector3{CurrentShip->CurrentJourney.EndPosition.X, CurrentShip->CurrentJourney.EndPosition.Y, 0}, &EngineState->GameCamera);
@@ -301,9 +302,46 @@ namespace game {
 						RenderLine(Line, 1.5f, color{0, 1, 0, 0.2f}, &EngineState->UIRenderer, false);
 					}
 
-					ImGui::Separator();
-					if (ImGui::Button("Execute Movement", ImVec2(-1.0f, 0.0f))) {
-						ShipMove(CurrentShip, CurrentShip->CurrentJourney);
+					// Journey settings
+					{
+						static bool32 DoCalc = false;
+						static float DurationMS = 0.0f;
+
+						ImGui::Separator();
+						if (ImGui::SliderFloat("Fuel Usage", &CurrentShip->CurrentJourney.EdgeRatio, 0.1f, 1.0f, "%.2f")) {
+							DoCalc = true;
+						} else {
+							DoCalc = false;
+						}
+
+						if (DoCalc) {
+							DurationMS = 0.0f;
+
+							float SimFPS = 30.0f;
+							float TimeStepMS = 1.0f / SimFPS;
+
+							vector2 PosOrig = CurrentShip->Position;
+							CurrentShip->Velocity = {};
+							ShipMove(CurrentShip, CurrentShip->CurrentJourney);
+
+							while (ShipSimulateMovement(CurrentShip, CurrentShip->CurrentJourney.EndPosition, TimeStepMS)) {
+								DurationMS += TimeStepMS;
+							}
+
+							CurrentShip->Position = PosOrig;
+							CurrentShip->Velocity = {};
+							CurrentShip->IsMoving = false;
+						}
+
+						float DurationMinutes = DurationMS / 1000.0f / 60.0f;
+
+						ImGui::Text("Journey Minutes");
+						ImGui::SameLine();
+						ImGui::Text(string{DurationMinutes} .Array());
+
+						if (ImGui::Button("Execute Movement", ImVec2(-1.0f, 0.0f))) {
+							ShipMove(CurrentShip, CurrentShip->CurrentJourney);
+						}
 					}
 				}
 
@@ -321,12 +359,8 @@ namespace game {
 				}
 
 				if (Input->MouseLeft.OnUp && !CurrentShip->IsMoving && !Input->MouseMoved()) {
-					float edgeRatio = 1.0;
-
 					CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;
 					CurrentShip->CurrentJourney.EndPosition = MouseWorldFlat;
-					CurrentShip->CurrentJourney.DistFromSidesToCoast =
-					    Vector2Distance(CurrentShip->Position, CurrentShip->CurrentJourney.EndPosition) * 0.5f * edgeRatio;
 				}
 			}
 

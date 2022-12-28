@@ -19,10 +19,9 @@ int64 ShipGetMass(ship* Ship)
 	return Mass;
 }
 
-//public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, UniversalPosition targetPositionUniverse, float time, JourneySettings settings)
-bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 Time)
+bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 TimeMS)
 {
-	real64 TimeSeconds = Time * 0.001f;
+	real64 TimeSeconds = TimeMS * 0.001f;
 
 	real64 fuelToUse = Ship->Definition.FuelRateGallonsPerSecond * TimeSeconds;
 	real64 fuelForce = fuelToUse * fuelForcePerGallon;
@@ -91,6 +90,9 @@ void ShipMove(ship* Ship, ship_journey Journey)
 {
 	Ship->IsMoving = true;
 	Ship->CurrentJourney = Journey;
+
+	Ship->CurrentJourney.DistFromSidesToCoast =
+	    Vector2Distance(Ship->Position, Ship->CurrentJourney.EndPosition) * 0.5f * Journey.EdgeRatio;
 
 	// Update rotation
 	vector2 MoveDir = Vector2Normalize(Ship->CurrentJourney.EndPosition - Ship->Position);
