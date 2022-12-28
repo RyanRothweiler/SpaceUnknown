@@ -6,7 +6,7 @@ struct item_definition {
 	item_id ID;
 	string DisplayName;
 	bool32 Stackable;
-	real64 Weight;
+	int64 Mass;
 };
 
 struct item_instance {

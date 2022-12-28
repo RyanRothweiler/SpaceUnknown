@@ -235,8 +235,8 @@ namespace game {
 						}
 						ImGui::TreePop();
 					}
+					ImGui::Separator();
 				}
-				ImGui::Separator();
 
 				// Velocity
 				{
@@ -244,6 +244,16 @@ namespace game {
 					ImGui::Text("Velocity (kph)");
 					ImGui::SameLine();
 					ImGui::Text(V.Array());
+				}
+
+				// Weight
+				{
+					int64 ShipWeight = ShipGetMass(CurrentShip);
+					string ShipWeightDisp = Humanize(ShipWeight);
+
+					ImGui::Text("Ship Total Mass (t)");
+					ImGui::SameLine();
+					ImGui::Text(ShipWeightDisp.Array());
 				}
 
 				if (ImGui::CollapsingHeader("Modules")) {
@@ -256,15 +266,19 @@ namespace game {
 					}
 				}
 
-				if (ImGui::CollapsingHeader("Cargo")) {
-					for (int i = 0; i < ArrayCount(CurrentShip->Cargo); i++) {
-						item_instance* Item = &CurrentShip->Cargo[i];
-						if (Item->Count > 0) {
-							ImGui::Text(Item->Definition.DisplayName.Array());
-							ImGui::SameLine();
-							ImGui::Text("x");
-							ImGui::SameLine();
-							ImGui::Text(string{Item->Count} .Array());
+				{
+					int64 CargoWeight = (int64)ShipGetCargoMass(CurrentShip);
+					string CargoTitle = "Cargo (" + string{CargoWeight} + "/" + string{(int64)CurrentShip->Definition.CargoMassLimit} + ")(t)###CARGO";
+					if (ImGui::CollapsingHeader(CargoTitle.Array())) {
+						for (int i = 0; i < ArrayCount(CurrentShip->Cargo); i++) {
+							item_instance* Item = &CurrentShip->Cargo[i];
+							if (Item->Count > 0) {
+								ImGui::Text(Item->Definition.DisplayName.Array());
+								ImGui::SameLine();
+								ImGui::Text("x");
+								ImGui::SameLine();
+								ImGui::Text(string{Item->Count} .Array());
+							}
 						}
 					}
 				}

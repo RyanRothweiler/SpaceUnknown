@@ -1,29 +1,24 @@
-item_definition ItemDefinitions[100];
-
-ship_module_definition Definition_Module_AsteroidMiner = {};
-
-ship_definition Definition_Ship_First = {};
-
 void CreateDefinitions()
 {
-	Definition_Module_AsteroidMiner.DisplayName = "Asteroid Miner";
-	Definition_Module_AsteroidMiner.ActivationTimeMS = SecondsToMilliseconds(60.0f * 2.0f);
-	Definition_Module_AsteroidMiner.ActivationRange = 40.0f;
+	Globals->AssetsList.Definition_Module_AsteroidMiner.DisplayName = "Asteroid Miner";
+	Globals->AssetsList.Definition_Module_AsteroidMiner.ActivationTimeMS = SecondsToMilliseconds(60.0f * 2.0f);
+	Globals->AssetsList.Definition_Module_AsteroidMiner.ActivationRange = 40.0f;
 
-	Definition_Ship_First.FuelRateGallonsPerSecond = 1.0f;
-	Definition_Ship_First.Mass = 100;
+	Globals->AssetsList.Definition_Ship_First.FuelRateGallonsPerSecond = 1.0f;
+	Globals->AssetsList.Definition_Ship_First.Mass = 200;
+	Globals->AssetsList.Definition_Ship_First.CargoMassLimit = 100;
 
-	ItemDefinitions[0].ID = item_id::venigen;
-	ItemDefinitions[0].DisplayName = "Venigen";
-	ItemDefinitions[0].Weight = 1;
-	ItemDefinitions[0].Stackable = false;
+	Globals->AssetsList.ItemDefinitions[0].ID = item_id::venigen;
+	Globals->AssetsList.ItemDefinitions[0].DisplayName = "Venigen";
+	Globals->AssetsList.ItemDefinitions[0].Mass = 1;
+	Globals->AssetsList.ItemDefinitions[0].Stackable = true;
 }
 
 item_definition GetItemDefinition(item_id ID)
 {
-	for (int i = 0; i < ArrayCount(ItemDefinitions); i++) {
-		if (ItemDefinitions[i].ID == ID) {
-			return ItemDefinitions[i];
+	for (int i = 0; i < ArrayCount(Globals->AssetsList.ItemDefinitions); i++) {
+		if (Globals->AssetsList.ItemDefinitions[i].ID == ID) {
+			return Globals->AssetsList.ItemDefinitions[i];
 		}
 	}
 

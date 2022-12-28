@@ -74,6 +74,7 @@ vector2 NearestOnLine(line Line, vector2 Point)
 #include "ParticleSystem.cpp"
 #include "Util.cpp"
 
+#include "../Game/Game.h"
 #include "../Game/AssetList.h"
 #include "CSV.cpp"
 

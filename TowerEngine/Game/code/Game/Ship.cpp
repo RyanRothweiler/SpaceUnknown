@@ -1,3 +1,24 @@
+int64 ShipGetCargoMass(ship* Ship)
+{
+	int64 Mass = 0;
+
+	// Add cargo weightt
+	for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
+		if (Ship->Cargo[i].Count > 0) {
+			Mass += Ship->Cargo[i].Definition.Mass * Ship->Cargo[i].Count;
+		}
+	}
+
+	return Mass;
+}
+
+int64 ShipGetMass(ship* Ship)
+{
+	int64 Mass = Ship->Definition.Mass;
+	Mass += ShipGetCargoMass(Ship);
+	return Mass;
+}
+
 //public static bool SimulateMovement(ref Physics physics, ShipDefinition def, float mass, UniversalPosition targetPositionUniverse, float time, JourneySettings settings)
 bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 Time)
 {
@@ -45,9 +66,9 @@ bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 Time)
 	}
 
 	// Get cargo mass too
-	real64 mass = Ship->Definition.Mass;
+	int64 Mass = ShipGetMass(Ship);
 
-	vector2 acceleration = Force / mass;
+	vector2 acceleration = Force / (real64)Mass;
 	Ship->Velocity = Ship->Velocity + acceleration;
 	Ship->Position = Ship->Position + (Ship->Velocity * TimeSeconds);
 
@@ -75,36 +96,6 @@ void ShipMove(ship* Ship, ship_journey Journey)
 	vector2 MoveDir = Vector2Normalize(Ship->CurrentJourney.EndPosition - Ship->Position);
 	Ship->Rotation = Vector2AngleBetween(vector2{0, 1}, MoveDir) + PI;
 	if (Ship->Position.X < Ship->CurrentJourney.EndPosition.X) { Ship->Rotation *= -1; }
-}
-
-void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
-{
-	ship_module* Module = (ship_module*)SelfData;
-
-	Module->Target = GameNull;
-
-	for (int i = 0; i < State->ClustersCount && Module->Target == GameNull; i++) {
-		asteroid_cluster* Cluster = &State->Asteroids[i];
-		for (int a = 0; a < ArrayCount(Cluster->Asteroids) && Module->Target == GameNull; a++) {
-			asteroid* Roid = &Cluster->Asteroids[a];
-			if (Roid->Using) {
-				real64 Dist = Vector2Distance(Roid->Position, Module->Owner->Position);
-				if (Dist < Module->Definition.ActivationRange) {
-					Module->Target = Roid;
-				}
-			}
-		}
-	}
-
-	if (Module->Target != GameNull) {
-		Module->ActivationTimerMS += Time;
-		if (Module->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
-			Module->ActivationTimerMS = 0.0f;
-			Module->Target->Using = false;
-		}
-	} else {
-		Module->ActivationTimerMS = 0.0f;
-	}
 }
 
 void ShipGiveItem(ship* Ship, item_id ItemID, int32 Count)
@@ -143,7 +134,39 @@ void ShipGiveItem(ship* Ship, item_id ItemID, int32 Count)
 			}
 		}
 	}
+}
 
+void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
+{
+	ship_module* Module = (ship_module*)SelfData;
+
+	Module->Target = GameNull;
+
+	for (int i = 0; i < State->ClustersCount && Module->Target == GameNull; i++) {
+		asteroid_cluster* Cluster = &State->Asteroids[i];
+		for (int a = 0; a < ArrayCount(Cluster->Asteroids) && Module->Target == GameNull; a++) {
+			asteroid* Roid = &Cluster->Asteroids[a];
+			if (Roid->Using) {
+				real64 Dist = Vector2Distance(Roid->Position, Module->Owner->Position);
+				if (Dist < Module->Definition.ActivationRange) {
+					Module->Target = Roid;
+				}
+			}
+		}
+	}
+
+	if (Module->Target != GameNull) {
+		Module->ActivationTimerMS += Time;
+		if (Module->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
+			Module->ActivationTimerMS = 0.0f;
+			Module->Target->Using = false;
+
+			// Do module thing
+			ShipGiveItem(Module->Owner, item_id::venigen, 1);
+		}
+	} else {
+		Module->ActivationTimerMS = 0.0f;
+	}
 }
 
 game::ship* ShipSetup(game::state* State, vector2 Pos)
@@ -155,9 +178,9 @@ game::ship* ShipSetup(game::state* State, vector2 Pos)
 			Ship->Using = true;
 			Ship->Position = Pos;
 			Ship->Size = vector2{6, 6};
-			Ship->Definition = Definition_Ship_First;
+			Ship->Definition = Globals->AssetsList.Definition_Ship_First;
 
-			Ship->Modules[0].Definition = Definition_Module_AsteroidMiner;
+			Ship->Modules[0].Definition = Globals->AssetsList.Definition_Module_AsteroidMiner;
 			Ship->Modules[0].Owner = Ship;
 			game::RegisterStepper(&Ship->Modules[0].Stepper, &ModuleUpdate, (void*)(&Ship->Modules[0]), State);
 			Ship->ModulesCount++;

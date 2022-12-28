@@ -104,4 +104,9 @@ struct assets_list {
 	int32 ImagesToLoadCount;
 	entity* EntitiesToUpload[1024];
 	int32 EntitiesToUploadCount;
+
+	// Game Definitions
+	game::item_definition ItemDefinitions[100];
+	game::ship_module_definition Definition_Module_AsteroidMiner = {};
+	game::ship_definition Definition_Ship_First = {};
 };
