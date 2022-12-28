@@ -12,6 +12,7 @@ namespace game {
 
 	struct editor_state {
 		bool32 EditorMode;
+		bool Paused;
 	};
 
 	struct ship_journey {

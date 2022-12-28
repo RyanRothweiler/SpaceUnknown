@@ -123,6 +123,8 @@ namespace game {
 
 				ImGui::Text("Time Boost");
 				{
+					ImGui::Checkbox("Pause", &EditorState->Paused);
+
 					real64 SimFPS = 60.0f;
 					real64 FrameLengthMS = (1.0f / SimFPS) * 1000.0f;
 					if (ImGui::Button("1 minute")) {
@@ -352,7 +354,9 @@ namespace game {
 			}
 		}
 
-		StepUniverse(State, EngineState->DeltaTimeMS);
+		if (!EditorState->Paused) {
+			StepUniverse(State, EngineState->DeltaTimeMS);
+		}
 
 		// Render planets
 		RenderCircle(vector2{1200, 200}, vector2{2000, 2000},

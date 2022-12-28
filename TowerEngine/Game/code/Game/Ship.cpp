@@ -98,6 +98,19 @@ void ShipMove(ship* Ship, ship_journey Journey)
 	if (Ship->Position.X < Ship->CurrentJourney.EndPosition.X) { Ship->Rotation *= -1; }
 }
 
+// Add item to a stack without exceeding the cargo mass limit
+void ShipStackGive(ship* Ship, item_instance* Inst, item_definition Def, int32 Count)
+{
+	int64 NewMass = ShipGetCargoMass(Ship) + (Def.Mass * Count);
+	if (NewMass <= Ship->Definition.CargoMassLimit) {
+		Inst->Count += Count;
+	} else {
+		int64 MassAvail = Ship->Definition.CargoMassLimit - ShipGetCargoMass(Ship);
+		int32 CountCanGiv = (int32)(MassAvail / Def.Mass);
+		Inst->Count += CountCanGiv;
+	}
+}
+
 void ShipGiveItem(ship* Ship, item_id ItemID, int32 Count)
 {
 	item_definition Def = GetItemDefinition(ItemID);
@@ -106,7 +119,7 @@ void ShipGiveItem(ship* Ship, item_id ItemID, int32 Count)
 		// Add to existing stack
 		for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
 			if (Ship->Cargo[i].Count > 0 && Ship->Cargo[i].Definition.ID == ItemID) {
-				Ship->Cargo[i].Count += Count;
+				ShipStackGive(Ship, &Ship->Cargo[i], Def, Count);
 				return;
 			}
 		}
@@ -114,8 +127,10 @@ void ShipGiveItem(ship* Ship, item_id ItemID, int32 Count)
 		// Make new stack
 		for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
 			if (Ship->Cargo[i].Count <= 0) {
-				Ship->Cargo[i].Count = Count;
+
+				Ship->Cargo[i].Count = 0;
 				Ship->Cargo[i].Definition = Def;
+				ShipStackGive(Ship, &Ship->Cargo[i], Def, Count);
 				return;
 			}
 		}
@@ -125,12 +140,18 @@ void ShipGiveItem(ship* Ship, item_id ItemID, int32 Count)
 	}
 
 	// Not stackable, so make new stacks
-	for (int c = 0; c < Count; c++) {
-		for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
-			if (Ship->Cargo[i].Count <= 0) {
-				Ship->Cargo[i].Count = 1;
-				Ship->Cargo[i].Definition = Def;
-				break;
+	{
+		// Verify we have space
+		if (ShipGetCargoMass(Ship) + Def.Mass > Ship->Definition.CargoMassLimit) { return; }
+
+		// Give
+		for (int c = 0; c < Count; c++) {
+			for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
+				if (Ship->Cargo[i].Count <= 0) {
+					Ship->Cargo[i].Count = 1;
+					Ship->Cargo[i].Definition = Def;
+					break;
+				}
 			}
 		}
 	}
@@ -141,6 +162,9 @@ void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
 	ship_module* Module = (ship_module*)SelfData;
 
 	Module->Target = GameNull;
+
+	// if no cargo space then do nothing
+	if (ShipGetCargoMass(Module->Owner) == Module->Owner->Definition.CargoMassLimit) { return; }
 
 	for (int i = 0; i < State->ClustersCount && Module->Target == GameNull; i++) {
 		asteroid_cluster* Cluster = &State->Asteroids[i];
@@ -162,7 +186,7 @@ void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
 			Module->Target->Using = false;
 
 			// Do module thing
-			ShipGiveItem(Module->Owner, item_id::venigen, 1);
+			ShipGiveItem(Module->Owner, item_id::venigen, 2);
 		}
 	} else {
 		Module->ActivationTimerMS = 0.0f;
