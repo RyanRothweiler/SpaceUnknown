@@ -7,6 +7,7 @@ void CreateDefinitions()
 	Globals->AssetsList.Definition_Ship_First.FuelRateGallonsPerSecond = 1.0f;
 	Globals->AssetsList.Definition_Ship_First.Mass = 200;
 	Globals->AssetsList.Definition_Ship_First.CargoMassLimit = 100;
+	Globals->AssetsList.Definition_Ship_First.FuelTankGallons = 300;
 
 	Globals->AssetsList.ItemDefinitions[0].ID = item_id::venigen;
 	Globals->AssetsList.ItemDefinitions[0].DisplayName = "Venigen";

@@ -18,6 +18,7 @@ struct ship_module {
 };
 
 struct ship_definition {
+	real64 FuelTankGallons;
 	real64 FuelRateGallonsPerSecond;
 	int64 Mass;
 	int64 CargoMassLimit;
