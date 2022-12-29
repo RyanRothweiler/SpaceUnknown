@@ -16,11 +16,17 @@ namespace game {
 	};
 
 	struct ship_journey {
+		// settings
 		vector2 EndPosition;
 		vector2 StartPosition;
-		real64 DistFromSidesToCoast;
 		float EdgeRatio;
+
+		// precalc and accumulations for efficiency
+		real64 DistFromSidesToCoast;
+		real64 FullDistance;
 		vector2 DirToEnd;
+		real64 CurrDistToEnd;
+		real64 CurrVelocityMag;
 	};
 
 	struct state;

@@ -157,6 +157,8 @@ namespace game {
 						CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;
 						CurrentShip->CurrentJourney.EndPosition = vector2{50, 50};
 
+						float TotalSimTime = 0;
+
 						for (int i = 0; i < Runs; i++ ) {
 							uint64 Start = PlatformApi.QueryPerformanceCounter();
 
@@ -168,7 +170,9 @@ namespace game {
 							CurrentShip->Velocity = {};
 							ShipMove(CurrentShip, CurrentShip->CurrentJourney);
 
-							while (ShipSimulateMovement(CurrentShip, CurrentShip->CurrentJourney.EndPosition, TimeStepMS)) { }
+							while (ShipSimulateMovement(CurrentShip, TimeStepMS)) {
+								TotalSimTime += TimeStepMS;
+							}
 
 							CurrentShip->Position = PosOrig;
 							CurrentShip->Velocity = {};
@@ -183,8 +187,10 @@ namespace game {
 							ConsoleLog(Report.Array());
 						}
 
+						real64 SimMinutes = MillisecondsToSeconds(TotalSimTime) / 60.0f;
 						real64 Avg = (real64)Accum / (real64)Runs;
-						string Report = "AVG " + string{Avg};
+						real64 CyclePerMin = Avg / SimMinutes;
+						string Report = "AVG " + string{Avg} + " ||  Total Real Time (m)" + string{SimMinutes} + " || Cycles per SimMin " + string{CyclePerMin};
 						ConsoleLog(Report.Array());
 					}
 				}
@@ -397,7 +403,7 @@ namespace game {
 								CurrentShip->Velocity = {};
 								ShipMove(CurrentShip, CurrentShip->CurrentJourney);
 
-								while (ShipSimulateMovement(CurrentShip, CurrentShip->CurrentJourney.EndPosition, TimeStepMS)) {
+								while (ShipSimulateMovement(CurrentShip, TimeStepMS)) {
 									DurationMS += TimeStepMS;
 								}
 
