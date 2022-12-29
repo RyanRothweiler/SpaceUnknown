@@ -33,6 +33,9 @@ void SpawnAsteroid(asteroid_cluster* Cluster)
 					Cluster->Asteroids[i].Position = PossiblePos;
 					Cluster->Asteroids[i].Size = RandomRangeFloat(5.0f, 10.0f);
 
+					int64 SpriteIndex = RandomRangeInt(0, ArrayCount(Globals->AssetsList.AsteroidImages) - 1);
+					Cluster->Asteroids[i].Image = Globals->AssetsList.AsteroidImages[SpriteIndex];
+
 					real64 Rate = PI / 10.0f;
 					Cluster->Asteroids[i].RotationRate = RandomRangeFloat(-Rate, Rate);
 					Cluster->Asteroids[i].Rotation = RandomRangeFloat(-PI / 2.0f, PI / 2.0f);

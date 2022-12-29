@@ -3,8 +3,9 @@ struct asteroid {
 	vector2 Position;
 	real64 Rotation;
 	real64 Size;
-	int64 Sprite;
 	real64 RotationRate;
+
+	loaded_image* Image;
 };
 
 struct asteroid_cluster {

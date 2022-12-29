@@ -66,6 +66,11 @@ namespace game {
 
 		RegisterStepper(&State->UniverseTime.Stepper, &TimeStep, (void*)(&State->UniverseTime), State);
 
+		// Load asteroid images
+		Globals->AssetsList.AsteroidImages[0] = assets::GetImage("Asteroid1");
+		Globals->AssetsList.AsteroidImages[1] = assets::GetImage("Asteroid2");
+		Globals->AssetsList.AsteroidImages[2] = assets::GetImage("Asteroid3");
+
 		ShipSetup(State, vector2{0, 0});
 		AsteroidCreateCluster(vector2{0, 0}, 30.0f, State);
 	}
@@ -448,12 +453,12 @@ namespace game {
 					m4y4 Model = m4y4Identity();
 					Model = Rotate(Model, vector3{0, 0, Clust->Asteroids[a].Rotation});
 
-					static loaded_image* AsteroidImage = assets::GetImage("Asteroid1");
 					RenderTextureAll(
 					    Clust->Asteroids[a].Position,
 					    vector2{Clust->Asteroids[a].Size, Clust->Asteroids[a].Size},
 					    Color255(79.0f, 60.0f, 48.0f, 1.0f),
-					    AsteroidImage->GLID, RenderLayerPlanet, Model, Globals->GameRenderer);
+					    Clust->Asteroids[a].Image->GLID,
+					    RenderLayerPlanet, Model, Globals->GameRenderer);
 				}
 			}
 		}
