@@ -157,12 +157,16 @@ namespace game {
 						CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;
 						CurrentShip->CurrentJourney.EndPosition = vector2{50, 50};
 
-						float TotalSimTime = 0;
+						real64 SimTimeTarget = 24.0f * 60.0f * 60.0f * 1000.0f;
+						real64 TotalSimTime = 0;
 
-						for (int i = 0; i < Runs; i++ ) {
+						int i = 0;
+						bool32 Running = true;
+						//for (int i = 0; i < Runs; i++ ) {
+						while (Running) {
 							uint64 Start = PlatformApi.QueryPerformanceCounter();
 
-							float SimFPS = 30.0f;
+							float SimFPS = 1.0f;
 							float TimeStepMS = 1.0f / SimFPS;
 
 							vector2 PosOrig = CurrentShip->Position;
@@ -170,21 +174,27 @@ namespace game {
 							CurrentShip->Velocity = {};
 							ShipMove(CurrentShip, CurrentShip->CurrentJourney);
 
-							while (ShipSimulateMovement(CurrentShip, TimeStepMS)) {
+							while (ShipSimulateMovement(CurrentShip, TimeStepMS) && Running) {
 								TotalSimTime += TimeStepMS;
+								if (TotalSimTime >= SimTimeTarget) {
+									Running = false;
+								}
 							}
 
-							CurrentShip->Position = PosOrig;
-							CurrentShip->Velocity = {};
-							CurrentShip->FuelGallons = FuelOrig;
-							CurrentShip->IsMoving = false;
+							if (Running) {
+								CurrentShip->Position = PosOrig;
+								CurrentShip->Velocity = {};
+								CurrentShip->FuelGallons = FuelOrig;
+								CurrentShip->IsMoving = false;
 
-							uint64 End = PlatformApi.QueryPerformanceCounter();
-							uint64 Count = End - Start;
-							Accum += Count;
+								uint64 End = PlatformApi.QueryPerformanceCounter();
+								uint64 Count = End - Start;
+								Accum += Count;
 
-							string Report = "Finished " + string{i + 1} + "/" + string{Runs} + " ->" + string{Count};
-							ConsoleLog(Report.Array());
+								real64 SimMinutes = MillisecondsToSeconds(TotalSimTime) / 60.0f;
+								string Report = "Finished " + string{i + 1} + "/" + string{Runs} + " ->" + string{Count} + " SimMinutes->" + string{SimMinutes};
+								ConsoleLog(Report.Array());
+							}
 						}
 
 						real64 SimMinutes = MillisecondsToSeconds(TotalSimTime) / 60.0f;

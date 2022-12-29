@@ -56,7 +56,7 @@ bool32 ShipSimulateMovement(ship* Ship, real64 TimeMS)
 		Force = DirToTargetForce * -1.0f;
 
 		// slow enough
-		if (Vector2Length(Ship->Velocity) < 0.001f) {
+		if (Ship->CurrentJourney.CurrVelocityMag < 0.001f) {
 			Ship->Velocity = vector2{0, 0};
 			return false;
 		}
