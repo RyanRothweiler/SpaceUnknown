@@ -20,6 +20,7 @@ namespace game {
 		vector2 StartPosition;
 		real64 DistFromSidesToCoast;
 		float EdgeRatio;
+		vector2 DirToEnd;
 	};
 
 	struct state;

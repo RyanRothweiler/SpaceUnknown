@@ -1,22 +1,15 @@
-int64 ShipGetCargoMass(ship* Ship)
+void ShipUpdateMass(ship* Ship)
 {
-	int64 Mass = 0;
+	Ship->CurrentCargoMass = 0;
 
 	// Add cargo weightt
 	for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
 		if (Ship->Cargo[i].Count > 0) {
-			Mass += Ship->Cargo[i].Definition.Mass * Ship->Cargo[i].Count;
+			Ship->CurrentCargoMass += Ship->Cargo[i].Definition.Mass * Ship->Cargo[i].Count;
 		}
 	}
 
-	return Mass;
-}
-
-int64 ShipGetMass(ship* Ship)
-{
-	int64 Mass = Ship->Definition.Mass;
-	Mass += ShipGetCargoMass(Ship);
-	return Mass;
+	Ship->CurrentMassTotal = Ship->CurrentCargoMass + Ship->Definition.Mass;
 }
 
 bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 TimeMS)
@@ -26,8 +19,11 @@ bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 TimeMS)
 	real64 fuelToUse = Ship->Definition.FuelRateGallonsPerSecond * TimeSeconds;
 	real64 fuelForce = fuelToUse * fuelForcePerGallon;
 
+	real64 DistToEnd = Vector2Distance(Ship->Position, TargetPos);
+	real64 DistToStart = Vector2Distance(Ship->Position, Ship->CurrentJourney.StartPosition);
+
 	// close enough
-	if (Vector2Distance(Ship->Position, TargetPos) < 0.01f) {
+	if (DistToEnd < 0.01f) {
 		Ship->Velocity = vector2{0, 0};
 		return false;
 	}
@@ -37,7 +33,7 @@ bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 TimeMS)
 	if (
 	    Vector2Distance(Ship->CurrentJourney.StartPosition, TargetPos) + 0.001f
 	    <
-	    (Vector2Distance(Ship->Position, TargetPos) + Vector2Distance(Ship->Position, Ship->CurrentJourney.StartPosition))
+	    (DistToEnd + DistToStart)
 	) {
 		// Stopping, past destination
 		Ship->Velocity = vector2{0, 0};
@@ -45,17 +41,18 @@ bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 TimeMS)
 	}
 
 	vector2 Force = {};
+	vector2 DirToTargetForce = Ship->CurrentJourney.DirToEnd * fuelForce;
 
 	// Speed up
-	if (Vector2Distance(Ship->Position, Ship->CurrentJourney.StartPosition) < Ship->CurrentJourney.DistFromSidesToCoast) {
+	if (DistToStart < Ship->CurrentJourney.DistFromSidesToCoast) {
 		Ship->FuelGallons -= fuelToUse;
-		Force = Vector2Normalize(TargetPos - Ship->Position) * fuelForce;
+		Force = DirToTargetForce;
 	}
 
 	// Slow down
-	if (Vector2Distance(Ship->Position, TargetPos) < Ship->CurrentJourney.DistFromSidesToCoast) {
+	if (DistToEnd < Ship->CurrentJourney.DistFromSidesToCoast) {
 		Ship->FuelGallons -= fuelToUse;
-		Force = Vector2Normalize(TargetPos - Ship->Position) * fuelForce * -1.0f;
+		Force = DirToTargetForce * -1.0f;
 
 		// slow enough
 		if (Vector2Length(Ship->Velocity) < 0.001f) {
@@ -65,7 +62,7 @@ bool32 ShipSimulateMovement(ship* Ship, vector2 TargetPos, real64 TimeMS)
 	}
 
 	// Get cargo mass too
-	int64 Mass = ShipGetMass(Ship);
+	int64 Mass = Ship->CurrentMassTotal;
 
 	vector2 acceleration = Force / (real64)Mass;
 	Ship->Velocity = Ship->Velocity + acceleration;
@@ -94,6 +91,8 @@ void ShipMove(ship* Ship, ship_journey Journey)
 	Ship->CurrentJourney.DistFromSidesToCoast =
 	    Vector2Distance(Ship->Position, Ship->CurrentJourney.EndPosition) * 0.5f * Journey.EdgeRatio;
 
+	Ship->CurrentJourney.DirToEnd = Vector2Normalize(Journey.EndPosition - Ship->Position);
+
 	// Update rotation
 	vector2 MoveDir = Vector2Normalize(Ship->CurrentJourney.EndPosition - Ship->Position);
 	Ship->Rotation = Vector2AngleBetween(vector2{0, 1}, MoveDir) + PI;
@@ -103,11 +102,11 @@ void ShipMove(ship* Ship, ship_journey Journey)
 // Add item to a stack without exceeding the cargo mass limit
 void ShipStackGive(ship* Ship, item_instance* Inst, item_definition Def, int32 Count)
 {
-	int64 NewMass = ShipGetCargoMass(Ship) + (Def.Mass * Count);
+	int64 NewMass = Ship->CurrentCargoMass + (Def.Mass * Count);
 	if (NewMass <= Ship->Definition.CargoMassLimit) {
 		Inst->Count += Count;
 	} else {
-		int64 MassAvail = Ship->Definition.CargoMassLimit - ShipGetCargoMass(Ship);
+		int64 MassAvail = Ship->Definition.CargoMassLimit - Ship->CurrentCargoMass;
 		int32 CountCanGiv = (int32)(MassAvail / Def.Mass);
 		Inst->Count += CountCanGiv;
 	}
@@ -122,7 +121,7 @@ void ShipGiveItem(ship* Ship, item_id ItemID, int32 Count)
 		for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
 			if (Ship->Cargo[i].Count > 0 && Ship->Cargo[i].Definition.ID == ItemID) {
 				ShipStackGive(Ship, &Ship->Cargo[i], Def, Count);
-				return;
+				goto end;
 			}
 		}
 
@@ -133,18 +132,18 @@ void ShipGiveItem(ship* Ship, item_id ItemID, int32 Count)
 				Ship->Cargo[i].Count = 0;
 				Ship->Cargo[i].Definition = Def;
 				ShipStackGive(Ship, &Ship->Cargo[i], Def, Count);
-				return;
+				goto end;
 			}
 		}
 
 		ConsoleLog("Ship cargo full");
-		return;
+		goto end;
 	}
 
 	// Not stackable, so make new stacks
 	{
 		// Verify we have space
-		if (ShipGetCargoMass(Ship) + Def.Mass > Ship->Definition.CargoMassLimit) { return; }
+		if (Ship->CurrentCargoMass + Def.Mass > Ship->Definition.CargoMassLimit) { return; }
 
 		// Give
 		for (int c = 0; c < Count; c++) {
@@ -152,11 +151,14 @@ void ShipGiveItem(ship* Ship, item_id ItemID, int32 Count)
 				if (Ship->Cargo[i].Count <= 0) {
 					Ship->Cargo[i].Count = 1;
 					Ship->Cargo[i].Definition = Def;
-					break;
+					goto end;
 				}
 			}
 		}
 	}
+
+end:
+	ShipUpdateMass(Ship);
 }
 
 void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
@@ -166,7 +168,7 @@ void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
 	Module->Target = GameNull;
 
 	// if no cargo space then do nothing
-	if (ShipGetCargoMass(Module->Owner) == Module->Owner->Definition.CargoMassLimit) { return; }
+	if (Module->Owner->CurrentCargoMass == Module->Owner->Definition.CargoMassLimit) { return; }
 
 	for (int i = 0; i < State->ClustersCount && Module->Target == GameNull; i++) {
 		asteroid_cluster* Cluster = &State->Asteroids[i];
@@ -214,6 +216,7 @@ game::ship* ShipSetup(game::state* State, vector2 Pos)
 
 			game::RegisterStepper(&Ship->Stepper, &ShipStep, (void*)Ship, State);
 
+			ShipUpdateMass(Ship);
 			return Ship;
 		}
 	}

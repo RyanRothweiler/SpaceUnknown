@@ -142,6 +142,52 @@ namespace game {
 				}
 
 				ImGui::Separator();
+
+				// Ship simulate performance testing
+				if (State->ShipSelected != GameNull) {
+					if (ImGui::Button("Test Ship Simulation")) {
+						ConsoleLog("Starting Test");
+
+						ship* CurrentShip = State->ShipSelected;
+
+						uint64 Accum = 0;
+						int32 Runs = 10;
+
+						CurrentShip->CurrentJourney.EdgeRatio = 0.25f;
+						CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;
+						CurrentShip->CurrentJourney.EndPosition = vector2{50, 50};
+
+						for (int i = 0; i < Runs; i++ ) {
+							uint64 Start = PlatformApi.QueryPerformanceCounter();
+
+							float SimFPS = 30.0f;
+							float TimeStepMS = 1.0f / SimFPS;
+
+							vector2 PosOrig = CurrentShip->Position;
+							real64 FuelOrig = CurrentShip->FuelGallons;
+							CurrentShip->Velocity = {};
+							ShipMove(CurrentShip, CurrentShip->CurrentJourney);
+
+							while (ShipSimulateMovement(CurrentShip, CurrentShip->CurrentJourney.EndPosition, TimeStepMS)) { }
+
+							CurrentShip->Position = PosOrig;
+							CurrentShip->Velocity = {};
+							CurrentShip->FuelGallons = FuelOrig;
+							CurrentShip->IsMoving = false;
+
+							uint64 End = PlatformApi.QueryPerformanceCounter();
+							uint64 Count = End - Start;
+							Accum += Count;
+
+							string Report = "Finished " + string{i + 1} + "/" + string{Runs} + " ->" + string{Count};
+							ConsoleLog(Report.Array());
+						}
+
+						real64 Avg = (real64)Accum / (real64)Runs;
+						string Report = "AVG " + string{Avg};
+						ConsoleLog(Report.Array());
+					}
+				}
 			}
 
 			ImGui::Text("Time");
@@ -247,8 +293,7 @@ namespace game {
 
 				// Weight
 				{
-					int64 ShipWeight = ShipGetMass(CurrentShip);
-					string ShipWeightDisp = Humanize(ShipWeight);
+					string ShipWeightDisp = Humanize(CurrentShip->CurrentMassTotal);
 
 					ImGui::Text("Ship Total Mass (t)");
 					ImGui::SameLine();
@@ -288,7 +333,7 @@ namespace game {
 
 				// Cargo
 				{
-					int64 CargoWeight = (int64)ShipGetCargoMass(CurrentShip);
+					int64 CargoWeight = (int64)CurrentShip->CurrentCargoMass;
 					string CargoTitle = "Cargo (" + string{CargoWeight} + "/" + string{(int64)CurrentShip->Definition.CargoMassLimit} + ")(t)###CARGO";
 					if (ImGui::CollapsingHeader(CargoTitle.Array())) {
 						for (int i = 0; i < ArrayCount(CurrentShip->Cargo); i++) {

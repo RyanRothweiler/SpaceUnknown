@@ -25,6 +25,9 @@ struct ship_definition {
 };
 
 struct ship {
+	int64 CurrentCargoMass;
+	int64 CurrentMassTotal;
+
 	bool32 Using;
 	ship_definition Definition;
 
