@@ -25,7 +25,6 @@ DebugLine(char *Output)
 #include "intrin.h"
 #include "Winnt.h"
 
-
 bool32 GlobalRunning = true;
 
 global_variable real64 GlobalScrollPos = 0.0f;

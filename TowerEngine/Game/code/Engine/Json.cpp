@@ -5,17 +5,6 @@
 
 namespace json {
 
-	/*
-	TODO: Features not yet implemented here
-
-	- Reading floats
-
-	- Check for duplicate keys on load
-	- add if key exists method
-	- save and load a struct
-
-	*/
-
 	struct json_data;
 
 	struct json_pair {
@@ -269,7 +258,7 @@ namespace json {
 	bool32 GetBool(string Key, json_data* Json)
 	{
 		string Data = GetData(Key, Json);
-		if (Data == "true") return true;
+		if (Data == "1") return true;
 
 		// Default for no key is false
 		return false;
@@ -279,6 +268,13 @@ namespace json {
 	{
 		string DataInString = GetData(Key, Data);
 		int32 IntData = StringToInt32(DataInString);
+		return (IntData);
+	}
+
+	int64 GetInt64(string Key, json_data * Data)
+	{
+		string DataInString = GetData(Key, Data);
+		int64 IntData = StringToInt64(DataInString);
 		return (IntData);
 	}
 
