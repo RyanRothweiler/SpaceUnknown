@@ -14,27 +14,28 @@ void ShipUpdateMass(ship* Ship)
 
 bool32 ShipSimulateMovement(ship* Ship, real64 TimeMS)
 {
-	static real64 FullDistBuff = Ship->CurrentJourney.FullDistance + 0.001f;
-
 	real64 TimeSeconds = TimeMS * 0.001f;
 
 	real64 fuelToUse = Ship->Definition.FuelRateGallonsPerSecond * TimeSeconds;
 	real64 fuelForce = fuelToUse * fuelForcePerGallon;
 
-	real64 DistToStart = Ship->CurrentJourney.FullDistance - Ship->CurrentJourney.CurrDistToEnd;
+	real64 DistToEnd = Vector2Distance(Ship->Position, Ship->CurrentJourney.EndPosition);
+	real64 DistToStart = Vector2Distance(Ship->Position, Ship->CurrentJourney.StartPosition);
 
 	// close enough
-	if (Ship->CurrentJourney.CurrDistToEnd < 0.01f) {
+	if (DistToEnd < 0.01f) {
 		Ship->Velocity = vector2{0, 0};
 		return false;
 	}
 
 	// past target
 	// Need a 0.1 buffer here because the two distances are equal during the journey, but not always exactly because of rounding errors
+	real64 D = Vector2Distance(Ship->CurrentJourney.StartPosition, Ship->CurrentJourney.EndPosition) + 1;
+	real64 T = DistToEnd + DistToStart;
 	if (
-	    FullDistBuff
+	    D
 	    <
-	    (Ship->CurrentJourney.CurrDistToEnd + DistToStart)
+	    T
 	) {
 		// Stopping, past destination
 		Ship->Velocity = vector2{0, 0};
@@ -51,24 +52,23 @@ bool32 ShipSimulateMovement(ship* Ship, real64 TimeMS)
 	}
 
 	// Slow down
-	if (Ship->CurrentJourney.CurrDistToEnd < Ship->CurrentJourney.DistFromSidesToCoast) {
+	if (DistToEnd < Ship->CurrentJourney.DistFromSidesToCoast) {
 		Ship->FuelGallons -= fuelToUse;
 		Force = DirToTargetForce * -1.0f;
 
 		// slow enough
-		if (Ship->CurrentJourney.CurrVelocityMag < 0.001f) {
+		if (Vector2Length(Ship->Velocity) < 0.001f) {
 			Ship->Velocity = vector2{0, 0};
 			return false;
 		}
 	}
 
-	if (Force.X > 0 || Force.Y > 0) {
-		vector2 acceleration = Force / (real64)Ship->CurrentMassTotal;
-		Ship->Velocity = Ship->Velocity + acceleration;
-		Ship->CurrentJourney.CurrVelocityMag = Vector2Length(Ship->Velocity);
-	}
+	// Get cargo mass too
+	int64 Mass = Ship->CurrentMassTotal;
+
+	vector2 acceleration = Force / (real64)Mass;
+	Ship->Velocity = Ship->Velocity + acceleration;
 	Ship->Position = Ship->Position + (Ship->Velocity * TimeSeconds);
-	Ship->CurrentJourney.CurrDistToEnd -= Ship->CurrentJourney.CurrVelocityMag * TimeSeconds;
 
 	return true;
 }
@@ -94,8 +94,6 @@ void ShipMove(ship* Ship, ship_journey Journey)
 	    Vector2Distance(Ship->Position, Ship->CurrentJourney.EndPosition) * 0.5f * Journey.EdgeRatio;
 
 	Ship->CurrentJourney.DirToEnd = Vector2Normalize(Journey.EndPosition - Ship->Position);
-	Ship->CurrentJourney.FullDistance = Vector2Distance(Ship->CurrentJourney.StartPosition, Ship->CurrentJourney.EndPosition);
-	Ship->CurrentJourney.CurrDistToEnd = Ship->CurrentJourney.FullDistance;
 
 	// Update rotation
 	vector2 MoveDir = Vector2Normalize(Ship->CurrentJourney.EndPosition - Ship->Position);

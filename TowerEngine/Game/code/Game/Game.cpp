@@ -8,7 +8,110 @@
 #include <chrono>
 #include <ctime>
 
+int64 VersionMajor = 0;
+int64 VersionMinor = 0;
+int64 VersionBuild = 0;
+
 namespace game {
+
+	void StepUniverse(game::state* State, real64 TimeMS)
+	{
+		for (int i = 0; i < State->SteppersCount; i++) {
+			stepper* Stepper = State->Steppers[i];
+			Stepper->Step(Stepper->SelfData, TimeMS, State);
+		}
+	}
+
+	void SaveGame(game::state* State)
+	{
+		json::json_data JsonOut = json::GetJson(GlobalTransMem);
+
+		using std::chrono::duration_cast;
+		using std::chrono::system_clock;
+		int64 SinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
+
+		AddKeyPair("real_time_saved", string{SinceEpoch} .Array(), &JsonOut);
+		AddKeyPair("simulation_time", string{State->UniverseTime.TimeMS}, &JsonOut);
+
+		for (int i = 0; i < ArrayCount(State->Ships); i++) {
+			if (State->Ships[i].Using) {
+				ship* Ship = &State->Ships[i];
+
+				json::AddKeyPair("ship_" + string{i} + "_position_x", string{Ship->Position.X}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_position_y", string{Ship->Position.Y}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_velocity_x", string{Ship->Velocity.X}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_velocity_y", string{Ship->Velocity.Y}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_is_moving", string{Ship->IsMoving}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_fuel", string{Ship->FuelGallons}, &JsonOut);
+
+				json::AddKeyPair("ship_" + string{i} + "_journey_end_x", string{Ship->CurrentJourney.EndPosition.X}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_end_y", string{Ship->CurrentJourney.EndPosition.Y}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_start_x", string{Ship->CurrentJourney.StartPosition.X}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_start_y", string{Ship->CurrentJourney.StartPosition.Y}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_dist_from_sides_to_coast", string{Ship->CurrentJourney.DistFromSidesToCoast}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_edge_ratio", string{Ship->CurrentJourney.EdgeRatio}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_x", string{Ship->CurrentJourney.DirToEnd.X}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_y", string{Ship->CurrentJourney.DirToEnd.Y}, &JsonOut);
+			}
+		}
+
+		json::SaveToFile(&JsonOut, "SaveGame.sus");
+		ConsoleLog("Game Saved");
+	}
+
+	void LoadGame(game::state* State)
+	{
+		json::json_data JsonIn = json::LoadFile("SaveGame.sus", GlobalTransMem);
+
+		if (JsonIn.PairsCount == 0) {
+			ConsoleLog("No saved data file");
+			return;
+		}
+
+		State->UniverseTime.TimeMS = json::GetReal64("simulation_time", &JsonIn);
+
+		for (int i = 0; i < ArrayCount(State->Ships); i++) {
+			json::json_pair* TestPair = GetPair("ship_" + string{i} + "_position_x", &JsonIn);
+			if (TestPair != GameNull) {
+				ship* Ship = &State->Ships[i];
+				Ship->Using = true;
+
+				Ship->Position.X = json::GetReal64("ship_" + string{i} + "_position_x", &JsonIn);
+				Ship->Position.Y = json::GetReal64("ship_" + string{i} + "_position_y", &JsonIn);
+				Ship->Velocity.X = json::GetReal64("ship_" + string{i} + "_velocity_x", &JsonIn);
+				Ship->Velocity.Y = json::GetReal64("ship_" + string{i} + "_velocity_y", &JsonIn);
+				Ship->IsMoving = json::GetBool("ship_" + string{i} + "_is_moving", &JsonIn);
+				Ship->FuelGallons = json::GetReal64("ship_" + string{i} + "_fuel", &JsonIn);
+
+				Ship->CurrentJourney.EndPosition.X = json::GetReal64("ship_" + string{i} + "_journey_end_x", &JsonIn);
+				Ship->CurrentJourney.EndPosition.Y = json::GetReal64("ship_" + string{i} + "_journey_end_y", &JsonIn);
+				Ship->CurrentJourney.StartPosition.X = json::GetReal64("ship_" + string{i} + "_journey_start_x", &JsonIn);
+				Ship->CurrentJourney.StartPosition.Y = json::GetReal64("ship_" + string{i} + "_journey_start_y", &JsonIn);
+				Ship->CurrentJourney.DistFromSidesToCoast = json::GetReal64("ship_" + string{i} + "_journey_dist_from_sides_to_coast", &JsonIn);
+				Ship->CurrentJourney.EdgeRatio = (real32)json::GetReal64("ship_" + string{i} + "_journey_edge_ratio", &JsonIn);
+				Ship->CurrentJourney.DirToEnd.X = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_x", &JsonIn);
+				Ship->CurrentJourney.DirToEnd.Y = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_y", &JsonIn);
+			}
+		}
+
+		using std::chrono::duration_cast;
+		using std::chrono::system_clock;
+		int64 CurrentSinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
+		int64 FileSinceEpoch = json::GetInt64("real_time_saved", &JsonIn);
+		real64 MissingMS = (real64)(CurrentSinceEpoch - FileSinceEpoch);
+
+		string P = "Simulating " + string{MissingMS} + " ms of missing time";
+		ConsoleLog(P.Array());
+
+		float SimFPS = 15.0f;
+		float TimeStepMS = 1.0f / SimFPS;
+		while (MissingMS > SimFPS) {
+			StepUniverse(State, TimeStepMS);
+			MissingMS -= TimeStepMS;
+		}
+		StepUniverse(State, MissingMS);
+		ConsoleLog("Finished");
+	}
 
 	string ChronoToString(std::chrono::seconds SecondsTotal)
 	{
@@ -38,14 +141,6 @@ namespace game {
 		UT->TimeMS += Time;
 	}
 
-	void StepUniverse(game::state* State, real64 TimeMS)
-	{
-		for (int i = 0; i < State->SteppersCount; i++) {
-			stepper* Stepper = State->Steppers[i];
-			Stepper->Step(Stepper->SelfData, TimeMS, State);
-		}
-	}
-
 #include "Definitions.cpp"
 #include "Asteroid.cpp"
 #include "Item.cpp"
@@ -73,6 +168,10 @@ namespace game {
 
 		ShipSetup(State, vector2{0, 0});
 		AsteroidCreateCluster(vector2{0, 0}, 30.0f, State);
+
+		LoadGame(State);
+
+		int x = 0;
 	}
 
 	const real32 ZoomMin = 0.0f;
@@ -98,6 +197,16 @@ namespace game {
 		EngineState->GameCamera.OrthoZoom = (real32)LerpCurve(ZoomRealMin, ZoomRealMax, Curve, State->Zoom);
 		real64 ZoomSpeedAdj = LerpCurve(4.0f, 200.0f, Curve, State->Zoom);
 
+		// save timer
+		{
+			static real64 SaveTimer = 0;
+			SaveTimer += EngineState->DeltaTimeMS;
+			if (MillisecondsToSeconds(SaveTimer) > 5.0f) {
+				SaveTimer = 0.0f;
+				SaveGame(State);
+			}
+		}
+
 		// Editor
 		{
 			if (Input->FunctionKeys[1].OnDown) {
@@ -105,7 +214,7 @@ namespace game {
 			}
 		}
 
-		// Main window
+		// Main windows
 		{
 			static bool Open = true;
 			ImGui::SetNextWindowPos(ImVec2(0, 0));

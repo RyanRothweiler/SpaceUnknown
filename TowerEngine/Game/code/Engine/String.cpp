@@ -210,12 +210,11 @@ struct string {
 		}
 	}
 
-	// NOTE this only handles up to two decimal places
 	string (real64 Input)
 	{
 		uint32 PreDecimalCount = DigitCount((int32)Input);
 
-		real64 MovedDecimal = 100 * Input;
+		real64 MovedDecimal = 100000 * Input;
 		char Dummy[MAX_STRING_SIZE] = {};
 		if (Input < 0) {
 			PreDecimalCount++;
@@ -477,6 +476,61 @@ bool32 StringEndsWith(string Source, string Ending)
 	}
 
 	return true;
+}
+
+int64
+StringToInt64(string String)
+{
+	uint32 MaxLength = CharArrayLength("18446744073709551615");
+	uint32 StringCount = ClampValue(0, MaxLength - 1, CharArrayLength(String.CharArray));
+
+	int64 FinalNumber = 0;
+	bool32 IsNegative = false;
+
+	// Handle leading zeroes such as 0012343
+	int32 NumStart = 0;
+	for (uint32 CharIndex = 0; CharIndex < StringCount; CharIndex++) {
+		if (String.CharArray[CharIndex] != '0') {
+			NumStart = CharIndex;
+			break;
+		}
+	}
+
+	for (uint32 CharIndex = NumStart; CharIndex < StringCount; CharIndex++) {
+		FinalNumber = FinalNumber * 10;
+
+		char NextCharacter = String.CharArray[CharIndex];
+		switch (NextCharacter) {
+			case ('-'): IsNegative = true; break;
+			case ('0'): FinalNumber += 0; break;
+			case ('1'): FinalNumber += 1; break;
+			case ('2'): FinalNumber += 2; break;
+			case ('3'): FinalNumber += 3; break;
+			case ('4'): FinalNumber += 4; break;
+			case ('5'): FinalNumber += 5; break;
+			case ('6'): FinalNumber += 6; break;
+			case ('7'): FinalNumber += 7; break;
+			case ('8'): FinalNumber += 8; break;
+			case ('9'): FinalNumber += 9; break;
+
+			// Ignore white space
+			case ('\n'): { } break;
+			case ('\t'): { } break;
+			case ('\r'): { } break;
+
+			default: {
+				// String is not entirely a number
+				Assert(0);
+			}
+			break;
+		}
+	}
+
+	if (IsNegative) {
+		FinalNumber = FinalNumber * -1;
+	}
+
+	return (FinalNumber);
 }
 
 int32
