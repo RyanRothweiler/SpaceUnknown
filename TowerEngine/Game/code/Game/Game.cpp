@@ -37,21 +37,22 @@ namespace game {
 			if (State->Ships[i].Using) {
 				ship* Ship = &State->Ships[i];
 
-				json::AddKeyPair("ship_" + string{i} + "_position_x", string{Ship->Position.X}, &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_position_y", string{Ship->Position.Y}, &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_velocity_x", string{Ship->Velocity.X}, &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_velocity_y", string{Ship->Velocity.Y}, &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_is_moving", string{Ship->IsMoving}, &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_fuel", string{Ship->FuelGallons}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_position_x", Real64ToString(Ship->Position.X, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_position_y", Real64ToString(Ship->Position.Y, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_velocity_x", Real64ToString(Ship->Velocity.X, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_velocity_y", Real64ToString(Ship->Velocity.Y, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_is_moving", Real64ToString(Ship->IsMoving, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_fuel", Real64ToString(Ship->FuelGallons, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_rotation", Real64ToString(Ship->Rotation, 7), &JsonOut);
 
-				json::AddKeyPair("ship_" + string{i} + "_journey_end_x", string{Ship->CurrentJourney.EndPosition.X}, &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_end_y", string{Ship->CurrentJourney.EndPosition.Y}, &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_start_x", string{Ship->CurrentJourney.StartPosition.X}, &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_start_y", string{Ship->CurrentJourney.StartPosition.Y}, &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_dist_from_sides_to_coast", string{Ship->CurrentJourney.DistFromSidesToCoast}, &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_edge_ratio", string{Ship->CurrentJourney.EdgeRatio}, &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_x", string{Ship->CurrentJourney.DirToEnd.X}, &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_y", string{Ship->CurrentJourney.DirToEnd.Y}, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_end_x", Real64ToString(Ship->CurrentJourney.EndPosition.X, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_end_y", Real64ToString(Ship->CurrentJourney.EndPosition.Y, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_start_x", Real64ToString(Ship->CurrentJourney.StartPosition.X, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_start_y", Real64ToString(Ship->CurrentJourney.StartPosition.Y, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_dist_from_sides_to_coast", Real64ToString(Ship->CurrentJourney.DistFromSidesToCoast, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_edge_ratio", Real64ToString(Ship->CurrentJourney.EdgeRatio, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_x", Real64ToString(Ship->CurrentJourney.DirToEnd.X, 7), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_y", Real64ToString(Ship->CurrentJourney.DirToEnd.Y, 7), &JsonOut);
 			}
 		}
 
@@ -82,6 +83,7 @@ namespace game {
 				Ship->Velocity.Y = json::GetReal64("ship_" + string{i} + "_velocity_y", &JsonIn);
 				Ship->IsMoving = json::GetBool("ship_" + string{i} + "_is_moving", &JsonIn);
 				Ship->FuelGallons = json::GetReal64("ship_" + string{i} + "_fuel", &JsonIn);
+				Ship->Rotation = json::GetReal64("ship_" + string{i} + "_rotation", &JsonIn);
 
 				Ship->CurrentJourney.EndPosition.X = json::GetReal64("ship_" + string{i} + "_journey_end_x", &JsonIn);
 				Ship->CurrentJourney.EndPosition.Y = json::GetReal64("ship_" + string{i} + "_journey_end_y", &JsonIn);
@@ -316,6 +318,7 @@ namespace game {
 			}
 
 			ImGui::Text("Time");
+			ImGui::SameLine();
 
 			std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>> Time = {};
 			Time += std::chrono::milliseconds((int)State->UniverseTime.TimeMS);
@@ -546,6 +549,7 @@ namespace game {
 
 							if (FuelUsage < CurrentShip->FuelGallons) {
 								if (ImGui::Button("Execute Movement", ImVec2(-1.0f, 0.0f))) {
+									SaveGame(State);
 									ShipMove(CurrentShip, CurrentShip->CurrentJourney);
 								}
 							} else {
@@ -555,7 +559,6 @@ namespace game {
 					} else {
 						ImGui::Text("Click world to set target destination");
 					}
-
 
 					// Render line
 					{
@@ -598,6 +601,9 @@ namespace game {
 						if (RectContains(Bounds, Input->MousePos)) {
 							State->ShipSelected = Ship;
 							State->ShipInfoWindowShowing = true;
+							if (!State->ShipSelected->IsMoving) {
+								State->ShipSelected->CurrentJourney.EndPosition = {};
+							}
 						}
 					}
 				}

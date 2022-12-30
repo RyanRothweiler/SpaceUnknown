@@ -214,7 +214,7 @@ struct string {
 	{
 		uint32 PreDecimalCount = DigitCount((int32)Input);
 
-		real64 MovedDecimal = 100000 * Input;
+		real64 MovedDecimal = 100 * Input;
 		char Dummy[MAX_STRING_SIZE] = {};
 		if (Input < 0) {
 			PreDecimalCount++;
@@ -243,8 +243,41 @@ struct string {
 
 };
 
-const string EmptyString = string{};
+string Real64ToString(real64 Input, int32 DecimalsCount)
+{
+	string Ret = {};
+	uint32 PreDecimalCount = DigitCount((int32)Input);
 
+	real64 MovedDecimal = pow(10, DecimalsCount) * Input;
+	char Dummy[MAX_STRING_SIZE] = {};
+	if (Input < 0) {
+		PreDecimalCount++;
+		IntToCharArray((int64)(-MovedDecimal), Dummy);
+	} else {
+		IntToCharArray((int64)MovedDecimal, Dummy);
+	}
+
+	uint32 ArrayIndex = 0;
+
+	if (Input < 0.0f) {
+		Ret.CharArray[0] = '-';
+		ArrayIndex++;
+	}
+
+	for (uint32 Index = 0; Index < MAX_STRING_SIZE - 1; Index++) {
+		if (ArrayIndex == PreDecimalCount) {
+			Ret.CharArray[ArrayIndex] = '.';
+			ArrayIndex++;
+		}
+
+		Ret.CharArray[ArrayIndex] = Dummy[Index];
+		ArrayIndex++;
+	}
+
+	return Ret;
+}
+
+const string EmptyString = string{};
 
 string BuildString(char* Input, uint32 InputLength)
 {

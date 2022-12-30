@@ -32,11 +32,7 @@ bool32 ShipSimulateMovement(ship* Ship, real64 TimeMS)
 	// Need a 0.1 buffer here because the two distances are equal during the journey, but not always exactly because of rounding errors
 	real64 D = Vector2Distance(Ship->CurrentJourney.StartPosition, Ship->CurrentJourney.EndPosition) + 1;
 	real64 T = DistToEnd + DistToStart;
-	if (
-	    D
-	    <
-	    T
-	) {
+	if (D < T) {
 		// Stopping, past destination
 		Ship->Velocity = vector2{0, 0};
 		return false;
@@ -66,8 +62,10 @@ bool32 ShipSimulateMovement(ship* Ship, real64 TimeMS)
 	// Get cargo mass too
 	int64 Mass = Ship->CurrentMassTotal;
 
-	vector2 acceleration = Force / (real64)Mass;
-	Ship->Velocity = Ship->Velocity + acceleration;
+	if (Force.X != 0 || Force.Y != 0) {
+		vector2 acceleration = Force / (real64)Mass;
+		Ship->Velocity = Ship->Velocity + acceleration;
+	}
 	Ship->Position = Ship->Position + (Ship->Velocity * TimeSeconds);
 
 	return true;
