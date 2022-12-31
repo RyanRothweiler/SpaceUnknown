@@ -563,6 +563,7 @@ struct state_to_serialize {
 };
 
 struct globals;
+struct engine_state;
 
 #include "../Game/Game.h"
 

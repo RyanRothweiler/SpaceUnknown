@@ -60,14 +60,8 @@ namespace game {
 		Sel->Center = Center;
 		Sel->Size = Size;
 		Sel->Data = Data;
-		Sel->OnSelectionUpdate = OnSelectionUpdate;
+		Sel->SelectionUpdate = OnSelectionUpdate;
 	}
-
-#include "Definitions.cpp"
-#include "Asteroid.cpp"
-#include "Item.cpp"
-#include "Ship.cpp"
-#include "Station.cpp"
 
 	void SaveGame(game::state* State)
 	{
@@ -122,6 +116,12 @@ namespace game {
 		json::SaveToFile(&JsonOut, "SaveGame.sus");
 		ConsoleLog("Game Saved");
 	}
+
+#include "Definitions.cpp"
+#include "Asteroid.cpp"
+#include "Item.cpp"
+#include "Ship.cpp"
+#include "Station.cpp"
 
 	void LoadGame(game::state* State)
 	{
@@ -402,229 +402,7 @@ namespace game {
 
 			State->ZoomTarget = (real32)ClampValue(ZoomMin, ZoomMax, State->ZoomTarget + (Input->MouseScrollDelta * MouseZoomSpeed * MouseZoomInvert));
 		}
-
-		// Ship
-		{
-			vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
-			vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
-
-			RenderCircle(MouseWorldFlat, vector2{1, 1},
-			             COLOR_RED, -1, Globals->GameRenderer);
-
-			// Ship window
-			//if (!State->ShipInfoWindowShowing) { State->Selection.Clear(); }
-			if (State->Selection.IsShip()) {
-				ship* CurrentShip = State->Selection.GetShip();
-
-				// ship current movement line
-				if (CurrentShip->IsMoving) {
-					vector2 Points[2] = {};
-					Points[0] = WorldToScreen(vector3{CurrentShip->CurrentJourney.EndPosition.X, CurrentShip->CurrentJourney.EndPosition.Y, 0}, &EngineState->GameCamera);
-					Points[1] = WorldToScreen(vector3{CurrentShip->Position.X, CurrentShip->Position.Y, 0}, &EngineState->GameCamera);
-					render_line Line = {};
-					Line.Points = Points;
-					Line.PointsCount = ArrayCount(Points);
-					RenderLine(Line, 2.0f, color{56.0f / 255.0f, 255.0f / 255.0f, 248.0f / 255.0f, 0.5f}, &EngineState->UIRenderer, false);
-				}
-
-				ImGui::Begin("Ship Info", &State->ShipInfoWindowShowing);
-				if (!State->ShipInfoWindowShowing) {
-					//State->Selection.Clear();
-				}
-
-				ImVec2 window_pos = ImGui::GetWindowPos();
-
-				if (EditorState->EditorMode) {
-					if (ImGui::TreeNode("Basic")) {
-						// Posititon
-						{
-							ImGui::PushID("position");
-							ImGui::Text("Position");
-							ImGui::Columns(2);
-
-							ImGui::Text("x");
-							ImGui::SameLine();
-							ImGui::Text(string{CurrentShip->Position.X} .Array());
-
-							ImGui::NextColumn();
-
-							ImGui::Text("y");
-							ImGui::SameLine();
-							ImGui::Text(string{CurrentShip->Position.Y} .Array());
-
-							ImGui::Columns(1);
-							ImGui::PopID();
-						}
-						ImGui::TreePop();
-					}
-					ImGui::Separator();
-				}
-
-				// Weight
-				{
-					string ShipWeightDisp = Humanize(CurrentShip->CurrentMassTotal);
-
-					ImGui::Text("Ship Total Mass (t)");
-					ImGui::SameLine();
-					ImGui::Text(ShipWeightDisp.Array());
-				}
-
-				// Velocity
-				{
-					string V = Humanize((int64)(Vector2Length(CurrentShip->Velocity) * UnitToMeters * 1000.0f));
-					ImGui::Text("Velocity (kph)");
-					ImGui::SameLine();
-					ImGui::Text(V.Array());
-				}
-
-				ImGui::Dummy(ImVec2(0, 10));
-
-				// Fuel
-				{
-					string FuelDisp = "Fuel Tank (g) " + string{CurrentShip->FuelGallons} + "/" + string{CurrentShip->Definition.FuelTankGallons};
-					ImGui::Text(FuelDisp.Array());
-					float Progress = (float)(CurrentShip->FuelGallons / CurrentShip->Definition.FuelTankGallons);
-					ImGui::ProgressBar(Progress);
-
-				}
-
-				ImGui::Dummy(ImVec2(0, 10));
-
-				if (ImGui::CollapsingHeader("Modules")) {
-					for (int i = 0; i < CurrentShip->ModulesCount; i++) {
-						ship_module* Module = &CurrentShip->Modules[i];
-
-						ImGui::Text(Module->Definition.DisplayName.Array());
-						float Progress = (float)(Module->ActivationTimerMS / Module->Definition.ActivationTimeMS);
-						ImGui::ProgressBar(Progress, ImVec2(-1.0f, 1.0f));
-					}
-				}
-
-				// Cargo
-				{
-					int64 CargoWeight = (int64)CurrentShip->CurrentCargoMass;
-					string CargoTitle = "Cargo (" + string{CargoWeight} + "/" + string{(int64)CurrentShip->Definition.CargoMassLimit} + ")(t)###CARGO";
-					if (ImGui::CollapsingHeader(CargoTitle.Array())) {
-						for (int i = 0; i < ArrayCount(CurrentShip->Cargo); i++) {
-							item_instance* Item = &CurrentShip->Cargo[i];
-							if (Item->Count > 0) {
-								ImGui::Text(Item->Definition.DisplayName.Array());
-								ImGui::SameLine();
-								ImGui::Text("x");
-								ImGui::SameLine();
-								ImGui::Text(string{Item->Count} .Array());
-							}
-						}
-					}
-				}
-
-				// Journey / movement stuff
-				{
-					static bool32 DoCalc = false;
-
-					ImGui::Separator();
-					ImGui::Dummy(ImVec2(0, 10));
-					ImGui::Text("Issue Movement Command");
-
-					if (
-					    !CurrentShip->IsMoving &&
-					    CurrentShip->CurrentJourney.EndPosition.X != 0 &&
-					    CurrentShip->CurrentJourney.EndPosition.Y != 0
-					) {
-
-
-						// Line to taget destination
-						{
-							vector2 Points[2] = {};
-							Points[0] = WorldToScreen(vector3{CurrentShip->CurrentJourney.EndPosition.X, CurrentShip->CurrentJourney.EndPosition.Y, 0}, &EngineState->GameCamera);
-							Points[1] = WorldToScreen(vector3{CurrentShip->Position.X, CurrentShip->Position.Y, 0}, &EngineState->GameCamera);
-							render_line Line = {};
-							Line.Points = Points;
-							Line.PointsCount = ArrayCount(Points);
-							RenderLine(Line, 1.5f, color{0, 1, 0, 0.2f}, &EngineState->UIRenderer, false);
-						}
-
-						// Journey settings
-						{
-							static float DurationMS = 0.0f;
-							static real64 FuelUsage = 0.0f;
-
-							if (ImGui::SliderFloat("Fuel Usage", &CurrentShip->CurrentJourney.EdgeRatio, 0.1f, 1.0f, "%.2f")) {
-								DoCalc = true;
-							}
-
-							if (DoCalc) {
-								DoCalc = false;
-
-								DurationMS = 0.0f;
-
-								float SimFPS = 30.0f;
-								float TimeStepMS = 1.0f / SimFPS;
-
-								vector2 PosOrig = CurrentShip->Position;
-								real64 FuelOrig = CurrentShip->FuelGallons;
-								CurrentShip->Velocity = {};
-								ShipMove(CurrentShip, CurrentShip->CurrentJourney);
-
-								while (ShipSimulateMovement(CurrentShip, TimeStepMS)) {
-									DurationMS += TimeStepMS;
-								}
-
-								FuelUsage = FuelOrig - CurrentShip->FuelGallons;
-
-								CurrentShip->Position = PosOrig;
-								CurrentShip->Velocity = {};
-								CurrentShip->FuelGallons = FuelOrig;
-								CurrentShip->IsMoving = false;
-							}
-
-							float DurationMinutes = DurationMS / 1000.0f / 60.0f;
-
-							ImGui::Text("Journey Minutes");
-							ImGui::SameLine();
-							ImGui::Text(string{DurationMinutes} .Array());
-
-							ImGui::Text("Fuel Usage");
-							ImGui::SameLine();
-							ImGui::Text(string{FuelUsage} .Array());
-
-							if (FuelUsage < CurrentShip->FuelGallons) {
-								if (ImGui::Button("Execute Movement", ImVec2(-1.0f, 0.0f))) {
-									SaveGame(State);
-									ShipMove(CurrentShip, CurrentShip->CurrentJourney);
-								}
-							} else {
-								ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Enough Fuel");
-							}
-						}
-					} else {
-						ImGui::Text("Click world to set target destination");
-					}
-
-					// Render line
-					{
-						vector2 Points[2] = {};
-						Points[0] = vector2{window_pos.x, window_pos.y};
-						Points[1] = WorldToScreen(vector3{CurrentShip->Position.X, CurrentShip->Position.Y, 0}, &EngineState->GameCamera);
-						render_line Line = {};
-						Line.Points = Points;
-						Line.PointsCount = ArrayCount(Points);
-						RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
-					}
-
-					if (Input->MouseLeft.OnUp && !CurrentShip->IsMoving && !Input->MouseMoved()) {
-						DoCalc = true;
-
-						CurrentShip->CurrentJourney.EdgeRatio = 0.1f;
-						CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;
-						CurrentShip->CurrentJourney.EndPosition = MouseWorldFlat;
-					}
-				}
-
-				ImGui::End();
-			}
-		}
-
+		
 		// Selection
 		if (Input->Escape.OnDown) {
 			State->Selection.Clear();
@@ -656,11 +434,9 @@ namespace game {
 		}
 
 		// Call selection update func
-		/*
-		if (State->Selection.Type != selection::none && State->Selection.) {
-
+		if (!State->Selection.None() && State->Selection.Selectable->SelectionUpdate != GameNull) {
+			State->Selection.Selectable->SelectionUpdate(EngineState, Input);
 		}
-		*/
 
 		if (!EditorState->Paused) {
 			StepUniverse(State, EngineState->DeltaTimeMS);

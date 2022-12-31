@@ -49,14 +49,16 @@ namespace game {
 
 	enum class selection_type { none, ship, station };
 
-	typedef void(*selection_update_func)(state* State);
+	struct selection;
+
+	typedef void(*selection_update_func)(engine_state* EngineState, game_input* Input);
 	struct selectable {
 
 		void* Data;
 		vector2* Center;
 		vector2* Size;
 
-		selection_update_func OnSelectionUpdate;
+		selection_update_func SelectionUpdate;
 		selection_type Type;
 	};
 
