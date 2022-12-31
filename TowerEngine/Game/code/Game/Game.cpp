@@ -98,6 +98,16 @@ namespace game {
 				json::AddKeyPair("ship_" + string{i} + "_journey_edge_ratio", Real64ToString(Ship->CurrentJourney.EdgeRatio, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_x", Real64ToString(Ship->CurrentJourney.DirToEnd.X, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_y", Real64ToString(Ship->CurrentJourney.DirToEnd.Y, DecimalCount), &JsonOut);
+
+				for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
+					if (Ship->Cargo[c].Count > 0) {
+
+						string DefID = item_id_NAME[(int)Ship->Cargo[c].Definition.ID];
+
+						json::AddKeyPair("ship_" + string{i} + "_cargo_" + string{c} + "_id", DefID, &JsonOut);
+						json::AddKeyPair("ship_" + string{i} + "_cargo_" + string{c} + "_count", string{Ship->Cargo[c].Count}, &JsonOut);
+					}
+				}
 			}
 		}
 
@@ -159,6 +169,21 @@ namespace game {
 				Ship->CurrentJourney.EdgeRatio = (real32)json::GetReal64("ship_" + string{i} + "_journey_edge_ratio", &JsonIn);
 				Ship->CurrentJourney.DirToEnd.X = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_x", &JsonIn);
 				Ship->CurrentJourney.DirToEnd.Y = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_y", &JsonIn);
+
+				for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
+					json::json_pair* CargoTestPair = GetPair("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
+					if (CargoTestPair != GameNull) {
+
+						string IDStr = json::GetString("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
+						item_id ItemID = (item_id)StringToEnum(IDStr, &item_id_NAME[0], ArrayCount(item_id_NAME));
+						item_definition Def = GetItemDefinition(ItemID);
+						Ship->Cargo[c].Definition = Def;
+
+						Ship->Cargo[c].Count = (int32)json::GetInt64("ship_" + string{i} + "_cargo_" + string{c} + "_count", &JsonIn);;
+					}
+				}
+
+				ShipUpdateMass(Ship);
 			}
 		}
 

@@ -7,6 +7,9 @@ char* AssetsFolderStructure[] {
 "Shaders/",
 }; 
 
+string item_id_NAME[] { 
+"venigen",
+}; 
 string glsl_type_NAME[] { 
 "none",
 "gl_mat4",

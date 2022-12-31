@@ -1,4 +1,4 @@
-enum class item_id {
+MetaStruct enum class item_id {
 	venigen,
 };
 

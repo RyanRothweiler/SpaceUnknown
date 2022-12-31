@@ -8,6 +8,7 @@
 #define GameNull 0
 
 #include "Engine/Types.cpp"
+#include "Engine/MemoryManager.h"
 #include "Engine/MemoryManager.cpp"
 #include "Engine/String.cpp"
 
@@ -800,9 +801,10 @@ int main(int argc, char* ars[])
 	PathsMemory.Head = (uint8*)PathsMemory.Memory;
 	PathsMemory.EndOfMemory = (uint8*)PathsMemory.Memory + PathsMemorySize;
 
+
 	{
 		path_list Paths = {};
-		GetPathsForFileType(".cpp", "T:/Game/code/Game/abilities/", &PathsMemory, &Paths);
+		GetPathsForFileType(".cpp", "T:/Game/code/Game/", &PathsMemory, &Paths);
 		path_list* P = &Paths;
 		while (P != GameNull && StringLength(P->Path) > 0) {
 			ProcessFile(P->Path.CharArray);
@@ -811,7 +813,7 @@ int main(int argc, char* ars[])
 	}
 	{
 		path_list Paths = {};
-		GetPathsForFileType(".cpp", "T:/Game/code/Game/status_effects/", &PathsMemory, &Paths);
+		GetPathsForFileType(".h", "T:/Game/code/Game/", &PathsMemory, &Paths);
 		path_list* P = &Paths;
 		while (P != GameNull && StringLength(P->Path) > 0) {
 			ProcessFile(P->Path.CharArray);
@@ -819,11 +821,10 @@ int main(int argc, char* ars[])
 		}
 	}
 
+
 	// Manually process files
 	char* FilesToRead[] = {
 		"T:/Game/code/Engine/EngineCore.h",
-		"T:/Game/code/Engine/Item.h",
-		"T:/Game/code/Engine/ability_definition/ability_definition.h",
 		"T:/Game/code/Engine/Renderer/Renderer.h",
 		"T:/Game/code/Game/AssetList.cpp",
 	};
