@@ -59,6 +59,8 @@ namespace game {
 		vector2* Center;
 		vector2* Size;
 
+		vector2 InfoWindowPos;
+
 		selection_update_func SelectionUpdate;
 		selection_on_func OnSelection;
 		selection_type Type;
@@ -66,27 +68,27 @@ namespace game {
 
 	struct selection {
 
-		selectable* Selectable;
+		selectable* Current;
 
-		bool32 None() { return Selectable == GameNull; }
-		bool32 IsShip() { return Selectable != GameNull && Selectable->Type == selection_type::ship; }
-		bool32 IsStation() { return Selectable != GameNull && Selectable->Type == selection_type::station; }
+		bool32 None() { return Current == GameNull; }
+		bool32 IsShip() { return Current != GameNull && Current->Type == selection_type::ship; }
+		bool32 IsStation() { return Current != GameNull && Current->Type == selection_type::station; }
 
 		ship* GetShip()
 		{
-			Assert(Selectable->Type == selection_type::ship);
-			return (ship*)Selectable->Data;
+			Assert(Current->Type == selection_type::ship);
+			return (ship*)Current->Data;
 		}
 
 		station* GetStation()
 		{
-			Assert(Selectable->Type == selection_type::station);
-			return (station*)Selectable->Data;
+			Assert(Current->Type == selection_type::station);
+			return (station*)Current->Data;
 		}
 
 		void Clear()
 		{
-			Selectable = {};
+			Current = {};
 		}
 	};
 

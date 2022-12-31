@@ -212,7 +212,8 @@ namespace game {
 		AsteroidCreateCluster(vector2{0, 0}, 30.0f, State);
 
 		station* Station = StationCreate(State);
-		Station->Position = vector2{50, 50};
+		Station->Position.X = 50;
+		Station->Position.Y = 50;
 
 		LoadGame(State);
 	}
@@ -421,10 +422,10 @@ namespace game {
 				Bounds.BottomRight = WorldToScreen(vector3{BottomRightWorld.X, BottomRightWorld.Y, 0}, &EngineState->GameCamera);
 
 				if (RectContains(Bounds, Input->MousePos)) {
-					State->Selection.Selectable = Sel;
+					State->Selection.Current = Sel;
 
-					if (State->Selection.Selectable->OnSelection != GameNull) {
-						State->Selection.Selectable->OnSelection(EngineState, Input);
+					if (State->Selection.Current->OnSelection != GameNull) {
+						State->Selection.Current->OnSelection(EngineState, Input);
 					}
 
 					break;
@@ -433,8 +434,22 @@ namespace game {
 		}
 
 		// Call selection update func
-		if (!State->Selection.None() && State->Selection.Selectable->SelectionUpdate != GameNull) {
-			State->Selection.Selectable->SelectionUpdate(EngineState, Input);
+		if (!State->Selection.None() && State->Selection.Current->SelectionUpdate != GameNull) {
+
+			// Render line to selection
+			{
+				vector2 ObjPos = *State->Selection.Current->Center;
+
+				vector2 Points[2] = {};
+				Points[0] = State->Selection.Current->InfoWindowPos;
+				Points[1] = WorldToScreen(vector3{ObjPos.X, ObjPos.Y, 0}, &EngineState->GameCamera);
+				render_line Line = {};
+				Line.Points = Points;
+				Line.PointsCount = ArrayCount(Points);
+				RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
+			}
+
+			State->Selection.Current->SelectionUpdate(EngineState, Input);
 		}
 
 		if (!EditorState->Paused) {

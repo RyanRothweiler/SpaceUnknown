@@ -220,9 +220,6 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 	RenderCircle(MouseWorldFlat, vector2{1, 1},
 	             COLOR_RED, -1, Globals->GameRenderer);
 
-	// Ship window
-	//if (!State->ShipInfoWindowShowing) { State->Selection.Clear(); }
-
 	// ship current movement line
 	if (CurrentShip->IsMoving) {
 		vector2 Points[2] = {};
@@ -238,6 +235,7 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 	ImGui::Begin("Ship Info", &Showing);
 
 	ImVec2 window_pos = ImGui::GetWindowPos();
+	State->Selection.Current->InfoWindowPos = vector2{window_pos.x, window_pos.y};
 
 	if (EditorState->EditorMode) {
 		if (ImGui::TreeNode("Basic")) {
@@ -408,17 +406,6 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 			ImGui::Text("Click world to set target destination");
 		}
 
-		// Render line
-		{
-			vector2 Points[2] = {};
-			Points[0] = vector2{window_pos.x, window_pos.y};
-			Points[1] = WorldToScreen(vector3{CurrentShip->Position.X, CurrentShip->Position.Y, 0}, &EngineState->GameCamera);
-			render_line Line = {};
-			Line.Points = Points;
-			Line.PointsCount = ArrayCount(Points);
-			RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
-		}
-
 		if (Input->MouseLeft.OnUp && !CurrentShip->IsMoving && !Input->MouseMoved()) {
 			DoCalc = true;
 
@@ -430,9 +417,7 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 
 	ImGui::End();
 
-	if (!Showing) {
-		State->Selection.Clear();
-	}
+	if (!Showing) { State->Selection.Clear(); }
 }
 
 game::ship* ShipSetup(game::state* State, vector2 Pos)
