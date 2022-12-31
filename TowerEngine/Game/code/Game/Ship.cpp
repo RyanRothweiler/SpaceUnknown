@@ -197,6 +197,16 @@ void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
 	}
 }
 
+void OnShipSelected(engine_state* EngineState, game_input* Input)
+{
+	game::state* State = &EngineState->GameState;
+	ship* CurrentShip = State->Selection.GetShip();
+
+	if (!CurrentShip->IsMoving) {
+		CurrentShip->CurrentJourney = {};
+	}
+}
+
 void ShipSelected(engine_state* EngineState, game_input* Input)
 {
 	game::state* State = &EngineState->GameState;
@@ -224,10 +234,8 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 		RenderLine(Line, 2.0f, color{56.0f / 255.0f, 255.0f / 255.0f, 248.0f / 255.0f, 0.5f}, &EngineState->UIRenderer, false);
 	}
 
-	ImGui::Begin("Ship Info", &State->ShipInfoWindowShowing);
-	if (!State->ShipInfoWindowShowing) {
-		//State->Selection.Clear();
-	}
+	bool Showing = true;
+	ImGui::Begin("Ship Info", &Showing);
 
 	ImVec2 window_pos = ImGui::GetWindowPos();
 
@@ -360,6 +368,7 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 
 					vector2 PosOrig = CurrentShip->Position;
 					real64 FuelOrig = CurrentShip->FuelGallons;
+					real64 RotOrig = CurrentShip->Rotation;
 					CurrentShip->Velocity = {};
 					ShipMove(CurrentShip, CurrentShip->CurrentJourney);
 
@@ -372,6 +381,7 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 					CurrentShip->Position = PosOrig;
 					CurrentShip->Velocity = {};
 					CurrentShip->FuelGallons = FuelOrig;
+					CurrentShip->Rotation = RotOrig;
 					CurrentShip->IsMoving = false;
 				}
 
@@ -419,6 +429,10 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 	}
 
 	ImGui::End();
+
+	if (!Showing) {
+		State->Selection.Clear();
+	}
 }
 
 game::ship* ShipSetup(game::state* State, vector2 Pos)
@@ -439,7 +453,9 @@ game::ship* ShipSetup(game::state* State, vector2 Pos)
 			Ship->ModulesCount++;
 
 			game::RegisterStepper(&Ship->Stepper, &ShipStep, (void*)Ship, State);
-			game::RegisterSelectable(selection_type::ship, &Ship->Position, &Ship->Size, (void*)Ship, State, &ShipSelected);
+			game::RegisterSelectable(selection_type::ship, &Ship->Position, &Ship->Size, (void*)Ship, State,
+			                         &ShipSelected, &OnShipSelected
+			                        );
 
 			ShipUpdateMass(Ship);
 			return Ship;

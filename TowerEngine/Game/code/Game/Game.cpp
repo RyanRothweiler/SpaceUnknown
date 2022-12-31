@@ -51,7 +51,8 @@ namespace game {
 	}
 
 	void RegisterSelectable(selection_type Type, vector2* Center, vector2* Size, void* Data, game::state* State,
-	                        selection_update_func OnSelectionUpdate)
+	                        selection_update_func OnSelectionUpdate,
+	                        selection_on_func OnSelection)
 	{
 		selectable* Sel = &State->Selectables[State->SelectablesCount++];
 		Assert(ArrayCount(State->Selectables) > State->SelectablesCount);
@@ -61,6 +62,7 @@ namespace game {
 		Sel->Size = Size;
 		Sel->Data = Data;
 		Sel->SelectionUpdate = OnSelectionUpdate;
+		Sel->OnSelection = OnSelection;
 	}
 
 	void SaveGame(game::state* State)
@@ -402,7 +404,7 @@ namespace game {
 
 			State->ZoomTarget = (real32)ClampValue(ZoomMin, ZoomMax, State->ZoomTarget + (Input->MouseScrollDelta * MouseZoomSpeed * MouseZoomInvert));
 		}
-		
+
 		// Selection
 		if (Input->Escape.OnDown) {
 			State->Selection.Clear();
@@ -421,14 +423,11 @@ namespace game {
 				if (RectContains(Bounds, Input->MousePos)) {
 					State->Selection.Selectable = Sel;
 
-					/*
-					State->Selection.Set(Ship);
-					State->ShipInfoWindowShowing = true;
-					if (!State->Selection.Data.Ship->IsMoving) {
-						State->Selection.Data.Ship->CurrentJourney = {};
+					if (State->Selection.Selectable->OnSelection != GameNull) {
+						State->Selection.Selectable->OnSelection(EngineState, Input);
 					}
-					*/
-					return;
+
+					break;
 				}
 			}
 		}

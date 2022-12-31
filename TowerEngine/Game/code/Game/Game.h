@@ -52,6 +52,7 @@ namespace game {
 	struct selection;
 
 	typedef void(*selection_update_func)(engine_state* EngineState, game_input* Input);
+	typedef void(*selection_on_func)(engine_state* EngineState, game_input* Input);
 	struct selectable {
 
 		void* Data;
@@ -59,6 +60,7 @@ namespace game {
 		vector2* Size;
 
 		selection_update_func SelectionUpdate;
+		selection_on_func OnSelection;
 		selection_type Type;
 	};
 
@@ -108,8 +110,6 @@ namespace game {
 
 		selectable Selectables[1024];
 		int32 SelectablesCount;
-
-		bool ShipInfoWindowShowing;
 	};
 };
 
