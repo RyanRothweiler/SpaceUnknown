@@ -205,7 +205,7 @@ game::ship* ShipSetup(game::state* State, vector2 Pos)
 
 			Ship->Using = true;
 			Ship->Position = Pos;
-			Ship->Size = vector2{6, 6};
+			Ship->Size = vector2{5, 5};
 			Ship->Definition = Globals->AssetsList.Definition_Ship_First;
 			Ship->FuelGallons = Ship->Definition.FuelTankGallons;
 

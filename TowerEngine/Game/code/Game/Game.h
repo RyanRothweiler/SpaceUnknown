@@ -45,15 +45,51 @@ namespace game {
 #include "Asteroid.h"
 #include "Item.h"
 #include "Ship.h"
+#include "Station.h"
+
+	struct selection {
+		enum class type { none, ship, station };
+		type Type;
+
+		union data {
+			ship* Ship;
+			station* Station;
+		} Data;
+
+		bool32 None() { return Type == type::none; }
+		bool32 IsShip() { return Type == type::ship; }
+		bool32 IsStation() { return Type == type::station; }
+
+		void Set(ship* Ship)
+		{
+			Data.Ship = Ship;
+			Type = type::ship;
+		}
+
+		void Set(station* Station)
+		{
+			Data.Station = Station;
+			Type = type::station;
+		}
+
+		void Clear()
+		{
+			Data = {};
+			Type = type::none;
+		}
+	};
 
 	struct state {
 		universe_time UniverseTime;
+		selection Selection;
 
 		ship Ships[100];
-		ship* ShipSelected;
 
 		asteroid_cluster Asteroids[100];
 		int32 ClustersCount;
+
+		station Stations[100];
+		int32 StationsCount;
 
 		real32 Zoom = 1.0f;
 		real32 ZoomTarget;

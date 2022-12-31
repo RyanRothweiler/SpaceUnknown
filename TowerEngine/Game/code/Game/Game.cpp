@@ -22,99 +22,6 @@ namespace game {
 		}
 	}
 
-	void SaveGame(game::state* State)
-	{
-		json::json_data JsonOut = json::GetJson(GlobalTransMem);
-
-		using std::chrono::duration_cast;
-		using std::chrono::system_clock;
-		int64 SinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
-
-		AddKeyPair("real_time_saved", string{SinceEpoch} .Array(), &JsonOut);
-		AddKeyPair("simulation_time", string{State->UniverseTime.TimeMS}, &JsonOut);
-
-		for (int i = 0; i < ArrayCount(State->Ships); i++) {
-			if (State->Ships[i].Using) {
-				ship* Ship = &State->Ships[i];
-
-				json::AddKeyPair("ship_" + string{i} + "_position_x", Real64ToString(Ship->Position.X, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_position_y", Real64ToString(Ship->Position.Y, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_velocity_x", Real64ToString(Ship->Velocity.X, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_velocity_y", Real64ToString(Ship->Velocity.Y, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_is_moving", Real64ToString(Ship->IsMoving, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_fuel", Real64ToString(Ship->FuelGallons, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_rotation", Real64ToString(Ship->Rotation, 7), &JsonOut);
-
-				json::AddKeyPair("ship_" + string{i} + "_journey_end_x", Real64ToString(Ship->CurrentJourney.EndPosition.X, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_end_y", Real64ToString(Ship->CurrentJourney.EndPosition.Y, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_start_x", Real64ToString(Ship->CurrentJourney.StartPosition.X, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_start_y", Real64ToString(Ship->CurrentJourney.StartPosition.Y, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_dist_from_sides_to_coast", Real64ToString(Ship->CurrentJourney.DistFromSidesToCoast, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_edge_ratio", Real64ToString(Ship->CurrentJourney.EdgeRatio, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_x", Real64ToString(Ship->CurrentJourney.DirToEnd.X, 7), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_y", Real64ToString(Ship->CurrentJourney.DirToEnd.Y, 7), &JsonOut);
-			}
-		}
-
-		json::SaveToFile(&JsonOut, "SaveGame.sus");
-		ConsoleLog("Game Saved");
-	}
-
-	void LoadGame(game::state* State)
-	{
-		json::json_data JsonIn = json::LoadFile("SaveGame.sus", GlobalTransMem);
-
-		if (JsonIn.PairsCount == 0) {
-			ConsoleLog("No saved data file");
-			return;
-		}
-
-		State->UniverseTime.TimeMS = json::GetReal64("simulation_time", &JsonIn);
-
-		for (int i = 0; i < ArrayCount(State->Ships); i++) {
-			json::json_pair* TestPair = GetPair("ship_" + string{i} + "_position_x", &JsonIn);
-			if (TestPair != GameNull) {
-				ship* Ship = &State->Ships[i];
-				Ship->Using = true;
-
-				Ship->Position.X = json::GetReal64("ship_" + string{i} + "_position_x", &JsonIn);
-				Ship->Position.Y = json::GetReal64("ship_" + string{i} + "_position_y", &JsonIn);
-				Ship->Velocity.X = json::GetReal64("ship_" + string{i} + "_velocity_x", &JsonIn);
-				Ship->Velocity.Y = json::GetReal64("ship_" + string{i} + "_velocity_y", &JsonIn);
-				Ship->IsMoving = json::GetBool("ship_" + string{i} + "_is_moving", &JsonIn);
-				Ship->FuelGallons = json::GetReal64("ship_" + string{i} + "_fuel", &JsonIn);
-				Ship->Rotation = json::GetReal64("ship_" + string{i} + "_rotation", &JsonIn);
-
-				Ship->CurrentJourney.EndPosition.X = json::GetReal64("ship_" + string{i} + "_journey_end_x", &JsonIn);
-				Ship->CurrentJourney.EndPosition.Y = json::GetReal64("ship_" + string{i} + "_journey_end_y", &JsonIn);
-				Ship->CurrentJourney.StartPosition.X = json::GetReal64("ship_" + string{i} + "_journey_start_x", &JsonIn);
-				Ship->CurrentJourney.StartPosition.Y = json::GetReal64("ship_" + string{i} + "_journey_start_y", &JsonIn);
-				Ship->CurrentJourney.DistFromSidesToCoast = json::GetReal64("ship_" + string{i} + "_journey_dist_from_sides_to_coast", &JsonIn);
-				Ship->CurrentJourney.EdgeRatio = (real32)json::GetReal64("ship_" + string{i} + "_journey_edge_ratio", &JsonIn);
-				Ship->CurrentJourney.DirToEnd.X = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_x", &JsonIn);
-				Ship->CurrentJourney.DirToEnd.Y = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_y", &JsonIn);
-			}
-		}
-
-		using std::chrono::duration_cast;
-		using std::chrono::system_clock;
-		int64 CurrentSinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
-		int64 FileSinceEpoch = json::GetInt64("real_time_saved", &JsonIn);
-		real64 MissingMS = (real64)(CurrentSinceEpoch - FileSinceEpoch);
-
-		string P = "Simulating " + string{MissingMS} + " ms of missing time";
-		ConsoleLog(P.Array());
-
-		float SimFPS = 15.0f;
-		float TimeStepMS = 1.0f / SimFPS;
-		while (MissingMS > SimFPS) {
-			StepUniverse(State, TimeStepMS);
-			MissingMS -= TimeStepMS;
-		}
-		StepUniverse(State, MissingMS);
-		ConsoleLog("Finished");
-	}
-
 	string ChronoToString(std::chrono::seconds SecondsTotal)
 	{
 		int64 Hours = std::chrono::duration_cast<std::chrono::hours>(SecondsTotal).count();
@@ -147,13 +54,140 @@ namespace game {
 #include "Asteroid.cpp"
 #include "Item.cpp"
 #include "Ship.cpp"
+#include "Station.cpp"
+
+	void SaveGame(game::state* State)
+	{
+		json::json_data JsonOut = json::GetJson(GlobalTransMem);
+		int32 DecimalCount = 7;
+
+		using std::chrono::duration_cast;
+		using std::chrono::system_clock;
+		int64 SinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
+
+		AddKeyPair("real_time_saved", string{SinceEpoch} .Array(), &JsonOut);
+		AddKeyPair("simulation_time", string{State->UniverseTime.TimeMS}, &JsonOut);
+
+		// Ships
+		for (int i = 0; i < ArrayCount(State->Ships); i++) {
+			if (State->Ships[i].Using) {
+				ship* Ship = &State->Ships[i];
+
+				json::AddKeyPair("ship_" + string{i} + "_position_x", Real64ToString(Ship->Position.X, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_position_y", Real64ToString(Ship->Position.Y, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_velocity_x", Real64ToString(Ship->Velocity.X, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_velocity_y", Real64ToString(Ship->Velocity.Y, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_is_moving", Real64ToString(Ship->IsMoving, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_fuel", Real64ToString(Ship->FuelGallons, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_rotation", Real64ToString(Ship->Rotation, DecimalCount), &JsonOut);
+
+				json::AddKeyPair("ship_" + string{i} + "_journey_end_x", Real64ToString(Ship->CurrentJourney.EndPosition.X, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_end_y", Real64ToString(Ship->CurrentJourney.EndPosition.Y, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_start_x", Real64ToString(Ship->CurrentJourney.StartPosition.X, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_start_y", Real64ToString(Ship->CurrentJourney.StartPosition.Y, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_dist_from_sides_to_coast", Real64ToString(Ship->CurrentJourney.DistFromSidesToCoast, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_edge_ratio", Real64ToString(Ship->CurrentJourney.EdgeRatio, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_x", Real64ToString(Ship->CurrentJourney.DirToEnd.X, DecimalCount), &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_y", Real64ToString(Ship->CurrentJourney.DirToEnd.Y, DecimalCount), &JsonOut);
+			}
+		}
+
+		// Asteroids
+		for (int i = 0; i < State->ClustersCount; i++) {
+			asteroid_cluster* Cluster = &State->Asteroids[i];
+			for (int c = 0; c < ArrayCount(Cluster->Asteroids); c++) {
+				if (Cluster->Asteroids[c].Using) {
+					asteroid* Roid = &Cluster->Asteroids[c];
+
+					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", Real64ToString(Roid->Position.X, DecimalCount), &JsonOut);
+					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", Real64ToString(Roid->Position.Y, DecimalCount), &JsonOut);
+					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_size", Real64ToString(Roid->Size, DecimalCount), &JsonOut);
+				}
+			}
+		}
+
+		json::SaveToFile(&JsonOut, "SaveGame.sus");
+		ConsoleLog("Game Saved");
+	}
+
+	void LoadGame(game::state* State)
+	{
+		json::json_data JsonIn = json::LoadFile("SaveGame.sus", GlobalTransMem);
+
+		if (JsonIn.PairsCount == 0) {
+			ConsoleLog("No saved data file");
+			return;
+		}
+
+		State->UniverseTime.TimeMS = json::GetReal64("simulation_time", &JsonIn);
+
+		// Ships
+		for (int i = 0; i < ArrayCount(State->Ships); i++) {
+			json::json_pair* TestPair = GetPair("ship_" + string{i} + "_position_x", &JsonIn);
+			if (TestPair != GameNull) {
+				ship* Ship = &State->Ships[i];
+				Ship->Using = true;
+
+				Ship->Position.X = json::GetReal64("ship_" + string{i} + "_position_x", &JsonIn);
+				Ship->Position.Y = json::GetReal64("ship_" + string{i} + "_position_y", &JsonIn);
+				Ship->Velocity.X = json::GetReal64("ship_" + string{i} + "_velocity_x", &JsonIn);
+				Ship->Velocity.Y = json::GetReal64("ship_" + string{i} + "_velocity_y", &JsonIn);
+				Ship->IsMoving = json::GetBool("ship_" + string{i} + "_is_moving", &JsonIn);
+				Ship->FuelGallons = json::GetReal64("ship_" + string{i} + "_fuel", &JsonIn);
+				Ship->Rotation = json::GetReal64("ship_" + string{i} + "_rotation", &JsonIn);
+
+				Ship->CurrentJourney.EndPosition.X = json::GetReal64("ship_" + string{i} + "_journey_end_x", &JsonIn);
+				Ship->CurrentJourney.EndPosition.Y = json::GetReal64("ship_" + string{i} + "_journey_end_y", &JsonIn);
+				Ship->CurrentJourney.StartPosition.X = json::GetReal64("ship_" + string{i} + "_journey_start_x", &JsonIn);
+				Ship->CurrentJourney.StartPosition.Y = json::GetReal64("ship_" + string{i} + "_journey_start_y", &JsonIn);
+				Ship->CurrentJourney.DistFromSidesToCoast = json::GetReal64("ship_" + string{i} + "_journey_dist_from_sides_to_coast", &JsonIn);
+				Ship->CurrentJourney.EdgeRatio = (real32)json::GetReal64("ship_" + string{i} + "_journey_edge_ratio", &JsonIn);
+				Ship->CurrentJourney.DirToEnd.X = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_x", &JsonIn);
+				Ship->CurrentJourney.DirToEnd.Y = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_y", &JsonIn);
+			}
+		}
+
+		// Asteroids
+		for (int i = 0; i < State->ClustersCount; i++) {
+			asteroid_cluster* Cluster = &State->Asteroids[i];
+			for (int c = 0; c < ArrayCount(Cluster->Asteroids); c++) {
+				json::json_pair* TestPair = GetPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
+				if (TestPair != GameNull) {
+					asteroid* Roid = &Cluster->Asteroids[c];
+					InitAsteroid(Roid);
+
+					Roid->Position.X = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
+					Roid->Position.Y = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", &JsonIn);
+				}
+			}
+		}
+
+		using std::chrono::duration_cast;
+		using std::chrono::system_clock;
+		int64 CurrentSinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
+		int64 FileSinceEpoch = json::GetInt64("real_time_saved", &JsonIn);
+		real64 MissingMS = (real64)(CurrentSinceEpoch - FileSinceEpoch);
+
+		string P = "Simulating " + string{MissingMS} + " ms of missing time";
+		ConsoleLog(P.Array());
+
+		float SimFPS = 15.0f;
+		float TimeStepMS = 1.0f / SimFPS;
+		while (MissingMS > SimFPS) {
+			StepUniverse(State, TimeStepMS);
+			MissingMS -= TimeStepMS;
+		}
+		StepUniverse(State, MissingMS);
+		ConsoleLog("Finished");
+	}
+
 
 	void ClearShipSelection(game::state* State)
 	{
-		if (State->ShipSelected != GameNull && !State->ShipSelected->IsMoving) {
-			State->ShipSelected->CurrentJourney = {};
+		if (State->Selection.IsShip() && !State->Selection.Data.Ship->IsMoving) {
+			State->Selection.Data.Ship->CurrentJourney = {};
 		}
-		State->ShipSelected = GameNull;
+		State->Selection.Clear();
 	}
 
 	void Start(engine_state* EngineState)
@@ -171,9 +205,10 @@ namespace game {
 		ShipSetup(State, vector2{0, 0});
 		AsteroidCreateCluster(vector2{0, 0}, 30.0f, State);
 
-		LoadGame(State);
+		station* Station = StationCreate(State);
+		Station->Position = vector2{50, 50};
 
-		int x = 0;
+		LoadGame(State);
 	}
 
 	const real32 ZoomMin = 0.0f;
@@ -255,11 +290,11 @@ namespace game {
 				ImGui::Separator();
 
 				// Ship simulate performance testing
-				if (State->ShipSelected != GameNull) {
+				if (State->Selection.IsShip() != GameNull) {
 					if (ImGui::Button("Test Ship Simulation")) {
 						ConsoleLog("Starting Test");
 
-						ship* CurrentShip = State->ShipSelected;
+						ship* CurrentShip = State->Selection.Data.Ship;
 
 						uint64 Accum = 0;
 						int32 Runs = 10;
@@ -366,7 +401,7 @@ namespace game {
 
 		// Ship
 		{
-			ship* CurrentShip = State->ShipSelected;
+			ship* CurrentShip = State->Selection.Data.Ship;
 
 			vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
 			vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
@@ -585,7 +620,7 @@ namespace game {
 
 			// Ship selecting
 			if (Input->Escape.OnDown) { ClearShipSelection(State); }
-			if (State->ShipSelected == GameNull && Input->MouseLeft.OnUp && !Input->MouseMoved() ) {
+			if (State->Selection.None() && Input->MouseLeft.OnUp && !Input->MouseMoved() ) {
 
 				for (int i = 0; i < ArrayCount(State->Ships); i++) {
 					ship* Ship = &State->Ships[i];
@@ -599,10 +634,10 @@ namespace game {
 						Bounds.BottomRight = WorldToScreen(vector3{BottomRightWorld.X, BottomRightWorld.Y, 0}, &EngineState->GameCamera);
 
 						if (RectContains(Bounds, Input->MousePos)) {
-							State->ShipSelected = Ship;
+							State->Selection.Set(Ship);
 							State->ShipInfoWindowShowing = true;
-							if (!State->ShipSelected->IsMoving) {
-								State->ShipSelected->CurrentJourney.EndPosition = {};
+							if (!State->Selection.Data.Ship->IsMoving) {
+								State->Selection.Data.Ship->CurrentJourney.EndPosition = {};
 							}
 						}
 					}
@@ -637,6 +672,25 @@ namespace game {
 					    RenderLayerPlanet, Model, Globals->GameRenderer);
 				}
 			}
+		}
+
+		// Render stations
+		for (int i = 0; i < State->StationsCount; i++) {
+			station* Station = &State->Stations[i];
+
+			Station->Rotation += (PI / 10.0f) * EngineState->DeltaTimeMS * 0.0002f;
+
+			m4y4 Model = m4y4Identity();
+			Model = Rotate(Model, vector3{0, 0, Station->Rotation});
+
+			static loaded_image* Sprite = assets::GetImage("Station");
+
+			RenderTextureAll(
+			    Station->Position,
+			    vector2{18.0f, 18.0f},
+			    COLOR_WHITE,
+			    Sprite->GLID,
+			    RenderLayerPlanet, Model, Globals->GameRenderer);
 		}
 
 		// Render ships

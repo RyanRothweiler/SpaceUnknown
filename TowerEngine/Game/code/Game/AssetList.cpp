@@ -359,6 +359,7 @@ namespace assets {
 			{"Asteroid1", 			"Asteroids/Asteroid1.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Asteroid2", 			"Asteroids/Asteroid2.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Asteroid3", 			"Asteroids/Asteroid3.png", 			gl_blend_type::linear, correct_gamma::no},
+			{"Station", 			"Station.png", 						gl_blend_type::linear, correct_gamma::no},
 		};
 
 		asset_shader Shaders[] = {

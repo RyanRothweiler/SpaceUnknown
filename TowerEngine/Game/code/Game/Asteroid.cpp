@@ -1,3 +1,16 @@
+void InitAsteroid(asteroid* Asteroid)
+{
+	Asteroid->Using = true;
+	Asteroid->Position = {};
+	Asteroid->Size = RandomRangeFloat(5.0f, 10.0f);
+
+	int64 SpriteIndex = RandomRangeInt(0, ArrayCount(Globals->AssetsList.AsteroidImages) - 1);
+	Asteroid->Image = Globals->AssetsList.AsteroidImages[SpriteIndex];
+
+	real64 Rate = PI / 10.0f;
+	Asteroid->RotationRate = RandomRangeFloat(-Rate, Rate);
+	Asteroid->Rotation = RandomRangeFloat(-PI / 2.0f, PI / 2.0f);
+}
 
 void SpawnAsteroid(asteroid_cluster* Cluster)
 {
@@ -29,25 +42,15 @@ void SpawnAsteroid(asteroid_cluster* Cluster)
 		if (Valid) {
 			for (int i = 0; i < ArrayCount(Cluster->Asteroids); i++) {
 				if (!Cluster->Asteroids[i].Using) {
-					Cluster->Asteroids[i].Using = true;
+					InitAsteroid(&Cluster->Asteroids[i]);
 					Cluster->Asteroids[i].Position = PossiblePos;
-					Cluster->Asteroids[i].Size = RandomRangeFloat(5.0f, 10.0f);
-
-					int64 SpriteIndex = RandomRangeInt(0, ArrayCount(Globals->AssetsList.AsteroidImages) - 1);
-					Cluster->Asteroids[i].Image = Globals->AssetsList.AsteroidImages[SpriteIndex];
-
-					real64 Rate = PI / 10.0f;
-					Cluster->Asteroids[i].RotationRate = RandomRangeFloat(-Rate, Rate);
-					Cluster->Asteroids[i].Rotation = RandomRangeFloat(-PI / 2.0f, PI / 2.0f);
-
 					return;
 				}
 			}
-
-			// No empty space found
-			return;
 		}
 	}
+
+	// No empty space found
 }
 
 void AsteroidSpawnStep(void* SelfData, real64 Time, game::state* State)
