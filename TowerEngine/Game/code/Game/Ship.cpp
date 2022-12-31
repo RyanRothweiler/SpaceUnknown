@@ -215,6 +215,7 @@ game::ship* ShipSetup(game::state* State, vector2 Pos)
 			Ship->ModulesCount++;
 
 			game::RegisterStepper(&Ship->Stepper, &ShipStep, (void*)Ship, State);
+			game::RegisterSelectable(selection_type::ship, &Ship->Position, &Ship->Size, (void*)Ship, State, GameNull);
 
 			ShipUpdateMass(Ship);
 			return Ship;

@@ -47,35 +47,42 @@ namespace game {
 #include "Ship.h"
 #include "Station.h"
 
+	enum class selection_type { none, ship, station };
+
+	typedef void(*selection_update_func)(state* State);
+	struct selectable {
+
+		void* Data;
+		vector2* Center;
+		vector2* Size;
+
+		selection_update_func OnSelectionUpdate;
+		selection_type Type;
+	};
+
 	struct selection {
-		enum class type { none, ship, station };
-		type Type;
 
-		union data {
-			ship* Ship;
-			station* Station;
-		} Data;
+		selectable* Selectable;
 
-		bool32 None() { return Type == type::none; }
-		bool32 IsShip() { return Type == type::ship; }
-		bool32 IsStation() { return Type == type::station; }
+		bool32 None() { return Selectable == GameNull; }
+		bool32 IsShip() { return Selectable != GameNull && Selectable->Type == selection_type::ship; }
+		bool32 IsStation() { return Selectable != GameNull && Selectable->Type == selection_type::station; }
 
-		void Set(ship* Ship)
+		ship* GetShip()
 		{
-			Data.Ship = Ship;
-			Type = type::ship;
+			Assert(Selectable->Type == selection_type::ship);
+			return (ship*)Selectable->Data;
 		}
 
-		void Set(station* Station)
+		station* GetStation()
 		{
-			Data.Station = Station;
-			Type = type::station;
+			Assert(Selectable->Type == selection_type::station);
+			return (station*)Selectable->Data;
 		}
 
 		void Clear()
 		{
-			Data = {};
-			Type = type::none;
+			Selectable = {};
 		}
 	};
 
@@ -96,6 +103,9 @@ namespace game {
 
 		stepper* Steppers[1000];
 		int32 SteppersCount;
+
+		selectable Selectables[1024];
+		int32 SelectablesCount;
 
 		bool ShipInfoWindowShowing;
 	};

@@ -50,6 +50,19 @@ namespace game {
 		UT->TimeMS += Time;
 	}
 
+	void RegisterSelectable(selection_type Type, vector2* Center, vector2* Size, void* Data, game::state* State,
+	                        selection_update_func OnSelectionUpdate)
+	{
+		selectable* Sel = &State->Selectables[State->SelectablesCount++];
+		Assert(ArrayCount(State->Selectables) > State->SelectablesCount);
+
+		Sel->Type = Type;
+		Sel->Center = Center;
+		Sel->Size = Size;
+		Sel->Data = Data;
+		Sel->OnSelectionUpdate = OnSelectionUpdate;
+	}
+
 #include "Definitions.cpp"
 #include "Asteroid.cpp"
 #include "Item.cpp"
@@ -181,15 +194,6 @@ namespace game {
 		ConsoleLog("Finished");
 	}
 
-
-	void ClearShipSelection(game::state* State)
-	{
-		if (State->Selection.IsShip() && !State->Selection.Data.Ship->IsMoving) {
-			State->Selection.Data.Ship->CurrentJourney = {};
-		}
-		State->Selection.Clear();
-	}
-
 	void Start(engine_state* EngineState)
 	{
 		game::state* State = &EngineState->GameState;
@@ -290,11 +294,11 @@ namespace game {
 				ImGui::Separator();
 
 				// Ship simulate performance testing
-				if (State->Selection.IsShip() != GameNull) {
+				if (State->Selection.IsShip()) {
 					if (ImGui::Button("Test Ship Simulation")) {
 						ConsoleLog("Starting Test");
 
-						ship* CurrentShip = State->Selection.Data.Ship;
+						ship* CurrentShip = State->Selection.GetShip();
 
 						uint64 Accum = 0;
 						int32 Runs = 10;
@@ -401,8 +405,6 @@ namespace game {
 
 		// Ship
 		{
-			ship* CurrentShip = State->Selection.Data.Ship;
-
 			vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
 			vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
 
@@ -410,8 +412,9 @@ namespace game {
 			             COLOR_RED, -1, Globals->GameRenderer);
 
 			// Ship window
-			if (!State->ShipInfoWindowShowing) { ClearShipSelection(State); }
-			if (CurrentShip != GameNull) {
+			//if (!State->ShipInfoWindowShowing) { State->Selection.Clear(); }
+			if (State->Selection.IsShip()) {
+				ship* CurrentShip = State->Selection.GetShip();
 
 				// ship current movement line
 				if (CurrentShip->IsMoving) {
@@ -425,6 +428,9 @@ namespace game {
 				}
 
 				ImGui::Begin("Ship Info", &State->ShipInfoWindowShowing);
+				if (!State->ShipInfoWindowShowing) {
+					//State->Selection.Clear();
+				}
 
 				ImVec2 window_pos = ImGui::GetWindowPos();
 
@@ -617,33 +623,44 @@ namespace game {
 
 				ImGui::End();
 			}
+		}
 
-			// Ship selecting
-			if (Input->Escape.OnDown) { ClearShipSelection(State); }
-			if (State->Selection.None() && Input->MouseLeft.OnUp && !Input->MouseMoved() ) {
+		// Selection
+		if (Input->Escape.OnDown) {
+			State->Selection.Clear();
+		}
+		if (State->Selection.None() && Input->MouseLeft.OnUp && !Input->MouseMoved() ) {
 
-				for (int i = 0; i < ArrayCount(State->Ships); i++) {
-					ship* Ship = &State->Ships[i];
-					if (Ship->Using) {
+			for (int i = 0; i < State->SelectablesCount; i++) {
+				selectable* Sel = &State->Selectables[i];
+				vector2 TopLeftWorld = *Sel->Center - (*Sel->Size * 0.5f);
+				vector2 BottomRightWorld = *Sel->Center + (*Sel->Size * 0.5f);
 
-						vector2 TopLeftWorld = Ship->Position - (Ship->Size * 0.5f);
-						vector2 BottomRightWorld = Ship->Position + (Ship->Size * 0.5f);
+				rect Bounds = {};
+				Bounds.TopLeft = WorldToScreen(vector3{TopLeftWorld.X, TopLeftWorld.Y, 0}, &EngineState->GameCamera);
+				Bounds.BottomRight = WorldToScreen(vector3{BottomRightWorld.X, BottomRightWorld.Y, 0}, &EngineState->GameCamera);
 
-						rect Bounds = {};
-						Bounds.TopLeft = WorldToScreen(vector3{TopLeftWorld.X, TopLeftWorld.Y, 0}, &EngineState->GameCamera);
-						Bounds.BottomRight = WorldToScreen(vector3{BottomRightWorld.X, BottomRightWorld.Y, 0}, &EngineState->GameCamera);
+				if (RectContains(Bounds, Input->MousePos)) {
+					State->Selection.Selectable = Sel;
 
-						if (RectContains(Bounds, Input->MousePos)) {
-							State->Selection.Set(Ship);
-							State->ShipInfoWindowShowing = true;
-							if (!State->Selection.Data.Ship->IsMoving) {
-								State->Selection.Data.Ship->CurrentJourney.EndPosition = {};
-							}
-						}
+					/*
+					State->Selection.Set(Ship);
+					State->ShipInfoWindowShowing = true;
+					if (!State->Selection.Data.Ship->IsMoving) {
+						State->Selection.Data.Ship->CurrentJourney = {};
 					}
+					*/
+					return;
 				}
 			}
 		}
+
+		// Call selection update func
+		/*
+		if (State->Selection.Type != selection::none && State->Selection.) {
+
+		}
+		*/
 
 		if (!EditorState->Paused) {
 			StepUniverse(State, EngineState->DeltaTimeMS);
@@ -723,7 +740,6 @@ namespace game {
 				}
 			}
 		}
-
 	}
 }
 
