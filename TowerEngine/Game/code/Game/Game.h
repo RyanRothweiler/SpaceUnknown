@@ -95,6 +95,7 @@ namespace game {
 	struct state {
 		universe_time UniverseTime;
 		selection Selection;
+		selectable* Hovering;
 
 		ship Ships[100];
 

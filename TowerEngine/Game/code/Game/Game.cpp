@@ -432,11 +432,13 @@ namespace game {
 		}
 
 		// Selection
-		if (Input->Escape.OnDown) {
-			State->Selection.Clear();
-		}
-		if (State->Selection.None() && Input->MouseLeft.OnUp && !Input->MouseMoved() ) {
+		{
+			if (Input->Escape.OnDown) {
+				State->Selection.Clear();
+			}
 
+			// Find what is hovered
+			State->Hovering = {};
 			for (int i = 0; i < State->SelectablesCount; i++) {
 				selectable* Sel = &State->Selectables[i];
 				vector2 TopLeftWorld = *Sel->Center - (*Sel->Size * 0.5f);
@@ -447,13 +449,32 @@ namespace game {
 				Bounds.BottomRight = WorldToScreen(vector3{BottomRightWorld.X, BottomRightWorld.Y, 0}, &EngineState->GameCamera);
 
 				if (RectContains(Bounds, Input->MousePos)) {
-					State->Selection.Current = Sel;
+					State->Hovering = Sel;
+				}
+			}
 
-					if (State->Selection.Current->OnSelection != GameNull) {
-						State->Selection.Current->OnSelection(EngineState, Input);
-					}
+			// Hover display
+			if (State->Hovering != GameNull) {
 
-					break;
+				vector2 WorldCenter = *State->Hovering->Center;
+				vector2 WorldSize = *State->Hovering->Size;
+
+				vector2 WorldTopLeft = WorldCenter + (WorldSize * 0.5f);
+				vector2 WorldBottomRight = WorldCenter - (WorldSize * 0.5f);
+
+				rect R = {};
+				R.TopLeft = WorldToScreen(vector3{WorldTopLeft.X, WorldTopLeft.Y, 0}, &EngineState->GameCamera);
+				R.BottomRight = WorldToScreen(vector3{WorldBottomRight.X, WorldBottomRight.Y, 0}, &EngineState->GameCamera);
+
+				RenderRectangleOutline(R, 1, COLOR_RED, -1, &EngineState->UIRenderer);
+			}
+
+			// Selecting
+			if (State->Hovering != GameNull && State->Selection.None() && Input->MouseLeft.OnUp && !Input->MouseMoved()) {
+				State->Selection.Current = State->Hovering;
+
+				if (State->Selection.Current->OnSelection != GameNull) {
+					State->Selection.Current->OnSelection(EngineState, Input);
 				}
 			}
 		}
