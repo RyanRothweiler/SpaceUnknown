@@ -15,7 +15,7 @@ namespace game {
 		bool Paused;
 	};
 
-	struct ship_journey {
+	struct journey_movement {
 		// settings
 		vector2 EndPosition;
 		vector2 StartPosition;
@@ -27,6 +27,27 @@ namespace game {
 		vector2 DirToEnd;
 		real64 CurrDistToEnd;
 		real64 CurrVelocityMag;
+	};
+
+	MetaStruct enum class journey_step_type { movement };
+	struct journey_step {
+		journey_step_type Type;
+
+		journey_movement Movement;
+	};
+
+	struct ship_journey {
+		journey_step Steps[100];
+		int32 CurrentStep;
+		int32 StepsCount;
+
+		journey_step* AddStep()
+		{
+			journey_step* Step = &Steps[StepsCount++];
+			Assert(StepsCount < ArrayCount(Steps));
+
+			return Step;
+		}
 	};
 
 	struct state;

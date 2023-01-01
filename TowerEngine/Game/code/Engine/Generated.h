@@ -7,6 +7,9 @@ char* AssetsFolderStructure[] {
 "Shaders/",
 }; 
 
+string journey_step_type_NAME[] { 
+"movement",
+}; 
 string item_id_NAME[] { 
 "venigen",
 }; 

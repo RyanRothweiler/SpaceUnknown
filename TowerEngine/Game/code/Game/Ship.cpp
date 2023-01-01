@@ -14,6 +14,7 @@ void ShipUpdateMass(ship* Ship)
 
 bool32 ShipSimulateMovement(ship* Ship, real64 TimeMS)
 {
+	/*
 	real64 TimeSeconds = TimeMS * 0.001f;
 
 	real64 fuelToUse = Ship->Definition.FuelRateGallonsPerSecond * TimeSeconds;
@@ -67,6 +68,7 @@ bool32 ShipSimulateMovement(ship* Ship, real64 TimeMS)
 		Ship->Velocity = Ship->Velocity + acceleration;
 	}
 	Ship->Position = Ship->Position + (Ship->Velocity * TimeSeconds);
+	*/
 
 	return true;
 }
@@ -88,6 +90,7 @@ void ShipMove(ship* Ship, ship_journey Journey)
 	Ship->IsMoving = true;
 	Ship->CurrentJourney = Journey;
 
+	/*
 	Ship->CurrentJourney.DistFromSidesToCoast =
 	    Vector2Distance(Ship->Position, Ship->CurrentJourney.EndPosition) * 0.5f * Journey.EdgeRatio;
 
@@ -97,6 +100,7 @@ void ShipMove(ship* Ship, ship_journey Journey)
 	vector2 MoveDir = Vector2Normalize(Ship->CurrentJourney.EndPosition - Ship->Position);
 	Ship->Rotation = Vector2AngleBetween(vector2{0, 1}, MoveDir) + PI;
 	if (Ship->Position.X < Ship->CurrentJourney.EndPosition.X) { Ship->Rotation *= -1; }
+	*/
 }
 
 // Add item to a stack without exceeding the cargo mass limit
@@ -221,6 +225,7 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 	             COLOR_RED, -1, Globals->GameRenderer);
 
 	// ship current movement line
+	/*
 	if (CurrentShip->IsMoving) {
 		vector2 Points[2] = {};
 		Points[0] = WorldToScreen(vector3{CurrentShip->CurrentJourney.EndPosition.X, CurrentShip->CurrentJourney.EndPosition.Y, 0}, &EngineState->GameCamera);
@@ -230,6 +235,7 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 		Line.PointsCount = ArrayCount(Points);
 		RenderLine(Line, 2.0f, color{56.0f / 255.0f, 255.0f / 255.0f, 248.0f / 255.0f, 0.5f}, &EngineState->UIRenderer, false);
 	}
+	*/
 
 	bool Showing = true;
 	ImGui::Begin("Ship Info", &Showing);
@@ -321,7 +327,39 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 		}
 	}
 
+	// Journey
+	if (ImGui::CollapsingHeader("Commands")) {
+		for (int i = 0; i < CurrentShip->CurrentJourney.StepsCount; i++) {
+			journey_step* Step = &CurrentShip->CurrentJourney.Steps[i];
+			switch (Step->Type) {
+				case journey_step_type::movement: {
+					ImGui::Text("Movement Step");
+				} break;
+				INVALID_DEFAULT
+			}
+			ImGui::Separator();
+		}
+		if (ImGui::Button("+ Add Step +")) {
+			journey_step* Step = CurrentShip->CurrentJourney.AddStep();
+			Step->Type = journey_step_type::movement;
+		}
+
+		// Click world to add movement command
+		if (Input->MouseLeft.OnUp && !CurrentShip->IsMoving && !Input->MouseMoved()) {
+			journey_step* Step = CurrentShip->CurrentJourney.AddStep();
+			Step->Type = journey_step_type::movement;
+
+
+			/*
+			CurrentShip->CurrentJourney.EdgeRatio = 0.1f;
+			CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;
+			CurrentShip->CurrentJourney.EndPosition = MouseWorldFlat;
+			*/
+		}
+	}
+
 	// Journey / movement stuff
+	/*
 	{
 		static bool32 DoCalc = false;
 
@@ -414,6 +452,7 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 			CurrentShip->CurrentJourney.EndPosition = MouseWorldFlat;
 		}
 	}
+	*/
 
 	ImGui::End();
 

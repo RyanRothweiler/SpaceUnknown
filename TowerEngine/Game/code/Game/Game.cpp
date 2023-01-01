@@ -90,6 +90,7 @@ namespace game {
 				json::AddKeyPair("ship_" + string{i} + "_fuel", Real64ToString(Ship->FuelGallons, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_rotation", Real64ToString(Ship->Rotation, DecimalCount), &JsonOut);
 
+				/*
 				json::AddKeyPair("ship_" + string{i} + "_journey_end_x", Real64ToString(Ship->CurrentJourney.EndPosition.X, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_journey_end_y", Real64ToString(Ship->CurrentJourney.EndPosition.Y, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_journey_start_x", Real64ToString(Ship->CurrentJourney.StartPosition.X, DecimalCount), &JsonOut);
@@ -98,6 +99,7 @@ namespace game {
 				json::AddKeyPair("ship_" + string{i} + "_journey_edge_ratio", Real64ToString(Ship->CurrentJourney.EdgeRatio, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_x", Real64ToString(Ship->CurrentJourney.DirToEnd.X, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_y", Real64ToString(Ship->CurrentJourney.DirToEnd.Y, DecimalCount), &JsonOut);
+				*/
 
 				for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
 					if (Ship->Cargo[c].Count > 0) {
@@ -161,6 +163,7 @@ namespace game {
 				Ship->FuelGallons = json::GetReal64("ship_" + string{i} + "_fuel", &JsonIn);
 				Ship->Rotation = json::GetReal64("ship_" + string{i} + "_rotation", &JsonIn);
 
+				/*
 				Ship->CurrentJourney.EndPosition.X = json::GetReal64("ship_" + string{i} + "_journey_end_x", &JsonIn);
 				Ship->CurrentJourney.EndPosition.Y = json::GetReal64("ship_" + string{i} + "_journey_end_y", &JsonIn);
 				Ship->CurrentJourney.StartPosition.X = json::GetReal64("ship_" + string{i} + "_journey_start_x", &JsonIn);
@@ -169,6 +172,7 @@ namespace game {
 				Ship->CurrentJourney.EdgeRatio = (real32)json::GetReal64("ship_" + string{i} + "_journey_edge_ratio", &JsonIn);
 				Ship->CurrentJourney.DirToEnd.X = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_x", &JsonIn);
 				Ship->CurrentJourney.DirToEnd.Y = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_y", &JsonIn);
+				*/
 
 				for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
 					json::json_pair* CargoTestPair = GetPair("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
@@ -324,6 +328,7 @@ namespace game {
 				// Ship simulate performance testing
 				if (State->Selection.IsShip()) {
 					if (ImGui::Button("Test Ship Simulation")) {
+						/*
 						ConsoleLog("Starting Test");
 
 						ship* CurrentShip = State->Selection.GetShip();
@@ -380,6 +385,7 @@ namespace game {
 						real64 CyclePerMin = Avg / SimMinutes;
 						string Report = "AVG " + string{Avg} + " ||  Total Real Time (m)" + string{SimMinutes} + " || Cycles per SimMin " + string{CyclePerMin};
 						ConsoleLog(Report.Array());
+						*/
 					}
 				}
 			}
