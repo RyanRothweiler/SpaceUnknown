@@ -8,6 +8,10 @@
 
 namespace game {
 
+	struct state;
+	struct ship;
+	struct journey_step;
+
 	const real64 UnitToMeters = 10.0f;
 
 	struct editor_state {
@@ -15,13 +19,17 @@ namespace game {
 		bool Paused;
 	};
 
+	typedef void(*journey_step_start_func)(ship* Ship, journey_step* JourneyStep, game::state* State);
+	// returns true if finished
+	typedef bool(*journey_step_func)(ship* Ship, journey_step* JourneyStep, real64 Time, game::state* State);
+
 	struct journey_movement {
 		// settings
 		vector2 EndPosition;
-		vector2 StartPosition;
 		float EdgeRatio;
 
 		// precalc and accumulations for efficiency
+		vector2 StartPosition;
 		real64 DistFromSidesToCoast;
 		real64 FullDistance;
 		vector2 DirToEnd;
@@ -34,9 +42,14 @@ namespace game {
 		journey_step_type Type;
 
 		journey_movement Movement;
+
+		journey_step_start_func Start;
+		journey_step_func Step;
 	};
 
 	struct ship_journey {
+		bool32 InProgress;
+
 		journey_step Steps[100];
 		int32 CurrentStep;
 		int32 StepsCount;
@@ -50,7 +63,6 @@ namespace game {
 		}
 	};
 
-	struct state;
 	typedef void(*step_func)(void* SelfData, real64 time, game::state* State);
 
 	struct stepper {
