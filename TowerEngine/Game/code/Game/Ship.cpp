@@ -92,11 +92,16 @@ bool ShipMovementStep(ship* Ship, journey_step* JourneyStep, real64 Time, game::
 
 void ShipDockUndockStart(ship* Ship, journey_step* JourneyStep, game::state* State)
 {
-	int x = 0;
+	JourneyStep->DockUndock.TimeAccum = 0;
 }
 
 bool ShipDockUndockStep(ship* Ship, journey_step* JourneyStep, real64 Time, game::state* State)
 {
+	JourneyStep->DockUndock.TimeAccum += Time;
+	if (JourneyStep->DockUndock.TimeAccum >= SecondsToMilliseconds(60.0f)) {
+		Ship->Docked = !Ship->Docked;
+		return true;
+	}
 	return false;
 }
 

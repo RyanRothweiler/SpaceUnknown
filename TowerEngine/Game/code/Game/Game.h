@@ -38,7 +38,7 @@ namespace game {
 	};
 
 	struct journey_dock_undock {
-		real64 TimeStart;
+		real64 TimeAccum;
 	};
 
 	MetaStruct enum class journey_step_type { movement, dock_undock };
