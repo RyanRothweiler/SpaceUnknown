@@ -41,6 +41,7 @@ struct ship {
 	vector2 Size;
 	real64 Rotation;
 
+	bool32 Docked;
 	bool32 IsMoving;
 	ship_journey CurrentJourney;
 

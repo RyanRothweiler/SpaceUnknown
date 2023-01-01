@@ -37,11 +37,16 @@ namespace game {
 		real64 CurrVelocityMag;
 	};
 
-	MetaStruct enum class journey_step_type { movement };
+	struct journey_dock_undock {
+		real64 TimeStart;
+	};
+
+	MetaStruct enum class journey_step_type { movement, dock_undock };
 	struct journey_step {
 		journey_step_type Type;
 
 		journey_movement Movement;
+		journey_dock_undock DockUndock;
 
 		journey_step_start_func Start;
 		journey_step_func Step;
@@ -97,6 +102,18 @@ namespace game {
 		selection_update_func SelectionUpdate;
 		selection_on_func OnSelection;
 		selection_type Type;
+
+		ship* GetShip()
+		{
+			Assert(Type == selection_type::ship);
+			return (ship*)Data;
+		}
+
+		station* GetStation()
+		{
+			Assert(Type == selection_type::station);
+			return (station*)Data;
+		}
 	};
 
 	struct selection {
@@ -107,17 +124,8 @@ namespace game {
 		bool32 IsShip() { return Current != GameNull && Current->Type == selection_type::ship; }
 		bool32 IsStation() { return Current != GameNull && Current->Type == selection_type::station; }
 
-		ship* GetShip()
-		{
-			Assert(Current->Type == selection_type::ship);
-			return (ship*)Current->Data;
-		}
-
-		station* GetStation()
-		{
-			Assert(Current->Type == selection_type::station);
-			return (station*)Current->Data;
-		}
+		ship* GetShip() { return Current->GetShip(); }
+		station* GetStation() { return Current->GetStation(); }
 
 		void Clear()
 		{

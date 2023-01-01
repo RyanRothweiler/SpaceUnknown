@@ -90,6 +90,16 @@ bool ShipMovementStep(ship* Ship, journey_step* JourneyStep, real64 Time, game::
 	return ShipSimulateMovement(Ship, &JourneyStep->Movement, Time);
 }
 
+void ShipDockUndockStart(ship* Ship, journey_step* JourneyStep, game::state* State)
+{
+	int x = 0;
+}
+
+bool ShipDockUndockStep(ship* Ship, journey_step* JourneyStep, real64 Time, game::state* State)
+{
+	return false;
+}
+
 void ShipStep(void* SelfData, real64 Time, game::state* State)
 {
 	game::ship* Ship = (game::ship*)SelfData;
@@ -223,6 +233,26 @@ void OnShipSelected(engine_state* EngineState, game_input* Input)
 	}
 }
 
+void CreateDockUndockStep(ship* Ship)
+{
+	journey_step* MovStep = Ship->CurrentJourney.AddStep();
+	MovStep->Type = journey_step_type::dock_undock;
+
+	MovStep->Start = &ShipDockUndockStart;
+	MovStep->Step = &ShipDockUndockStep;
+}
+
+void CreateMovementStep(ship* Ship, vector2 EndPos)
+{
+	journey_step* MovStep = Ship->CurrentJourney.AddStep();
+	MovStep->Type = journey_step_type::movement;
+
+	MovStep->Start = &ShipMovementStart;
+	MovStep->Step = &ShipMovementStep;
+	MovStep->Movement.EdgeRatio = 0.1f;
+	MovStep->Movement.EndPosition = EndPos;
+}
+
 void ShipSelected(engine_state* EngineState, game_input* Input)
 {
 	game::state* State = &EngineState->GameState;
@@ -329,6 +359,8 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 	// Journey
 	if (ImGui::CollapsingHeader("Commands")) {
 		ship_journey* CurrJour = &CurrentShip->CurrentJourney;
+
+		bool32 DockState = CurrentShip->Docked;
 		vector2 JourneyPosCurrent = CurrentShip->Position;
 
 		for (int i = 0; i < CurrentShip->CurrentJourney.StepsCount; i++) {
@@ -339,12 +371,7 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 			journey_step* Step = &CurrentShip->CurrentJourney.Steps[i];
 			switch (Step->Type) {
 				case journey_step_type::movement: {
-					ImGui::Text("Movement Step");
-					ImGui::SameLine();
-					if (!CurrJour->InProgress && ImGui::Button("- Delete Step -")) {
-						RemoveSlideArray((void*)&CurrentShip->CurrentJourney.Steps[0], CurrentShip->CurrentJourney.StepsCount, sizeof(CurrentShip->CurrentJourney.Steps[0]), i);
-						CurrentShip->CurrentJourney.StepsCount--;
-					}
+					ImGui::Text("Movement");
 
 					// render line
 					if (i >= CurrJour->CurrentStep) {
@@ -360,8 +387,24 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 					JourneyPosCurrent = Step->Movement.EndPosition;
 				} break;
 
+				case journey_step_type::dock_undock: {
+					if (DockState) {
+						ImGui::Text("Undock");
+					} else {
+						ImGui::Text("Dock");
+					}
+					DockState = !DockState;
+				} break;
+
+
 				INVALID_DEFAULT
 			}
+
+			if (!CurrJour->InProgress && ImGui::Button("- Delete Step -")) {
+				RemoveSlideArray((void*)&CurrentShip->CurrentJourney.Steps[0], CurrentShip->CurrentJourney.StepsCount, sizeof(CurrentShip->CurrentJourney.Steps[0]), i);
+				CurrentShip->CurrentJourney.StepsCount--;
+			}
+
 			ImGui::Separator();
 			ImGui::PopID();
 		}
@@ -378,14 +421,13 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 
 			// Click world to add movement command
 			if (Input->MouseLeft.OnUp && !CurrentShip->IsMoving && !Input->MouseMoved()) {
-				journey_step* Step = CurrentShip->CurrentJourney.AddStep();
-				Step->Type = journey_step_type::movement;
 
-				// Fill out step settings
-				Step->Start = &ShipMovementStart;
-				Step->Step = &ShipMovementStep;
-				Step->Movement.EdgeRatio = 0.1f;
-				Step->Movement.EndPosition = MouseWorldFlat;
+				if (State->Hovering == GameNull) {
+					CreateMovementStep(CurrentShip, MouseWorldFlat);
+				} else if (State->Hovering->Type == selection_type::station) {
+					CreateMovementStep(CurrentShip, State->Hovering->GetStation()->Position);
+					CreateDockUndockStep(CurrentShip);
+				}
 			}
 		}
 	}

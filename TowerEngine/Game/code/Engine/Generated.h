@@ -9,6 +9,7 @@ char* AssetsFolderStructure[] {
 
 string journey_step_type_NAME[] { 
 "movement",
+"dock_undock",
 }; 
 string item_id_NAME[] { 
 "venigen",
