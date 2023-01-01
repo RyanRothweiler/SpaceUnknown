@@ -115,27 +115,6 @@ void ShipStep(void* SelfData, real64 Time, game::state* State)
 	}
 }
 
-void ShipMove(ship* Ship, ship_journey Journey)
-{
-	// todo remove
-	Assert(0);
-
-	Ship->IsMoving = true;
-	Ship->CurrentJourney = Journey;
-
-	/*
-	Ship->CurrentJourney.DistFromSidesToCoast =
-	    Vector2Distance(Ship->Position, Ship->CurrentJourney.EndPosition) * 0.5f * Journey.EdgeRatio;
-
-	Ship->CurrentJourney.DirToEnd = Vector2Normalize(Journey.EndPosition - Ship->Position);
-
-	// Update rotation
-	vector2 MoveDir = Vector2Normalize(Ship->CurrentJourney.EndPosition - Ship->Position);
-	Ship->Rotation = Vector2AngleBetween(vector2{0, 1}, MoveDir) + PI;
-	if (Ship->Position.X < Ship->CurrentJourney.EndPosition.X) { Ship->Rotation *= -1; }
-	*/
-}
-
 // Add item to a stack without exceeding the cargo mass limit
 void ShipStackGive(ship* Ship, item_instance* Inst, item_definition Def, int32 Count)
 {
