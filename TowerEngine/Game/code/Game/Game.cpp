@@ -134,8 +134,8 @@ namespace game {
 #include "Definitions.cpp"
 #include "Asteroid.cpp"
 #include "Item.cpp"
-#include "Ship.cpp"
 #include "Station.cpp"
+#include "Ship.cpp"
 
 	void LoadGame(game::state* State)
 	{
@@ -455,7 +455,11 @@ namespace game {
 				Bounds.BottomRight = WorldToScreen(vector3{BottomRightWorld.X, BottomRightWorld.Y, 0}, &EngineState->GameCamera);
 
 				if (RectContains(Bounds, Input->MousePos)) {
-					State->Hovering = Sel;
+					if (State->Hovering == GameNull) {
+						State->Hovering = Sel;
+					} else if ((int)Sel->Type < (int)State->Hovering->Type) {
+						State->Hovering = Sel;
+					}
 				}
 			}
 
@@ -508,6 +512,32 @@ namespace game {
 			StepUniverse(State, EngineState->DeltaTimeMS);
 		}
 
+		// Display updates
+		for (int i = 0; i < ArrayCount(State->Ships); i++) {
+			ship* Ship = &State->Ships[i];
+			if (Ship->Using) {
+
+				// Janky but whatever. Would need to use the transform scene hierarchy to improve
+				if (Ship->Status == ship_status::docked) {
+					Ship->Rotation = Ship->StationDocked->Rotation;
+
+					int DocksCount = 10;
+					real64 DockRel = (real64)(Ship->StationDocked->DockedCount) / (real64)DocksCount;
+					real64 DockRadians = DockRel * (2 * PI);
+
+					real64 DockRadius = Ship->StationDocked->Size.X * 0.5f * 0.9f;
+					vector2 StationOffset = Ship->StationDocked->Position + vector2 {
+						DockRadius * sin(DockRadians),
+						DockRadius * cos(DockRadians)
+					};
+
+					vector2 NewPos = Vector2RotatePoint(StationOffset, Ship->StationDocked->Position, DockRadians + -Ship->StationDocked->Rotation);
+					Ship->Position.X = NewPos.X;
+					Ship->Position.Y = NewPos.Y;
+				}
+			}
+		}
+
 		// Render planets
 		RenderCircle(vector2{1200, 200}, vector2{2000, 2000},
 		             COLOR_RED, RenderLayerPlanet, Globals->GameRenderer);
@@ -547,7 +577,7 @@ namespace game {
 			RenderTextureAll(
 			    Station->Position,
 			    vector2{18.0f, 18.0f},
-			    COLOR_WHITE,
+			    Color255(90.0f, 99.0f, 97.0f, 255.0f),
 			    Sprite->GLID,
 			    RenderLayerPlanet, Model, Globals->GameRenderer);
 		}
@@ -557,12 +587,14 @@ namespace game {
 			ship* Ship = &State->Ships[i];
 			if (Ship->Using) {
 
+				vector2 Pos = Ship->Position;
+
 				m4y4 Model = m4y4Identity();
 				Model = Rotate(Model, vector3{0, 0, Ship->Rotation});
 
 				static loaded_image* ShipImage = assets::GetImage("Ship");
 				RenderTextureAll(
-				    Ship->Position,
+				    Pos,
 				    Ship->Size,
 				    COLOR_WHITE,
 				    ShipImage->GLID, RenderLayerShip, Model, Globals->GameRenderer);

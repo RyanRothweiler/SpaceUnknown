@@ -11,6 +11,7 @@ namespace game {
 	struct state;
 	struct ship;
 	struct journey_step;
+	struct station;
 
 	const real64 UnitToMeters = 10.0f;
 
@@ -38,6 +39,7 @@ namespace game {
 	};
 
 	struct journey_dock_undock {
+		station* Station;
 		real64 TimeAccum;
 	};
 
@@ -45,8 +47,10 @@ namespace game {
 	struct journey_step {
 		journey_step_type Type;
 
-		journey_movement Movement;
-		journey_dock_undock DockUndock;
+		union {
+			journey_movement Movement;
+			journey_dock_undock DockUndock;
+		};
 
 		journey_step_start_func Start;
 		journey_step_func Step;
@@ -85,6 +89,7 @@ namespace game {
 #include "Ship.h"
 #include "Station.h"
 
+	// This also dictates the priority
 	enum class selection_type { none, ship, station };
 
 	struct selection;

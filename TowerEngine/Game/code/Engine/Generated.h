@@ -14,6 +14,13 @@ string journey_step_type_NAME[] {
 string item_id_NAME[] { 
 "venigen",
 }; 
+string ship_status_NAME[] { 
+"idle",
+"moving",
+"docking",
+"undocking",
+"docked",
+}; 
 string glsl_type_NAME[] { 
 "none",
 "gl_mat4",

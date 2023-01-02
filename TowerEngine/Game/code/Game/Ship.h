@@ -1,5 +1,9 @@
 const real64 fuelForcePerGallon = 8.0f;
 
+MetaStruct enum class ship_status {
+	idle, moving, docking, undocking, docked
+};
+
 struct ship_module_definition {
 	string DisplayName;
 	real64 ActivationTimeMS;
@@ -25,6 +29,10 @@ struct ship_definition {
 };
 
 struct ship {
+	ship_status Status;
+
+	station* StationDocked;
+
 	int64 CurrentCargoMass;
 	int64 CurrentMassTotal;
 
@@ -41,7 +49,6 @@ struct ship {
 	vector2 Size;
 	real64 Rotation;
 
-	bool32 Docked;
 	bool32 IsMoving;
 	ship_journey CurrentJourney;
 

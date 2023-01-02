@@ -16,6 +16,32 @@ void StationSelected(engine_state* EngineState, game_input* Input)
 	if (!Open) { State->Selection.Clear(); }
 }
 
+void StationDockShip(station* Station, ship* Ship)
+{
+	int DockIndex = Station->DockedCount;
+	Station->DockedCount++;
+
+	int DocksCount = 10;
+	real64 DockRel = (real64)DockIndex / (real64)DocksCount;
+	real64 DockRadians = DockRel * (2 * PI);
+
+	real64 DockRadius = Station->Size.X * 0.5f * 0.9f;
+	vector2 P = Station->Position + vector2 {
+		DockRadius * sin(DockRadians),
+		DockRadius * cos(DockRadians)
+	};
+
+	Ship->Position = P;
+	Ship->Status = ship_status::docked;
+	Ship->StationDocked = Station;
+}
+
+void StationUndockShip(ship* Ship)
+{
+	Ship->Position = Ship->StationDocked->Position;
+	Ship->StationDocked = {};
+	Ship->Status = ship_status::idle;
+}
 
 station* StationCreate(game::state* State)
 {
