@@ -107,6 +107,8 @@ void ShipDockUndockStart(ship* Ship, journey_step* JourneyStep, game::state* Sta
 bool ShipDockUndockStep(ship* Ship, journey_step* JourneyStep, real64 Time, game::state* State)
 {
 	JourneyStep->DockUndock.TimeAccum += Time;
+	Ship->Position = JourneyStep->DockUndock.Station->Position;
+
 	if (JourneyStep->DockUndock.TimeAccum >= SecondsToMilliseconds(60.0f)) {
 
 		if (Ship->Status == ship_status::undocking) {
@@ -419,6 +421,7 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 				} break;
 
 				case journey_step_type::dock_undock: {
+					JourneyPosCurrent = Step->DockUndock.Station->Position;
 					if (DockState) {
 						ImGui::Text("Undock");
 					} else {
@@ -454,7 +457,13 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 			if (Input->MouseLeft.OnUp && !CurrentShip->IsMoving && !Input->MouseMoved()) {
 
 				if (State->Hovering == GameNull) {
-					CreateMovementStep(CurrentShip, MouseWorldFlat);
+					if (CurrentShip->Status == ship_status::docked) {
+						CreateDockUndockStep(CurrentShip, CurrentShip->StationDocked);
+						CreateMovementStep(CurrentShip, MouseWorldFlat);
+					} else {
+						CreateMovementStep(CurrentShip, MouseWorldFlat);
+					}
+
 				} else if (State->Hovering->Type == selection_type::station) {
 					station* Station = State->Hovering->GetStation();
 					CreateMovementStep(CurrentShip, Station->Position);
