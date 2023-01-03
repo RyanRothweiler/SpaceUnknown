@@ -384,6 +384,13 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 					ImGui::Text("x");
 					ImGui::SameLine();
 					ImGui::Text(string{Item->Count} .Array());
+
+					if (CurrentShip->Status == ship_status::docked) {
+						ImGui::SameLine();
+						if (ImGui::Button(">> To Station >>")) {
+							ItemTransferToStation(Item, CurrentShip->StationDocked, State);
+						}
+					}
 				}
 			}
 		}

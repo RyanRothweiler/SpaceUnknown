@@ -44,6 +44,17 @@ namespace game {
 		State->Steppers[State->SteppersCount++] = Stepper;
 	}
 
+	void UnregisterStepper(stepper* Stepper, game::state* State)
+	{
+		for (int i = 0; i  < State->SteppersCount; i++) {
+			if (Stepper == State->Steppers[i]) {
+				RemoveSlideArray((void*)&State->Steppers[0], State->SteppersCount, sizeof(State->Steppers[0]), i);
+				State->SteppersCount--;
+				return;
+			}
+		}
+	}
+
 	void TimeStep(void* SelfData, real64 Time, game::state* State)
 	{
 		game::universe_time* UT = (game::universe_time*)SelfData;
