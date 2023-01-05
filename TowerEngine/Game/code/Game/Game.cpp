@@ -343,68 +343,68 @@ namespace game {
 				ImGui::Separator();
 
 				// Ship simulate performance testing
+				/*
 				if (State->Selection.IsShip()) {
-					if (ImGui::Button("Test Ship Simulation")) {
-						/*
-						ConsoleLog("Starting Test");
+				if (ImGui::Button("Test Ship Simulation")) {
+				ConsoleLog("Starting Test");
 
-						ship* CurrentShip = State->Selection.GetShip();
+				ship* CurrentShip = State->Selection.GetShip();
 
-						uint64 Accum = 0;
-						int32 Runs = 10;
+				uint64 Accum = 0;
+				int32 Runs = 10;
 
-						CurrentShip->CurrentJourney.EdgeRatio = 0.25f;
-						CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;
-						CurrentShip->CurrentJourney.EndPosition = vector2{50, 50};
+				CurrentShip->CurrentJourney.EdgeRatio = 0.25f;
+				CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;
+				CurrentShip->CurrentJourney.EndPosition = vector2{50, 50};
 
-						real64 SimTimeTarget = 24.0f * 60.0f * 60.0f * 1000.0f;
-						real64 TotalSimTime = 0;
+				real64 SimTimeTarget = 24.0f * 60.0f * 60.0f * 1000.0f;
+				real64 TotalSimTime = 0;
 
-						int i = 0;
-						bool32 Running = true;
-						//for (int i = 0; i < Runs; i++ ) {
-						while (Running) {
-							uint64 Start = PlatformApi.QueryPerformanceCounter();
+				int i = 0;
+				bool32 Running = true;
+				//for (int i = 0; i < Runs; i++ ) {
+				while (Running) {
+					uint64 Start = PlatformApi.QueryPerformanceCounter();
 
-							float SimFPS = 1.0f;
-							float TimeStepMS = 1.0f / SimFPS;
+					float SimFPS = 1.0f;
+					float TimeStepMS = 1.0f / SimFPS;
 
-							vector2 PosOrig = CurrentShip->Position;
-							real64 FuelOrig = CurrentShip->FuelGallons;
-							CurrentShip->Velocity = {};
-							ShipMove(CurrentShip, CurrentShip->CurrentJourney);
+					vector2 PosOrig = CurrentShip->Position;
+					real64 FuelOrig = CurrentShip->FuelGallons;
+					CurrentShip->Velocity = {};
+					ShipMove(CurrentShip, CurrentShip->CurrentJourney);
 
-							while (ShipSimulateMovement(CurrentShip, TimeStepMS) && Running) {
-								TotalSimTime += TimeStepMS;
-								if (TotalSimTime >= SimTimeTarget) {
-									Running = false;
-								}
-							}
-
-							if (Running) {
-								CurrentShip->Position = PosOrig;
-								CurrentShip->Velocity = {};
-								CurrentShip->FuelGallons = FuelOrig;
-								CurrentShip->IsMoving = false;
-
-								uint64 End = PlatformApi.QueryPerformanceCounter();
-								uint64 Count = End - Start;
-								Accum += Count;
-
-								real64 SimMinutes = MillisecondsToSeconds(TotalSimTime) / 60.0f;
-								string Report = "Finished " + string{i + 1} + "/" + string{Runs} + " ->" + string{Count} + " SimMinutes->" + string{SimMinutes};
-								ConsoleLog(Report.Array());
-							}
+					while (ShipSimulateMovement(CurrentShip, TimeStepMS) && Running) {
+						TotalSimTime += TimeStepMS;
+						if (TotalSimTime >= SimTimeTarget) {
+							Running = false;
 						}
+					}
+
+					if (Running) {
+						CurrentShip->Position = PosOrig;
+						CurrentShip->Velocity = {};
+						CurrentShip->FuelGallons = FuelOrig;
+						CurrentShip->IsMoving = false;
+
+						uint64 End = PlatformApi.QueryPerformanceCounter();
+						uint64 Count = End - Start;
+						Accum += Count;
 
 						real64 SimMinutes = MillisecondsToSeconds(TotalSimTime) / 60.0f;
-						real64 Avg = (real64)Accum / (real64)Runs;
-						real64 CyclePerMin = Avg / SimMinutes;
-						string Report = "AVG " + string{Avg} + " ||  Total Real Time (m)" + string{SimMinutes} + " || Cycles per SimMin " + string{CyclePerMin};
+						string Report = "Finished " + string{i + 1} + "/" + string{Runs} + " ->" + string{Count} + " SimMinutes->" + string{SimMinutes};
 						ConsoleLog(Report.Array());
-						*/
 					}
 				}
+
+				real64 SimMinutes = MillisecondsToSeconds(TotalSimTime) / 60.0f;
+				real64 Avg = (real64)Accum / (real64)Runs;
+				real64 CyclePerMin = Avg / SimMinutes;
+				string Report = "AVG " + string{Avg} + " ||  Total Real Time (m)" + string{SimMinutes} + " || Cycles per SimMin " + string{CyclePerMin};
+				ConsoleLog(Report.Array());
+				}
+				}
+				*/
 			}
 
 			ImGui::Text("Time");
@@ -456,10 +456,6 @@ namespace game {
 
 		// Selection
 		{
-			if (Input->Escape.OnDown) {
-				State->Selection.Clear();
-			}
-
 			// Find what is hovered
 			State->Hovering = {};
 			for (int i = 0; i < State->SelectablesCount; i++) {
@@ -497,32 +493,42 @@ namespace game {
 			}
 
 			// Selecting
-			if (State->Hovering != GameNull && State->Selection.None() && Input->MouseLeft.OnUp && !Input->MouseMoved()) {
-				State->Selection.Current = State->Hovering;
+			if (State->Hovering != GameNull && !State->Hovering->Selected && Input->MouseLeft.OnUp && !Input->MouseMoved()) {
+				for (int i = 0; i < ArrayCount(State->Selections); i++) {
+					selection* Sel = &State->Selections[i];
+					if (Sel->None()) {
+						Sel->Current = State->Hovering;
+						Sel->Current->Selected = true;
 
-				if (State->Selection.Current->OnSelection != GameNull) {
-					State->Selection.Current->OnSelection(EngineState, Input);
+						if (Sel->Current->OnSelection != GameNull) {
+							Sel->Current->OnSelection(Sel, EngineState, Input);
+						}
+						break;
+					}
 				}
 			}
 		}
 
 		// Call selection update func
-		if (!State->Selection.None() && State->Selection.Current->SelectionUpdate != GameNull) {
+		for (int i = 0; i < ArrayCount(State->Selections); i++) {
+			selection* Sel = &State->Selections[i];
+			if (!Sel->None()) {
 
-			// Render line to selection
-			{
-				vector2 ObjPos = *State->Selection.Current->Center;
+				// Render line to selection
+				{
+					vector2 ObjPos = *Sel->Current->Center;
 
-				vector2 Points[2] = {};
-				Points[0] = State->Selection.Current->InfoWindowPos;
-				Points[1] = WorldToScreen(vector3{ObjPos.X, ObjPos.Y, 0}, &EngineState->GameCamera);
-				render_line Line = {};
-				Line.Points = Points;
-				Line.PointsCount = ArrayCount(Points);
-				RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
+					vector2 Points[2] = {};
+					Points[0] = Sel->Current->InfoWindowPos;
+					Points[1] = WorldToScreen(vector3{ObjPos.X, ObjPos.Y, 0}, &EngineState->GameCamera);
+					render_line Line = {};
+					Line.Points = Points;
+					Line.PointsCount = ArrayCount(Points);
+					RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
+				}
+
+				Sel->Current->SelectionUpdate(Sel, EngineState, Input);
 			}
-
-			State->Selection.Current->SelectionUpdate(EngineState, Input);
 		}
 
 		if (!EditorState->Paused) {

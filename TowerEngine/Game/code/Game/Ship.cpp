@@ -185,10 +185,10 @@ void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
 	}
 }
 
-void OnShipSelected(engine_state* EngineState, game_input* Input)
+void OnShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 {
 	game::state* State = &EngineState->GameState;
-	ship* CurrentShip = State->Selection.GetShip();
+	ship* CurrentShip = Sel->GetShip();
 
 	if (!CurrentShip->IsMoving) {
 		CurrentShip->CurrentJourney = {};
@@ -218,12 +218,12 @@ void CreateMovementStep(ship* Ship, vector2 EndPos)
 	MovStep->Movement.EndPosition = EndPos;
 }
 
-void ShipSelected(engine_state* EngineState, game_input* Input)
+void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 {
 	game::state* State = &EngineState->GameState;
 	game::editor_state* EditorState = &EngineState->EditorState;
 
-	ship* CurrentShip = State->Selection.GetShip();
+	ship* CurrentShip = Sel->GetShip();
 
 	vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
 	vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
@@ -239,7 +239,7 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 	ImGui::Text(ship_status_NAME[(int)CurrentShip->Status].Array());
 
 	ImVec2 window_pos = ImGui::GetWindowPos();
-	State->Selection.Current->InfoWindowPos = vector2{window_pos.x, window_pos.y};
+	Sel->Current->InfoWindowPos = vector2{window_pos.x, window_pos.y};
 
 	if (EditorState->EditorMode) {
 		if (ImGui::TreeNode("Basic")) {
@@ -492,7 +492,7 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 
 	ImGui::End();
 
-	if (!Showing) { State->Selection.Clear(); }
+	if (!Showing) { Sel->Clear(); }
 }
 
 game::ship* ShipSetup(game::state* State, vector2 Pos)

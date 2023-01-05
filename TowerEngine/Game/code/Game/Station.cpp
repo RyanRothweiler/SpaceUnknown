@@ -1,21 +1,21 @@
-void StationSelected(engine_state* EngineState, game_input* Input)
+void StationSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 {
 	game::state* State = &EngineState->GameState;
 	game::editor_state* EditorState = &EngineState->EditorState;
 
-	station* CurrentStation = State->Selection.GetStation();
+	station* CurrentStation = Sel->GetStation();
 
 	bool Open = true;
 	ImGui::Begin("Station Info", &Open);
 
 	ImVec2 window_pos = ImGui::GetWindowPos();
-	State->Selection.Current->InfoWindowPos = vector2{window_pos.x, window_pos.y};
+	Sel->Current->InfoWindowPos = vector2{window_pos.x, window_pos.y};
 
 	ItemDisplayHold(&CurrentStation->Hold, GameNull);
 
 	ImGui::End();
 
-	if (!Open) { State->Selection.Clear(); }
+	if (!Open) { Sel->Clear(); }
 }
 
 void StationDockShip(station* Station, ship* Ship)

@@ -94,10 +94,11 @@ namespace game {
 
 	struct selection;
 
-	typedef void(*selection_update_func)(engine_state* EngineState, game_input* Input);
-	typedef void(*selection_on_func)(engine_state* EngineState, game_input* Input);
+	typedef void(*selection_update_func)(selection* Sel, engine_state* EngineState, game_input* Input);
+	typedef void(*selection_on_func)(selection* Sel, engine_state* EngineState, game_input* Input);
 	struct selectable {
 
+		bool32 Selected;
 		void* Data;
 		vector2* Center;
 		vector2* Size;
@@ -134,13 +135,14 @@ namespace game {
 
 		void Clear()
 		{
+			Current->Selected = false;
 			Current = {};
 		}
 	};
 
 	struct state {
 		universe_time UniverseTime;
-		selection Selection;
+		selection Selections[100];
 		selectable* Hovering;
 
 		ship Ships[100];
