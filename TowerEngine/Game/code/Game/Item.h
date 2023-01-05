@@ -9,14 +9,25 @@ struct item_definition {
 	int64 Mass;
 };
 
-MetaStruct enum class item_transfer_target { ship, station };
-
 struct item_instance {
-	stepper TransferStepper;
-	item_transfer_target TransferTarget;
-	ship* ToShipTransfer;
-	station* ToStationTransfer;
-
 	item_definition Definition;
 	int32 Count;
+};
+
+struct item_hold {
+	int64 MassCurrent;
+
+	item_instance Items[256];
+	int64 MassLimit;
+
+	// Add cargo weightt
+	void UpdateMass()
+	{
+		MassCurrent = 0;
+		for (int i = 0; i < ArrayCount(Items); i++) {
+			if (Items[i].Count > 0) {
+				MassCurrent += Items[i].Definition.Mass * Items[i].Count;
+			}
+		}
+	}
 };

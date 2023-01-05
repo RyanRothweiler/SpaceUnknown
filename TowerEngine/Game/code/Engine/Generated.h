@@ -14,10 +14,6 @@ string journey_step_type_NAME[] {
 string item_id_NAME[] { 
 "venigen",
 }; 
-string item_transfer_target_NAME[] { 
-"ship",
-"station",
-}; 
 string ship_status_NAME[] { 
 "idle",
 "moving",

@@ -1,15 +1,7 @@
 void ShipUpdateMass(ship* Ship)
 {
-	Ship->CurrentCargoMass = 0;
-
-	// Add cargo weightt
-	for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
-		if (Ship->Cargo[i].Count > 0) {
-			Ship->CurrentCargoMass += Ship->Cargo[i].Definition.Mass * Ship->Cargo[i].Count;
-		}
-	}
-
-	Ship->CurrentMassTotal = Ship->CurrentCargoMass + Ship->Definition.Mass;
+	Ship->Hold.UpdateMass();
+	Ship->CurrentMassTotal = Ship->Hold.MassCurrent + Ship->Definition.Mass;
 }
 
 void ShipMovementStart(ship* Ship, journey_step* JourneyStep, game::state* State)
@@ -151,65 +143,9 @@ void ShipStep(void* SelfData, real64 Time, game::state* State)
 	}
 }
 
-// Add item to a stack without exceeding the cargo mass limit
-void ShipStackGive(ship* Ship, item_instance* Inst, item_definition Def, int32 Count)
-{
-	int64 NewMass = Ship->CurrentCargoMass + (Def.Mass * Count);
-	if (NewMass <= Ship->Definition.CargoMassLimit) {
-		Inst->Count += Count;
-	} else {
-		int64 MassAvail = Ship->Definition.CargoMassLimit - Ship->CurrentCargoMass;
-		int32 CountCanGiv = (int32)(MassAvail / Def.Mass);
-		Inst->Count += CountCanGiv;
-	}
-}
-
 void ShipGiveItem(ship* Ship, item_id ItemID, int32 Count)
 {
-	item_definition Def = GetItemDefinition(ItemID);
-
-	if (Def.Stackable) {
-		// Add to existing stack
-		for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
-			if (Ship->Cargo[i].Count > 0 && Ship->Cargo[i].Definition.ID == ItemID) {
-				ShipStackGive(Ship, &Ship->Cargo[i], Def, Count);
-				goto end;
-			}
-		}
-
-		// Make new stack
-		for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
-			if (Ship->Cargo[i].Count <= 0) {
-
-				Ship->Cargo[i].Count = 0;
-				Ship->Cargo[i].Definition = Def;
-				ShipStackGive(Ship, &Ship->Cargo[i], Def, Count);
-				goto end;
-			}
-		}
-
-		ConsoleLog("Ship cargo full");
-		goto end;
-	}
-
-	// Not stackable, so make new stacks
-	{
-		// Verify we have space
-		if (Ship->CurrentCargoMass + Def.Mass > Ship->Definition.CargoMassLimit) { return; }
-
-		// Give
-		for (int c = 0; c < Count; c++) {
-			for (int i = 0; i < ArrayCount(Ship->Cargo); i++) {
-				if (Ship->Cargo[i].Count <= 0) {
-					Ship->Cargo[i].Count = 1;
-					Ship->Cargo[i].Definition = Def;
-					goto end;
-				}
-			}
-		}
-	}
-
-end:
+	ItemGive(&Ship->Hold, ItemID, Count);
 	ShipUpdateMass(Ship);
 }
 
@@ -220,7 +156,7 @@ void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
 	Module->Target = GameNull;
 
 	// if no cargo space then do nothing
-	if (Module->Owner->CurrentCargoMass == Module->Owner->Definition.CargoMassLimit) { return; }
+	if (Module->Owner->Hold.MassCurrent == Module->Owner->Hold.MassLimit) { return; }
 
 	for (int i = 0; i < State->ClustersCount && Module->Target == GameNull; i++) {
 		asteroid_cluster* Cluster = &State->Asteroids[i];
@@ -372,29 +308,7 @@ void ShipSelected(engine_state* EngineState, game_input* Input)
 	}
 
 	// Cargo
-	{
-		int64 CargoWeight = (int64)CurrentShip->CurrentCargoMass;
-		string CargoTitle = "Cargo (" + string{CargoWeight} + "/" + string{(int64)CurrentShip->Definition.CargoMassLimit} + ")(t)###CARGO";
-		if (ImGui::CollapsingHeader(CargoTitle.Array())) {
-			for (int i = 0; i < ArrayCount(CurrentShip->Cargo); i++) {
-				item_instance* Item = &CurrentShip->Cargo[i];
-				if (Item->Count > 0) {
-					ImGui::Text(Item->Definition.DisplayName.Array());
-					ImGui::SameLine();
-					ImGui::Text("x");
-					ImGui::SameLine();
-					ImGui::Text(string{Item->Count} .Array());
-
-					if (CurrentShip->Status == ship_status::docked) {
-						ImGui::SameLine();
-						if (ImGui::Button(">> To Station >>")) {
-							ItemTransferToStation(Item, CurrentShip->StationDocked, State);
-						}
-					}
-				}
-			}
-		}
-	}
+	ItemDisplayHold(&CurrentShip->Hold, CurrentShip);
 
 	// Journey
 	if (ImGui::CollapsingHeader("Commands")) {
@@ -594,6 +508,8 @@ game::ship* ShipSetup(game::state* State, vector2 Pos)
 			Ship->Size = vector2{5, 5};
 			Ship->Definition = Globals->AssetsList.Definition_Ship_First;
 			Ship->FuelGallons = Ship->Definition.FuelTankGallons;
+
+			Ship->Hold.MassLimit = 20;
 
 			Ship->Modules[0].Definition = Globals->AssetsList.Definition_Module_AsteroidMiner;
 			Ship->Modules[0].Owner = Ship;

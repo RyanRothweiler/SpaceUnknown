@@ -25,7 +25,6 @@ struct ship_definition {
 	real64 FuelTankGallons;
 	real64 FuelRateGallonsPerSecond;
 	int64 Mass;
-	int64 CargoMassLimit;
 };
 
 struct ship {
@@ -33,7 +32,6 @@ struct ship {
 
 	station* StationDocked;
 
-	int64 CurrentCargoMass;
 	int64 CurrentMassTotal;
 
 	bool32 Using;
@@ -42,7 +40,7 @@ struct ship {
 	ship_module Modules[50];
 	int32 ModulesCount;
 
-	item_instance Cargo[256];
+	item_hold Hold;
 
 	vector2 Position;
 	vector2 Velocity;

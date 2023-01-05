@@ -112,6 +112,8 @@ namespace game {
 				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_y", Real64ToString(Ship->CurrentJourney.DirToEnd.Y, DecimalCount), &JsonOut);
 				*/
 
+				// Add method for saving a hold
+				/*
 				for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
 					if (Ship->Cargo[c].Count > 0) {
 
@@ -121,6 +123,7 @@ namespace game {
 						json::AddKeyPair("ship_" + string{i} + "_cargo_" + string{c} + "_count", string{Ship->Cargo[c].Count}, &JsonOut);
 					}
 				}
+				*/
 			}
 		}
 
@@ -185,6 +188,8 @@ namespace game {
 				Ship->CurrentJourney.DirToEnd.Y = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_y", &JsonIn);
 				*/
 
+				// method to load an item_hold
+				/*
 				for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
 					json::json_pair* CargoTestPair = GetPair("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
 					if (CargoTestPair != GameNull) {
@@ -197,6 +202,7 @@ namespace game {
 						Ship->Cargo[c].Count = (int32)json::GetInt64("ship_" + string{i} + "_cargo_" + string{c} + "_count", &JsonIn);;
 					}
 				}
+				*/
 
 				ShipUpdateMass(Ship);
 			}

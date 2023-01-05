@@ -11,6 +11,8 @@ void StationSelected(engine_state* EngineState, game_input* Input)
 	ImVec2 window_pos = ImGui::GetWindowPos();
 	State->Selection.Current->InfoWindowPos = vector2{window_pos.x, window_pos.y};
 
+	ItemDisplayHold(&CurrentStation->Hold, GameNull);
+
 	ImGui::End();
 
 	if (!Open) { State->Selection.Clear(); }
@@ -49,6 +51,7 @@ station* StationCreate(game::state* State)
 	Assert(ArrayCount(State->Stations) > State->StationsCount);
 
 	Station->Size = vector2{18.0f, 18.0f};
+	Station->Hold.MassLimit = 1000;
 
 	game::RegisterSelectable(selection_type::station, &Station->Position, &Station->Size, (void*)Station, State,
 	                         &StationSelected, GameNull
