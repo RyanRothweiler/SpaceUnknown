@@ -7,6 +7,8 @@ struct item_definition {
 	string DisplayName;
 	bool32 Stackable;
 	int64 Mass;
+
+	loaded_image* Icon;
 };
 
 struct item_instance {

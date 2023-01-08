@@ -72,27 +72,83 @@ void ItemTransfer(item_instance* Inst, item_hold* Dest, int32 Count)
 	Inst->Count -= CountMoving;
 }
 
-void ItemDisplayHold(item_hold* Hold, ship* Ship)
+void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game::state* State, game_input* Input)
 {
 	int64 CargoWeight = (int64)Hold->MassCurrent;
 	string CargoTitle = "Cargo (" + string{CargoWeight} + "/" + string{(int64)Hold->MassLimit} + ")(t)###CARGO";
 	if (ImGui::CollapsingHeader(CargoTitle.Array())) {
+
+		ImGui::Text("Drag items here or onto target to transfer");
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ITEM_INSTANCE")) {
+				item_instance* Inst = State->ItemDragging;
+
+				if (SelfShip != GameNull) {
+					ItemTransfer(Inst, &SelfShip->Hold, Inst->Count);
+				} else if (SelfStation != GameNull) {
+					ItemTransfer(Inst, &SelfStation->Hold, Inst->Count);
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 		for (int i = 0; i < ArrayCount(Hold->Items); i++) {
+
+			ImGui::PushID(i);
+
 			item_instance* Item = &Hold->Items[i];
+			int64 ptr = (int64)Item;
 			if (Item->Count > 0) {
+
+				ImGui::Image(
+				    (ImTextureID)((int64)Item->Definition.Icon->GLID),
+				    ImVec2(40, 40),
+				    ImVec2(0, 0),
+				    ImVec2(1, -1),
+				    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+				);
+
+				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+					State->ItemDragging = Item;
+
+					int D = 0;
+					ImGui::SetDragDropPayload("ITEM_INSTANCE", &D, sizeof(D));
+
+					ImGui::Image(
+					    (ImTextureID)((int64)Item->Definition.Icon->GLID),
+					    ImVec2(40, 40),
+					    ImVec2(0, 0),
+					    ImVec2(1, -1),
+					    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+					    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+					);
+
+					ImGui::EndDragDropSource();
+				}
+
+				ImGui::SameLine();
 				ImGui::Text(Item->Definition.DisplayName.Array());
 				ImGui::SameLine();
 				ImGui::Text("x");
 				ImGui::SameLine();
 				ImGui::Text(string{Item->Count} .Array());
-
-				if (Ship != GameNull && Ship->Status == ship_status::docked) {
-					ImGui::SameLine();
-					if (ImGui::Button(">> To Station >>")) {
-						ItemTransfer(Item, &Ship->StationDocked->Hold, Item->Count);
-					}
-				}
 			}
+
+			ImGui::PopID();
 		}
+	}
+
+	if (Input->MouseLeft.OnUp) {
+		if (State->ItemDragging != GameNull && State->Hovering != GameNull) {
+			if (State->Hovering->Type == selection_type::ship) {
+				ItemTransfer(State->ItemDragging, &State->Hovering->GetShip()->Hold, State->ItemDragging->Count);
+			} else if (State->Hovering->Type == selection_type::station) {
+				ItemTransfer(State->ItemDragging, &State->Hovering->GetStation()->Hold, State->ItemDragging->Count);
+			}
+
+		}
+
+		State->ItemDragging = {};
 	}
 }

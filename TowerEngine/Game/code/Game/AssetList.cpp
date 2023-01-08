@@ -360,6 +360,8 @@ namespace assets {
 			{"Asteroid2", 			"Asteroids/Asteroid2.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Asteroid3", 			"Asteroids/Asteroid3.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Station", 			"Station.png", 						gl_blend_type::linear, correct_gamma::no},
+
+			{"Icon_Venigen", 		"Icons/Icon_Venigen.png", 			gl_blend_type::linear, correct_gamma::no},
 		};
 
 		asset_shader Shaders[] = {

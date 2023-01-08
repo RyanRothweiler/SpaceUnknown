@@ -8,11 +8,10 @@ void StationSelected(selection* Sel, engine_state* EngineState, game_input* Inpu
 	bool Open = true;
 	ImGui::Begin("Station Info", &Open);
 
+	ItemDisplayHold(&CurrentStation->Hold, GameNull, CurrentStation, State, Input);
+
 	ImVec2 window_pos = ImGui::GetWindowPos();
 	Sel->Current->InfoWindowPos = vector2{window_pos.x, window_pos.y};
-
-	ItemDisplayHold(&CurrentStation->Hold, GameNull);
-
 	ImGui::End();
 
 	if (!Open) { Sel->Clear(); }

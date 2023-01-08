@@ -11,7 +11,7 @@ void CreateDefinitions()
 	Globals->AssetsList.ItemDefinitions[0].ID = item_id::venigen;
 	Globals->AssetsList.ItemDefinitions[0].DisplayName = "Venigen";
 	Globals->AssetsList.ItemDefinitions[0].Mass = 1;
-	Globals->AssetsList.ItemDefinitions[0].Stackable = true;
+	Globals->AssetsList.ItemDefinitions[0].Icon = assets::GetImage("Icon_Venigen");
 }
 
 item_definition GetItemDefinition(item_id ID)

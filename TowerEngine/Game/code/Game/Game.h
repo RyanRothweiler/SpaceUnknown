@@ -161,6 +161,8 @@ namespace game {
 
 		selectable Selectables[1024];
 		int32 SelectablesCount;
+
+		item_instance* ItemDragging;
 	};
 };
 

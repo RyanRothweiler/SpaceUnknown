@@ -4,6 +4,7 @@
 char* AssetsFolderStructure[] { 
 "Asteroids/",
 "EngineResources/",
+"Icons/",
 "Shaders/",
 }; 
 
