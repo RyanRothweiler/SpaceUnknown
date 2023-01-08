@@ -1,5 +1,5 @@
 MetaStruct enum class item_id {
-	venigen,
+	venigen, module
 };
 
 struct item_definition {

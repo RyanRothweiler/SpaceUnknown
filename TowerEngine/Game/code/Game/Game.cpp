@@ -624,9 +624,9 @@ namespace game {
 			}
 
 			// Render ship module effects
-			for (int m = 0; m < Ship->ModulesCount; m++) {
-				ship_module* Module = &Ship->Modules[m];
-				if (Module->Target != GameNull) {
+			for (int m = 0; m < ArrayCount(Ship->EquippedModules); m++) {
+				ship_module* Module = &Ship->EquippedModules[m];
+				if (Module->Filled && Module->Target != GameNull) {
 					vector2 Points[2] = {};
 					Points[0] = WorldToScreen(vector3{Ship->Position.X, Ship->Position.Y, 0}, &EngineState->GameCamera);
 					Points[1] = WorldToScreen(vector3{Module->Target->Position.X, Module->Target->Position.Y, 0}, &EngineState->GameCamera);

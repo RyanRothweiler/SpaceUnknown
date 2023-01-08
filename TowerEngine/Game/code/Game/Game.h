@@ -84,6 +84,8 @@ namespace game {
 		real64 TimeMS;
 	};
 
+#define ImGuiImageSize ImVec2(40, 40)
+
 #include "Asteroid.h"
 #include "Item.h"
 #include "Ship.h"

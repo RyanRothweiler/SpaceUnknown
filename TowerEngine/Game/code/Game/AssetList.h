@@ -107,7 +107,10 @@ struct assets_list {
 
 	// Game Definitions
 	game::item_definition ItemDefinitions[100];
-	game::ship_module_definition Definition_Module_AsteroidMiner = {};
+	game::ship_module_definition ShipModuleDefinitions[100];
 	game::ship_definition Definition_Ship_First = {};
 	loaded_image* AsteroidImages[3];
+
+	loaded_image* ShipModuleTypeIcons[100];
+	loaded_image* ShipModuleIcons[100];
 };

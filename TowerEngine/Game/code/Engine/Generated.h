@@ -14,6 +14,7 @@ string journey_step_type_NAME[] {
 }; 
 string item_id_NAME[] { 
 "venigen",
+"module",
 }; 
 string ship_status_NAME[] { 
 "idle",
@@ -21,6 +22,10 @@ string ship_status_NAME[] {
 "docking",
 "undocking",
 "docked",
+}; 
+string ship_module_id_NAME[] { 
+"asteroid_miner",
+"count",
 }; 
 string glsl_type_NAME[] { 
 "none",

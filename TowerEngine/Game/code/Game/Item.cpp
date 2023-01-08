@@ -1,3 +1,4 @@
+
 // Add item to a stack without exceeding the cargo mass limit
 int32 ItemStackGive(item_hold* Hold, item_instance* Inst, item_definition Def, int32 Count)
 {
@@ -12,6 +13,13 @@ int32 ItemStackGive(item_hold* Hold, item_instance* Inst, item_definition Def, i
 		return CountCanGive;
 	}
 }
+
+/*
+void ItemGiveModule(item_hold* Hold, ship_module* Module)
+{
+
+}
+*/
 
 // returns amount given
 int32 ItemGive(item_hold* Hold, item_id ItemID, int32 Count)
@@ -102,7 +110,7 @@ void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game
 
 				ImGui::Image(
 				    (ImTextureID)((int64)Item->Definition.Icon->GLID),
-				    ImVec2(40, 40),
+				    ImGuiImageSize,
 				    ImVec2(0, 0),
 				    ImVec2(1, -1),
 				    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),

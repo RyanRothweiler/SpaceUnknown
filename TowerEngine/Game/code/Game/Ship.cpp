@@ -298,12 +298,49 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	ImGui::Dummy(ImVec2(0, 10));
 
 	if (ImGui::CollapsingHeader("Modules")) {
-		for (int i = 0; i < CurrentShip->ModulesCount; i++) {
-			ship_module* Module = &CurrentShip->Modules[i];
+		for (int i = 0; i < CurrentShip->Definition.SlotsCount; i++) {
+			ship_module* Module = &CurrentShip->EquippedModules[i];
 
-			ImGui::Text(Module->Definition.DisplayName.Array());
-			float Progress = (float)(Module->ActivationTimerMS / Module->Definition.ActivationTimeMS);
-			ImGui::ProgressBar(Progress, ImVec2(-1.0f, 1.0f));
+			if (Module->Filled != GameNull) {
+
+				//Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner] = assets::GetImage("Icon_ShipModule_AsteroidMiner");
+
+
+				ImGui::Image(
+				    (ImTextureID)((int64)Globals->AssetsList.ShipModuleIcons[(int)Module->Definition.ID]->GLID),
+				    ImGuiImageSize,
+				    ImVec2(0, 0),
+				    ImVec2(1, -1),
+				    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+				);
+
+				ImGui::SameLine();
+				ImGui::BeginGroup();
+
+				ImGui::Text(Module->Definition.DisplayName.Array());
+				float Progress = (float)(Module->ActivationTimerMS / Module->Definition.ActivationTimeMS);
+				ImGui::ProgressBar(Progress, ImVec2(-1.0f, 1.0f));
+
+				ImGui::EndGroup();
+			} else {
+
+				Assert(ArrayCount(CurrentShip->Definition.SlotTypes) > i);
+
+				ImGui::Image(
+				    (ImTextureID)((int64)Globals->AssetsList.ShipModuleTypeIcons[(int)CurrentShip->Definition.SlotTypes[i]]->GLID),
+				    ImGuiImageSize,
+				    ImVec2(0, 0),
+				    ImVec2(1, -1),
+				    ImVec4(1.0f, 1.0f, 1.0f, 0.25f),
+				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+				);
+
+				ImGui::SameLine();
+				ImGui::Text("Empty Slot");
+			}
+
+			ImGui::Separator();
 		}
 	}
 
@@ -495,6 +532,15 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	if (!Showing) { Sel->Clear(); }
 }
 
+void ShipAddModule(ship_module* Dest, ship_module_id ModuleID, ship* Ship, game::state* State)
+{
+	Dest->Filled = true;
+	Dest->Definition = Globals->AssetsList.ShipModuleDefinitions[(int)ModuleID];
+	Dest->Owner = Ship;
+
+	game::RegisterStepper(&Dest->Stepper, &ModuleUpdate, (void*)(Dest), State);
+}
+
 game::ship* ShipSetup(game::state* State, vector2 Pos)
 {
 	for (int i = 0; i < ArrayCount(State->Ships); i++) {
@@ -511,10 +557,7 @@ game::ship* ShipSetup(game::state* State, vector2 Pos)
 
 			Ship->Hold.MassLimit = 20;
 
-			Ship->Modules[0].Definition = Globals->AssetsList.Definition_Module_AsteroidMiner;
-			Ship->Modules[0].Owner = Ship;
-			game::RegisterStepper(&Ship->Modules[0].Stepper, &ModuleUpdate, (void*)(&Ship->Modules[0]), State);
-			Ship->ModulesCount++;
+			ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
 
 			game::RegisterStepper(&Ship->Stepper, &ShipStep, (void*)Ship, State);
 			game::RegisterSelectable(selection_type::ship, &Ship->Position, &Ship->Size, (void*)Ship, State,
