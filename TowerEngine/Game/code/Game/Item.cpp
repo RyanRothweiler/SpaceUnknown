@@ -86,9 +86,9 @@ void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game
 	string CargoTitle = "Cargo (" + string{CargoWeight} + "/" + string{(int64)Hold->MassLimit} + ")(t)###CARGO";
 	if (ImGui::CollapsingHeader(CargoTitle.Array())) {
 
-		ImGui::Text("Drag items here or onto target to transfer");
+		ImGui::Text("Drag items here or onto target");
 		if (ImGui::BeginDragDropTarget()) {
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ITEM_INSTANCE")) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
 				item_instance* Inst = State->ItemDragging;
 
 				if (SelfShip != GameNull) {
@@ -97,6 +97,19 @@ void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game
 					ItemTransfer(Inst, &SelfStation->Hold, Inst->Count);
 				}
 			}
+
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiShipModuleUnequippingDraggingID)) {
+				ship_module* Inst = State->ModuleUnequipping;
+
+				/*
+				if (SelfShip != GameNull) {
+					ItemTransfer(Inst, &SelfShip->Hold, Inst->Count);
+				} else if (SelfStation != GameNull) {
+					ItemTransfer(Inst, &SelfStation->Hold, Inst->Count);
+				}
+				*/
+			}
+
 			ImGui::EndDragDropTarget();
 		}
 
@@ -121,7 +134,7 @@ void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game
 					State->ItemDragging = Item;
 
 					int D = 0;
-					ImGui::SetDragDropPayload("ITEM_INSTANCE", &D, sizeof(D));
+					ImGui::SetDragDropPayload(ImguiItemDraggingID, &D, sizeof(D));
 
 					ImGui::Image(
 					    (ImTextureID)((int64)Item->Definition.Icon->GLID),
@@ -158,5 +171,6 @@ void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game
 		}
 
 		State->ItemDragging = {};
+		State->ModuleUnequipping = {};
 	}
 }

@@ -303,17 +303,33 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 			if (Module->Filled != GameNull) {
 
-				//Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner] = assets::GetImage("Icon_ShipModule_AsteroidMiner");
-
-
+				loaded_image* Icon = Globals->AssetsList.ShipModuleIcons[(int)Module->Definition.ID];
 				ImGui::Image(
-				    (ImTextureID)((int64)Globals->AssetsList.ShipModuleIcons[(int)Module->Definition.ID]->GLID),
+				    (ImTextureID)((int64)Icon->GLID),
 				    ImGuiImageSize,
 				    ImVec2(0, 0),
 				    ImVec2(1, -1),
 				    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
 				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
 				);
+
+				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+					State->ModuleUnequipping = Module;
+
+					int D = 0;
+					ImGui::SetDragDropPayload(ImguiShipModuleUnequippingDraggingID, &D, sizeof(D));
+
+					ImGui::Image(
+					    (ImTextureID)((int64)Icon->GLID),
+					    ImVec2(40, 40),
+					    ImVec2(0, 0),
+					    ImVec2(1, -1),
+					    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+					    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+					);
+
+					ImGui::EndDragDropSource();
+				}
 
 				ImGui::SameLine();
 				ImGui::BeginGroup();

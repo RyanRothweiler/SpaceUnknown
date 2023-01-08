@@ -86,6 +86,9 @@ namespace game {
 
 #define ImGuiImageSize ImVec2(40, 40)
 
+	char* ImguiItemDraggingID = "ITEM_INSTANCE";
+	char* ImguiShipModuleUnequippingDraggingID = "SHIP_MODULE_UNEQUIP";
+
 #include "Asteroid.h"
 #include "Item.h"
 #include "Ship.h"
@@ -165,6 +168,7 @@ namespace game {
 		int32 SelectablesCount;
 
 		item_instance* ItemDragging;
+		ship_module* ModuleUnequipping;
 	};
 };
 
