@@ -557,6 +557,13 @@ void ShipAddModule(ship_module* Dest, ship_module_id ModuleID, ship* Ship, game:
 	game::RegisterStepper(&Dest->Stepper, &ModuleUpdate, (void*)(Dest), State);
 }
 
+void ShipRemoveModule(ship_module* Module, game::state* State)
+{
+	Module->Filled = false;
+	Module->Definition = {};
+	game::UnregisterStepper(&Module->Stepper, State);
+}
+
 game::ship* ShipSetup(game::state* State, vector2 Pos)
 {
 	for (int i = 0; i < ArrayCount(State->Ships); i++) {

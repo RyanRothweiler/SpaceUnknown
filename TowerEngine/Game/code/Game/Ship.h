@@ -70,3 +70,6 @@ struct ship {
 
 	stepper Stepper;
 };
+
+
+void ShipRemoveModule(ship_module* Module, game::state* State);

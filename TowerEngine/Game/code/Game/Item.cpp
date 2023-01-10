@@ -14,17 +14,10 @@ int32 ItemStackGive(item_hold* Hold, item_instance* Inst, item_definition Def, i
 	}
 }
 
-/*
-void ItemGiveModule(item_hold* Hold, ship_module* Module)
-{
-
-}
-*/
-
 // returns amount given
 int32 ItemGive(item_hold* Hold, item_id ItemID, int32 Count)
 {
-	item_definition Def = GetItemDefinition(ItemID);
+	item_definition Def = Globals->AssetsList.ItemDefinitions[(int)ItemID];
 	int AmountGiven = 0;
 
 	if (Def.Stackable) {
@@ -100,14 +93,10 @@ void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game
 
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiShipModuleUnequippingDraggingID)) {
 				ship_module* Inst = State->ModuleUnequipping;
+				ship* Ship = Inst->Owner;
 
-				/*
-				if (SelfShip != GameNull) {
-					ItemTransfer(Inst, &SelfShip->Hold, Inst->Count);
-				} else if (SelfStation != GameNull) {
-					ItemTransfer(Inst, &SelfStation->Hold, Inst->Count);
-				}
-				*/
+				ItemGive(&Ship->Hold, item_id::sm_asteroid_miner, 1);
+				ShipRemoveModule(Inst, State);
 			}
 
 			ImGui::EndDragDropTarget();

@@ -1,5 +1,8 @@
+// sm is short for ship_module
 MetaStruct enum class item_id {
-	venigen, module
+	venigen,
+	sm_asteroid_miner,
+	count,
 };
 
 struct item_definition {

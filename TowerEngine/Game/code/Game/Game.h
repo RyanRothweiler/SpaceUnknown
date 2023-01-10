@@ -13,7 +13,14 @@ namespace game {
 	struct journey_step;
 	struct station;
 
+	// -----------------------------------------------------------------------------
+#define ImGuiImageSize ImVec2(40, 40)
+
+	char* ImguiItemDraggingID = "ITEM_INSTANCE";
+	char* ImguiShipModuleUnequippingDraggingID = "SHIP_MODULE_UNEQUIP";
+
 	const real64 UnitToMeters = 10.0f;
+	// -----------------------------------------------------------------------------
 
 	struct editor_state {
 		bool32 EditorMode;
@@ -83,11 +90,6 @@ namespace game {
 		stepper Stepper;
 		real64 TimeMS;
 	};
-
-#define ImGuiImageSize ImVec2(40, 40)
-
-	char* ImguiItemDraggingID = "ITEM_INSTANCE";
-	char* ImguiShipModuleUnequippingDraggingID = "SHIP_MODULE_UNEQUIP";
 
 #include "Asteroid.h"
 #include "Item.h"

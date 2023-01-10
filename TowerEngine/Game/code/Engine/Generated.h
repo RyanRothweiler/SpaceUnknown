@@ -14,7 +14,8 @@ string journey_step_type_NAME[] {
 }; 
 string item_id_NAME[] { 
 "venigen",
-"module",
+"sm_asteroid_miner",
+"count",
 }; 
 string ship_status_NAME[] { 
 "idle",
