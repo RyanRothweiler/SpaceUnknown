@@ -1,7 +1,16 @@
 void ShipUpdateMass(ship* Ship)
 {
-	Ship->Hold.UpdateMass();
 	Ship->CurrentMassTotal = Ship->Hold.MassCurrent + Ship->Definition.Mass;
+}
+
+int64 ShipGetMassTotal(ship* Ship)
+{
+	if (Ship->Hold.MassChanged.DidChange()) {
+		Ship->Hold.MassChanged.MarkAccess();
+		ShipUpdateMass(Ship);
+	}
+
+	return Ship->CurrentMassTotal;
 }
 
 void ShipMovementStart(ship* Ship, journey_step* JourneyStep, game::state* State)
@@ -69,7 +78,7 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS)
 	}
 
 	// Get cargo mass too
-	int64 Mass = Ship->CurrentMassTotal;
+	int64 Mass = ShipGetMassTotal(Ship);
 
 	if (Force.X != 0 || Force.Y != 0) {
 		vector2 acceleration = Force / (real64)Mass;
@@ -143,12 +152,6 @@ void ShipStep(void* SelfData, real64 Time, game::state* State)
 	}
 }
 
-void ShipGiveItem(ship* Ship, item_id ItemID, int32 Count)
-{
-	ItemGive(&Ship->Hold, ItemID, Count);
-	ShipUpdateMass(Ship);
-}
-
 void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
 {
 	ship_module* Module = (ship_module*)SelfData;
@@ -178,7 +181,7 @@ void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
 			Module->Target->Using = false;
 
 			// Do module thing
-			ShipGiveItem(Module->Owner, item_id::venigen, 2);
+			ItemGive(&Module->Owner->Hold, item_id::venigen, 2);
 		}
 	} else {
 		Module->ActivationTimerMS = 0.0f;
@@ -285,7 +288,8 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 	// Weight
 	{
-		string ShipWeightDisp = Humanize(CurrentShip->CurrentMassTotal);
+		int64 MassTotal = ShipGetMassTotal(CurrentShip);
+		string ShipWeightDisp = Humanize(MassTotal);
 
 		ImGui::Text("Ship Total Mass (t)");
 		ImGui::SameLine();
@@ -510,6 +514,7 @@ game::ship* ShipSetup(game::state * State, vector2 Pos)
 			Ship->FuelGallons = Ship->Definition.FuelTankGallons;
 
 			Ship->Hold.MassLimit = 20;
+			Ship->Hold.MassChanged.RegisterConsumer();
 
 			ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
 

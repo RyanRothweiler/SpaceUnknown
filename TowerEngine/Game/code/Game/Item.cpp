@@ -66,10 +66,13 @@ end:
 	return AmountGiven;
 }
 
-void ItemTransfer(item_instance* Inst, item_hold* Dest, int32 Count)
+void ItemTransfer(item_instance* Inst, item_hold* Source, item_hold* Dest, int32 Count)
 {
 	int CountMoving = ItemGive(Dest, Inst->Definition.ID, Count);
 	Inst->Count -= CountMoving;
+
+	Source->UpdateMass();
+	Dest->UpdateMass();
 }
 
 void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game::state* State, game_input* Input)
@@ -81,13 +84,15 @@ void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game
 		ImGui::Text("Drag items here or onto target");
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
+
 				item_instance* Inst = State->ItemDragging;
+				item_hold* SourceHold = State->HoldItemDraggingFrom;
 
 				if (!Inst->Definition.IsModule()) {
 					if (SelfShip != GameNull) {
-						ItemTransfer(Inst, &SelfShip->Hold, Inst->Count);
+						ItemTransfer(Inst, SourceHold, &SelfShip->Hold, Inst->Count);
 					} else if (SelfStation != GameNull) {
-						ItemTransfer(Inst, &SelfStation->Hold, Inst->Count);
+						ItemTransfer(Inst, SourceHold, &SelfStation->Hold, Inst->Count);
 					}
 				}
 			}
@@ -122,6 +127,7 @@ void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
 					State->ItemDragging = Item;
+					State->HoldItemDraggingFrom = Hold;
 
 					int D = 0;
 					ImGui::SetDragDropPayload(ImguiItemDraggingID, &D, sizeof(D));
@@ -153,14 +159,15 @@ void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game
 	if (Input->MouseLeft.OnUp) {
 		if (State->ItemDragging != GameNull && State->Hovering != GameNull) {
 			if (State->Hovering->Type == selection_type::ship) {
-				ItemTransfer(State->ItemDragging, &State->Hovering->GetShip()->Hold, State->ItemDragging->Count);
+				ItemTransfer(State->ItemDragging, State->HoldItemDraggingFrom, &State->Hovering->GetShip()->Hold, State->ItemDragging->Count);
 			} else if (State->Hovering->Type == selection_type::station) {
-				ItemTransfer(State->ItemDragging, &State->Hovering->GetStation()->Hold, State->ItemDragging->Count);
+				ItemTransfer(State->ItemDragging, State->HoldItemDraggingFrom, &State->Hovering->GetStation()->Hold, State->ItemDragging->Count);
 			}
 
 		}
 
 		State->ItemDragging = {};
+		State->HoldItemDraggingFrom = {};
 		State->ModuleUnequipping = {};
 	}
 }

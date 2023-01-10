@@ -28,13 +28,16 @@ struct item_instance {
 
 struct item_hold {
 	int64 MassCurrent;
+	changed_flag MassChanged;
 
 	item_instance Items[256];
 	int64 MassLimit;
 
-	// Add cargo weightt
+	// Add cargo weight
 	void UpdateMass()
 	{
+		MassChanged.MarkChanged();
+
 		MassCurrent = 0;
 		for (int i = 0; i < ArrayCount(Items); i++) {
 			if (Items[i].Count > 0) {

@@ -176,6 +176,7 @@ namespace game {
 		int32 SelectablesCount;
 
 		item_instance* ItemDragging;
+		item_hold* HoldItemDraggingFrom;
 		ship_module* ModuleUnequipping;
 	};
 };

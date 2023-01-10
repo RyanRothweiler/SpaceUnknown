@@ -44,8 +44,6 @@ struct ship {
 
 	station* StationDocked;
 
-	int64 CurrentMassTotal;
-
 	bool32 Using;
 	ship_definition Definition;
 
@@ -64,7 +62,11 @@ struct ship {
 	real64 FuelGallons;
 
 	stepper Stepper;
+
+	// Use method to get this most updated
+	int64 CurrentMassTotal;
 };
 
 
+void ShipUpdateMass(ship* Ship);
 void ShipRemoveModule(ship_module* Module, game::state* State);

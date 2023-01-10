@@ -253,6 +253,33 @@ struct window_info {
 
 #define TRANSFORM_MAX_CHILDREN 100
 
+struct changed_flag {
+private:
+	int32 ConsumersCount;
+	int32 ChangedFlagCount;
+
+public:
+	void RegisterConsumer()
+	{
+		ConsumersCount++;
+	}
+
+	bool32 DidChange()
+	{
+		return ChangedFlagCount > 0;
+	}
+
+	void MarkAccess()
+	{
+		ChangedFlagCount--;
+	}
+
+	void MarkChanged()
+	{
+		ChangedFlagCount = ConsumersCount;
+	}
+};
+
 struct transform {
 
 	m4y4 FinalWorld;
