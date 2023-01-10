@@ -1,4 +1,3 @@
-
 // Add item to a stack without exceeding the cargo mass limit
 int32 ItemStackGive(item_hold* Hold, item_instance* Inst, item_definition Def, int32 Count)
 {
@@ -84,10 +83,12 @@ void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
 				item_instance* Inst = State->ItemDragging;
 
-				if (SelfShip != GameNull) {
-					ItemTransfer(Inst, &SelfShip->Hold, Inst->Count);
-				} else if (SelfStation != GameNull) {
-					ItemTransfer(Inst, &SelfStation->Hold, Inst->Count);
+				if (!Inst->Definition.IsModule()) {
+					if (SelfShip != GameNull) {
+						ItemTransfer(Inst, &SelfShip->Hold, Inst->Count);
+					} else if (SelfStation != GameNull) {
+						ItemTransfer(Inst, &SelfStation->Hold, Inst->Count);
+					}
 				}
 			}
 

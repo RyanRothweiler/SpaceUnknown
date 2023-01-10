@@ -91,6 +91,12 @@ namespace game {
 		real64 TimeMS;
 	};
 
+	MetaStruct enum class ship_module_id {
+		none,
+		asteroid_miner,
+		count
+	};
+
 #include "Asteroid.h"
 #include "Item.h"
 #include "Ship.h"

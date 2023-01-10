@@ -218,6 +218,22 @@ void CreateMovementStep(ship* Ship, vector2 EndPos)
 	MovStep->Movement.EndPosition = EndPos;
 }
 
+void ShipAddModule(ship_module* Dest, ship_module_id ModuleID, ship* Ship, game::state* State)
+{
+	Dest->Filled = true;
+	Dest->Definition = Globals->AssetsList.ShipModuleDefinitions[(int)ModuleID];
+	Dest->Owner = Ship;
+
+	game::RegisterStepper(&Dest->Stepper, &ModuleUpdate, (void*)(Dest), State);
+}
+
+void ShipRemoveModule(ship_module* Module, game::state* State)
+{
+	Module->Filled = false;
+	Module->Definition = {};
+	game::UnregisterStepper(&Module->Stepper, State);
+}
+
 void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 {
 	game::state* State = &EngineState->GameState;
@@ -352,6 +368,33 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
 				);
 
+				// Equipping ship module
+				if (ImGui::BeginDragDropTarget()) {
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
+						item_instance* Inst = State->ItemDragging;
+
+						if (Inst->Definition.IsModule()) {
+
+							ship_module_slot_type DesiredType = Globals->AssetsList.ShipModuleDefinitions[(int)Inst->Definition.ShipModuleID].SlotType;
+							if (DesiredType == CurrentShip->Definition.SlotTypes[i]) {
+								// Remove item
+								Inst->Count = 0;
+								CurrentShip->Hold.UpdateMass();
+
+								// Add module
+								ShipAddModule(Module, Inst->Definition.ShipModuleID, CurrentShip, State);
+							} else {
+								//TODO DISPLAY_ERROR
+								ConsoleLog("Slots do not match. Display error");
+							}
+						} else {
+							//TODO DISPLAY_ERROR
+							ConsoleLog("Item is not module. Display error.");
+						}
+					}
+				}
+
+
 				ImGui::SameLine();
 				ImGui::Text("Empty Slot");
 			}
@@ -447,124 +490,12 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 		}
 	}
 
-	// Journey / movement stuff
-	/*
-	{
-		static bool32 DoCalc = false;
-
-		ImGui::Separator();
-		ImGui::Dummy(ImVec2(0, 10));
-		ImGui::Text("Issue Movement Command");
-
-		if (
-		    !CurrentShip->IsMoving &&
-		    CurrentShip->CurrentJourney.EndPosition.X != 0 &&
-		    CurrentShip->CurrentJourney.EndPosition.Y != 0
-		) {
-
-
-			// Line to taget destination
-			{
-				vector2 Points[2] = {};
-				Points[0] = WorldToScreen(vector3{CurrentShip->CurrentJourney.EndPosition.X, CurrentShip->CurrentJourney.EndPosition.Y, 0}, &EngineState->GameCamera);
-				Points[1] = WorldToScreen(vector3{CurrentShip->Position.X, CurrentShip->Position.Y, 0}, &EngineState->GameCamera);
-				render_line Line = {};
-				Line.Points = Points;
-				Line.PointsCount = ArrayCount(Points);
-				RenderLine(Line, 1.5f, color{0, 1, 0, 0.2f}, &EngineState->UIRenderer, false);
-			}
-
-			// Journey settings
-			{
-				static float DurationMS = 0.0f;
-				static real64 FuelUsage = 0.0f;
-
-				if (ImGui::SliderFloat("Fuel Usage", &CurrentShip->CurrentJourney.EdgeRatio, 0.1f, 1.0f, "%.2f")) {
-					DoCalc = true;
-				}
-
-				if (DoCalc) {
-					DoCalc = false;
-
-					DurationMS = 0.0f;
-
-					float SimFPS = 30.0f;
-					float TimeStepMS = 1.0f / SimFPS;
-
-					vector2 PosOrig = CurrentShip->Position;
-					real64 FuelOrig = CurrentShip->FuelGallons;
-					real64 RotOrig = CurrentShip->Rotation;
-					CurrentShip->Velocity = {};
-					ShipMove(CurrentShip, CurrentShip->CurrentJourney);
-
-					while (ShipSimulateMovement(CurrentShip, TimeStepMS)) {
-						DurationMS += TimeStepMS;
-					}
-
-					FuelUsage = FuelOrig - CurrentShip->FuelGallons;
-
-					CurrentShip->Position = PosOrig;
-					CurrentShip->Velocity = {};
-					CurrentShip->FuelGallons = FuelOrig;
-					CurrentShip->Rotation = RotOrig;
-					CurrentShip->IsMoving = false;
-				}
-
-				float DurationMinutes = DurationMS / 1000.0f / 60.0f;
-
-				ImGui::Text("Journey Minutes");
-				ImGui::SameLine();
-				ImGui::Text(string{DurationMinutes} .Array());
-
-				ImGui::Text("Fuel Usage");
-				ImGui::SameLine();
-				ImGui::Text(string{FuelUsage} .Array());
-
-				if (FuelUsage < CurrentShip->FuelGallons) {
-					if (ImGui::Button("Execute Movement", ImVec2(-1.0f, 0.0f))) {
-						SaveGame(State);
-						ShipMove(CurrentShip, CurrentShip->CurrentJourney);
-					}
-				} else {
-					ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Enough Fuel");
-				}
-			}
-		} else {
-			ImGui::Text("Click world to set target destination");
-		}
-
-		if (Input->MouseLeft.OnUp && !CurrentShip->IsMoving && !Input->MouseMoved()) {
-			DoCalc = true;
-
-			CurrentShip->CurrentJourney.EdgeRatio = 0.1f;
-			CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;
-			CurrentShip->CurrentJourney.EndPosition = MouseWorldFlat;
-		}
-	}
-	*/
-
 	ImGui::End();
 
 	if (!Showing) { Sel->Clear(); }
 }
 
-void ShipAddModule(ship_module* Dest, ship_module_id ModuleID, ship* Ship, game::state* State)
-{
-	Dest->Filled = true;
-	Dest->Definition = Globals->AssetsList.ShipModuleDefinitions[(int)ModuleID];
-	Dest->Owner = Ship;
-
-	game::RegisterStepper(&Dest->Stepper, &ModuleUpdate, (void*)(Dest), State);
-}
-
-void ShipRemoveModule(ship_module* Module, game::state* State)
-{
-	Module->Filled = false;
-	Module->Definition = {};
-	game::UnregisterStepper(&Module->Stepper, State);
-}
-
-game::ship* ShipSetup(game::state* State, vector2 Pos)
+game::ship* ShipSetup(game::state * State, vector2 Pos)
 {
 	for (int i = 0; i < ArrayCount(State->Ships); i++) {
 		game::ship* Ship = &State->Ships[i];

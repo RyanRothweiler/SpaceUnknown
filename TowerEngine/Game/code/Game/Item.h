@@ -1,4 +1,4 @@
-// sm is short for ship_module
+// sm is short for ship_module. That is checked so its required to mark ship modules. The name matters
 MetaStruct enum class item_id {
 	venigen,
 	sm_asteroid_miner,
@@ -12,6 +12,13 @@ struct item_definition {
 	int64 Mass;
 
 	loaded_image* Icon;
+
+	ship_module_id ShipModuleID;
+
+	bool32 IsModule()
+	{
+		return ShipModuleID != ship_module_id::none;
+	}
 };
 
 struct item_instance {

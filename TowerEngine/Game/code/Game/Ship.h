@@ -11,11 +11,6 @@ enum class ship_module_slot_type {
 	count
 };
 
-MetaStruct enum class ship_module_id {
-	asteroid_miner,
-	count
-};
-
 struct ship_module_definition {
 	ship_module_id ID;
 	ship_module_slot_type SlotType;
