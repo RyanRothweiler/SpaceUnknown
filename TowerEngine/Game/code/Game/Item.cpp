@@ -75,7 +75,7 @@ void ItemTransfer(item_instance* Inst, item_hold* Source, item_hold* Dest, int32
 	Dest->UpdateMass();
 }
 
-void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game::state* State, game_input* Input)
+void ItemDisplayHold(item_hold* Hold, game::state* State, game_input* Input)
 {
 	int64 CargoWeight = (int64)Hold->MassCurrent;
 	string CargoTitle = "Cargo (" + string{CargoWeight} + "/" + string{(int64)Hold->MassLimit} + ")(t)###CARGO";
@@ -88,20 +88,13 @@ void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game
 				item_instance* Inst = State->ItemDragging;
 				item_hold* SourceHold = State->HoldItemDraggingFrom;
 
-				if (!Inst->Definition.IsModule()) {
-					if (SelfShip != GameNull) {
-						ItemTransfer(Inst, SourceHold, &SelfShip->Hold, Inst->Count);
-					} else if (SelfStation != GameNull) {
-						ItemTransfer(Inst, SourceHold, &SelfStation->Hold, Inst->Count);
-					}
-				}
+				ItemTransfer(Inst, SourceHold, Hold, Inst->Count);
 			}
 
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiShipModuleUnequippingDraggingID)) {
 				ship_module* Inst = State->ModuleUnequipping;
-				ship* Ship = Inst->Owner;
 
-				ItemGive(&Ship->Hold, item_id::sm_asteroid_miner, 1);
+				ItemGive(Hold, item_id::sm_asteroid_miner, 1);
 				ShipRemoveModule(Inst, State);
 			}
 
@@ -144,12 +137,17 @@ void ItemDisplayHold(item_hold* Hold, ship* SelfShip, station* SelfStation, game
 					ImGui::EndDragDropSource();
 				}
 
+
 				ImGui::SameLine();
+
+				ImGui::BeginGroup();
+
 				ImGui::Text(Item->Definition.DisplayName.Array());
-				ImGui::SameLine();
 				ImGui::Text("x");
 				ImGui::SameLine();
 				ImGui::Text(string{Item->Count} .Array());
+
+				ImGui::EndGroup();
 			}
 
 			ImGui::PopID();

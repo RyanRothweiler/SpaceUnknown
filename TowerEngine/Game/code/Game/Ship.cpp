@@ -333,7 +333,9 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
 				);
 
-				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+				if (CurrentShip->Status == ship_status::docked &&
+				        ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)
+				   ) {
 					State->ModuleUnequipping = Module;
 
 					int D = 0;
@@ -373,7 +375,9 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				);
 
 				// Equipping ship module
-				if (ImGui::BeginDragDropTarget()) {
+				if (CurrentShip->Status == ship_status::docked &&
+				        ImGui::BeginDragDropTarget()
+				   ) {
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
 						item_instance* Inst = State->ItemDragging;
 
@@ -408,7 +412,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	}
 
 	// Cargo
-	ItemDisplayHold(&CurrentShip->Hold, CurrentShip, GameNull, State, Input);
+	ItemDisplayHold(&CurrentShip->Hold, State, Input);
 
 	// Journey
 	if (ImGui::CollapsingHeader("Commands")) {
