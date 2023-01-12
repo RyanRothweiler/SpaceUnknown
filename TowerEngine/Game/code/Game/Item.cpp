@@ -75,13 +75,14 @@ void ItemTransfer(item_instance* Inst, item_hold* Source, item_hold* Dest, int32
 	Dest->UpdateMass();
 }
 
-void ItemDisplayHold(item_hold* Hold, game::state* State, game_input* Input)
+void ItemDisplayHold(item_hold* Hold, game::state* State, game_input* Input, bool32 CanTransfer)
 {
 	int64 CargoWeight = (int64)Hold->MassCurrent;
 	string CargoTitle = "Cargo (" + string{CargoWeight} + "/" + string{(int64)Hold->MassLimit} + ")(t)###CARGO";
 	if (ImGui::CollapsingHeader(CargoTitle.Array())) {
 
-		ImGui::Text("Drag items here or onto target");
+
+		/*
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
 
@@ -100,6 +101,10 @@ void ItemDisplayHold(item_hold* Hold, game::state* State, game_input* Input)
 
 			ImGui::EndDragDropTarget();
 		}
+		*/
+
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(0, 0, 0, 100));
+		ImGui::BeginChild("testing", ImVec2(0, 300), true, ImGuiWindowFlags_None);
 
 		for (int i = 0; i < ArrayCount(Hold->Items); i++) {
 
@@ -118,7 +123,7 @@ void ItemDisplayHold(item_hold* Hold, game::state* State, game_input* Input)
 				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
 				);
 
-				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+				if (CanTransfer && ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
 					State->ItemDragging = Item;
 					State->HoldItemDraggingFrom = Hold;
 
@@ -152,20 +157,29 @@ void ItemDisplayHold(item_hold* Hold, game::state* State, game_input* Input)
 
 			ImGui::PopID();
 		}
-	}
 
-	if (Input->MouseLeft.OnUp) {
-		if (State->ItemDragging != GameNull && State->Hovering != GameNull) {
-			if (State->Hovering->Type == selection_type::ship) {
-				ItemTransfer(State->ItemDragging, State->HoldItemDraggingFrom, &State->Hovering->GetShip()->Hold, State->ItemDragging->Count);
-			} else if (State->Hovering->Type == selection_type::station) {
-				ItemTransfer(State->ItemDragging, State->HoldItemDraggingFrom, &State->Hovering->GetStation()->Hold, State->ItemDragging->Count);
+
+		ImGui::EndChild();
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
+
+				item_instance* Inst = State->ItemDragging;
+				item_hold* SourceHold = State->HoldItemDraggingFrom;
+
+				ItemTransfer(Inst, SourceHold, Hold, Inst->Count);
 			}
 
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiShipModuleUnequippingDraggingID)) {
+				ship_module* Inst = State->ModuleUnequipping;
+
+				ItemGive(Hold, item_id::sm_asteroid_miner, 1);
+				ShipRemoveModule(Inst, State);
+			}
+
+			ImGui::EndDragDropTarget();
 		}
 
-		State->ItemDragging = {};
-		State->HoldItemDraggingFrom = {};
-		State->ModuleUnequipping = {};
+		ImGui::PopStyleColor();
+
 	}
 }

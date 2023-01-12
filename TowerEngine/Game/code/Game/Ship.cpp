@@ -412,7 +412,9 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	}
 
 	// Cargo
-	ItemDisplayHold(&CurrentShip->Hold, State, Input);
+	ItemDisplayHold(&CurrentShip->Hold, State, Input,
+	                CurrentShip->Status == ship_status::docked
+	               );
 
 	// Journey
 	if (ImGui::CollapsingHeader("Commands")) {
