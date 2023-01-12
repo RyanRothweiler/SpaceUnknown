@@ -132,7 +132,7 @@ void ItemDisplayHold(item_hold* Hold, game::state* State, game_input* Input, boo
 
 					ImGui::Image(
 					    (ImTextureID)((int64)Item->Definition.Icon->GLID),
-					    ImVec2(40, 40),
+					    ImGuiImageSize,
 					    ImVec2(0, 0),
 					    ImVec2(1, -1),
 					    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),

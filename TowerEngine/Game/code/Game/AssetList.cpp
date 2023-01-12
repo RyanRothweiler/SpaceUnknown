@@ -362,6 +362,7 @@ namespace assets {
 			{"Station", 			"Station.png", 						gl_blend_type::linear, correct_gamma::no},
 
 			{"Icon_Venigen", 		"Icons/Icon_Venigen.png", 			gl_blend_type::linear, correct_gamma::no},
+			{"Icon_STL", 			"Icons/Icon_STL.png", 			gl_blend_type::linear, correct_gamma::no},
 
 			{"Icon_ShipModule_AsteroidMiner", 		"Icons/Icon_ShipModule_AsteroidMiner.png", 			gl_blend_type::linear, correct_gamma::no},
 

@@ -325,7 +325,7 @@ void ImGuiSetGameTheme()
 	colors[ImGuiCol_NavHighlight]           = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
 	colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 0.00f, 0.00f, 0.70f);
 	colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(1.00f, 0.00f, 0.00f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
+	colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -752,7 +752,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	PollModelReload(Memory, GameState->Assets);
 
 	static bool DemoShowing = true;
-	//ImGui::ShowDemoWindow(&DemoShowing);
+	ImGui::ShowDemoWindow(&DemoShowing);
 
 	// Prevent mouse clicks for game if imgui captures mouse
 	if (ImGui::GetIO().WantCaptureMouse) {

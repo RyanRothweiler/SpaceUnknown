@@ -19,7 +19,12 @@ string ship_module_id_NAME[] {
 }; 
 string item_id_NAME[] { 
 "venigen",
+"stl",
 "sm_asteroid_miner",
+"count",
+}; 
+string recipe_id_NAME[] { 
+"venigen_stl",
 "count",
 }; 
 string ship_status_NAME[] { 

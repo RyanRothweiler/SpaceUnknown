@@ -43,5 +43,20 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].ShipModuleID = ship_module_id::asteroid_miner;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].Mass = 1;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].Icon = Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner];
+
+		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].ID = item_id::stl;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].DisplayName = "STL Fuel";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Mass = 1;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Icon = assets::GetImage("Icon_STL");
+		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Stackable = true;
+	}
+
+	// recipes
+	{
+		Assert(ArrayCount(Globals->AssetsList.RecipeDefinitions) > (int)recipe_id::count);
+
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterInput(item_id::venigen, 5);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterOutput(item_id::stl, 1);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].DurationMS = MinutesToMilliseconds(60);
 	}
 }

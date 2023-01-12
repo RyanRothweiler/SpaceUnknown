@@ -99,6 +99,7 @@ namespace game {
 
 #include "Asteroid.h"
 #include "Item.h"
+#include "Order.h"
 #include "Ship.h"
 #include "Station.h"
 
