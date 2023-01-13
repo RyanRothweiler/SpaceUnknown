@@ -33,7 +33,3 @@ struct recipe {
 		OutputsCount++;
 	}
 };
-
-struct order {
-	recipe Recipe;
-};

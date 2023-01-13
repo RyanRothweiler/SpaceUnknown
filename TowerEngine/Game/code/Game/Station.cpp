@@ -1,6 +1,20 @@
+void ConverterUpdate(void* SelfData, real64 Time, game::state* State)
+{
+	converter* Converter = (converter*)SelfData;
+	if (Converter->RunsCount > 0) {
+		Converter->CurrentOrderTime += Time;
+	}
+}
+
+void ConverterAddOrder(converter* Converter, recipe Order)
+{
+	Converter->RunsCount = 1;
+	Converter->CurrentOrderTime = 0.0f;
+	Converter->Order = Order;
+}
+
 void ImGuiItemCountList(item_count* Items, int32 Count)
 {
-
 	for (int inp = 0; inp < Count; inp++) {
 		item_count* IC = &Items[inp];
 
@@ -15,7 +29,7 @@ void ImGuiItemCountList(item_count* Items, int32 Count)
 
 		ImGui::SameLine();
 		ImGui::Text("x %i", IC->Count);
-		ImGui::SameLine();
+		if (inp != Count - 1) { ImGui::SameLine(); }
 	}
 }
 
@@ -31,11 +45,47 @@ void StationSelected(selection* Sel, engine_state* EngineState, game_input* Inpu
 
 	ItemDisplayHold(&CurrentStation->Hold, State, Input, true);
 
+	static int RecipeIndexSelected = -1;
+
 	if (ImGui::CollapsingHeader("Services")) {
 		if (ImGui::TreeNode("Refinery")) {
 
-			if (ImGui::Button("New Order")) {
-				ImGui::OpenPopup("NewOrder");
+			converter* Converter = &CurrentStation->Converters[0];
+
+			if (Converter->HasOrder()) {
+				recipe* Recipe = &Converter->Order;
+
+				ImGui::Columns(2, "mycolumns"); // 4-ways, with border
+
+				ImGui::Separator();
+				ImGui::Text("Inputs"); ImGui::NextColumn();
+				ImGui::Text("Outputs"); ImGui::NextColumn();
+				ImGui::Separator();
+
+				ImGuiItemCountList(&Recipe->Inputs[0], Recipe->InputsCount);
+				ImGui::NextColumn();
+
+				ImGuiItemCountList(&Recipe->Outputs[0], Recipe->OutputsCount);
+				ImGui::NextColumn();
+
+				ImGui::Columns(1);
+
+				{
+					//string FuelDisp = "Fuel Tank (g) " + string{CurrentShip->FuelGallons} + "/" + string{CurrentShip->Definition.FuelTankGallons};
+					//ImGui::Text(FuelDisp.Array());
+					float Progress = (float)(Converter->CurrentOrderTime / Converter->Order.DurationMS);
+					ImGui::ProgressBar(Progress);
+
+				}
+
+				if (ImGui::Button("Cancel Order", ImVec2(-1, 0))) {
+					Converter->RunsCount = 0;
+				}
+			} else {
+				if (ImGui::Button("New Order")) {
+					ImGui::OpenPopup("NewOrder");
+					RecipeIndexSelected = -1;
+				}
 			}
 
 			// new order modal
@@ -52,7 +102,6 @@ void StationSelected(selection* Sel, engine_state* EngineState, game_input* Inpu
 				ImGui::Text("Outputs"); ImGui::NextColumn();
 				ImGui::Separator();
 
-				static int IndexSelected = -1;
 
 				for (int i = 0; i < (int)recipe_id::count; i++) {
 					recipe* Recipe = &Globals->AssetsList.RecipeDefinitions[i];
@@ -60,7 +109,7 @@ void StationSelected(selection* Sel, engine_state* EngineState, game_input* Inpu
 					string dur = Humanize((int64)MillisecondsToMinutes(Recipe->DurationMS)) + "(m)";
 					static bool sel = false;
 					if (ImGui::Selectable(dur.Array(), &sel, ImGuiSelectableFlags_SpanAllColumns, ImVec2(0, ImGuiImageSize.x))) {
-						IndexSelected = i;
+						RecipeIndexSelected = i;
 					}
 					ImGui::NextColumn();
 
@@ -75,11 +124,14 @@ void StationSelected(selection* Sel, engine_state* EngineState, game_input* Inpu
 				ImGui::EndChild();
 				ImGui::PopStyleColor();
 
-				real32 HW = ImGui::GetWindowWidth() * 0.5f;
-				ImGui::Separator();
+				real32 HW = ImGui::GetWindowWidth();
+				if (RecipeIndexSelected != -1) { HW = HW * 0.5f; }
 
-				if (IndexSelected != -1) {
+				ImGui::Separator();
+				if (RecipeIndexSelected != -1) {
 					if (ImGui::Button("Submit", ImVec2(HW, 0))) {
+						ConverterAddOrder(&CurrentStation->Converters[0], Globals->AssetsList.RecipeDefinitions[RecipeIndexSelected]);
+
 						ImGui::CloseCurrentPopup();
 					}
 					ImGui::SetItemDefaultFocus();
@@ -141,6 +193,8 @@ station* StationCreate(game::state* State)
 	game::RegisterSelectable(selection_type::station, &Station->Position, &Station->Size, (void*)Station, State,
 	                         &StationSelected, GameNull
 	                        );
+
+	game::RegisterStepper(&Station->Converters[0].Stepper, &ConverterUpdate, (void*)(&Station->Converters[0]), State);
 
 	return Station;
 }
