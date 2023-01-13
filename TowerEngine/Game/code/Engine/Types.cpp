@@ -17,7 +17,9 @@
 
 #define MinutesToMilliseconds(value) (value * 1000.0f * 60.0f)
 #define SecondsToMilliseconds(value) (value * 1000.0f)
+
 #define MillisecondsToSeconds(value) (value / 1000.0f)
+#define MillisecondsToMinutes(value) (value / 1000.0f / 60.0f)
 #define MicrosecondsToSeconds(value) (value / 1000000.0f)
 
 #define INVALID_DEFAULT default: Assert(0);

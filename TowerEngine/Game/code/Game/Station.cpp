@@ -43,22 +43,24 @@ void StationSelected(selection* Sel, engine_state* EngineState, game_input* Inpu
 
 				ImGui::Text("Select Recipe");
 				ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(0, 0, 0, 100));
-				ImGui::BeginChild("recipes", ImVec2(0, 300));
+				ImGui::BeginChild("recipes", ImVec2(500, 300));
 
 				ImGui::Columns(3, "mycolumns"); // 4-ways, with border
 				ImGui::Separator();
+				ImGui::Text("Duration"); ImGui::NextColumn();
 				ImGui::Text("Inputs"); ImGui::NextColumn();
 				ImGui::Text("Outputs"); ImGui::NextColumn();
-				ImGui::Text("Duration"); ImGui::NextColumn();
 				ImGui::Separator();
+
+				static int IndexSelected = -1;
 
 				for (int i = 0; i < (int)recipe_id::count; i++) {
 					recipe* Recipe = &Globals->AssetsList.RecipeDefinitions[i];
 
-					string dur = string{Recipe->DurationMS};
+					string dur = Humanize((int64)MillisecondsToMinutes(Recipe->DurationMS)) + "(m)";
 					static bool sel = false;
 					if (ImGui::Selectable(dur.Array(), &sel, ImGuiSelectableFlags_SpanAllColumns, ImVec2(0, ImGuiImageSize.x))) {
-						//selected = i;
+						IndexSelected = i;
 					}
 					ImGui::NextColumn();
 
@@ -67,18 +69,25 @@ void StationSelected(selection* Sel, engine_state* EngineState, game_input* Inpu
 
 					ImGuiItemCountList(&Recipe->Outputs[0], Recipe->OutputsCount);
 					ImGui::NextColumn();
-
 				}
 
 				ImGui::Columns(1);
 				ImGui::EndChild();
 				ImGui::PopStyleColor();
 
+				real32 HW = ImGui::GetWindowWidth() * 0.5f;
 				ImGui::Separator();
-				if (ImGui::Button("Submit", ImVec2(300, 0))) { ImGui::CloseCurrentPopup(); }
-				ImGui::SetItemDefaultFocus();
-				ImGui::SameLine();
-				if (ImGui::Button("Cancel", ImVec2(300, 0))) { ImGui::CloseCurrentPopup(); }
+
+				if (IndexSelected != -1) {
+					if (ImGui::Button("Submit", ImVec2(HW, 0))) {
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::SetItemDefaultFocus();
+					ImGui::SameLine();
+				}
+				if (ImGui::Button("Cancel", ImVec2(HW, 0))) {
+					ImGui::CloseCurrentPopup();
+				}
 				ImGui::EndPopup();
 			}
 
