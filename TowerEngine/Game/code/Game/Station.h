@@ -4,6 +4,10 @@ struct converter {
 	real64 CurrentOrderTime;
 	int32 RunsCount;
 
+	bool32 IsRunning;
+
+	station* Owner;
+
 	bool32 HasOrder()
 	{
 		return RunsCount > 0;

@@ -158,8 +158,8 @@ void ItemDisplayHold(item_hold* Hold, game::state* State, game_input* Input, boo
 			ImGui::PopID();
 		}
 
-
 		ImGui::EndChild();
+
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
 

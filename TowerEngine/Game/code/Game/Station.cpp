@@ -2,18 +2,55 @@ void ConverterUpdate(void* SelfData, real64 Time, game::state* State)
 {
 	converter* Converter = (converter*)SelfData;
 	if (Converter->RunsCount > 0) {
-		Converter->CurrentOrderTime += Time;
+
+		if (Converter->IsRunning) {
+			Converter->CurrentOrderTime += Time;
+			if (Converter->CurrentOrderTime >= Converter->Order.DurationMS) {
+				Converter->RunsCount--;
+
+				if (Converter->RunsCount <= 0) {
+					Converter->IsRunning = false;
+				}
+
+				// Give items
+				for (int i = 0; i < Converter->Order.OutputsCount; i++) {
+					item_count* C = &Converter->Order.Outputs[i];
+					ItemGive(&Converter->Owner->Hold, C->ID, C->Count);
+				}
+			}
+		} else {
+			recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Converter->Order, &Converter->Owner->Hold);
+			if (InputsMissing.Count == 0) {
+				Converter->IsRunning = true;
+
+				// Consume items. We can assume they exist in sufficient amounts
+				item_hold* Source = &Converter->Owner->Hold;
+				recipe* Order = &Converter->Order;
+
+				for (int i = 0; i < Order->InputsCount; i++) {
+					item_count* C = &Order->Inputs[i];
+
+					for (int h = 0; h < ArrayCount(Source->Items); h++) {
+						if (Source->Items[h].Definition.ID == C->ID) {
+							Source->Items[h].Count -= C->Count;
+						}
+					}
+				}
+
+			}
+		}
 	}
 }
 
-void ConverterAddOrder(converter* Converter, recipe Order)
+void ConverterAddOrder(converter * Converter, recipe Order)
 {
+	Converter->IsRunning = false;
 	Converter->RunsCount = 1;
 	Converter->CurrentOrderTime = 0.0f;
 	Converter->Order = Order;
 }
 
-void ImGuiItemCountList(item_count* Items, int32 Count)
+void ImGuiItemCountList(item_count * Items, int32 Count)
 {
 	for (int inp = 0; inp < Count; inp++) {
 		item_count* IC = &Items[inp];
@@ -33,7 +70,7 @@ void ImGuiItemCountList(item_count* Items, int32 Count)
 	}
 }
 
-void StationSelected(selection* Sel, engine_state* EngineState, game_input* Input)
+void StationSelected(selection * Sel, engine_state * EngineState, game_input * Input)
 {
 	game::state* State = &EngineState->GameState;
 	game::editor_state* EditorState = &EngineState->EditorState;
@@ -70,17 +107,31 @@ void StationSelected(selection* Sel, engine_state* EngineState, game_input* Inpu
 
 				ImGui::Columns(1);
 
-				{
-					//string FuelDisp = "Fuel Tank (g) " + string{CurrentShip->FuelGallons} + "/" + string{CurrentShip->Definition.FuelTankGallons};
-					//ImGui::Text(FuelDisp.Array());
-					float Progress = (float)(Converter->CurrentOrderTime / Converter->Order.DurationMS);
-					ImGui::ProgressBar(Progress);
+				recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(Recipe, &CurrentStation->Hold);
 
+				if (Converter->IsRunning) {
+					// Progress
+					float Progress = (float)(Converter->CurrentOrderTime / Converter->Order.DurationMS);
+					float PD = Progress * 100.0f;
+					string ProgStr = Real64ToString(PD, 2);
+					string ProgDisp = ProgStr + "%";
+					ImGui::ProgressBar(Progress, ImVec2(-1.0f, 0.0f), ProgDisp.Array());
+				} else {
+					for (int i = 0; i < InputsMissing.Count; i++) {
+						item_definition Def = Globals->AssetsList.ItemDefinitions[(int)InputsMissing.Items[i].ID];
+						string Output = "Item Missing - " + Def.DisplayName + " x" + InputsMissing.Items[i].Count;
+						ImGui::TextColored(ImVec4(1, 0, 0, 1), Output.Array());
+					}
 				}
 
+				/*
 				if (ImGui::Button("Cancel Order", ImVec2(-1, 0))) {
 					Converter->RunsCount = 0;
+					CurrentStation->Converters[0] = {};
+
+					// TODO return consumed items
 				}
+				*/
 			} else {
 				if (ImGui::Button("New Order")) {
 					ImGui::OpenPopup("NewOrder");
@@ -155,7 +206,7 @@ void StationSelected(selection* Sel, engine_state* EngineState, game_input* Inpu
 	if (!Open) { Sel->Clear(); }
 }
 
-void StationDockShip(station* Station, ship* Ship)
+void StationDockShip(station * Station, ship * Ship)
 {
 	int DockIndex = Station->DockedCount;
 	Station->DockedCount++;
@@ -175,14 +226,14 @@ void StationDockShip(station* Station, ship* Ship)
 	Ship->StationDocked = Station;
 }
 
-void StationUndockShip(ship* Ship)
+void StationUndockShip(ship * Ship)
 {
 	Ship->Position = Ship->StationDocked->Position;
 	Ship->StationDocked = {};
 	Ship->Status = ship_status::idle;
 }
 
-station* StationCreate(game::state* State)
+station* StationCreate(game::state * State)
 {
 	station* Station = &State->Stations[State->StationsCount++];
 	Assert(ArrayCount(State->Stations) > State->StationsCount);
@@ -195,6 +246,7 @@ station* StationCreate(game::state* State)
 	                        );
 
 	game::RegisterStepper(&Station->Converters[0].Stepper, &ConverterUpdate, (void*)(&Station->Converters[0]), State);
+	Station->Converters[0].Owner = Station;
 
 	return Station;
 }

@@ -148,6 +148,7 @@ namespace game {
 #include "Definitions.cpp"
 #include "Asteroid.cpp"
 #include "Item.cpp"
+#include "Recipe.cpp"
 #include "Station.cpp"
 #include "Ship.cpp"
 
@@ -341,6 +342,60 @@ namespace game {
 				}
 
 				ImGui::Separator();
+
+
+				if (ImGui::Button("Item Window")) {
+					EditorState->ItemWindowOpen = !EditorState->ItemWindowOpen;
+				}
+
+				if (EditorState->ItemWindowOpen) {
+
+					ImGui::Begin("Debug item give");
+
+					for (int i = 0; i < (int)item_id::count; i++) {
+						item_definition Def = Globals->AssetsList.ItemDefinitions[i];
+
+						ImGui::Image(
+						    (ImTextureID)((int64)Def.Icon->GLID),
+						    ImGuiImageSize,
+						    ImVec2(0, 0),
+						    ImVec2(1, -1),
+						    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+						    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+						);
+
+						if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+							EditorState->DebugItemDragging.Definition = Def;
+							EditorState->DebugItemDragging.Count = 1;
+
+							State->ItemDragging = &EditorState->DebugItemDragging;
+							State->HoldItemDraggingFrom = &EditorState->DebugHold;
+
+							int D = 0;
+							ImGui::SetDragDropPayload(ImguiItemDraggingID, &D, sizeof(D));
+
+							ImGui::Image(
+							    (ImTextureID)((int64)Def.Icon->GLID),
+							    ImGuiImageSize,
+							    ImVec2(0, 0),
+							    ImVec2(1, -1),
+							    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+							    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+							);
+
+							ImGui::EndDragDropSource();
+						}
+
+						ImGui::SameLine();
+
+						ImGui::BeginGroup();
+						ImGui::Text(Def.DisplayName.Array());
+						ImGui::Text("x1");
+						ImGui::EndGroup();
+					}
+
+					ImGui::End();
+				}
 
 				// Ship simulate performance testing
 				/*

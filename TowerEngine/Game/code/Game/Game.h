@@ -22,11 +22,6 @@ namespace game {
 	const real64 UnitToMeters = 10.0f;
 	// -----------------------------------------------------------------------------
 
-	struct editor_state {
-		bool32 EditorMode;
-		bool Paused;
-	};
-
 	typedef void(*journey_step_start_func)(ship* Ship, journey_step* JourneyStep, game::state* State);
 	// returns true if finished
 	typedef bool(*journey_step_func)(ship* Ship, journey_step* JourneyStep, real64 Time, game::state* State);
@@ -99,7 +94,7 @@ namespace game {
 
 #include "Asteroid.h"
 #include "Item.h"
-#include "Order.h"
+#include "Recipe.h"
 #include "Ship.h"
 #include "Station.h"
 
@@ -152,6 +147,16 @@ namespace game {
 			Current->Selected = false;
 			Current = {};
 		}
+	};
+
+	struct editor_state {
+		bool32 EditorMode;
+
+		bool32 ItemWindowOpen;
+		item_hold DebugHold;
+		item_instance DebugItemDragging;
+
+		bool Paused;
 	};
 
 	struct state {
