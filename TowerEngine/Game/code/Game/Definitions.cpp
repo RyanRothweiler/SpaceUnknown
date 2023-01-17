@@ -11,24 +11,28 @@ void CreateDefinitions()
 	Assert(ArrayCount(Globals->AssetsList.ShipModuleIcons) > (int)ship_module_id::count);
 	Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner] = assets::GetImage("Icon_ShipModule_AsteroidMiner");
 
-	Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ID = ship_module_id::asteroid_miner;
-	Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].DisplayName = "Asteroid Miner";
-	Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationTimeMS = SecondsToMilliseconds(60.0f * 2.0f);
-	Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationRange = 40.0f;
-	Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].SlotType = ship_module_slot_type::industrial;
+	// Ship modules
+	{
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ID = ship_module_id::asteroid_miner;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].DisplayName = "Asteroid Miner";
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationTimeMS = SecondsToMilliseconds(60.0f * 2.0f);
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationRange = 40.0f;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].SlotType = ship_module_slot_type::industrial;
+	}
 
-	// Ship modules definitions
+	// Ships
 	{
 		Globals->AssetsList.Definition_Ship_First.FuelRateGallonsPerSecond = 1.0f;
 		Globals->AssetsList.Definition_Ship_First.Mass = 200;
 		Globals->AssetsList.Definition_Ship_First.FuelTankGallons = 300;
+		Globals->AssetsList.Definition_Ship_First.FuelTankMassLimit = 300;
 		Globals->AssetsList.Definition_Ship_First.SlotsCount = 3;
 		Globals->AssetsList.Definition_Ship_First.SlotTypes[0] = ship_module_slot_type::industrial;
 		Globals->AssetsList.Definition_Ship_First.SlotTypes[1] = ship_module_slot_type::industrial;
 		Globals->AssetsList.Definition_Ship_First.SlotTypes[2] = ship_module_slot_type::structural;
 	}
 
-	// Item definitions
+	// Items
 	{
 		Assert(ArrayCount(Globals->AssetsList.ItemDefinitions) > (int)item_id::count);
 
@@ -51,12 +55,12 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Stackable = true;
 	}
 
-	// recipes
+	// Recipes
 	{
 		Assert(ArrayCount(Globals->AssetsList.RecipeDefinitions) > (int)recipe_id::count);
 
-		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterInput(item_id::venigen, 5);
-		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterOutput(item_id::stl, 1);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterInput(item_id::venigen, 5.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterOutput(item_id::stl, 1.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].DurationMS = MinutesToMilliseconds(60);
 	}
 }

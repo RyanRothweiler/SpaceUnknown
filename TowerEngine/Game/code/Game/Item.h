@@ -1,7 +1,7 @@
 // sm is short for ship_module. That is checked so its required to mark ship modules. The name matters
 MetaStruct enum class item_id {
 	venigen,
-	stl, 
+	stl,
 	sm_asteroid_miner,
 	count,
 };
@@ -24,11 +24,14 @@ struct item_definition {
 
 struct item_instance {
 	item_definition Definition;
-	int32 Count;
+	real64 Count;
 };
 
 struct item_hold {
-	int64 MassCurrent;
+
+	string GUID;
+
+	real64 MassCurrent;
 	changed_flag MassChanged;
 
 	item_instance Items[256];
@@ -45,5 +48,12 @@ struct item_hold {
 				MassCurrent += Items[i].Definition.Mass * Items[i].Count;
 			}
 		}
+	}
+
+	void Setup(int64 ML)
+	{
+		MassLimit = ML;
+		GUID = PlatformApi.GetGUID();
+		MassChanged.RegisterConsumer();
 	}
 };

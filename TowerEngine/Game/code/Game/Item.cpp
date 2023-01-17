@@ -1,12 +1,12 @@
 // Add item to a stack without exceeding the cargo mass limit
-int32 ItemStackGive(item_hold* Hold, item_instance* Inst, item_definition Def, int32 Count)
+real64 ItemStackGive(item_hold* Hold, item_instance* Inst, item_definition Def, real64 Count)
 {
-	int64 NewMass = Hold->MassCurrent + (Def.Mass * Count);
+	real64 NewMass = Hold->MassCurrent + (Def.Mass * Count);
 	if (NewMass <= Hold->MassLimit) {
 		Inst->Count += Count;
 		return Count;
 	} else {
-		int64 MassAvail = Hold->MassLimit - Hold->MassCurrent;
+		real64 MassAvail = Hold->MassLimit - Hold->MassCurrent;
 		int32 CountCanGive = (int32)(MassAvail / Def.Mass);
 		Inst->Count += CountCanGive;
 		return CountCanGive;
@@ -14,10 +14,10 @@ int32 ItemStackGive(item_hold* Hold, item_instance* Inst, item_definition Def, i
 }
 
 // returns amount given
-int32 ItemGive(item_hold* Hold, item_id ItemID, int32 Count)
+real64 ItemGive(item_hold* Hold, item_id ItemID, real64 Count)
 {
 	item_definition Def = Globals->AssetsList.ItemDefinitions[(int)ItemID];
-	int AmountGiven = 0;
+	real64 AmountGiven = 0;
 
 	if (Def.Stackable) {
 		// Add to existing stack
@@ -66,42 +66,24 @@ end:
 	return AmountGiven;
 }
 
-void ItemTransfer(item_instance* Inst, item_hold* Source, item_hold* Dest, int32 Count)
+void ItemTransfer(item_instance* Inst, item_hold* Source, item_hold* Dest, real64 Count)
 {
-	int CountMoving = ItemGive(Dest, Inst->Definition.ID, Count);
+	real64 CountMoving = ItemGive(Dest, Inst->Definition.ID, Count);
 	Inst->Count -= CountMoving;
 
 	Source->UpdateMass();
 	Dest->UpdateMass();
 }
 
-void ItemDisplayHold(item_hold* Hold, game::state* State, game_input* Input, bool32 CanTransfer)
+enum class item_hold_filter {
+	any, stl,
+};
+
+void ItemDisplayHold(string Title, item_hold* Hold, game::state* State, game_input* Input, bool32 CanTransfer, item_hold_filter AllowedItems)
 {
 	int64 CargoWeight = (int64)Hold->MassCurrent;
-	string CargoTitle = "Cargo (" + string{CargoWeight} + "/" + string{(int64)Hold->MassLimit} + ")(t)###CARGO";
+	string CargoTitle = Title + " (" + string{CargoWeight} + "/" + string{(int64)Hold->MassLimit} + ")(t)###" + Hold->GUID.Array();
 	if (ImGui::CollapsingHeader(CargoTitle.Array())) {
-
-
-		/*
-		if (ImGui::BeginDragDropTarget()) {
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
-
-				item_instance* Inst = State->ItemDragging;
-				item_hold* SourceHold = State->HoldItemDraggingFrom;
-
-				ItemTransfer(Inst, SourceHold, Hold, Inst->Count);
-			}
-
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiShipModuleUnequippingDraggingID)) {
-				ship_module* Inst = State->ModuleUnequipping;
-
-				ItemGive(Hold, item_id::sm_asteroid_miner, 1);
-				ShipRemoveModule(Inst, State);
-			}
-
-			ImGui::EndDragDropTarget();
-		}
-		*/
 
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(0, 0, 0, 100));
 		ImGui::BeginChild("testing", ImVec2(0, 300), true, ImGuiWindowFlags_None);
@@ -163,10 +145,19 @@ void ItemDisplayHold(item_hold* Hold, game::state* State, game_input* Input, boo
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
 
-				item_instance* Inst = State->ItemDragging;
-				item_hold* SourceHold = State->HoldItemDraggingFrom;
+				bool32 Allowed = true;
+				if (AllowedItems == item_hold_filter::stl) {
+					Allowed = (State->ItemDragging->Definition.ID == item_id::stl);
+				}
 
-				ItemTransfer(Inst, SourceHold, Hold, Inst->Count);
+				if (Allowed) {
+					item_instance* Inst = State->ItemDragging;
+					item_hold* SourceHold = State->HoldItemDraggingFrom;
+
+					ItemTransfer(Inst, SourceHold, Hold, Inst->Count);
+				} else {
+					// TODO dipslay error maybe
+				}
 			}
 
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiShipModuleUnequippingDraggingID)) {

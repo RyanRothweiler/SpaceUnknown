@@ -32,6 +32,7 @@ struct ship_module {
 
 struct ship_definition {
 	real64 FuelTankGallons;
+	real64 FuelTankMassLimit;
 	real64 FuelRateGallonsPerSecond;
 	int64 Mass;
 
@@ -50,6 +51,7 @@ struct ship {
 	ship_module EquippedModules[64];
 
 	item_hold Hold;
+	item_hold FuelTank;
 
 	vector2 Position;
 	vector2 Velocity;
@@ -64,7 +66,7 @@ struct ship {
 	stepper Stepper;
 
 	// Use method to get this most updated
-	int64 CurrentMassTotal;
+	real64 CurrentMassTotal;
 };
 
 

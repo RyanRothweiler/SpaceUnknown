@@ -5,7 +5,7 @@ MetaStruct enum class recipe_id {
 
 struct item_count {
 	item_id ID;
-	int32 Count;
+	real64 Count;
 };
 
 struct recipe {
@@ -17,7 +17,7 @@ struct recipe {
 
 	real64 DurationMS;
 
-	void RegisterInput(item_id ID, int32 Count)
+	void RegisterInput(item_id ID, real64 Count)
 	{
 		Assert(InputsCount < ArrayCount(Inputs));
 		Inputs[InputsCount].ID = ID;
@@ -25,7 +25,7 @@ struct recipe {
 		InputsCount++;
 	}
 
-	void RegisterOutput(item_id ID, int32 Count)
+	void RegisterOutput(item_id ID, real64 Count)
 	{
 		Assert(OutputsCount < ArrayCount(Outputs));
 		Outputs[OutputsCount].ID = ID;

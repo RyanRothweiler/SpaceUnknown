@@ -3,7 +3,7 @@ void ShipUpdateMass(ship* Ship)
 	Ship->CurrentMassTotal = Ship->Hold.MassCurrent + Ship->Definition.Mass;
 }
 
-int64 ShipGetMassTotal(ship* Ship)
+real64 ShipGetMassTotal(ship* Ship)
 {
 	if (Ship->Hold.MassChanged.DidChange()) {
 		Ship->Hold.MassChanged.MarkAccess();
@@ -78,7 +78,7 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS)
 	}
 
 	// Get cargo mass too
-	int64 Mass = ShipGetMassTotal(Ship);
+	real64 Mass = ShipGetMassTotal(Ship);
 
 	if (Force.X != 0 || Force.Y != 0) {
 		vector2 acceleration = Force / (real64)Mass;
@@ -288,8 +288,9 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 	// Weight
 	{
-		int64 MassTotal = ShipGetMassTotal(CurrentShip);
-		string ShipWeightDisp = Humanize(MassTotal);
+		real64 MassTotal = ShipGetMassTotal(CurrentShip);
+		//string ShipWeightDisp = Humanize(MassTotal);
+		string ShipWeightDisp = string{MassTotal};
 
 		ImGui::Text("Ship Total Mass (t)");
 		ImGui::SameLine();
@@ -312,8 +313,11 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 		ImGui::Text(FuelDisp.Array());
 		float Progress = (float)(CurrentShip->FuelGallons / CurrentShip->Definition.FuelTankGallons);
 		ImGui::ProgressBar(Progress);
-
 	}
+	ItemDisplayHold("Fuel Tank", &CurrentShip->FuelTank, State, Input,
+	                CurrentShip->Status == ship_status::docked,
+	                item_hold_filter::stl
+	               );
 
 	ImGui::Dummy(ImVec2(0, 10));
 
@@ -412,8 +416,9 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	}
 
 	// Cargo
-	ItemDisplayHold(&CurrentShip->Hold, State, Input,
-	                CurrentShip->Status == ship_status::docked
+	ItemDisplayHold("Cargo", &CurrentShip->Hold, State, Input,
+	                CurrentShip->Status == ship_status::docked,
+	                item_hold_filter::any
 	               );
 
 	// Journey
@@ -519,8 +524,8 @@ game::ship* ShipSetup(game::state * State, vector2 Pos)
 			Ship->Definition = Globals->AssetsList.Definition_Ship_First;
 			Ship->FuelGallons = Ship->Definition.FuelTankGallons;
 
-			Ship->Hold.MassLimit = 20;
-			Ship->Hold.MassChanged.RegisterConsumer();
+			Ship->Hold.Setup(20);
+			Ship->FuelTank.Setup(20);
 
 			ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
 

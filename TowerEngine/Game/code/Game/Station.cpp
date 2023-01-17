@@ -65,7 +65,7 @@ void ImGuiItemCountList(item_count * Items, int32 Count)
 		);
 
 		ImGui::SameLine();
-		ImGui::Text("x %i", IC->Count);
+		ImGui::Text("x %i", (int)IC->Count);
 		if (inp != Count - 1) { ImGui::SameLine(); }
 	}
 }
@@ -80,7 +80,7 @@ void StationSelected(selection * Sel, engine_state * EngineState, game_input * I
 	bool Open = true;
 	ImGui::Begin("Station Info", &Open);
 
-	ItemDisplayHold(&CurrentStation->Hold, State, Input, true);
+	ItemDisplayHold("Cargo", &CurrentStation->Hold, State, Input, true, item_hold_filter::any);
 
 	static int RecipeIndexSelected = -1;
 
@@ -239,7 +239,8 @@ station* StationCreate(game::state * State)
 	Assert(ArrayCount(State->Stations) > State->StationsCount);
 
 	Station->Size = vector2{18.0f, 18.0f};
-	Station->Hold.MassLimit = 1000;
+
+	Station->Hold.Setup(1000);
 
 	game::RegisterSelectable(selection_type::station, &Station->Position, &Station->Size, (void*)Station, State,
 	                         &StationSelected, GameNull

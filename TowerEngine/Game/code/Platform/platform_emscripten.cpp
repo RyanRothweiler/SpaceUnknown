@@ -141,7 +141,10 @@ GetWallClock()
 
 uint32 GetGUID()
 {
+	do this now;
+
 	Print("GetGUID - UNSUPPORTED");
+	Assert(0);
 	return 0;
 }
 
