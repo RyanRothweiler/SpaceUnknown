@@ -1,12 +1,15 @@
 void ShipUpdateMass(ship* Ship)
 {
-	Ship->CurrentMassTotal = Ship->Hold.MassCurrent + Ship->Definition.Mass;
+	Ship->CurrentMassTotal = Ship->Hold.MassCurrent + Ship->FuelTank.MassCurrent + Ship->Definition.Mass;
 }
 
 real64 ShipGetMassTotal(ship* Ship)
 {
-	if (Ship->Hold.MassChanged.DidChange()) {
+	if (Ship->Hold.MassChanged.DidChange() || Ship->FuelTank.MassChanged.DidChange()) {
+
+		Ship->FuelTank.MassChanged.MarkAccess();
 		Ship->Hold.MassChanged.MarkAccess();
+
 		ShipUpdateMass(Ship);
 	}
 
@@ -34,7 +37,7 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS)
 {
 	real64 TimeSeconds = TimeMS * 0.001f;
 
-	real64 fuelToUse = Ship->Definition.FuelRateGallonsPerSecond * TimeSeconds;
+	real64 fuelToUse = Ship->Definition.FuelRateMassPerSecond * TimeSeconds;
 	real64 fuelForce = fuelToUse * fuelForcePerGallon;
 
 	real64 DistToEnd = Vector2Distance(Ship->Position, Mov->EndPosition);
@@ -61,13 +64,13 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS)
 
 	// Speed up
 	if (DistToStart < Mov->DistFromSidesToCoast) {
-		Ship->FuelGallons -= fuelToUse;
+		Ship->FuelTank.ConsumeFuel(fuelToUse);
 		Force = DirToTargetForce;
 	}
 
 	// Slow down
 	if (DistToEnd < Mov->DistFromSidesToCoast) {
-		Ship->FuelGallons -= fuelToUse;
+		Ship->FuelTank.ConsumeFuel(fuelToUse);
 		Force = DirToTargetForce * -1.0f;
 
 		// slow enough
@@ -309,9 +312,9 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 	// Fuel
 	{
-		string FuelDisp = "Fuel Tank (g) " + string{CurrentShip->FuelGallons} + "/" + string{CurrentShip->Definition.FuelTankGallons};
+		string FuelDisp = "Fuel Tank (g) " + string{CurrentShip->FuelTank.GetFuel()} + "/" + string{CurrentShip->FuelTank.MassLimit};
 		ImGui::Text(FuelDisp.Array());
-		float Progress = (float)(CurrentShip->FuelGallons / CurrentShip->Definition.FuelTankGallons);
+		float Progress = (float)(CurrentShip->FuelTank.GetFuel() / CurrentShip->FuelTank.MassLimit);
 		ImGui::ProgressBar(Progress);
 	}
 	ItemDisplayHold("Fuel Tank", &CurrentShip->FuelTank, State, Input,
@@ -522,7 +525,6 @@ game::ship* ShipSetup(game::state * State, vector2 Pos)
 			Ship->Position = Pos;
 			Ship->Size = vector2{5, 5};
 			Ship->Definition = Globals->AssetsList.Definition_Ship_First;
-			Ship->FuelGallons = Ship->Definition.FuelTankGallons;
 
 			Ship->Hold.Setup(20);
 			Ship->FuelTank.Setup(20);

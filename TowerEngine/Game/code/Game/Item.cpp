@@ -86,7 +86,8 @@ void ItemDisplayHold(string Title, item_hold* Hold, game::state* State, game_inp
 	if (ImGui::CollapsingHeader(CargoTitle.Array())) {
 
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(0, 0, 0, 100));
-		ImGui::BeginChild("testing", ImVec2(0, 300), true, ImGuiWindowFlags_None);
+		string ChildID = string{"itemchild"} + Hold->GUID.Array();
+		ImGui::BeginChild(ChildID.Array(), ImVec2(0, 300), true, ImGuiWindowFlags_None);
 
 		for (int i = 0; i < ArrayCount(Hold->Items); i++) {
 

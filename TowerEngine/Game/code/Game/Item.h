@@ -10,7 +10,7 @@ struct item_definition {
 	item_id ID;
 	string DisplayName;
 	bool32 Stackable;
-	int64 Mass;
+	real64 Mass;
 
 	loaded_image* Icon;
 
@@ -55,5 +55,20 @@ struct item_hold {
 		MassLimit = ML;
 		GUID = PlatformApi.GetGUID();
 		MassChanged.RegisterConsumer();
+	}
+
+	real64 GetFuel()
+	{
+		// Assume the only item here is the stl fuel
+		if (Items[0].Definition.ID == item_id::stl) {
+			return Items[0].Count * Items[0].Definition.Mass;
+		}
+		return 0;
+	}
+
+	void ConsumeFuel(real64 Count)
+	{
+		Assert(Items[0].Definition.ID == item_id::stl);
+		Items[0].Count -= Count;
 	}
 };

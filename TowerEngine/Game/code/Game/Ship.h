@@ -31,9 +31,8 @@ struct ship_module {
 };
 
 struct ship_definition {
-	real64 FuelTankGallons;
 	real64 FuelTankMassLimit;
-	real64 FuelRateGallonsPerSecond;
+	real64 FuelRateMassPerSecond;
 	int64 Mass;
 
 	ship_module_slot_type SlotTypes[64];
@@ -60,8 +59,6 @@ struct ship {
 
 	bool32 IsMoving;
 	ship_journey CurrentJourney;
-
-	real64 FuelGallons;
 
 	stepper Stepper;
 

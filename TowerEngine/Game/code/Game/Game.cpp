@@ -98,7 +98,7 @@ namespace game {
 				json::AddKeyPair("ship_" + string{i} + "_velocity_x", Real64ToString(Ship->Velocity.X, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_velocity_y", Real64ToString(Ship->Velocity.Y, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_is_moving", Real64ToString(Ship->IsMoving, DecimalCount), &JsonOut);
-				json::AddKeyPair("ship_" + string{i} + "_fuel", Real64ToString(Ship->FuelGallons, DecimalCount), &JsonOut);
+				//json::AddKeyPair("ship_" + string{i} + "_fuel", Real64ToString(Ship->FuelGallons, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_rotation", Real64ToString(Ship->Rotation, DecimalCount), &JsonOut);
 
 				/*
@@ -175,7 +175,7 @@ namespace game {
 				Ship->Velocity.X = json::GetReal64("ship_" + string{i} + "_velocity_x", &JsonIn);
 				Ship->Velocity.Y = json::GetReal64("ship_" + string{i} + "_velocity_y", &JsonIn);
 				Ship->IsMoving = json::GetBool("ship_" + string{i} + "_is_moving", &JsonIn);
-				Ship->FuelGallons = json::GetReal64("ship_" + string{i} + "_fuel", &JsonIn);
+				//Ship->FuelGallons = json::GetReal64("ship_" + string{i} + "_fuel", &JsonIn);
 				Ship->Rotation = json::GetReal64("ship_" + string{i} + "_rotation", &JsonIn);
 
 				/*
@@ -355,24 +355,7 @@ namespace game {
 					for (int i = 0; i < (int)item_id::count; i++) {
 						item_definition Def = Globals->AssetsList.ItemDefinitions[i];
 
-						ImGui::Image(
-						    (ImTextureID)((int64)Def.Icon->GLID),
-						    ImGuiImageSize,
-						    ImVec2(0, 0),
-						    ImVec2(1, -1),
-						    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
-						    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
-						);
-
-						if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-							EditorState->DebugItemDragging.Definition = Def;
-							EditorState->DebugItemDragging.Count = 1;
-
-							State->ItemDragging = &EditorState->DebugItemDragging;
-							State->HoldItemDraggingFrom = &EditorState->DebugHold;
-
-							int D = 0;
-							ImGui::SetDragDropPayload(ImguiItemDraggingID, &D, sizeof(D));
+						{
 
 							ImGui::Image(
 							    (ImTextureID)((int64)Def.Icon->GLID),
@@ -383,15 +366,76 @@ namespace game {
 							    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
 							);
 
-							ImGui::EndDragDropSource();
+							if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+								EditorState->DebugItemDragging.Definition = Def;
+								EditorState->DebugItemDragging.Count = 1;
+
+								State->ItemDragging = &EditorState->DebugItemDragging;
+								State->HoldItemDraggingFrom = &EditorState->DebugHold;
+
+								int D = 0;
+								ImGui::SetDragDropPayload(ImguiItemDraggingID, &D, sizeof(D));
+
+								ImGui::Image(
+								    (ImTextureID)((int64)Def.Icon->GLID),
+								    ImGuiImageSize,
+								    ImVec2(0, 0),
+								    ImVec2(1, -1),
+								    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+								    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+								);
+
+								ImGui::EndDragDropSource();
+							}
+
+							ImGui::SameLine();
+
+							ImGui::BeginGroup();
+							ImGui::Text(Def.DisplayName.Array());
+							ImGui::Text("x1");
+							ImGui::EndGroup();
 						}
 
-						ImGui::SameLine();
 
-						ImGui::BeginGroup();
-						ImGui::Text(Def.DisplayName.Array());
-						ImGui::Text("x1");
-						ImGui::EndGroup();
+						{
+							ImGui::Image(
+							    (ImTextureID)((int64)Def.Icon->GLID),
+							    ImGuiImageSize,
+							    ImVec2(0, 0),
+							    ImVec2(1, -1),
+							    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+							    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+							);
+
+							if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+								EditorState->DebugItemDragging.Definition = Def;
+								EditorState->DebugItemDragging.Count = 10;
+
+								State->ItemDragging = &EditorState->DebugItemDragging;
+								State->HoldItemDraggingFrom = &EditorState->DebugHold;
+
+								int D = 0;
+								ImGui::SetDragDropPayload(ImguiItemDraggingID, &D, sizeof(D));
+
+								ImGui::Image(
+								    (ImTextureID)((int64)Def.Icon->GLID),
+								    ImGuiImageSize,
+								    ImVec2(0, 0),
+								    ImVec2(1, -1),
+								    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+								    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+								);
+
+								ImGui::EndDragDropSource();
+							}
+
+							ImGui::SameLine();
+
+							ImGui::BeginGroup();
+							ImGui::Text(Def.DisplayName.Array());
+							ImGui::Text("x10");
+							ImGui::EndGroup();
+						}
 					}
 
 					ImGui::End();

@@ -22,9 +22,8 @@ void CreateDefinitions()
 
 	// Ships
 	{
-		Globals->AssetsList.Definition_Ship_First.FuelRateGallonsPerSecond = 1.0f;
+		Globals->AssetsList.Definition_Ship_First.FuelRateMassPerSecond = 0.5f;
 		Globals->AssetsList.Definition_Ship_First.Mass = 200;
-		Globals->AssetsList.Definition_Ship_First.FuelTankGallons = 300;
 		Globals->AssetsList.Definition_Ship_First.FuelTankMassLimit = 300;
 		Globals->AssetsList.Definition_Ship_First.SlotsCount = 3;
 		Globals->AssetsList.Definition_Ship_First.SlotTypes[0] = ship_module_slot_type::industrial;
@@ -50,7 +49,7 @@ void CreateDefinitions()
 
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].ID = item_id::stl;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].DisplayName = "STL Fuel";
-		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Mass = 1;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Mass = 0.25f;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Icon = assets::GetImage("Icon_STL");
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Stackable = true;
 	}
