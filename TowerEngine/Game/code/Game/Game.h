@@ -31,13 +31,16 @@ namespace game {
 		vector2 EndPosition;
 		float EdgeRatio;
 
-		// precalc and accumulations for efficiency
-		vector2 StartPosition;
-		real64 DistFromSidesToCoast;
 		real64 FullDistance;
 		vector2 DirToEnd;
-		real64 CurrDistToEnd;
-		real64 CurrVelocityMag;
+		vector2 StartPosition;
+		real64 DistFromSidesToCoast;
+
+		// Caching for optimzation
+		real64 CachedTime;
+		real64 CachedFuelToUse;
+		real64 CachedFuelForce;
+		vector2 CachedDirToTargetForce;
 	};
 
 	struct journey_dock_undock {

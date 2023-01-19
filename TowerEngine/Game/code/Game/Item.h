@@ -68,7 +68,7 @@ struct item_hold {
 
 	void ConsumeFuel(real64 Count)
 	{
-		Assert(Items[0].Definition.ID == item_id::stl);
+		//Assert(Items[0].Definition.ID == item_id::stl);
 		Items[0].Count -= Count;
 	}
 };
