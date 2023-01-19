@@ -442,68 +442,58 @@ namespace game {
 				}
 
 				// Ship simulate performance testing
-				/*
-				if (State->Selection.IsShip()) {
-				if (ImGui::Button("Test Ship Simulation")) {
-				ConsoleLog("Starting Test");
+				if (State->Selections[0].IsShip()) {
+					if (ImGui::Button("Test Ship Simulation")) {
+						ConsoleLog("Starting Test");
 
-				ship* CurrentShip = State->Selection.GetShip();
+						ship* CurrentShip = State->Selections[0].GetShip();
 
-				uint64 Accum = 0;
-				int32 Runs = 10;
+						uint64 Accum = 0;
+						int32 Runs = 10;
 
-				CurrentShip->CurrentJourney.EdgeRatio = 0.25f;
-				CurrentShip->CurrentJourney.StartPosition = CurrentShip->Position;
-				CurrentShip->CurrentJourney.EndPosition = vector2{50, 50};
+						CreateMovementStep(CurrentShip, vector2{50, 50});
 
-				real64 SimTimeTarget = 24.0f * 60.0f * 60.0f * 1000.0f;
-				real64 TotalSimTime = 0;
+						real64 TotalSimTime = 0;
 
-				int i = 0;
-				bool32 Running = true;
-				//for (int i = 0; i < Runs; i++ ) {
-				while (Running) {
-					uint64 Start = PlatformApi.QueryPerformanceCounter();
+						for (int i = 0; i < Runs; i++ ) {
+							uint64 Start = PlatformApi.QueryPerformanceCounter();
 
-					float SimFPS = 1.0f;
-					float TimeStepMS = 1.0f / SimFPS;
+							float SimFPS = 30.0f;
+							float TimeStepMS = 1.0f / SimFPS;
 
-					vector2 PosOrig = CurrentShip->Position;
-					real64 FuelOrig = CurrentShip->FuelGallons;
-					CurrentShip->Velocity = {};
-					ShipMove(CurrentShip, CurrentShip->CurrentJourney);
+							vector2 PosOrig = CurrentShip->Position;
+							ItemGive(&CurrentShip->FuelTank, item_id::stl, 1000);
+							CurrentShip->Velocity = {};
 
-					while (ShipSimulateMovement(CurrentShip, TimeStepMS) && Running) {
-						TotalSimTime += TimeStepMS;
-						if (TotalSimTime >= SimTimeTarget) {
-							Running = false;
+							CurrentShip->CurrentJourney.Execute();
+							CurrentShip->CurrentJourney.Steps[0].Start(CurrentShip, &CurrentShip->CurrentJourney.Steps[0], State);
+
+							while (
+							    !CurrentShip->CurrentJourney.Steps[0].Step(CurrentShip, &CurrentShip->CurrentJourney.Steps[0], TimeStepMS, State)
+							) {
+								TotalSimTime += TimeStepMS;
+							}
+
+							CurrentShip->Position = PosOrig;
+							CurrentShip->Velocity = {};
+							CurrentShip->IsMoving = false;
+
+							uint64 End = PlatformApi.QueryPerformanceCounter();
+							uint64 Count = End - Start;
+							Accum += Count;
+
+							real64 SimMinutes = MillisecondsToSeconds(TotalSimTime) / 60.0f;
+							string Report = "Finished " + string{i + 1} + "/" + string{Runs} + " ->" + string{Count} + " SimMinutes->" + string{SimMinutes};
+							ConsoleLog(Report.Array());
 						}
-					}
-
-					if (Running) {
-						CurrentShip->Position = PosOrig;
-						CurrentShip->Velocity = {};
-						CurrentShip->FuelGallons = FuelOrig;
-						CurrentShip->IsMoving = false;
-
-						uint64 End = PlatformApi.QueryPerformanceCounter();
-						uint64 Count = End - Start;
-						Accum += Count;
 
 						real64 SimMinutes = MillisecondsToSeconds(TotalSimTime) / 60.0f;
-						string Report = "Finished " + string{i + 1} + "/" + string{Runs} + " ->" + string{Count} + " SimMinutes->" + string{SimMinutes};
+						real64 Avg = (real64)Accum / (real64)Runs;
+						real64 CyclePerMin = Avg / SimMinutes;
+						string Report = "AVG " + string{Avg} + " ||  Total Real Time (m)" + string{SimMinutes} + " || Cycles per SimMin " + string{CyclePerMin};
 						ConsoleLog(Report.Array());
 					}
 				}
-
-				real64 SimMinutes = MillisecondsToSeconds(TotalSimTime) / 60.0f;
-				real64 Avg = (real64)Accum / (real64)Runs;
-				real64 CyclePerMin = Avg / SimMinutes;
-				string Report = "AVG " + string{Avg} + " ||  Total Real Time (m)" + string{SimMinutes} + " || Cycles per SimMin " + string{CyclePerMin};
-				ConsoleLog(Report.Array());
-				}
-				}
-				*/
 			}
 
 			ImGui::Text("Time");

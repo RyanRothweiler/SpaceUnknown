@@ -484,8 +484,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				Step->Type = journey_step_type::movement;
 			}
 			if (ImGui::Button("Execute")) {
-				CurrJour->InProgress = true;
-				CurrJour->CurrentStep = -1;
+				CurrJour->Execute();
 			}
 
 			// Click world to add movement command

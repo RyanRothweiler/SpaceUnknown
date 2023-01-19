@@ -72,6 +72,12 @@ namespace game {
 
 			return Step;
 		}
+
+		void Execute()
+		{
+			InProgress = true;
+			CurrentStep = -1;
+		}
 	};
 
 	typedef void(*step_func)(void* SelfData, real64 time, game::state* State);
