@@ -52,8 +52,8 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS)
 		Mov->CachedDirToTargetForce = dirToTargetForce;
 	}
 
-	real64 DistToEnd = Vector2Distance(Ship->Position, Mov->EndPosition);
 	real64 DistToStart = Vector2Distance(Ship->Position, Mov->StartPosition);
+	real64 DistToEnd = Vector2Distance(Ship->Position, Mov->EndPosition);
 
 	// close enough
 	if (DistToEnd < 0.01f) {
@@ -63,34 +63,34 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS)
 
 	// past target
 	// Need a 0.1 buffer here because the two distances are equal during the journey, but not always exactly because of rounding errors
-	real64 T = DistToEnd + DistToStart;
-	if (Mov->FullDistance < T) {
+	if (Mov->FullDistance < DistToEnd + DistToStart) {
 		// Stopping, past destination
 		Ship->Velocity = vector2{0, 0};
 		return true;
 	}
 
-	vector2 Force = {};
+	if (DistToStart < Mov->DistFromSidesToCoast || DistToEnd < Mov->DistFromSidesToCoast) {
 
-	// Speed up
-	if (DistToStart < Mov->DistFromSidesToCoast) {
-		Ship->FuelTank.ConsumeFuel(fuelToUse);
-		Force = dirToTargetForce;
-	}
+		vector2 Force = {};
 
-	// Slow down
-	if (DistToEnd < Mov->DistFromSidesToCoast) {
-		Ship->FuelTank.ConsumeFuel(fuelToUse);
-		Force = dirToTargetForce * -1.0f;
-
-		// slow enough
-		if (Vector2Length(Ship->Velocity) < 0.001f) {
-			Ship->Velocity = vector2{0, 0};
-			return true;
+		// Speed up
+		if (DistToStart < Mov->DistFromSidesToCoast) {
+			Ship->FuelTank.ConsumeFuel(fuelToUse);
+			Force = dirToTargetForce;
 		}
-	}
 
-	if (Force.X != 0 || Force.Y != 0) {
+		// Slow down
+		if (DistToEnd < Mov->DistFromSidesToCoast) {
+			Ship->FuelTank.ConsumeFuel(fuelToUse);
+			Force = dirToTargetForce * -1.0f;
+
+			// slow enough
+			if (Vector2Length(Ship->Velocity) < 0.001f) {
+				Ship->Velocity = vector2{0, 0};
+				return true;
+			}
+		}
+
 		real64 Mass = ShipGetMassTotal(Ship);
 		vector2 acceleration = Force / (real64)Mass;
 		Ship->Velocity = Ship->Velocity + acceleration;
