@@ -56,11 +56,9 @@ void SpawnAsteroid(asteroid_cluster* Cluster)
 void AsteroidSpawnStep(void* SelfData, real64 Time, game::state* State)
 {
 	game::asteroid_cluster* Self = (game::asteroid_cluster*)SelfData;
-	Self->SpawnTimer += Time;
-	if (Self->SpawnTimer >= SecondsToMilliseconds(5.0f)) {
-		Self->SpawnTimer = 0;
-		SpawnAsteroid(Self);
-	}
+
+	SpawnAsteroid(Self);
+	SleepStepper(State, &Self->Spawner, SecondsToMilliseconds(5));
 }
 
 void AsteroidCreateCluster(vector2 Center, real64 Radius, game::state* State)

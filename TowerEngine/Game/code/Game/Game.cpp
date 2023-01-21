@@ -14,8 +14,45 @@ int64 VersionBuild = 0;
 
 namespace game {
 
+	void AddStepper(stepper* Stepper, game::state* State)
+	{
+		Assert(State->SteppersCount < ArrayCount(State->Steppers));
+		State->Steppers[State->SteppersCount++] = Stepper;
+	}
+
+	void RegisterStepper(stepper* Stepper,
+	                     step_func Method,
+	                     void* SelfData,
+	                     game::state* State)
+	{
+		Stepper->Step = Method;
+		Stepper->SelfData = SelfData;
+		AddStepper(Stepper, State);
+	}
+
+	void UnregisterStepper(stepper* Stepper, game::state* State)
+	{
+		for (int i = 0; i  < State->SteppersCount; i++) {
+			if (Stepper == State->Steppers[i]) {
+				RemoveSlideArray((void*)&State->Steppers[0], State->SteppersCount, sizeof(State->Steppers[0]), i);
+				State->SteppersCount--;
+				return;
+			}
+		}
+	}
+
 	void StepUniverse(game::state* State, real64 TimeMS)
 	{
+		// Check for wakeup stepper
+		if (State->SleepingSteppers->LinkCount >= 1) {
+			stepper_ptr* pt = (stepper_ptr*)GetLinkData(State->SleepingSteppers, 0);
+			if (State->UniverseTime.TimeMS >= pt->Stp->WakeupTime) {
+				AddStepper(pt->Stp, State);
+				RemoveLink(State->SleepingSteppers, 0);
+			}
+		}
+
+		// Step everything
 		for (int i = 0; i < State->SteppersCount; i++) {
 			stepper* Stepper = State->Steppers[i];
 			Stepper->Step(Stepper->SelfData, TimeMS, State);
@@ -31,28 +68,30 @@ namespace game {
 		return string{Hours} + string{"h "} + string{Minutes} + string{"m "} + string{Seconds} + string{"s "};
 	}
 
-	void RegisterStepper(stepper* Stepper,
-	                     step_func Method,
-	                     void* SelfData,
-	                     game::state* State)
+	void SleepStepper(game::state* State, stepper* Stepper, real64 SleepDurationMS)
 	{
-		Assert(State->SteppersCount < ArrayCount(State->Steppers));
+		stepper_ptr Data = {};
+		Data.Stp = Stepper;
 
-		Stepper->Step = Method;
-		Stepper->SelfData = SelfData;
+		Stepper->WakeupTime = State->UniverseTime.TimeMS + SleepDurationMS;
+		UnregisterStepper(Stepper, State);
 
-		State->Steppers[State->SteppersCount++] = Stepper;
-	}
-
-	void UnregisterStepper(stepper* Stepper, game::state* State)
-	{
-		for (int i = 0; i  < State->SteppersCount; i++) {
-			if (Stepper == State->Steppers[i]) {
-				RemoveSlideArray((void*)&State->Steppers[0], State->SteppersCount, sizeof(State->Steppers[0]), i);
-				State->SteppersCount--;
+		// Insert into list sorted
+		list_link* CurrentLink = State->SleepingSteppers->TopLink;
+		int I = 0;
+		while (CurrentLink != GameNull) {
+			stepper_ptr* Sleeper = (stepper_ptr*)CurrentLink->Data;
+			if (Stepper->WakeupTime < Sleeper->Stp->WakeupTime) {
+				InsertLink(State->SleepingSteppers, I, (void*)&Data, GlobalPermMem);
 				return;
 			}
+
+			I++;
+			CurrentLink = CurrentLink->NextLink;
 		}
+
+		// Add to end, return out before getting here
+		AddLink(State->SleepingSteppers, (void*)&Data, GlobalPermMem);
 	}
 
 	void TimeStep(void* SelfData, real64 Time, game::state* State)
@@ -246,6 +285,9 @@ namespace game {
 	void Start(engine_state* EngineState)
 	{
 		game::state* State = &EngineState->GameState;
+
+		State->SleepingSteppers = CreateList(GlobalPermMem, sizeof(stepper_ptr));
+
 		CreateDefinitions();
 
 		RegisterStepper(&State->UniverseTime.Stepper, &TimeStep, (void*)(&State->UniverseTime), State);

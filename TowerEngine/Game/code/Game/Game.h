@@ -88,6 +88,12 @@ namespace game {
 	struct stepper {
 		void* SelfData;
 		step_func Step;
+
+		real64 WakeupTime;
+	};
+
+	struct stepper_ptr {
+		stepper* Stp;
 	};
 
 	struct universe_time {
@@ -186,6 +192,8 @@ namespace game {
 
 		stepper* Steppers[1000];
 		int32 SteppersCount;
+
+		list_head* SleepingSteppers;
 
 		selectable Selectables[1024];
 		int32 SelectablesCount;
