@@ -68,7 +68,6 @@ void AsteroidCreateCluster(vector2 Center, real64 Radius, game::state* State)
 
 	Cluster->Center = Center;
 	Cluster->Radius = Radius;
-	Cluster->SpawnTimer = 0;
 
 	RegisterStepper(&Cluster->Spawner, &AsteroidSpawnStep, (void*)Cluster, State);
 }

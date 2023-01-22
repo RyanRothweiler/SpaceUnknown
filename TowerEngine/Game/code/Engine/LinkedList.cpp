@@ -5,8 +5,7 @@
 
 #include "LinkedList.h"
 
-void
-ListSaveToArray(list_head* Head, memory_arena* Memory)
+void ListSaveToArray(list_head* Head, memory_arena* Memory)
 {
 	if (Head->ArrayValid) {
 		// We really should free this before we make another array!!
@@ -27,8 +26,7 @@ ListSaveToArray(list_head* Head, memory_arena* Memory)
 	}
 }
 
-void*
-ListGetArrayIndex(list_head* Head, uint32 Index)
+void* ListGetArrayIndex(list_head* Head, uint32 Index)
 {
 	Assert(Head->ArrayValid);
 	Assert(Index < Head->LinkCount);
@@ -38,8 +36,7 @@ ListGetArrayIndex(list_head* Head, uint32 Index)
 }
 
 // NOTE this is zero indexed. So to get the first link you pass 0.
-list_link*
-GetLink(list_head *Head, uint32 LinkNum)
+list_link* GetLink(list_head *Head, uint32 LinkNum)
 {
 	Assert(LinkNum >= 0);
 	Assert(LinkNum < Head->LinkCount);
@@ -60,16 +57,14 @@ GetLink(list_head *Head, uint32 LinkNum)
 	return (GameNull);
 }
 
-void *
-GetLinkData(list_head *Head, uint32 LinkNum)
+void* GetLinkData(list_head *Head, uint32 LinkNum)
 {
 	list_link* Link = GetLink(Head, LinkNum);
 	Assert(Link != NULL);
 	return (Link->Data);
 }
 
-void
-InitList(list_head* ListHead, uint32 DataSize)
+void InitList(list_head* ListHead, uint32 DataSize)
 {
 	ListHead->Initialized = true;
 	ListHead->LinkCount = 0;
@@ -79,30 +74,51 @@ InitList(list_head* ListHead, uint32 DataSize)
 	ListHead->BottomLink = GameNull;
 }
 
-list_head *
-CreateList(memory_arena *Memory, uint32 DataSize)
+list_head* CreateListFixed(memory_arena *Memory, uint32 DataSize, int32 Count)
+{
+	list_head *ListHead = (list_head *)ArenaAllocate(Memory, sizeof(list_head));
+	ListHead->UsingFixedMemory = true;
+	InitList(ListHead, DataSize);
+
+	ListHead->FixedDataMemory = fixed_allocator::Create(DataSize, Count);
+	ListHead->FixedLinkMemory = fixed_allocator::Create(sizeof(list_link), Count);
+
+	return (ListHead);
+}
+
+list_head* CreateList(memory_arena *Memory, uint32 DataSize)
 {
 	list_head *ListHead = (list_head *)ArenaAllocate(Memory, sizeof(list_head));
 	InitList(ListHead, DataSize);
 	return (ListHead);
 }
 
-list_link *
-AllocateLink(memory_arena *Memory, void* Data, uint32 DataSize)
+list_link* AllocateLink(memory_arena *Memory, void* Data, uint32 DataSize,
+                        fixed_allocator::memory* FixedDataAlloc,
+                        fixed_allocator::memory* FixedLinkAlloc
+                       )
 {
-	list_link *NewLink = (list_link *)ArenaAllocate(Memory, sizeof(list_link));
+	list_link *NewLink = {};
+	void* NewData = {};
+	if (FixedDataAlloc->BlocksCount != 0) {
+		NewLink = (list_link*)fixed_allocator::Alloc(FixedLinkAlloc);
+		NewData = fixed_allocator::Alloc(FixedDataAlloc);
+	} else {
+		NewLink = (list_link*)ArenaAllocate(Memory, sizeof(list_link));
+		NewData = ArenaAllocate(Memory, DataSize);
+	}
+
 	NewLink->NextLink = GameNull;
-	NewLink->Data = ArenaAllocate(Memory, DataSize);
+	NewLink->Data = NewData;
 	MemoryCopy((char*)NewLink->Data, (char*)Data, DataSize);
 	return (NewLink);
 }
 
-void*
-AddLink(list_head *Head, void* Data, memory_arena *Memory)
+void* AddLink(list_head *Head, void* Data, memory_arena *Memory)
 {
 	Assert(Head != GameNull);
 
-	list_link *NewLink = AllocateLink(Memory, Data, Head->DataSize);
+	list_link *NewLink = AllocateLink(Memory, Data, Head->DataSize, &Head->FixedDataMemory, &Head->FixedLinkMemory);
 
 	if (Head->LinkCount != 0) {
 		Head->BottomLink->NextLink = NewLink;
@@ -118,8 +134,7 @@ AddLink(list_head *Head, void* Data, memory_arena *Memory)
 }
 
 // The new link will be inserted at the index, pushing everything else down.
-void
-InsertLink(list_head *Head, uint32 InsertionIndex, void* Data, memory_arena *Memory)
+void InsertLink(list_head *Head, uint32 InsertionIndex, void* Data, memory_arena *Memory)
 {
 	Assert(InsertionIndex >= 0); //"Probably didn't create the list"
 	Assert(InsertionIndex < Head->LinkCount); //"This checks that the place inserting is valid"
@@ -127,7 +142,7 @@ InsertLink(list_head *Head, uint32 InsertionIndex, void* Data, memory_arena *Mem
 	if (InsertionIndex == Head->LinkCount - 1) {
 		if (Head->LinkCount == 1) {
 
-			list_link *NewLink = AllocateLink(Memory, Data, Head->DataSize);
+			list_link *NewLink = AllocateLink(Memory, Data, Head->DataSize, &Head->FixedDataMemory, &Head->FixedLinkMemory);
 
 			Head->LinkCount++;
 			Head->ArrayValid = false;
@@ -141,7 +156,7 @@ InsertLink(list_head *Head, uint32 InsertionIndex, void* Data, memory_arena *Mem
 		}
 	}
 
-	list_link *NewLink = AllocateLink(Memory, Data, Head->DataSize);
+	list_link *NewLink = AllocateLink(Memory, Data, Head->DataSize, &Head->FixedDataMemory, &Head->FixedLinkMemory);
 
 	Head->LinkCount++;
 	Head->ArrayValid = false;
@@ -167,8 +182,7 @@ InsertLink(list_head *Head, uint32 InsertionIndex, void* Data, memory_arena *Mem
 }
 
 // NOTE this is used within linked list code.
-void
-PatchNextLinkOut(list_head *Head, list_link *CurrentLink)
+void PatchNextLinkOut(list_head *Head, list_link *CurrentLink)
 {
 	//NOTE MEM FREE HERE
 	list_link *LinkRemoving = CurrentLink->NextLink;
@@ -184,14 +198,24 @@ PatchNextLinkOut(list_head *Head, list_link *CurrentLink)
 	Head->ArrayValid = false;
 }
 
-void
-RemoveLink(list_head *Head, uint32 IndexRemoving)
+// Deallocate the link AND the memory for its data
+void LinkDealloc(list_head* Head, list_link* Link)
+{
+	if (Head->FixedDataMemory.BlocksCount > 0) {
+		fixed_allocator::Free(&Head->FixedDataMemory, Link->Data);
+		fixed_allocator::Free(&Head->FixedLinkMemory, (void*)Link);
+	} else {
+		// NOTE MEM FREE HERE
+		// free the link and also free the data in the link
+	}
+}
+
+void RemoveLink(list_head *Head, uint32 IndexRemoving)
 {
 	Assert(IndexRemoving >= 0);
-
 	if (IndexRemoving == 0) {
 
-		// NOTE MEM FREE HERE
+		LinkDealloc(Head, Head->TopLink);
 
 		if (Head->LinkCount == 1) {
 			Head->TopLink = GameNull;
@@ -213,6 +237,7 @@ RemoveLink(list_head *Head, uint32 IndexRemoving)
 	while (CurrentLink->NextLink) {
 		if (IndexRemoving == CurrentLinkIndex) {
 			PatchNextLinkOut(Head, CurrentLink);
+			LinkDealloc(Head, CurrentLink);
 			return;
 		}
 
@@ -226,8 +251,7 @@ RemoveLink(list_head *Head, uint32 IndexRemoving)
 
 
 //NOTE this doesn't check for equivalency, only if the pointers are the same
-void
-RemoveLinkData(list_head *Head, void *DataRemoving)
+void RemoveLinkData(list_head *Head, void *DataRemoving)
 {
 	if (Head->TopLink->Data == DataRemoving) {
 		RemoveLink(Head, 0);
@@ -237,6 +261,7 @@ RemoveLinkData(list_head *Head, void *DataRemoving)
 	while (CurrentLink->NextLink) {
 		if (CurrentLink->NextLink->Data == DataRemoving) {
 			PatchNextLinkOut(Head, CurrentLink);
+			LinkDealloc(Head, CurrentLink);
 			return;
 		}
 
@@ -247,8 +272,7 @@ RemoveLinkData(list_head *Head, void *DataRemoving)
 #endif
 
 // #if UNIT_TESTING
-void
-LinkedListUnitTests(memory_arena *Memory)
+void LinkedListUnitTests(memory_arena *Memory)
 {
 	// creating a list
 	list_head *TestList = CreateList(Memory, sizeof(vector2));

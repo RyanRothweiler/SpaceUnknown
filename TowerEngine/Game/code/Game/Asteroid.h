@@ -13,6 +13,4 @@ struct asteroid_cluster {
 	vector2 Center;
 	real64 Radius;
 	stepper Spawner;
-
-	real64 SpawnTimer;
 };

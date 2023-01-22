@@ -17,6 +17,10 @@ struct list_head {
 
 	void* Array;
 	bool32 ArrayValid;
+
+	bool32 UsingFixedMemory;
+	fixed_allocator::memory FixedDataMemory;
+	fixed_allocator::memory FixedLinkMemory;
 };
 
 #endif

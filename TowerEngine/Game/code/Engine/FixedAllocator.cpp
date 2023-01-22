@@ -33,6 +33,8 @@ namespace fixed_allocator {
             }
         }
 
+        //TODO resize
+
         //ConsoleLog("Fixed allcoator is full.");
         Assert(0);
         return Alloc->Blocks;

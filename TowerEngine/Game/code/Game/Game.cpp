@@ -286,7 +286,7 @@ namespace game {
 	{
 		game::state* State = &EngineState->GameState;
 
-		State->SleepingSteppers = CreateList(GlobalPermMem, sizeof(stepper_ptr));
+		State->SleepingSteppers = CreateListFixed(GlobalPermMem, sizeof(stepper_ptr), 100);
 
 		CreateDefinitions();
 
