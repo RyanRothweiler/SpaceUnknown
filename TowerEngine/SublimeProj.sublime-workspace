@@ -4,6 +4,166 @@
 		"selected_items":
 		[
 			[
+				"coast",
+				"CoastDurationSeconds"
+			],
+			[
+				"Global",
+				"GlobalTransMem"
+			],
+			[
+				"has",
+				"hasFlag"
+			],
+			[
+				"show",
+				"showState"
+			],
+			[
+				"DistTo",
+				"DistToStart"
+			],
+			[
+				"Cached",
+				"CachedDirToTargetForce"
+			],
+			[
+				"Current",
+				"CurrentShip"
+			],
+			[
+				"Mass",
+				"MassCurrent"
+			],
+			[
+				"item_hol",
+				"item_hold_filter"
+			],
+			[
+				"Inputs",
+				"InputsMissing"
+			],
+			[
+				"Ediot",
+				"EditorState"
+			],
+			[
+				"Editor",
+				"EditorState"
+			],
+			[
+				"Items",
+				"ItemsMissingCount"
+			],
+			[
+				"Curr",
+				"CurrentStation"
+			],
+			[
+				"Cur",
+				"CurrentStation"
+			],
+			[
+				"COnver",
+				"ConverterUpdate"
+			],
+			[
+				"Durati",
+				"DurationMS"
+			],
+			[
+				"output",
+				"OutputsCount"
+			],
+			[
+				"Output",
+				"OutputsCount"
+			],
+			[
+				"Hovering",
+				"HoveringItemWindow"
+			],
+			[
+				"Hover",
+				"HoveringItemWindow"
+			],
+			[
+				"HO",
+				"HoldItemDraggingFrom"
+			],
+			[
+				"Hold",
+				"HoldItemDraggingFrom"
+			],
+			[
+				"Update",
+				"UpdateMass"
+			],
+			[
+				"Chang",
+				"ChangedFlagCount"
+			],
+			[
+				"Con",
+				"Consumers"
+			],
+			[
+				"nam",
+				"nameLabel"
+			],
+			[
+				"Exper",
+				"ExperienceType"
+			],
+			[
+				"FeaturedC",
+				"FeaturedCardLaunchType"
+			],
+			[
+				"worl",
+				"worldscapeThumbnail"
+			],
+			[
+				"exper",
+				"experienceDisplayName"
+			],
+			[
+				"ExperieneType",
+				"ExperienceTypeInformation"
+			],
+			[
+				"Clear",
+				"ClearPreviousData"
+			],
+			[
+				"Expre",
+				"ExperienceTypeInformation"
+			],
+			[
+				"cur",
+				"currentWorldSpaces"
+			],
+			[
+				"ship_modul",
+				"ship_module_id"
+			],
+			[
+				"ship_module_",
+				"ship_module_slot_type"
+			],
+			[
+				"ship_modu",
+				"ship_module_type"
+			],
+			[
+				"Item",
+				"ItemDragging"
+			],
+			[
+				"Self",
+				"SelfStation"
+			],
+			[
 				"Platfor",
 				"PlatformApi"
 			],
@@ -176,10 +336,6 @@
 				"MissionSelected"
 			],
 			[
-				"Editor",
-				"EditorData"
-			],
-			[
 				"MIssion",
 				"MissionWindowOpen"
 			],
@@ -280,10 +436,6 @@
 				"energyEffect"
 			],
 			[
-				"Global",
-				"GlobalPermMem"
-			],
-			[
 				"Drop",
 				"DropTables"
 			],
@@ -362,163 +514,38 @@
 			[
 				"delta",
 				"deltaPosition"
-			],
-			[
-				"PlaneTop",
-				"PlaneTopLeft"
-			],
-			[
-				"sele",
-				"selectFill"
-			],
-			[
-				"sel",
-				"selectFillRate"
-			],
-			[
-				"fill",
-				"selectFillIndicator"
-			],
-			[
-				"Char",
-				"CharArrayLength"
-			],
-			[
-				"Image",
-				"ImageWidth"
-			],
-			[
-				"Size",
-				"SizeAdj"
-			],
-			[
-				"Monster",
-				"MonsterAbilities"
-			],
-			[
-				"Blueprint",
-				"BlueprintRarityColors"
-			],
-			[
-				"monster",
-				"monster_blueprint"
-			],
-			[
-				"notific",
-				"notification_type"
-			],
-			[
-				"destab",
-				"destabalize_test"
-			],
-			[
-				"Ability",
-				"AbilityRunning"
-			],
-			[
-				"Abilit",
-				"AbilityRunning"
-			],
-			[
-				"meltdow",
-				"meltdown_test"
-			],
-			[
-				"QualityValue",
-				"QualityValuesCount"
-			],
-			[
-				"Entry",
-				"EntryIndex"
-			],
-			[
-				"Entires",
-				"EntriesCount"
-			],
-			[
-				"En",
-				"Entries"
-			],
-			[
-				"Cont",
-				"ContentsSize"
-			],
-			[
-				"COnt",
-				"ContentsSize"
-			],
-			[
-				"Panel",
-				"PanelStackPush"
-			],
-			[
-				"update",
-				"updatePrices"
-			],
-			[
-				"lifetime",
-				"lifetimeChoice"
-			],
-			[
-				"Annual",
-				"AnnualSelect"
-			],
-			[
-				"plan",
-				"planSelected"
-			],
-			[
-				"Repair",
-				"RepairDrones"
-			],
-			[
-				"General",
-				"GeneralTitle"
-			],
-			[
-				"Abilities",
-				"AbilitiesTitle"
-			],
-			[
-				"Tit",
-				"TitleDisplay"
-			],
-			[
-				"COLOR_",
-				"COLOR_BLACK"
-			],
-			[
-				"Gu",
-				"ChildLayoutGutter"
-			],
-			[
-				"Array",
-				"ArrayStart"
-			],
-			[
-				"MarginT",
-				"MarginTabOffset"
-			],
-			[
-				"Margin",
-				"MarginTopLeft"
-			],
-			[
-				"Backpack",
-				"BackpackContentHolder"
-			],
-			[
-				"Windo",
-				"WindowInfo"
-			],
-			[
-				"Init",
-				"Initialize"
 			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "Game/code/Game/Game.cpp",
+			"settings":
+			{
+				"buffer_size": 27147,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/code/Game/Asteroid.cpp",
+			"settings":
+			{
+				"buffer_size": 2018,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/code/Engine/LinkedList.cpp",
+			"settings":
+			{
+				"buffer_size": 18212,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -633,134 +660,134 @@
 	],
 	"file_history":
 	[
-		"/T/Game/code/Engine/String.cpp",
-		"/T/Game/code/Engine/Renderer/ShaderLoader.cpp",
-		"/T/Game/code/Game/AssetList.cpp",
-		"/T/Game/code/Engine/Editor.cpp",
 		"/T/Game/code/Engine/EngineCore.h",
+		"/T/Game/code/Game/Game.h",
+		"/T/Game/code/Engine/Renderer/ogles3.cpp",
+		"/T/Game/code/Engine/FixedAllocator.cpp",
+		"/E/tripp-client - android/Assets/Scripts/Input/PlayerInput.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/XR/XRUIInputModuleKeepEnabled.cs",
+		"/E/tripp-client - android/Library/PackageCache/com.unity.xr.interaction.toolkit@2.1.1/Runtime/UI/XRUIInputModule.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Analytics/AnalyticsManager.cs",
+		"/T/Game/code/Engine/EngineCore.cpp",
+		"/T/Game/code/Game/Ship.cpp",
+		"/T/Game/code/Game/Ship.h",
+		"/T/Game/code/Engine/Math.cpp",
+		"/T/Game/code/Game/Game.cpp",
+		"/T/Game/code/Game/Asteroid.cpp",
+		"/T/Game/code/Game/Asteroid.h",
+		"/t/game/code/engine/linkedlist.h",
+		"/T/Game/code/Platform/platform_win32.cpp",
+		"/T/Game/code/Engine/LinkedList.cpp",
+		"/E/tripp-client - android/Assets/Scripts/UI/InExperience/TrippPauseMenu.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Engine/ExperienceController.cs",
+		"/E/tripp-client - android/Assets/3rdParty/Scripts/Journey/JourneyExperienceManager.cs",
+		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/SerenityGarden/UI/SanctumPauseMenu.cs",
+		"/T/Game/code/Engine/String.cpp",
+		"/T/Game/code/Game/Item.h",
+		"/E/tripp-client - android/Assets/3rdParty/Scripts/JourneyLauncher.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Engine/PlayerController.cs",
+		"/E/tripp-client - android/Assets/Art/ARTISTS/Dmitri/Drift/_Scripts/Runtime/Core/DriftExperienceManager.cs",
+		"/E/tripp-client - android/Library/PackageCache/com.unity.xr.interaction.toolkit@2.1.1/Runtime/Interaction/Controllers/ActionBasedController.cs",
+		"/E/tripp-client - android/Assets/Scripts/HandenessManager.cs",
+		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/MMFeedbacks/MMTools/Tools/MMSingletons/MMPersistentSingleton.cs",
+		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/MMFeedbacks/MMTools/Tools/MMSingletons/MMPersistentHumbleSingleton.cs",
+		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/Pixelplacement/Surge/Utilities/Initialization.cs",
+		"/E/tripp-client - android/Assets/Journey/Scripts/LocalAvatar.cs",
+		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/AethericArts/XR/General/XRHelper.cs",
+		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/AethericArts/XR/General/LinkAvatarToHelper.cs",
+		"/E/tripp-client - android/Assets/Journey/Scripts/ShaderSwapper.cs",
+		"/E/tripp-client - android/Assets/Scripts/Input/ControllerEnabler.cs",
+		"/E/tripp-client - android/Assets/Journey/Scripts/CameraContainerController.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/XR/XritControllerManager.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Engine/BackgroundController.cs",
+		"/T/Game/code/Game/Item.cpp",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Account/AccountManager.cs",
+		"/E/tripp-client - android/Assets/Editor/AutoBuilder.cs",
+		"/E/tripp-client - android/Library/PackageCache/com.unity.xr.core-utils@2.0.0/Runtime/XROrigin.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/XR/DeviceDetection.cs",
+		"/E/tripp-client - android/Library/PackageCache/com.unity.render-pipelines.core@12.1.6/Runtime/Debugging/DebugUpdater.cs",
+		"/E/tripp-client - android/Assets/Scripts/HandleVREvents.cs",
+		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/ExperienceController.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/AssetManagement/ExperienceExpression.cs",
+		"/T/Game/code/Game/Definitions.cpp",
+		"/t/game/code/game/recipe.cpp",
+		"/t/game/code/game/recipe.h",
+		"/T/Game/code/Game/Station.cpp",
+		"/T/Game/code/Game/Station.h",
+		"/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/Featured/MainMenuFeatured.cs",
+		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/ThirdPartyLauncher.cs",
+		"/E/tripp-client - android/Assets/3rdParty/Scripts/CrystalBowlsLauncher.cs",
+		"/E/tripp-client - android/Assets/3rdParty/Scripts/CosmicFlowLauncher.cs",
+		"/T/Game/code/Game/AssetList.cpp",
+		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/TrippDetailsPanel.cs",
+		"/E/tripp-client - android/Assets/Oculus/Platform/Scripts/Models/LaunchDetails.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Analytics/Analytics.cs",
+		"/C/Tripp/backend/firebase-backend/Tools/artsync_win64_prod.bat",
+		"/C/Tripp/backend/firebase-backend/Tools/artsync_win64_stag.bat",
+		"/C/Tripp/backend/firebase-backend/Tools/artsync_psvr_prod.bat",
+		"/C/Tripp/backend/firebase-backend/Tools/artsync_psvr_stag.bat",
+		"/T/Game/code/Platform/platform_emscripten.cpp",
+		"/C/Users/perma/Desktop/Capture.PNG",
+		"/C/Users/perma/Desktop/file.cpp",
+		"/E/tripp-client - android/Assets/Scripts/UI/RegistrationUI.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Util/GlobalTuning.cs",
+		"/T/Game/code/Engine/imgui/imgui.h",
+		"/T/Game/code/Engine/imgui/imgui.cpp",
+		"/T/Game/code/Engine/Timer.cpp",
+		"/T/Game/code/Engine/Types.cpp",
+		"/T/Game/code/Game/AssetList.h",
+		"/T/Game/code/Engine/Generated.h",
+		"/T/Game/code/Engine/imgui/imgui_demo.cpp",
+		"/t/game/code/game/station.cpp",
+		"/t/game/code/game/station.h",
+		"/T/Game/code/Game/Recipe.cpp",
+		"/T/Game/code/Game/Recipe.h",
+		"/T/Game/code/Game/Order.h",
+		"/T/Game/code/Game/Order.cpp",
+		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/Stage2/AditionalElements/Shaders/LightDecal.shader",
+		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/HeroStage/AditionamElements/Shaders/AmberEclips.shader",
+		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/HeroStage/AditionamElements/Shaders/Planet Lecacy Edited.shader",
+		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/HeroStage/AditionamElements/Shaders/AmberClouds.shader",
+		"/C/Program Files/Unity/Hub/Editor/2019.4.31f1/Editor/Data/CGIncludes/UnityCG.cginc",
+		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/Stage2/AditionalElements/Shaders/Clouds.shader",
+		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/Stage2/AditionalElements/Shaders/AmberLeafSeaDragonTwo.shader",
+		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/Stage2/AditionalElements/Shaders/AmberLeafSeaDragon.shader",
+		"/E/tripp-client-art-ps4/Temp/Compiled-Amber-LeafSeaDragon.shader",
+		"/E/tripp-client-art-ps4/Temp/Compiled-Amber-LeafySeaDragons V2.shader",
+		"/E/tripp-client-art-ps4/Temp/GeneratedFromSurface-Amber-LeafySeaDragons V2.shader",
+		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/Stage2/AditionalElements/Shaders/AmberTreesBillbord.shader",
+		"/T/Game/code/Engine/imgui/imstb_truetype.h",
+		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/TRIPP/Core/Util/GlobalTuning.cs",
+		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/MainMenuDebugTrippsPanel.cs",
+		"/E/tripp-client-art/Assets/Editor/Armatures/ExperienceExpressionBuildWindow.cs",
+		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/Util/TrippBootstrapper.cs",
+		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/TRIPP/Core/Util/Logging.cs",
+		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Editor/AutoBuilder.cs",
+		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/TRIPP/Engine/Engine/ResourceManager.cs",
+		"/E/tripp-client-art/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Editor/TMP_PackageUtilities.cs",
+		"/E/tripp-client-art/Assets/Scripts/VideoPlayerManager.cs",
+		"/E/tripp-client - android/Assets/Scripts/UI/TrippComposer/TrippComposerContentManager.cs",
+		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/ExperienceButton.cs",
+		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/MainMenuController.cs",
+		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/ComposerPage.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/AssetManagement/ExperienceExpressionNetworking.cs",
+		"/T/Game/assets/Shaders/ImGui.fs",
+		"/t/game/code/engine/generated.h",
+		"/T/Game/build_scripts/sign_android TEMPLATE.bat",
+		"/T/Game/CMakeLists.txt",
+		"/T/Game/code/Engine/Renderer/ShaderLoader.cpp",
+		"/T/Game/code/Engine/Editor.cpp",
 		"/T/Game/build_scripts/build_win32.bat",
 		"/T/Game/build_scripts/build_android.bat",
 		"/T/Game/build_scripts/build_emscripten.bat",
-		"/T/Game/code/Platform/platform_win32.cpp",
-		"/T/Game/code/Engine/Types.cpp",
-		"/T/Game/code/Engine/Renderer/ogles3.cpp",
 		"/T/Game/code/Platform/render_android_ogles3.cpp",
 		"/T/Game/code/Platform/render_win32_ogles3.cpp",
 		"/T/Game/run_emscripten.bat",
-		"/T/Game/code/Engine/EngineCore.cpp",
-		"/T/Game/code/Engine/Generated.h",
 		"/T/Game/code/Platform/platform_android.cpp",
-		"/T/Game/code/Platform/platform_emscripten.cpp",
 		"/E/tripp-client-audio - ps4/Assets/TeachingDefinitions/C2T_GratitudeChallenges.txt",
 		"/E/tripp-client-audio - ps4/Assets/Editor/TeachingAutomation.cs",
 		"/C/Users/perma/Downloads/ps4-pkg-UP5956-CUSA25147_00-9550879995002358-A0112-V0100-spec.xml",
-		"/C/Program Files (x86)/SCE/Common/SkeedSilverBullet/keys/ryan5ec800dbd12df.key",
-		"/C/Program Files (x86)/SCE/Common/SkeedSilverBullet/configs.xml",
-		"/E/tripp-client - ps4/tripp-client - ps4/PS4Resources/Trophy Submission Notes.txt",
-		"/T/Game/code/Engine/Profiler.cpp",
-		"/T/Game/assets/Cube.dae",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/UI/MainMenu/MainMenuDebugTrippsPanel.cs",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/Util/TrippBootstrapper.cs",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/UI/MainMenu/ComposerCategoryButton.cs",
-		"/C/Users/perma/Downloads/client.ovpn",
-		"/E/tripp-client - ps4/tripp-client - ps4/PS4Resources/SIEA/params.sfx",
-		"/E/tripp-client - ps4/tripp-client - ps4/PS4Resources/SIEE/params.sfx",
-		"/E/tripp-client-audio - android/Assets/TeachingDefinitions/C2T_GratitudeChallenges.txt",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/TRIPP/Engine/Util/EngineUtil.cs",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Editor/AutoBuilder.cs",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/TRIPP/Core/Account/AccountManager.cs",
-		"/E/tripp-client - ps4/tripp-client - ps4/PS4Resources/SIEA/PatchNotes/changeinfo.xml",
-		"/E/tripp-client - ps4/tripp-client - ps4/PS4Resources/SIEE/PatchNotes/changeinfo.xml",
-		"/T/Game/code/Engine/MemoryManager.cpp",
-		"/T/Game/code/Engine/Logging.cpp",
-		"/C/Sublime/Data/Packages/User/TowerEngine_game_emscripten.sublime-build",
-		"/T/Game/build/Windows/log.txt",
-		"/C/emsdk-main/emsdk-main/emsdk_env.sh",
-		"/C/emsdk-main/emsdk-main/emsdk_manifest.json",
-		"/C/emsdk-main/emsdk-main/emscripten-releases-tags.json",
-		"/C/emsdk-main/emsdk-main/emsdk.bat",
-		"/C/emsdk-main/emsdk-main/README.md",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Behaviors/BreathingInteractionBehavior.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Segmentation/Segmentation.cs",
-		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/LoginFlow/WelcomePanel.cs",
-		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/LoginFlow/MainMenuLoginUI.cs",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/HandenessManager.cs",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/_SerenityGarden/Scripts/Xrit/XritInteractorManager.cs",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/TRIPP/Engine/XR/XritHandTrackingManager.cs",
-		"/E/tripp-client-audio - android/Assets/Editor/TeachingAutomation.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Analytics/AnalyticsEvent.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Analytics/AnalyticsManager.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Activities/BreathingCircleActivity.cs",
-		"/T/Game/CMakeLists.txt",
-		"/T/Game/code/Engine/Math.cpp",
-		"/T/Game/code/Engine/imgui/imgui_internal.h",
-		"/T/Game/build_scripts/build_android_debugAPK.bat",
-		"/E/tripp-client-audio - android/TeachingExpressionStrings/C2T_GratitudeChallenge_Day4.json",
-		"/E/tripp-client-audio - android/Assets/Scripts/TRIPP/Engine/AssetManagement/TeachingVOExpression.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Account/Account.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Networking/AccountNetworking.cs",
-		"/E/tripp-client - android/Assets/Scripts/Util/TrippBootstrapper.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Sound/VOController.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/AssetManagement/ExperienceExpressionNetworking.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/AssetManagement/TeachingVOExpression.cs",
-		"/C/Users/perma/AppData/LocalLow/TRIPP/TRIPP/expressions/jWlP366qvltiJ2V2aQSA",
-		"/C/Users/perma/AppData/LocalLow/TRIPP/TRIPP/expressionsDB/Calm2/mxtLYcSoNWoSgjUwCLOe",
-		"/C/Users/perma/AppData/LocalLow/TRIPP/TRIPP/expressions/mxtLYcSoNWoSgjUwCLOe",
-		"/E/tripp-client - android/Assets/Art/ARTISTS/Dmitri/Drift/_Scripts/Runtime/Core/DriftBootstrapper.cs",
-		"/E/tripp-client-audio - android/Assets/Editor/ResourceManagement/ResourceBundleTools.cs",
-		"/E/tripp-client-audio - android/TeachingExpressionStrings/C2T_Abundance.json",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Util/GlobalTuning.cs",
-		"/E/tripp-client - android/Assets/Art/ARTISTS/Dmitri/Drift/_Scripts/Runtime/UI/DriftSelection.cs",
-		"/T/Game/debugger_game.bat",
-		"/T/Game/build_scripts/cmake_build.bat",
-		"/C/Sublime/Data/Packages/User/TowerEngine_game_win32.sublime-build",
-		"/T/Game/build/CMakeOut/Renderer.dir/Debug/Renderer.tlog/CL.command.1.tlog",
-		"/E/tripp-client - android/Assets/Scripts/Analytics/BQAnalytics.cs",
-		"/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/BottomNavigation.cs",
-		"/E/tripp-client - android/Assets/Art/ARTISTS/Dmitri/Drift/_Scripts/Helpers/DriftElementSO.cs",
-		"/E/tripp-client - android/Assets/Art/ARTISTS/Dmitri/Drift/_Scripts/Helpers/DriftElementListSO.cs",
-		"/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/Featured/MainMenuFeatured.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Passthrough/OVRPassthroughLayerHelper.cs",
-		"/t/game/code/engine/editor.h",
-		"/T/Game/code/Engine/ui/UiPanel.h",
-		"/T/Game/code/Engine/ui/UiPanel.cpp",
-		"/T/readme.txt",
-		"/T/Game/code/Engine/Collision.cpp",
-		"/t/game/code/game/assetlist.h",
-		"/T/Game/build/CMakeOut/CMakeFiles/TargetDirectories.txt",
-		"/T/Game/build/CMakeOut/cmake_install.cmake",
-		"/T/Game/build/CMakeOut/CMakeCache.txt",
-		"/T/Game/build_scripts/cmake.bat",
-		"/T/Game/version.txt",
-		"/T/Game/assets/Tests/focus_laser.battletest",
-		"/T/Game/debugger_game_remedy.bat",
-		"/T/.gitignore",
-		"/T/todo.todo",
-		"/T/Game/code/Engine/Tile.cpp",
-		"/T/Game/code/Engine/SkillTree.cpp",
-		"/T/Game/code/Engine/RandomTable.cpp",
-		"/T/Game/code/Engine/Item.cpp",
-		"/T/Game/code/Engine/GameSpecificData.cpp",
-		"/T/Game/code/Engine/GameConstants.cpp",
-		"/T/Game/code/Engine/GameBehaviors.cpp",
-		"/T/Game/code/Game/Missions.cpp",
-		"/T/Game/code/Engine/mapper/mapper.cpp",
-		"/C/Users/perma/Desktop/sounds.txt",
-		"/T/Game/code/Engine/imgui/imgui_demo.cpp",
-		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/SerenityGarden/RewardEnergyData.cs",
-		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/SerenityGarden/Placeables/PlaceableProgressionController.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Engine/ExperienceController.cs",
-		"/E/tripp-client - android/Assets/Scripts/LoadingBackground.cs",
-		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/MainMenuController.cs",
-		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/Grabbable.cs",
-		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/InventoryController.cs",
-		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/GardenGlobalInventory.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Analytics/Analytics.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Networking/TrippNetworkManager.cs",
-		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/HandController.cs",
-		"/C/Users/perma/AppData/LocalLow/TRIPP/TRIPP/EventsBuffer/4a3fb02b-1a81-4127-b305-7d4993f0dbc8.json",
-		"/T/Game/code/Engine/Json.cpp",
-		"/T/Game/code/Engine/imguiHelper.cpp"
+		"/C/Program Files (x86)/SCE/Common/SkeedSilverBullet/keys/ryan5ec800dbd12df.key"
 	],
 	"find":
 	{
@@ -906,134 +933,134 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			"tab",
-			"GameInput",
-			"keyboarddown",
-			"KeyCallback",
-			"keyboarddown",
-			"KeyboardInput",
-			"keyboardinput",
-			"MouseLeft",
-			"MouseLeft.OnDown = ",
-			"MouseLeft.OnDown",
-			"MouseLeft",
-			"mouseleft",
-			"MouseLeft",
-			"mouseleft",
-			"GameInput",
-			"game_input",
-			"DoPickRender",
-			"MakeHDRTexture",
-			"MakeCubeMap",
-			"MakeTexture",
-			"MakeProgram",
-			"initialize",
-			"Processing shader",
-			"WindowInfo",
-			"GlobalGameInput",
-			"GlobalRunning",
-			"WIN_EXPORT",
-			"vk_est",
-			"GetPathsForFileType",
-			"path_list",
-			"CharArrayLength",
-			"GetPathsForFileType",
-			"EntityPaths",
-			"chararray",
-			"Array",
-			"GetPathsForFileType",
-			"strdup",
-			"GetPathsForFileType",
-			"getprocaddress",
-			"GetProcAddress",
-			"PlatformGetFileWriteTime",
-			"GetWallClockGame",
-			"GetWallClock",
-			"getclockms",
-			"openfiledia",
-			"writefile",
-			"deletefile",
-			"appendfile",
-			"game_thread_proc",
-			"AddWork",
-			"MakeDirectory",
-			"getcycle",
-			"PerformanceCounterFrequency",
-			"GetWallClockGame",
-			"GetWallClock",
-			"FileExists",
-			"LoadFile",
-			"LoadState",
-			"loadstate",
-			"ReadFile",
-			"loadfile",
-			"readfile",
-			"OpenFileExternal",
-			"categoryButtonPrefab",
-			"random",
-			"randomfloat",
-			"activeBreathingExpressionsDir",
-			"IsHandTrackingMode",
-			"GrowSegment",
-			"GetCurrentSection",
-			"PointType",
-			"inhale",
-			"main",
-			"RenderCode",
-			"audiofilereplacements",
-			"AudioReplacementKeys",
-			"categories",
-			"basePath",
-			"\"expressions\"",
-			"teachingvoexpression",
-			">>>",
-			"dreamscapelist",
-			"rendercode.dll",
-			"rendercode.dll = ",
-			"rendercode.dll.path",
-			"extern",
-			"rendercode",
-			"dreamscapeList",
-			"AddAnalyticsPackage",
-			"imagestoload",
-			"shaderscount",
-			"GameSetup",
-			"gamesetup",
-			"tile",
-			"CreateBackground",
-			"LaunchDrift",
-			"PreLaunchExperience",
-			"error",
-			"error:",
-			"error",
-			"PreLaunchExperience",
-			"loadingbackground",
-			"LoadingBackground",
-			"galaxyentity",
-			"display_name",
-			"galaxy_entity_id",
-			"dependencies_count",
-			"enemy_level",
-			"PushID",
-			"enemy_level",
-			"enum",
-			"Missions",
-			"loadingbackground",
-			"backgroundScene",
-			"populateslot",
-			"BQAnalytics",
-			"JSONNode",
-			"jsonnonde",
-			"json",
-			"ininventory",
-			"id",
-			"int",
-			"ImVec2",
-			"WantTextInput",
-			"keyboardinput",
-			"input text",
-			"string",
-			"GetReal64"
+			"Asteroid",
+			"AnalyticsManager",
+			"experiencetype",
+			"OnExperienceTypeSet",
+			"experiencetype",
+			"ExperienceType",
+			"homeButton",
+			"home",
+			"defaultCameraOffset",
+			"z",
+			"LinkDealloc",
+			"ShipSimulateMovement",
+			"ShipMovementStep",
+			"ShipSimulateMovement",
+			"profiler",
+			"sleepingsteppers",
+			"AllocateLink",
+			"linked_list",
+			"fixed_allocator",
+			"InitList",
+			"globalpermmem",
+			"loadgame",
+			"vrcamera",
+			"TrackingSpaceRef",
+			"trackingspace",
+			"OnFocusAcquired",
+			"xritcontrollermanager.visibility",
+			"visibility",
+			"xrit",
+			"lefthandanchor",
+			"runid",
+			"RunID",
+			"runid",
+			"begin",
+			"onpausebutton()",
+			"onpausebutton",
+			"xrrig",
+			"pause",
+			"showpause",
+			"Show()",
+			"launcher",
+			"dirToTargetForce",
+			"ShipMovementStep",
+			"ShipSimulateMovement",
+			"ShipMovementStep",
+			"ShipSimulateMovement",
+			"CurrentJourney",
+			"currentjourney",
+			"thirdpartyexperience",
+			"driftThumbnail",
+			"experiencetype",
+			"driftDescriptionTemplate",
+			"FuelRateGallonsPerSecond",
+			"GetGUID",
+			"guid",
+			"agerequirement",
+			"agerequire",
+			"ageRequirement",
+			"birthdayInvalid",
+			"birthdayError",
+			"age",
+			"bage",
+			"birthdayInvalid",
+			"AgeRequirement",
+			"birthdayOutline",
+			"ItemDisplayHold",
+			"Fuel",
+			"editorstate",
+			"ConverterAddOrder",
+			"struct recipe",
+			"struct order",
+			"float",
+			"progressbar",
+			"mul",
+			"progressbar",
+			"progress",
+			"registerstepper",
+			"ModuleUpdate",
+			"Selectable",
+			"selectable",
+			"gamestate",
+			"\"columns\"",
+			"columns",
+			"popupbg",
+			"holdhovering = ",
+			"HoldItemDraggingFrom",
+			"beginchild",
+			"ImGuiWindowFlags",
+			"beginchild",
+			"debug.lo",
+			"MetricsRenderWindows",
+			"metricswindow",
+			"showmetricswindow",
+			"ismousehovering",
+			"ismousehoveringbox",
+			"getitemrectmin",
+			"imgui::get",
+			"//todo ",
+			"EquippedModules",
+			"ItemDragging",
+			"itemdragging",
+			"ShipUpdateMass",
+			"CurrentMassTotal",
+			"ItemTransfer",
+			"focus2_amber_whitenight_quest",
+			"rb_teachingvo_optimism",
+			"white",
+			"focus2_amber_whitenight_quest",
+			"PerformPS4Build",
+			"SetDragDropPayload",
+			"ImguiShipModuleUnequippingDraggingID",
+			"SetExperienceSelected",
+			"show(",
+			"SelectWorldscape",
+			"ShowTeachings",
+			"ShowExperienceChoosePageWhenIsUpdatingContentDone",
+			"SelectWorldscape",
+			"SetExperienceSelected",
+			"UpdateCurrentTeachings",
+			"selectedTeachingList",
+			"CategorizeTeachings",
+			"UpdateTeachingCategoryButtons",
+			"UpdateCategoryButtons",
+			"UpdateTeachingCategoryButtons",
+			"categorybuttons.add",
+			"ShowTeachings",
+			"spriteselectedexperience = ",
+			"spriteselectedexperience"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1041,6 +1068,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"FuelRateMassPerSecond",
 			"Three.Y",
 			"Zero.Y",
 			"One.Y",
@@ -1096,8 +1124,96 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "Game/code/Game/Game.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 27147,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								939,
+								939
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "Game/code/Game/Asteroid.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2018,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1601,
+								1601
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "Game/code/Engine/LinkedList.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 18212,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5647,
+								5647
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2300.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -1148,7 +1264,7 @@
 	{
 		"height": 98.0
 	},
-	"pinned_build_system": "Packages/User/TowerEngine_game_emscripten.sublime-build",
+	"pinned_build_system": "Packages/User/TowerEngine_game_win32.sublime-build",
 	"project": "SublimeProj.sublime-project",
 	"replace":
 	{
@@ -1162,28 +1278,276 @@
 		"selected_items":
 		[
 			[
-				"em",
-				"Game\\code\\Platform\\platform_emscripten.cpp"
+				"asteroid",
+				"Game\\code\\Game\\Asteroid.cpp"
 			],
 			[
-				"en",
-				"Game\\code\\Engine\\EngineCore.h"
+				"linked",
+				"Game\\code\\Engine\\LinkedList.cpp"
 			],
 			[
-				"plat",
+				"game",
+				"Game\\code\\Game\\Game.cpp"
+			],
+			[
+				"journ",
+				"E:\\tripp-client - android\\Assets\\3rdParty\\Scripts\\Journey\\JourneyExperienceManager.cs"
+			],
+			[
+				"pause",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\InExperience\\TrippPauseMenu.cs"
+			],
+			[
+				"link",
+				"Game\\code\\Engine\\LinkedList.h"
+			],
+			[
+				"ship",
+				"Game\\code\\Game\\Ship.cpp"
+			],
+			[
+				"gmae",
+				"Game\\code\\Game\\Game.h"
+			],
+			[
+				"aster",
+				"Game\\code\\Game\\Asteroid.cpp"
+			],
+			[
+				"math",
+				"Game\\code\\Engine\\Math.cpp"
+			],
+			[
+				"engine",
+				"Game\\code\\Engine\\EngineCore.cpp"
+			],
+			[
+				"fixed",
+				"Game\\code\\Engine\\FixedAllocator.cpp"
+			],
+			[
+				"",
+				"Game\\code\\Engine\\LinkedList.cpp"
+			],
+			[
+				"fixe",
+				"Game\\code\\Engine\\FixedAllocator.cpp"
+			],
+			[
+				"win",
 				"Game\\code\\Platform\\platform_win32.cpp"
 			],
 			[
-				"eng",
+				"engin",
 				"Game\\code\\Engine\\EngineCore.h"
+			],
+			[
+				"linke",
+				"Game\\code\\Engine\\LinkedList.cpp"
+			],
+			[
+				"enigne",
+				"Game\\code\\Engine\\EngineCore.cpp"
+			],
+			[
+				"gam",
+				"Game\\code\\Game\\Game.cpp"
+			],
+			[
+				"asteroi",
+				"Game\\code\\Game\\Asteroid.cpp"
+			],
+			[
+				"en",
+				"Game\\code\\Engine\\EngineCore.cpp"
+			],
+			[
+				"ogl",
+				"Game\\code\\Engine\\Renderer\\ogles3.cpp"
+			],
+			[
+				"shi",
+				"Game\\code\\Game\\Ship.cpp"
+			],
+			[
+				"item",
+				"Game\\code\\Game\\Item.h"
+			],
+			[
+				"third",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\ThirdPartyLauncher.cs"
+			],
+			[
+				"detail",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\TrippDetailsPanel.cs"
+			],
+			[
+				"feature",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\V20 MainMenu\\Featured\\MainMenuFeatured.cs"
 			],
 			[
 				"asset",
 				"Game\\code\\Game\\AssetList.cpp"
 			],
 			[
-				"engine",
-				"Game\\code\\Engine\\EngineCore.cpp"
+				"def",
+				"Game\\code\\Game\\Definitions.cpp"
+			],
+			[
+				"station",
+				"Game\\code\\Game\\Station.cpp"
+			],
+			[
+				"em",
+				"Game\\code\\Platform\\platform_emscripten.cpp"
+			],
+			[
+				"rec",
+				"Game\\code\\Game\\Recipe.cpp"
+			],
+			[
+				"string",
+				"Game\\code\\Engine\\String.cpp"
+			],
+			[
+				"recip",
+				"Game\\code\\Game\\Recipe.cpp"
+			],
+			[
+				"demo",
+				"Game\\code\\Engine\\imgui\\imgui_demo.cpp"
+			],
+			[
+				"rcip",
+				"Game\\code\\Game\\Recipe.cpp"
+			],
+			[
+				"stat",
+				"Game\\code\\Game\\Station.cpp"
+			],
+			[
+				"order",
+				"Game\\code\\Game\\Order.h"
+			],
+			[
+				"or",
+				"Game\\code\\Game\\Order.h"
+			],
+			[
+				"types",
+				"Game\\code\\Engine\\Types.cpp"
+			],
+			[
+				"teyp",
+				"Game\\code\\Engine\\imgui\\imstb_truetype.h"
+			],
+			[
+				"imgui",
+				"Game\\code\\Engine\\imgui\\imgui.h"
+			],
+			[
+				"de",
+				"Game\\code\\Game\\Definitions.cpp"
+			],
+			[
+				"ore",
+				"Game\\code\\Game\\Order.h"
+			],
+			[
+				"time",
+				"Game\\code\\Engine\\Timer.cpp"
+			],
+			[
+				"itme",
+				"Game\\code\\Game\\Item.cpp"
+			],
+			[
+				"g",
+				"Game\\code\\Game\\Game.h"
+			],
+			[
+				"shh",
+				"Game\\code\\Game\\Ship.h"
+			],
+			[
+				"gen",
+				"Game\\code\\Engine\\Generated.h"
+			],
+			[
+				"composerp",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\ComposerPage.cs"
+			],
+			[
+				"debu",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\MainMenuDebugTrippsPanel.cs"
+			],
+			[
+				"exper",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\ExperienceButton.cs"
+			],
+			[
+				"debug",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\MainMenuDebugTrippsPanel.cs"
+			],
+			[
+				"composer",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\TrippComposer\\TrippComposerContentManager.cs"
+			],
+			[
+				"debugtr",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\MainMenuDebugTrippsPanel.cs"
+			],
+			[
+				"debugtrip",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\MainMenuDebugTrippsPanel.cs"
+			],
+			[
+				"featured",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\V20 MainMenu\\Featured\\MainMenuFeatured.cs"
+			],
+			[
+				"featture",
+				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\V20 MainMenu\\Featured\\MainMenuFeatured.cs"
+			],
+			[
+				"hip",
+				"Game\\code\\Game\\Ship.h"
+			],
+			[
+				"asse",
+				"Game\\code\\Game\\AssetList.cpp"
+			],
+			[
+				"itetm",
+				"Game\\build_scripts\\sign_android TEMPLATE.bat"
+			],
+			[
+				"ass",
+				"Game\\code\\Game\\AssetList.cpp"
+			],
+			[
+				"assett",
+				"Game\\code\\Game\\AssetList.h"
+			],
+			[
+				"d",
+				"Game\\code\\Game\\Definitions.cpp"
+			],
+			[
+				"imgui.cpp",
+				"Game\\code\\Engine\\imgui\\imgui.cpp"
+			],
+			[
+				"eng",
+				"Game\\code\\Engine\\EngineCore.h"
+			],
+			[
+				"as",
+				"Game\\code\\Game\\AssetList.cpp"
+			],
+			[
+				"plat",
+				"Game\\code\\Platform\\platform_win32.cpp"
 			],
 			[
 				"andr",
@@ -1198,10 +1562,6 @@
 				"Game\\code\\Platform\\platform_android.cpp"
 			],
 			[
-				"win",
-				"Game\\code\\Platform\\platform_win32.cpp"
-			],
-			[
 				"ems",
 				"Game\\build_scripts\\build_emscripten.bat"
 			],
@@ -1210,32 +1570,12 @@
 				"Game\\code\\Platform\\platform_emscripten.cpp"
 			],
 			[
-				"ogl",
-				"Game\\code\\Engine\\Renderer\\ogles3.cpp"
-			],
-			[
 				"android",
 				"Game\\code\\Platform\\platform_android.cpp"
 			],
 			[
-				"engin",
-				"Game\\code\\Engine\\EngineCore.h"
-			],
-			[
-				"string",
-				"Game\\code\\Engine\\String.cpp"
-			],
-			[
-				"",
-				"Game\\code\\Engine\\EngineCore.h"
-			],
-			[
 				"w",
 				"Game\\code\\Platform\\platform_win32.cpp"
-			],
-			[
-				"gen",
-				"Game\\code\\Engine\\Generated.h"
 			],
 			[
 				"gener",
@@ -1256,10 +1596,6 @@
 			[
 				"wi",
 				"Game\\code\\Platform\\platform_win32.cpp"
-			],
-			[
-				"types",
-				"Game\\code\\Engine\\Types.cpp"
 			],
 			[
 				"logging",
@@ -1334,14 +1670,6 @@
 				"Game\\code\\Game\\Missions.cpp"
 			],
 			[
-				"math",
-				"Game\\code\\Engine\\Math.cpp"
-			],
-			[
-				"demo",
-				"Game\\code\\Engine\\imgui\\imgui_demo.cpp"
-			],
-			[
 				"mainmen",
 				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\MainMenuController.cs"
 			],
@@ -1356,10 +1684,6 @@
 			[
 				"miss",
 				"Game\\code\\Game\\Missions.cpp"
-			],
-			[
-				"imgui",
-				"Game\\code\\Engine\\imguiHelper.cpp"
 			],
 			[
 				"json",
@@ -1388,10 +1712,6 @@
 			[
 				"camb",
 				"C:\\Users\\perma\\Desktop\\CambriaPushNotes.txt"
-			],
-			[
-				"exper",
-				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\MainMenuExperienceCircle.cs"
 			],
 			[
 				"gardenflow",
@@ -1450,10 +1770,6 @@
 				"Game\\code\\Engine\\battle\\battle.cpp"
 			],
 			[
-				"item",
-				"Game\\code\\Engine\\Item.h"
-			],
-			[
 				"monster",
 				"Game\\code\\Engine\\monster\\monster.h"
 			],
@@ -1472,206 +1788,6 @@
 			[
 				"edito",
 				"Game\\code\\Engine\\Editor.cpp"
-			],
-			[
-				"font",
-				"Game\\code\\Engine\\Font.cpp"
-			],
-			[
-				"gears",
-				"Game\\assets\\Gears\\Gears.entity"
-			],
-			[
-				"scene",
-				"Game\\code\\Engine\\scene\\scene.cpp"
-			],
-			[
-				"ren",
-				"Game\\code\\Engine\\Renderer\\Renderer.h"
-			],
-			[
-				"spike",
-				"Game\\assets\\Monsters\\SpikeBall\\SpikeBall.entity"
-			],
-			[
-				"engnie",
-				"Game\\code\\Engine\\EngineCore.cpp"
-			],
-			[
-				"maiunmenu",
-				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\MainMenuController.cs"
-			],
-			[
-				"const",
-				"Game\\code\\Engine\\GameConstants.cpp"
-			],
-			[
-				"pre",
-				"Game\\code\\preprocessor.h"
-			],
-			[
-				"prep",
-				"Game\\code\\preprocessor.h"
-			],
-			[
-				"right",
-				"C:\\Users\\perma\\Desktop\\rightnowtodo.txt"
-			],
-			[
-				"experienc",
-				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\MainMenuExperienceCircle.cs"
-			],
-			[
-				"hey",
-				"Game\\assets\\Tiles\\Hallway\\Hallway.entity"
-			],
-			[
-				"poision",
-				"Game\\assets\\Abilities\\PoisonSting.abilitydefinition"
-			],
-			[
-				"poisonsp",
-				"Game\\assets\\Abilities\\PoisonSpray.abilitydefinition"
-			],
-			[
-				"smite",
-				"Game\\assets\\Abilities\\Smite.abilitydefinition"
-			],
-			[
-				"saci",
-				"Game\\assets\\Abilities\\Sacrifice.abilitydefinition"
-			],
-			[
-				"sacrific",
-				"Game\\code\\Game\\abilities\\ability_sacrifice.cpp"
-			],
-			[
-				"taunt",
-				"Game\\assets\\Abilities\\Taunt.abilitydefinition"
-			],
-			[
-				"thrash",
-				"Game\\assets\\Abilities\\Thrash.abilitydefinition"
-			],
-			[
-				"sapper",
-				"Game\\assets\\Abilities\\Sapper.abilitydefinition"
-			],
-			[
-				"mel",
-				"Game\\assets\\Abilities\\Meltdown.abilitydefinition"
-			],
-			[
-				"destabalize",
-				"Game\\assets\\Abilities\\Destabalize.abilitydefinition"
-			],
-			[
-				"ssecond",
-				"Game\\assets\\Missions\\SecondMission.missiondefinition"
-			],
-			[
-				"supply",
-				"Game\\assets\\Abilities\\SupplyDrop.abilitydefinition"
-			],
-			[
-				"drift",
-				"E:\\tripp-client - android\\Assets\\Art\\ARTISTS\\Dmitri\\Drift\\_Scripts\\Runtime\\Core\\DriftExperienceManager.cs"
-			],
-			[
-				"experience",
-				"E:\\tripp-client - android\\Assets\\Scripts\\TRIPP\\Engine\\Engine\\ExperienceController.cs"
-			],
-			[
-				"analyti",
-				"E:\\tripp-client - android\\Assets\\Scripts\\TRIPP\\Core\\Analytics\\AnalyticsManager.cs"
-			],
-			[
-				"third",
-				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\MainMenu\\ThirdPartyLauncher.cs"
-			],
-			[
-				"experi",
-				"E:\\tripp-client - android\\Assets\\Scripts\\TRIPP\\Engine\\Engine\\ExperienceController.cs"
-			],
-			[
-				"analytics",
-				"E:\\tripp-client - android\\Assets\\Scripts\\TRIPP\\Core\\Analytics\\AnalyticsManager.cs"
-			],
-			[
-				"atom",
-				"Game\\assets\\Enemies\\Atom\\Atom.monsterdefinition"
-			],
-			[
-				"status",
-				"Game\\code\\Engine\\status_effects.h"
-			],
-			[
-				"ball",
-				"Game\\code\\Game\\abilities\\ability_ball_stun.cpp"
-			],
-			[
-				"electric",
-				"Game\\assets\\Tests\\electric_shock.battletest"
-			],
-			[
-				"status_effect",
-				"Game\\code\\Game\\status_effects\\status_effect_stun.cpp"
-			],
-			[
-				"electir",
-				"Game\\code\\Game\\abilities\\ability_electric_shock.cpp"
-			],
-			[
-				"gaspra",
-				"Game\\assets\\Enemies\\Gaspra\\Gaspra.monsterdefinition"
-			],
-			[
-				"mars_crash",
-				"Game\\code\\Game\\abilities\\ability_mars_crash.cpp"
-			],
-			[
-				"mars",
-				"Game\\assets\\Enemies\\MarsTwo\\MarsTwo.monsterdefinition"
-			],
-			[
-				"ui",
-				"Game\\code\\Engine\\ui\\ui.cpp"
-			],
-			[
-				"second",
-				"Game\\assets\\Missions\\SecondMission.missiondefinition"
-			],
-			[
-				"orca",
-				"Game\\assets\\Monsters\\orca_supply\\orca_supply.monsterdefinition"
-			],
-			[
-				"ite",
-				"Game\\code\\Engine\\Item.h"
-			],
-			[
-				"memory",
-				"Game\\code\\Engine\\memorymanager.cpp"
-			],
-			[
-				"dae",
-				"Game\\code\\Engine\\ModelLoading\\Dae.cpp"
-			],
-			[
-				"panel",
-				"Game\\code\\Engine\\ui\\PanelStack.cpp"
-			],
-			[
-				"engien",
-				"Game\\code\\Engine\\EngineCore.cpp"
-			],
-			[
-				"first",
-				"Game\\assets\\Missions\\FirstMission.missiondefinition"
-			],
-			[
-				"enigne",
-				"Game\\code\\Engine\\EngineCore.h"
 			]
 		],
 		"width": 0.0

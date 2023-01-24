@@ -215,7 +215,7 @@ void RemoveLink(list_head *Head, uint32 IndexRemoving)
 	Assert(IndexRemoving >= 0);
 	if (IndexRemoving == 0) {
 
-		LinkDealloc(Head, Head->TopLink);
+		list_link* TopLink = Head->TopLink;
 
 		if (Head->LinkCount == 1) {
 			Head->TopLink = GameNull;
@@ -223,6 +223,8 @@ void RemoveLink(list_head *Head, uint32 IndexRemoving)
 		} else {
 			Head->TopLink = Head->TopLink->NextLink;
 		}
+
+		LinkDealloc(Head, TopLink);
 
 		Head->ArrayValid = false;
 		Head->LinkCount--;

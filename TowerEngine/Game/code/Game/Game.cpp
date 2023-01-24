@@ -487,6 +487,7 @@ namespace game {
 				if (State->Selections[0].IsShip()) {
 					if (ImGui::Button("Test Ship Simulation")) {
 						ConsoleLog("Starting Test");
+						State->ForwardSimulating = true;
 
 						ship* CurrentShip = State->Selections[0].GetShip();
 
@@ -528,6 +529,8 @@ namespace game {
 							string Report = "Finished " + string{i + 1} + "/" + string{Runs} + " ->" + string{Count} + " SimMinutes->" + string{SimMinutes};
 							ConsoleLog(Report.Array());
 						}
+
+						State->ForwardSimulating = false;
 
 						real64 SimMinutes = MillisecondsToSeconds(TotalSimTime) / 60.0f;
 						real64 Avg = (real64)Accum / (real64)Runs;

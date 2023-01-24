@@ -198,6 +198,8 @@ namespace game {
 		selectable Selectables[1024];
 		int32 SelectablesCount;
 
+		bool32 ForwardSimulating;
+
 		item_instance* ItemDragging;
 		item_hold* HoldItemDraggingFrom;
 		ship_module* ModuleUnequipping;

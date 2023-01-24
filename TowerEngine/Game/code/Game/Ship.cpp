@@ -34,7 +34,7 @@ void ShipMovementStart(ship* Ship, journey_step* JourneyStep, game::state* State
 	if (Ship->Position.X < Mov->EndPosition.X) { Ship->Rotation *= -1; }
 }
 
-bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS)
+bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, game::state* State)
 {
 	real64 TimeSeconds = TimeMS * 0.001f;
 
@@ -94,7 +94,24 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS)
 		real64 Mass = ShipGetMassTotal(Ship);
 		vector2 acceleration = Force / (real64)Mass;
 		Ship->Velocity = Ship->Velocity + acceleration;
+	} else {
+
+		// If we're simulating, then we can sleep until the ship need to slow down
+		// TODO we will need to check for when the simulating ends and wake up then
+		if (State->ForwardSimulating) {
+			// Figure out when the ship will start slowing down
+			real64 CoastDist = Mov->FullDistance - (Mov->DistFromSidesToCoast * 2.0f);
+			real64 CoastSpeed = Vector2Length(Ship->Velocity);
+			real64 CoastDurationSeconds = CoastDist / CoastSpeed;
+
+			SleepStepper(State, &Ship->Stepper, SecondsToMilliseconds(CoastDurationSeconds));
+
+			// Move ship to the point at which we want it to be when it wakes up. Probably fine maybe?
+			vector2 SlowStartingPos = Mov->EndPosition - (Mov->DirToEnd * Mov->DistFromSidesToCoast);
+			Ship->Position = SlowStartingPos;
+		}
 	}
+
 	Ship->Position = Ship->Position + (Ship->Velocity * TimeSeconds);
 
 	return false;
@@ -102,7 +119,7 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS)
 
 bool ShipMovementStep(ship* Ship, journey_step* JourneyStep, real64 Time, game::state* State)
 {
-	return ShipSimulateMovement(Ship, &JourneyStep->Movement, Time);
+	return ShipSimulateMovement(Ship, &JourneyStep->Movement, Time, State);
 }
 
 void ShipDockUndockStart(ship* Ship, journey_step* JourneyStep, game::state* State)
