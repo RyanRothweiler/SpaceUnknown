@@ -268,17 +268,32 @@ namespace game {
 		int64 CurrentSinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
 		int64 FileSinceEpoch = json::GetInt64("real_time_saved", &JsonIn);
 		real64 MissingMS = (real64)(CurrentSinceEpoch - FileSinceEpoch);
+		real64 MissingMSStart = MissingMS;
 
 		string P = "Simulating " + string{MissingMS} + " ms of missing time";
 		ConsoleLog(P.Array());
 
+		State->ForwardSimulating = true;
+
+		int32 Flicker = 2000;
+
 		float SimFPS = 15.0f;
-		float TimeStepMS = 1.0f / SimFPS;
+		float TimeStepMS = (1.0f / SimFPS) * 1000.0f;
 		while (MissingMS > SimFPS) {
 			StepUniverse(State, TimeStepMS);
 			MissingMS -= TimeStepMS;
+
+			Flicker--;
+			if (Flicker <= 0) {
+				Flicker = 2000;
+				real64 PercDone = 100.0f - ((MissingMS / MissingMSStart) * 100.0f);
+				string PercDisp = string{PercDone};
+				ConsoleLog(PercDisp);
+			}
 		}
 		StepUniverse(State, MissingMS);
+
+		State->ForwardSimulating = false;
 		ConsoleLog("Finished");
 	}
 
