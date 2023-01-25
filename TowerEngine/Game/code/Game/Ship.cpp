@@ -191,8 +191,19 @@ void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
 
 	Module->Target = GameNull;
 
-	// if no cargo space then do nothing
-	if (Module->Owner->Hold.MassCurrent == Module->Owner->Hold.MassLimit) { return; }
+	bool32 Skip = false;
+
+	// If no cargo space then do nothing
+	if (Module->Owner->Hold.MassCurrent == Module->Owner->Hold.MassLimit) { Skip = true; }
+
+	// Can only work when the ship is idle
+	if (Module->Owner->Status != ship_status::idle) { Skip = true; }
+
+	if (Skip) {
+		Module->ActivationTimerMS = 0.0f;
+		return;
+	}
+
 
 	for (int i = 0; i < State->ClustersCount && Module->Target == GameNull; i++) {
 		asteroid_cluster* Cluster = &State->Asteroids[i];
