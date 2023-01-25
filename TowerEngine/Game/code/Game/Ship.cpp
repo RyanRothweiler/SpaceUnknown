@@ -168,12 +168,17 @@ void ShipStep(void* SelfData, real64 Time, game::state* State)
 			if (Ship->CurrentJourney.CurrentStep < Ship->CurrentJourney.StepsCount) {
 				Ship->CurrentJourney.Steps[Ship->CurrentJourney.CurrentStep].Start(Ship, &Ship->CurrentJourney.Steps[Ship->CurrentJourney.CurrentStep], State);
 			} else {
-				Ship->CurrentJourney.InProgress = false;
-				Ship->CurrentJourney.StepsCount = 0;
-				Ship->CurrentJourney.CurrentStep = 0;
 
-				if (Ship->Status != ship_status::docked) {
-					Ship->Status = ship_status::idle;
+				if (Ship->CurrentJourney.Repeat) {
+					Ship->CurrentJourney.Execute();
+				} else {
+					Ship->CurrentJourney.InProgress = false;
+					Ship->CurrentJourney.StepsCount = 0;
+					Ship->CurrentJourney.CurrentStep = 0;
+
+					if (Ship->Status != ship_status::docked) {
+						Ship->Status = ship_status::idle;
+					}
 				}
 			}
 		}
@@ -454,6 +459,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 		ship_journey* CurrJour = &CurrentShip->CurrentJourney;
 
 		bool32 DockState = (CurrentShip->Status == ship_status::docked);
+		station* LastStation = {};
 		vector2 JourneyPosCurrent = CurrentShip->Position;
 
 		for (int i = 0; i < CurrentShip->CurrentJourney.StepsCount; i++) {
@@ -482,6 +488,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 				case journey_step_type::dock_undock: {
 					JourneyPosCurrent = Step->DockUndock.Station->Position;
+					LastStation = Step->DockUndock.Station;
 					if (DockState) {
 						ImGui::Text("Undock");
 					} else {
@@ -508,7 +515,19 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				journey_step* Step = CurrentShip->CurrentJourney.AddStep();
 				Step->Type = journey_step_type::movement;
 			}
+			ImGui::Checkbox("Return to start and repeat", &CurrJour->Repeat);
 			if (ImGui::Button("Execute")) {
+
+				if (CurrJour->Repeat) {
+
+					// This assumes the next step is a movement step. which won't be true when we add more steps
+					if (DockState) {
+						CreateDockUndockStep(CurrentShip, LastStation);
+					}
+
+					CreateMovementStep(CurrentShip, CurrentShip->Position);
+				}
+
 				CurrJour->Execute();
 			}
 
@@ -518,6 +537,9 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				if (State->Hovering == GameNull) {
 					if (CurrentShip->Status == ship_status::docked) {
 						CreateDockUndockStep(CurrentShip, CurrentShip->StationDocked);
+						CreateMovementStep(CurrentShip, MouseWorldFlat);
+					} else if (DockState) {
+						CreateDockUndockStep(CurrentShip, LastStation);
 						CreateMovementStep(CurrentShip, MouseWorldFlat);
 					} else {
 						CreateMovementStep(CurrentShip, MouseWorldFlat);

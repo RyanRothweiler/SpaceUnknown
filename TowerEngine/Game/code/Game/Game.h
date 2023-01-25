@@ -68,6 +68,8 @@ namespace game {
 		int32 CurrentStep;
 		int32 StepsCount;
 
+		bool Repeat;
+
 		journey_step* AddStep()
 		{
 			journey_step* Step = &Steps[StepsCount++];
@@ -82,7 +84,6 @@ namespace game {
 			CurrentStep = -1;
 		}
 	};
-
 	typedef void(*step_func)(void* SelfData, real64 time, game::state* State);
 
 	struct stepper {
