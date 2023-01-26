@@ -22,6 +22,8 @@ namespace game {
 	const real64 UnitToMeters = 10.0f;
 	// -----------------------------------------------------------------------------
 
+	enum class scene { universe, skill_tree };
+
 	typedef void(*journey_step_start_func)(ship* Ship, journey_step* JourneyStep, game::state* State);
 	// returns true if finished
 	typedef bool(*journey_step_func)(ship* Ship, journey_step* JourneyStep, real64 Time, game::state* State);
@@ -113,6 +115,7 @@ namespace game {
 #include "Recipe.h"
 #include "Ship.h"
 #include "Station.h"
+#include "SkillTree.h"
 
 	// This also dictates the priority
 	enum class selection_type { none, ship, station };
@@ -176,6 +179,11 @@ namespace game {
 	};
 
 	struct state {
+		scene Scene;
+
+		skill_node SkillNodesRoot[1];
+		fixed_allocator::memory SkillNodesMemory;
+
 		universe_time UniverseTime;
 		selection Selections[100];
 		selectable* Hovering;

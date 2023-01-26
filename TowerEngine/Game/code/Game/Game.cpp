@@ -190,6 +190,7 @@ namespace game {
 #include "Recipe.cpp"
 #include "Station.cpp"
 #include "Ship.cpp"
+#include "SkillTree.cpp"
 
 	void LoadGame(game::state* State)
 	{
@@ -300,6 +301,17 @@ namespace game {
 	void Start(engine_state* EngineState)
 	{
 		game::state* State = &EngineState->GameState;
+
+		State->SkillNodesMemory = fixed_allocator::Create(sizeof(skill_node), 100);
+		{
+			skill_node* Node = (skill_node*)fixed_allocator::Alloc(&State->SkillNodesMemory);
+			Node->Position = vector2{5, 2};
+			State->SkillNodesRoot[0].AddChild(Node);
+
+			Node = (skill_node*)fixed_allocator::Alloc(&State->SkillNodesMemory);
+			Node->Position = vector2{5, 5};
+			State->SkillNodesRoot[0].AddChild(Node);
+		}
 
 		State->SleepingSteppers = CreateListFixed(GlobalPermMem, sizeof(stepper_ptr), 100);
 
@@ -567,224 +579,280 @@ namespace game {
 
 			ImGui::Separator();
 
-			ImGui::SliderFloat("Zoom", &State->ZoomTarget, ZoomMin, ZoomMax, "%.3f");
+			switch (State->Scene) {
+
+				case scene::universe: {
+					ImGui::SliderFloat("Zoom", &State->ZoomTarget, ZoomMin, ZoomMax, "%.3f");
+
+					if (ImGui::Button("Skill Tree", ImVec2(-1, 0))) {
+						State->Scene = scene::skill_tree;
+					}
+				}
+				break;
+
+				case scene::skill_tree: {
+					if (ImGui::Button("Universe", ImVec2(-1, 0))) {
+						State->Scene = scene::universe;
+					}
+				}
+				break;
+
+				INVALID_DEFAULT;
+			}
 
 			ImGui::End();
 		}
 
-		// camera controls
-		{
-			// Keyboard
-			vector2 CamMoveDir = vector2{0, 0};
-			if (Input->KeyboardInput['A'].IsDown || Input->KeyboardInput['a'].IsDown) { CamMoveDir.X = -1; }
-			if (Input->KeyboardInput['D'].IsDown || Input->KeyboardInput['d'].IsDown) { CamMoveDir.X = 1; }
-			if (Input->KeyboardInput['W'].IsDown || Input->KeyboardInput['w'].IsDown) { CamMoveDir.Y = -1; }
-			if (Input->KeyboardInput['S'].IsDown || Input->KeyboardInput['s'].IsDown) { CamMoveDir.Y = 1; }
-			CamMoveDir = Vector2Normalize(CamMoveDir);
-			EngineState->GameCamera.Center.X += CamMoveDir.X * KeyboardPanSpeed * (ZoomSpeedAdj);
-			EngineState->GameCamera.Center.Y += CamMoveDir.Y * KeyboardPanSpeed * (ZoomSpeedAdj);
-
-			// Mouse
-			static vector2 MouseStart;
-			static vector2 CamStart;
-			if (Input->MouseLeft.OnDown) {
-				MouseStart = Input->MousePos;
-
-				CamStart.X = EngineState->GameCamera.Center.X;
-				CamStart.Y = EngineState->GameCamera.Center.Y;
-			}
-			if (Input->MouseLeft.IsDown) {
-				vector2 Offset = MouseStart - Input->MousePos;
-				vector2 P = CamStart + (Offset * MousePanSpeed * ZoomSpeedAdj);
-				EngineState->GameCamera.Center.X = P.X;
-				EngineState->GameCamera.Center.Y = P.Y;
-			}
-
-			State->ZoomTarget = (real32)ClampValue(ZoomMin, ZoomMax, State->ZoomTarget + (Input->MouseScrollDelta * MouseZoomSpeed * MouseZoomInvert));
-		}
-
-		// Selection
-		{
-			// Find what is hovered
-			State->Hovering = {};
-			for (int i = 0; i < State->SelectablesCount; i++) {
-				selectable* Sel = &State->Selectables[i];
-				vector2 TopLeftWorld = *Sel->Center - (*Sel->Size * 0.5f);
-				vector2 BottomRightWorld = *Sel->Center + (*Sel->Size * 0.5f);
-
-				rect Bounds = {};
-				Bounds.TopLeft = WorldToScreen(vector3{TopLeftWorld.X, TopLeftWorld.Y, 0}, &EngineState->GameCamera);
-				Bounds.BottomRight = WorldToScreen(vector3{BottomRightWorld.X, BottomRightWorld.Y, 0}, &EngineState->GameCamera);
-
-				if (RectContains(Bounds, Input->MousePos)) {
-					if (State->Hovering == GameNull) {
-						State->Hovering = Sel;
-					} else if ((int)Sel->Type < (int)State->Hovering->Type) {
-						State->Hovering = Sel;
-					}
-				}
-			}
-
-			// Hover display
-			if (State->Hovering != GameNull) {
-
-				vector2 WorldCenter = *State->Hovering->Center;
-				vector2 WorldSize = *State->Hovering->Size;
-
-				vector2 WorldTopLeft = WorldCenter + (WorldSize * 0.5f);
-				vector2 WorldBottomRight = WorldCenter - (WorldSize * 0.5f);
-
-				rect R = {};
-				R.TopLeft = WorldToScreen(vector3{WorldTopLeft.X, WorldTopLeft.Y, 0}, &EngineState->GameCamera);
-				R.BottomRight = WorldToScreen(vector3{WorldBottomRight.X, WorldBottomRight.Y, 0}, &EngineState->GameCamera);
-
-				RenderRectangleOutline(R, 1, COLOR_RED, -1, &EngineState->UIRenderer);
-			}
-
-			// Selecting
-			if (State->Hovering != GameNull && !State->Hovering->Selected && Input->MouseLeft.OnUp && !Input->MouseMoved()) {
-				for (int i = 0; i < ArrayCount(State->Selections); i++) {
-					selection* Sel = &State->Selections[i];
-					if (Sel->None()) {
-						Sel->Current = State->Hovering;
-						Sel->Current->Selected = true;
-
-						if (Sel->Current->OnSelection != GameNull) {
-							Sel->Current->OnSelection(Sel, EngineState, Input);
-						}
-						break;
-					}
-				}
-			}
-		}
-
-		// Call selection update func
-		for (int i = 0; i < ArrayCount(State->Selections); i++) {
-			selection* Sel = &State->Selections[i];
-			if (!Sel->None()) {
-
-				// Render line to selection
-				{
-					vector2 ObjPos = *Sel->Current->Center;
-
-					vector2 Points[2] = {};
-					Points[0] = Sel->Current->InfoWindowPos;
-					Points[1] = WorldToScreen(vector3{ObjPos.X, ObjPos.Y, 0}, &EngineState->GameCamera);
-					render_line Line = {};
-					Line.Points = Points;
-					Line.PointsCount = ArrayCount(Points);
-					RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
-				}
-
-				Sel->Current->SelectionUpdate(Sel, EngineState, Input);
-			}
-		}
 
 		if (!EditorState->Paused) {
 			StepUniverse(State, EngineState->DeltaTimeMS);
 		}
 
-		// Display updates
-		for (int i = 0; i < ArrayCount(State->Ships); i++) {
-			ship* Ship = &State->Ships[i];
-			if (Ship->Using) {
+		// Scene Rendering
+		switch (State->Scene) {
 
-				// Janky but whatever. Would need to use the transform scene hierarchy to improve
-				if (Ship->Status == ship_status::docked) {
-					Ship->Rotation = Ship->StationDocked->Rotation;
+			case scene::universe: {
 
-					int DocksCount = 10;
-					real64 DockRel = (real64)(Ship->StationDocked->DockedCount) / (real64)DocksCount;
-					real64 DockRadians = DockRel * (2 * PI);
+				// camera controls
+				{
+					// Keyboard
+					vector2 CamMoveDir = vector2{0, 0};
+					if (Input->KeyboardInput['A'].IsDown || Input->KeyboardInput['a'].IsDown) { CamMoveDir.X = -1; }
+					if (Input->KeyboardInput['D'].IsDown || Input->KeyboardInput['d'].IsDown) { CamMoveDir.X = 1; }
+					if (Input->KeyboardInput['W'].IsDown || Input->KeyboardInput['w'].IsDown) { CamMoveDir.Y = -1; }
+					if (Input->KeyboardInput['S'].IsDown || Input->KeyboardInput['s'].IsDown) { CamMoveDir.Y = 1; }
+					CamMoveDir = Vector2Normalize(CamMoveDir);
+					EngineState->GameCamera.Center.X += CamMoveDir.X * KeyboardPanSpeed * (ZoomSpeedAdj);
+					EngineState->GameCamera.Center.Y += CamMoveDir.Y * KeyboardPanSpeed * (ZoomSpeedAdj);
 
-					real64 DockRadius = Ship->StationDocked->Size.X * 0.5f * 0.9f;
-					vector2 StationOffset = Ship->StationDocked->Position + vector2 {
-						DockRadius * sin(DockRadians),
-						DockRadius * cos(DockRadians)
-					};
+					// Mouse
+					static vector2 MouseStart;
+					static vector2 CamStart;
+					if (Input->MouseLeft.OnDown) {
+						MouseStart = Input->MousePos;
 
-					vector2 NewPos = Vector2RotatePoint(StationOffset, Ship->StationDocked->Position, DockRadians + -Ship->StationDocked->Rotation);
-					Ship->Position.X = NewPos.X;
-					Ship->Position.Y = NewPos.Y;
+						CamStart.X = EngineState->GameCamera.Center.X;
+						CamStart.Y = EngineState->GameCamera.Center.Y;
+					}
+					if (Input->MouseLeft.IsDown) {
+						vector2 Offset = MouseStart - Input->MousePos;
+						vector2 P = CamStart + (Offset * MousePanSpeed * ZoomSpeedAdj);
+						EngineState->GameCamera.Center.X = P.X;
+						EngineState->GameCamera.Center.Y = P.Y;
+					}
+
+					State->ZoomTarget = (real32)ClampValue(ZoomMin, ZoomMax, State->ZoomTarget + (Input->MouseScrollDelta * MouseZoomSpeed * MouseZoomInvert));
 				}
-			}
-		}
 
-		// Render planets
-		RenderCircle(vector2{1200, 200}, vector2{2000, 2000},
-		             COLOR_RED, RenderLayerPlanet, Globals->GameRenderer);
+				// Selection
+				{
+					// Find what is hovered
+					State->Hovering = {};
+					for (int i = 0; i < State->SelectablesCount; i++) {
+						selectable* Sel = &State->Selectables[i];
+						vector2 TopLeftWorld = *Sel->Center - (*Sel->Size * 0.5f);
+						vector2 BottomRightWorld = *Sel->Center + (*Sel->Size * 0.5f);
 
-		// Render asteroids
-		for (int i = 0; i < State->ClustersCount; i++) {
-			asteroid_cluster* Clust = &State->Asteroids[i];
-			for (int a = 0; a < ArrayCount(Clust->Asteroids); a++) {
-				if (Clust->Asteroids[a].Using) {
+						rect Bounds = {};
+						Bounds.TopLeft = WorldToScreen(vector3{TopLeftWorld.X, TopLeftWorld.Y, 0}, &EngineState->GameCamera);
+						Bounds.BottomRight = WorldToScreen(vector3{BottomRightWorld.X, BottomRightWorld.Y, 0}, &EngineState->GameCamera);
 
-					Clust->Asteroids[a].Rotation += Clust->Asteroids[a].RotationRate * EngineState->DeltaTimeMS * 0.0002f;
+						if (RectContains(Bounds, Input->MousePos)) {
+							if (State->Hovering == GameNull) {
+								State->Hovering = Sel;
+							} else if ((int)Sel->Type < (int)State->Hovering->Type) {
+								State->Hovering = Sel;
+							}
+						}
+					}
+
+					// Hover display
+					if (State->Hovering != GameNull) {
+
+						vector2 WorldCenter = *State->Hovering->Center;
+						vector2 WorldSize = *State->Hovering->Size;
+
+						vector2 WorldTopLeft = WorldCenter + (WorldSize * 0.5f);
+						vector2 WorldBottomRight = WorldCenter - (WorldSize * 0.5f);
+
+						rect R = {};
+						R.TopLeft = WorldToScreen(vector3{WorldTopLeft.X, WorldTopLeft.Y, 0}, &EngineState->GameCamera);
+						R.BottomRight = WorldToScreen(vector3{WorldBottomRight.X, WorldBottomRight.Y, 0}, &EngineState->GameCamera);
+
+						RenderRectangleOutline(R, 1, COLOR_RED, -1, &EngineState->UIRenderer);
+					}
+
+					// Selecting
+					if (State->Hovering != GameNull && !State->Hovering->Selected && Input->MouseLeft.OnUp && !Input->MouseMoved()) {
+						for (int i = 0; i < ArrayCount(State->Selections); i++) {
+							selection* Sel = &State->Selections[i];
+							if (Sel->None()) {
+								Sel->Current = State->Hovering;
+								Sel->Current->Selected = true;
+
+								if (Sel->Current->OnSelection != GameNull) {
+									Sel->Current->OnSelection(Sel, EngineState, Input);
+								}
+								break;
+							}
+						}
+					}
+				}
+
+
+				// Call selection update func
+				for (int i = 0; i < ArrayCount(State->Selections); i++) {
+					selection* Sel = &State->Selections[i];
+					if (!Sel->None()) {
+
+						// Render line to selection
+						{
+							vector2 ObjPos = *Sel->Current->Center;
+
+							vector2 Points[2] = {};
+							Points[0] = Sel->Current->InfoWindowPos;
+							Points[1] = WorldToScreen(vector3{ObjPos.X, ObjPos.Y, 0}, &EngineState->GameCamera);
+							render_line Line = {};
+							Line.Points = Points;
+							Line.PointsCount = ArrayCount(Points);
+							RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
+						}
+
+						Sel->Current->SelectionUpdate(Sel, EngineState, Input);
+					}
+				}
+
+
+				// Update displays
+				for (int i = 0; i < ArrayCount(State->Ships); i++) {
+					ship* Ship = &State->Ships[i];
+					if (Ship->Using) {
+
+						// Janky but whatever. Would need to use the transform scene hierarchy to improve
+						if (Ship->Status == ship_status::docked) {
+							Ship->Rotation = Ship->StationDocked->Rotation;
+
+							int DocksCount = 10;
+							real64 DockRel = (real64)(Ship->StationDocked->DockedCount) / (real64)DocksCount;
+							real64 DockRadians = DockRel * (2 * PI);
+
+							real64 DockRadius = Ship->StationDocked->Size.X * 0.5f * 0.9f;
+							vector2 StationOffset = Ship->StationDocked->Position + vector2 {
+								DockRadius * sin(DockRadians),
+								DockRadius * cos(DockRadians)
+							};
+
+							vector2 NewPos = Vector2RotatePoint(StationOffset, Ship->StationDocked->Position, DockRadians + -Ship->StationDocked->Rotation);
+							Ship->Position.X = NewPos.X;
+							Ship->Position.Y = NewPos.Y;
+						}
+					}
+				}
+
+				// Render planets
+				RenderCircle(vector2{1200, 200}, vector2{2000, 2000},
+				             COLOR_RED, RenderLayerPlanet, Globals->GameRenderer);
+
+				// Render asteroids
+				for (int i = 0; i < State->ClustersCount; i++) {
+					asteroid_cluster* Clust = &State->Asteroids[i];
+					for (int a = 0; a < ArrayCount(Clust->Asteroids); a++) {
+						if (Clust->Asteroids[a].Using) {
+
+							Clust->Asteroids[a].Rotation += Clust->Asteroids[a].RotationRate * EngineState->DeltaTimeMS * 0.0002f;
+
+							m4y4 Model = m4y4Identity();
+							Model = Rotate(Model, vector3{0, 0, Clust->Asteroids[a].Rotation});
+
+							RenderTextureAll(
+							    Clust->Asteroids[a].Position,
+							    vector2{Clust->Asteroids[a].Size, Clust->Asteroids[a].Size},
+							    Color255(79.0f, 60.0f, 48.0f, 1.0f),
+							    Clust->Asteroids[a].Image->GLID,
+							    RenderLayerPlanet, Model, Globals->GameRenderer);
+						}
+					}
+				}
+
+				// Render stations
+				for (int i = 0; i < State->StationsCount; i++) {
+					station* Station = &State->Stations[i];
+
+					Station->Rotation += (PI / 10.0f) * EngineState->DeltaTimeMS * 0.0002f;
 
 					m4y4 Model = m4y4Identity();
-					Model = Rotate(Model, vector3{0, 0, Clust->Asteroids[a].Rotation});
+					Model = Rotate(Model, vector3{0, 0, Station->Rotation});
+
+					static loaded_image* Sprite = assets::GetImage("Station");
 
 					RenderTextureAll(
-					    Clust->Asteroids[a].Position,
-					    vector2{Clust->Asteroids[a].Size, Clust->Asteroids[a].Size},
-					    Color255(79.0f, 60.0f, 48.0f, 1.0f),
-					    Clust->Asteroids[a].Image->GLID,
+					    Station->Position,
+					    vector2{18.0f, 18.0f},
+					    Color255(90.0f, 99.0f, 97.0f, 255.0f),
+					    Sprite->GLID,
 					    RenderLayerPlanet, Model, Globals->GameRenderer);
 				}
-			}
-		}
 
-		// Render stations
-		for (int i = 0; i < State->StationsCount; i++) {
-			station* Station = &State->Stations[i];
+				// Render ships
+				for (int i = 0; i < ArrayCount(State->Ships); i++) {
+					ship* Ship = &State->Ships[i];
+					if (Ship->Using) {
 
-			Station->Rotation += (PI / 10.0f) * EngineState->DeltaTimeMS * 0.0002f;
+						vector2 Pos = Ship->Position;
 
-			m4y4 Model = m4y4Identity();
-			Model = Rotate(Model, vector3{0, 0, Station->Rotation});
+						m4y4 Model = m4y4Identity();
+						Model = Rotate(Model, vector3{0, 0, Ship->Rotation});
 
-			static loaded_image* Sprite = assets::GetImage("Station");
+						static loaded_image* ShipImage = assets::GetImage("Ship");
+						RenderTextureAll(
+						    Pos,
+						    Ship->Size,
+						    COLOR_WHITE,
+						    ShipImage->GLID, RenderLayerShip, Model, Globals->GameRenderer);
+					}
 
-			RenderTextureAll(
-			    Station->Position,
-			    vector2{18.0f, 18.0f},
-			    Color255(90.0f, 99.0f, 97.0f, 255.0f),
-			    Sprite->GLID,
-			    RenderLayerPlanet, Model, Globals->GameRenderer);
-		}
-
-		// Render ships
-		for (int i = 0; i < ArrayCount(State->Ships); i++) {
-			ship* Ship = &State->Ships[i];
-			if (Ship->Using) {
-
-				vector2 Pos = Ship->Position;
-
-				m4y4 Model = m4y4Identity();
-				Model = Rotate(Model, vector3{0, 0, Ship->Rotation});
-
-				static loaded_image* ShipImage = assets::GetImage("Ship");
-				RenderTextureAll(
-				    Pos,
-				    Ship->Size,
-				    COLOR_WHITE,
-				    ShipImage->GLID, RenderLayerShip, Model, Globals->GameRenderer);
-			}
-
-			// Render ship module effects
-			for (int m = 0; m < ArrayCount(Ship->EquippedModules); m++) {
-				ship_module* Module = &Ship->EquippedModules[m];
-				if (Module->Filled && Module->Target != GameNull) {
-					vector2 Points[2] = {};
-					Points[0] = WorldToScreen(vector3{Ship->Position.X, Ship->Position.Y, 0}, &EngineState->GameCamera);
-					Points[1] = WorldToScreen(vector3{Module->Target->Position.X, Module->Target->Position.Y, 0}, &EngineState->GameCamera);
-					render_line Line = {};
-					Line.Points = Points;
-					Line.PointsCount = ArrayCount(Points);
-					RenderLine(Line, 1.5f, color{1, 0, 0, 0.2f}, &EngineState->UIRenderer, false);
+					// Render ship module effects
+					for (int m = 0; m < ArrayCount(Ship->EquippedModules); m++) {
+						ship_module* Module = &Ship->EquippedModules[m];
+						if (Module->Filled && Module->Target != GameNull) {
+							vector2 Points[2] = {};
+							Points[0] = WorldToScreen(vector3{Ship->Position.X, Ship->Position.Y, 0}, &EngineState->GameCamera);
+							Points[1] = WorldToScreen(vector3{Module->Target->Position.X, Module->Target->Position.Y, 0}, &EngineState->GameCamera);
+							render_line Line = {};
+							Line.Points = Points;
+							Line.PointsCount = ArrayCount(Points);
+							RenderLine(Line, 1.5f, color{1, 0, 0, 0.2f}, &EngineState->UIRenderer, false);
+						}
+					}
 				}
+
 			}
+			break;
+
+			case scene::skill_tree: {
+
+				struct locals {
+					void RenderSkillNode(skill_node* Node)
+					{
+						RenderCircle(Node->Position, vector2{1, 1}, COLOR_RED, -1, Globals->GameRenderer);
+
+						// tood draw lines
+
+						// Render skill tree nodes
+						for (int i = 0; i < Node->ChildrenCount; i++) {
+							RenderSkillNode(Node->Children[i]);
+						}
+					}
+				} Locals;
+
+				for (int i = 0; i < ArrayCount(State->SkillNodesRoot); i++) {
+					Locals.RenderSkillNode(&State->SkillNodesRoot[i]);
+				}
+
+			}
+			break;
+
+			INVALID_DEFAULT;
 		}
 	}
 }
