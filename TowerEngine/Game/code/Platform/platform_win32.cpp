@@ -1169,16 +1169,7 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 		GameStateFromMemory->LogicCycles = __rdtsc() - LogicCyclesBegin;
 		GameMemory.HotReloaded = false;
 
-
 		state_to_serialize* State = &GameStateFromMemory->StateSerializing;
-		if (BuildVarAutomatedTesting) {
-			if (State->TestingDone) {
-				char* ResultsPath = "T:/Crossbow/build/TestingResults.txt";
-				PlatformDeleteFile(ResultsPath);
-				AppendFile(ResultsPath, "guddderanother \n");
-				return 0;
-			}
-		}
 
 		uint64 RenderingCyclesBegin = __rdtsc();
 		if (GlobalRunning) {

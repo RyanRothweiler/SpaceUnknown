@@ -3,6 +3,8 @@ struct skill_node {
 	vector2 Position;
 	bool32 Unlocked;
 
+	real64 CircleRadius = 2;
+
 	skill_node* Children[10];
 	int32 ChildrenCount;
 

@@ -6,6 +6,7 @@ char* AssetsFolderStructure[] {
 "EngineResources/",
 "Icons/",
 "Shaders/",
+"SkillTreeNodes/",
 }; 
 
 string journey_step_type_NAME[] { 

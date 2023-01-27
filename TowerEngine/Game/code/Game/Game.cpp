@@ -303,15 +303,10 @@ namespace game {
 		game::state* State = &EngineState->GameState;
 
 		State->SkillNodesMemory = fixed_allocator::Create(sizeof(skill_node), 100);
-		{
-			skill_node* Node = (skill_node*)fixed_allocator::Alloc(&State->SkillNodesMemory);
-			Node->Position = vector2{5, 2};
-			State->SkillNodesRoot[0].AddChild(Node);
 
-			Node = (skill_node*)fixed_allocator::Alloc(&State->SkillNodesMemory);
-			Node->Position = vector2{5, 5};
-			State->SkillNodesRoot[0].AddChild(Node);
-		}
+		State->SkillNodesRoot[0] = *SkillTreeNodeCreate(&State->SkillNodesMemory);
+		State->SkillNodesRoot[0].ID = "ROOT";
+		State->SkillNodesRoot[0].Position = {};
 
 		State->SleepingSteppers = CreateListFixed(GlobalPermMem, sizeof(stepper_ptr), 100);
 
@@ -412,11 +407,30 @@ namespace game {
 
 				ImGui::Separator();
 
+				if (ImGui::Button("Item Window")) { EditorState->ItemWindowOpen = !EditorState->ItemWindowOpen; }
+				ImGui::SameLine();
+				if (ImGui::Button("Skill Node Window")) { EditorState->SkillNodeWindowOpen = !EditorState->SkillNodeWindowOpen; }
 
-				if (ImGui::Button("Item Window")) {
-					EditorState->ItemWindowOpen = !EditorState->ItemWindowOpen;
+				if (EditorState->SkillNodeWindowOpen) {
+					ImGui::Begin("Skill Node Window");
+
+					if (Input->MouseLeft.OnDown && State->NodeHovering != GameNull) {
+						EditorState->NodeSelected = State->NodeHovering;
+					}
+
+					if (EditorState->NodeSelected != GameNull) {
+						ImGui::Text(EditorState->NodeSelected->ID.Array());
+					}
+
+					ImGui::Dummy(ImVec2(0, 30));
+
+					if (ImGui::Button("++ New ++ ", ImVec2(-1, 0))) {
+						EditorState->NodeSelected = SkillTreeNodeCreate(&State->SkillNodesMemory);
+						State->SkillNodesRoot[0].AddChild(EditorState->NodeSelected);
+					}
+
+					ImGui::End();
 				}
-
 				if (EditorState->ItemWindowOpen) {
 
 					ImGui::Begin("Debug item give");
@@ -608,41 +622,42 @@ namespace game {
 			StepUniverse(State, EngineState->DeltaTimeMS);
 		}
 
+		// camera controls
+		{
+			// Keyboard
+			vector2 CamMoveDir = vector2{0, 0};
+			if (Input->KeyboardInput['A'].IsDown || Input->KeyboardInput['a'].IsDown) { CamMoveDir.X = -1; }
+			if (Input->KeyboardInput['D'].IsDown || Input->KeyboardInput['d'].IsDown) { CamMoveDir.X = 1; }
+			if (Input->KeyboardInput['W'].IsDown || Input->KeyboardInput['w'].IsDown) { CamMoveDir.Y = -1; }
+			if (Input->KeyboardInput['S'].IsDown || Input->KeyboardInput['s'].IsDown) { CamMoveDir.Y = 1; }
+			CamMoveDir = Vector2Normalize(CamMoveDir);
+			EngineState->GameCamera.Center.X += CamMoveDir.X * KeyboardPanSpeed * (ZoomSpeedAdj);
+			EngineState->GameCamera.Center.Y += CamMoveDir.Y * KeyboardPanSpeed * (ZoomSpeedAdj);
+
+			// Mouse
+			static vector2 MouseStart;
+			static vector2 CamStart;
+			if (Input->MouseLeft.OnDown) {
+				MouseStart = Input->MousePos;
+
+				CamStart.X = EngineState->GameCamera.Center.X;
+				CamStart.Y = EngineState->GameCamera.Center.Y;
+			}
+			if (Input->MouseLeft.IsDown) {
+				vector2 Offset = MouseStart - Input->MousePos;
+				vector2 P = CamStart + (Offset * MousePanSpeed * ZoomSpeedAdj);
+				EngineState->GameCamera.Center.X = P.X;
+				EngineState->GameCamera.Center.Y = P.Y;
+			}
+
+			State->ZoomTarget = (real32)ClampValue(ZoomMin, ZoomMax, State->ZoomTarget + (Input->MouseScrollDelta * MouseZoomSpeed * MouseZoomInvert));
+		}
+
 		// Scene Rendering
 		switch (State->Scene) {
 
 			case scene::universe: {
 
-				// camera controls
-				{
-					// Keyboard
-					vector2 CamMoveDir = vector2{0, 0};
-					if (Input->KeyboardInput['A'].IsDown || Input->KeyboardInput['a'].IsDown) { CamMoveDir.X = -1; }
-					if (Input->KeyboardInput['D'].IsDown || Input->KeyboardInput['d'].IsDown) { CamMoveDir.X = 1; }
-					if (Input->KeyboardInput['W'].IsDown || Input->KeyboardInput['w'].IsDown) { CamMoveDir.Y = -1; }
-					if (Input->KeyboardInput['S'].IsDown || Input->KeyboardInput['s'].IsDown) { CamMoveDir.Y = 1; }
-					CamMoveDir = Vector2Normalize(CamMoveDir);
-					EngineState->GameCamera.Center.X += CamMoveDir.X * KeyboardPanSpeed * (ZoomSpeedAdj);
-					EngineState->GameCamera.Center.Y += CamMoveDir.Y * KeyboardPanSpeed * (ZoomSpeedAdj);
-
-					// Mouse
-					static vector2 MouseStart;
-					static vector2 CamStart;
-					if (Input->MouseLeft.OnDown) {
-						MouseStart = Input->MousePos;
-
-						CamStart.X = EngineState->GameCamera.Center.X;
-						CamStart.Y = EngineState->GameCamera.Center.Y;
-					}
-					if (Input->MouseLeft.IsDown) {
-						vector2 Offset = MouseStart - Input->MousePos;
-						vector2 P = CamStart + (Offset * MousePanSpeed * ZoomSpeedAdj);
-						EngineState->GameCamera.Center.X = P.X;
-						EngineState->GameCamera.Center.Y = P.Y;
-					}
-
-					State->ZoomTarget = (real32)ClampValue(ZoomMin, ZoomMax, State->ZoomTarget + (Input->MouseScrollDelta * MouseZoomSpeed * MouseZoomInvert));
-				}
 
 				// Selection
 				{
@@ -831,22 +846,41 @@ namespace game {
 
 			case scene::skill_tree: {
 
-				struct locals {
-					void RenderSkillNode(skill_node* Node)
-					{
-						RenderCircle(Node->Position, vector2{1, 1}, COLOR_RED, -1, Globals->GameRenderer);
+				vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
+				vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
 
-						// tood draw lines
+				struct locals {
+					void RenderSkillNode(skill_node* Node, vector2 MouseWorld, engine_state* EngineState)
+					{
+						Node->CircleRadius = Lerp(Node->CircleRadius, 2, 0.25f);
+						RenderCircle(Node->Position, vector2{Node->CircleRadius, Node->CircleRadius}, COLOR_WHITE, -1, Globals->GameRenderer);
+						if (Vector2Distance(Node->Position, MouseWorld) < Node->CircleRadius) {
+							EngineState->GameState.NodeHovering = Node;
+						}
 
 						// Render skill tree nodes
 						for (int i = 0; i < Node->ChildrenCount; i++) {
-							RenderSkillNode(Node->Children[i]);
+
+							vector2 Points[2] = {};
+							Points[0] = WorldToScreen(vector3{Node->Position.X, Node->Position.Y, 0}, &EngineState->GameCamera);
+							Points[1] = WorldToScreen(vector3{Node->Children[i]->Position.X, Node->Children[i]->Position.Y, 0}, &EngineState->GameCamera);
+							render_line Line = {};
+							Line.Points = Points;
+							Line.PointsCount = ArrayCount(Points);
+							RenderLine(Line, 3, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
+
+							RenderSkillNode(Node->Children[i], MouseWorld, EngineState);
 						}
 					}
 				} Locals;
 
+				EngineState->GameState.NodeHovering = {};
 				for (int i = 0; i < ArrayCount(State->SkillNodesRoot); i++) {
-					Locals.RenderSkillNode(&State->SkillNodesRoot[i]);
+					Locals.RenderSkillNode(&State->SkillNodesRoot[i], MouseWorldFlat, EngineState);
+				}
+
+				if (EngineState->GameState.NodeHovering != GameNull) {
+					EngineState->GameState.NodeHovering->CircleRadius = 4;
 				}
 
 			}

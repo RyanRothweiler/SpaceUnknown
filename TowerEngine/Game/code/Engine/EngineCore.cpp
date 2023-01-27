@@ -599,11 +599,6 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		}
 	}
 
-	if (BuildVarAutomatedTesting) {
-		State->TestingDone = true;
-		ConsoleLog("Running!!");
-	}
-
 	ui::NextAnimState = 0;
 
 	// imgui init

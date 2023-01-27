@@ -175,6 +175,9 @@ namespace game {
 		item_hold DebugHold;
 		item_instance DebugItemDragging;
 
+		bool32 SkillNodeWindowOpen;
+		skill_node* NodeSelected;
+
 		bool Paused;
 	};
 
@@ -187,6 +190,7 @@ namespace game {
 		universe_time UniverseTime;
 		selection Selections[100];
 		selectable* Hovering;
+		skill_node* NodeHovering = {};
 
 		ship Ships[100];
 

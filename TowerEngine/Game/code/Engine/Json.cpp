@@ -190,6 +190,12 @@ namespace json {
 		JsonData->PairsCount++;
 	}
 
+	void AddKeyPair(string Name, vector2 Data, json_data * JsonData)
+	{
+		AddKeyPair(Name + string{"_x"}, Real64ToString(Data.X, 7), JsonData);
+		AddKeyPair(Name + string{"_y"}, Real64ToString(Data.Y, 7), JsonData);
+	}
+
 	void SaveToFile(json_data * JsonData, string FileLocation)
 	{
 		char* FinalString = (char *)ArenaAllocate(GlobalTransMem, sizeof(char) * 4096);
