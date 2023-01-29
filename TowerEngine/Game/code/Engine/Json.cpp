@@ -295,11 +295,19 @@ namespace json {
 		return (IntData);
 	}
 
-	real64 GetReal64(string Key, json_data * Data)
+	real64 GetReal64(string Key, json_data* Data)
 	{
 		string DataInString = GetData(Key, Data);
 		real64 Real = StringToReal64(DataInString);
 		return (Real);
+	}
+
+	vector2 GetVector2(string Key, json_data* Data)
+	{
+		vector2 Ret;
+		Ret.X = GetReal64(Key + "_x", Data);
+		Ret.Y = GetReal64(Key + "_y", Data);
+		return Ret;
 	}
 
 	void WriteStruct(meta_member * MetaInfo, uint32 MetaInfoCount, void* AccData, string FileLoc)

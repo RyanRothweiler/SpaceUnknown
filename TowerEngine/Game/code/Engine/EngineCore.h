@@ -597,6 +597,8 @@ struct engine_state;
 struct engine_state {
 	shader BackupShader;
 
+	string RootAssetPath;
+
 	game_assets* Assets;
 	state_to_serialize StateSerializing;
 

@@ -397,6 +397,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	// Initialization
 	if (!Memory->IsInitialized) {
 		string AssetRootDir = RootAssetPath;
+		GameState->RootAssetPath = AssetRootDir;
 
 		Memory->IsInitialized = true;
 		GameState->Assets = (game_assets*)ArenaAllocate(&Memory->PermanentMemory, sizeof(game_assets));

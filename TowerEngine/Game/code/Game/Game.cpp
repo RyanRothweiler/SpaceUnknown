@@ -302,11 +302,28 @@ namespace game {
 	{
 		game::state* State = &EngineState->GameState;
 
-		State->SkillNodesMemory = fixed_allocator::Create(sizeof(skill_node), 100);
+		// Setup skill tree
+		{
+			State->SkillNodesMemory = fixed_allocator::Create(sizeof(skill_node), 100);
 
-		State->SkillNodesRoot[0] = *SkillTreeNodeCreate(&State->SkillNodesMemory);
-		State->SkillNodesRoot[0].ID = "ROOT";
-		State->SkillNodesRoot[0].Position = {};
+			State->SkillNodesRoot[0] = *SkillTreeNodeCreate(&State->SkillNodesMemory);
+			State->SkillNodesRoot[0].ID = "ROOT";
+			State->SkillNodesRoot[0].Position = {};
+
+			// Load skill nodes
+			{
+				path_list NodeFiles = {};
+				PlatformApi.GetPathsForFileType(".skill_node", EngineState->RootAssetPath.Array(), GlobalTransMem, &NodeFiles);
+
+				path_list* P = &NodeFiles;
+				while (StringLength(P->Path) > 0) {
+					json::json_data json = json::LoadFile(P->Path, GlobalTransMem);
+					SkillTreeNodeLoad(&json, &State->SkillNodesRoot[0], State);
+
+					P = P->Next;
+				}
+			}
+		}
 
 		State->SleepingSteppers = CreateListFixed(GlobalPermMem, sizeof(stepper_ptr), 100);
 
@@ -414,12 +431,31 @@ namespace game {
 				if (EditorState->SkillNodeWindowOpen) {
 					ImGui::Begin("Skill Node Window");
 
-					if (Input->MouseLeft.OnDown && State->NodeHovering != GameNull) {
+					static skill_node* NodeMoving = {};
+
+					// Node selecting
+					if (Input->MouseLeft.OnUp && !Input->MouseMoved() && State->NodeHovering != GameNull) {
 						EditorState->NodeSelected = State->NodeHovering;
+					}
+
+					// Node dragging
+					if (Input->MouseRight.OnUp) {
+						NodeMoving = {};
+					}
+					if (Input->MouseRight.OnDown && State->NodeHovering != GameNull) {
+						NodeMoving = State->NodeHovering;
+					}
+					if (Input->MouseRight.IsDown && Input->MouseMoved() && NodeMoving != GameNull) {
+						vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
+						NodeMoving->Position = vector2{MouseWorld.X, MouseWorld.Y};
 					}
 
 					if (EditorState->NodeSelected != GameNull) {
 						ImGui::Text(EditorState->NodeSelected->ID.Array());
+
+						if (ImGui::Button("Save", ImVec2(-1, 0))) {
+							SkillTreeNodeSave(EditorState->NodeSelected);
+						}
 					}
 
 					ImGui::Dummy(ImVec2(0, 30));
