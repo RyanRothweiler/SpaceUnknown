@@ -304,11 +304,9 @@ namespace game {
 
 		// Setup skill tree
 		{
-			State->SkillNodesMemory = fixed_allocator::Create(sizeof(skill_node), 100);
-
-			State->SkillNodesRoot[0] = *SkillTreeNodeCreate(&State->SkillNodesMemory);
-			State->SkillNodesRoot[0].ID = "ROOT";
-			State->SkillNodesRoot[0].Position = {};
+			skill_node* Root = SkillTreeNodeCreate(State);
+			Root->ID = "ROOT";
+			Root->Position = {};
 
 			// Load skill nodes
 			{
@@ -318,7 +316,7 @@ namespace game {
 				path_list* P = &NodeFiles;
 				while (StringLength(P->Path) > 0) {
 					json::json_data json = json::LoadFile(P->Path, GlobalTransMem);
-					SkillTreeNodeLoad(&json, &State->SkillNodesRoot[0], State);
+					SkillTreeNodeLoad(&json, State);
 
 					P = P->Next;
 				}
@@ -432,10 +430,16 @@ namespace game {
 					ImGui::Begin("Skill Node Window");
 
 					static skill_node* NodeMoving = {};
+					static bool32 AddingChild = false;
 
 					// Node selecting
 					if (Input->MouseLeft.OnUp && !Input->MouseMoved() && State->NodeHovering != GameNull) {
-						EditorState->NodeSelected = State->NodeHovering;
+						if (!AddingChild) {
+							EditorState->NodeSelected = State->NodeHovering;
+						} else {
+							AddingChild = false;
+							EditorState->NodeSelected->AddChild(State->NodeHovering);
+						}
 					}
 
 					// Node dragging
@@ -452,17 +456,46 @@ namespace game {
 
 					if (EditorState->NodeSelected != GameNull) {
 						ImGui::Text(EditorState->NodeSelected->ID.Array());
+						for (int i = 0; i < EditorState->NodeSelected->ChildrenCount; i++) {
+							ImGui::Text(EditorState->NodeSelected->Children[i]->ID.Array());
+							ImGui::SameLine();
 
-						if (ImGui::Button("Save", ImVec2(-1, 0))) {
-							SkillTreeNodeSave(EditorState->NodeSelected);
+							ImGui::PushID(i);
+							if (ImGui::Button("-")) {
+								RemoveSlideArray((void*)&EditorState->NodeSelected->Children[0], EditorState->NodeSelected->ChildrenCount, sizeof(EditorState->NodeSelected->Children[0]), i);
+								EditorState->NodeSelected->ChildrenCount--;
+							}
+							ImGui::PopID();
+						}
+
+						if (!AddingChild) {
+							if (ImGui::Button("+ Add Child + ")) {
+								AddingChild = true;
+							}
+						} else {
+							ImGui::Text("!! CLICK CHILD !!");
 						}
 					}
 
 					ImGui::Dummy(ImVec2(0, 30));
 
 					if (ImGui::Button("++ New ++ ", ImVec2(-1, 0))) {
-						EditorState->NodeSelected = SkillTreeNodeCreate(&State->SkillNodesMemory);
-						State->SkillNodesRoot[0].AddChild(EditorState->NodeSelected);
+						EditorState->NodeSelected = SkillTreeNodeCreate(State);
+					}
+					if (ImGui::Button("Save All", ImVec2(-1, 0))) {
+						struct locals {
+							void Save(skill_node* Node)
+							{
+								SkillTreeNodeSave(Node);
+								for (int i = 0; i < Node->ChildrenCount; i++) {
+									Save(Node->Children[i]);
+								}
+							}
+						} Locals;
+
+						for (int i = 0; i < State->SkillNodesCount; i++) {
+							Locals.Save(&State->SkillNodes[i]);
+						}
 					}
 
 					ImGui::End();
@@ -885,34 +918,28 @@ namespace game {
 				vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
 				vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
 
-				struct locals {
-					void RenderSkillNode(skill_node* Node, vector2 MouseWorld, engine_state* EngineState)
-					{
-						Node->CircleRadius = Lerp(Node->CircleRadius, 2, 0.25f);
-						RenderCircle(Node->Position, vector2{Node->CircleRadius, Node->CircleRadius}, COLOR_WHITE, -1, Globals->GameRenderer);
-						if (Vector2Distance(Node->Position, MouseWorld) < Node->CircleRadius) {
-							EngineState->GameState.NodeHovering = Node;
-						}
-
-						// Render skill tree nodes
-						for (int i = 0; i < Node->ChildrenCount; i++) {
-
-							vector2 Points[2] = {};
-							Points[0] = WorldToScreen(vector3{Node->Position.X, Node->Position.Y, 0}, &EngineState->GameCamera);
-							Points[1] = WorldToScreen(vector3{Node->Children[i]->Position.X, Node->Children[i]->Position.Y, 0}, &EngineState->GameCamera);
-							render_line Line = {};
-							Line.Points = Points;
-							Line.PointsCount = ArrayCount(Points);
-							RenderLine(Line, 3, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
-
-							RenderSkillNode(Node->Children[i], MouseWorld, EngineState);
-						}
-					}
-				} Locals;
-
 				EngineState->GameState.NodeHovering = {};
-				for (int i = 0; i < ArrayCount(State->SkillNodesRoot); i++) {
-					Locals.RenderSkillNode(&State->SkillNodesRoot[i], MouseWorldFlat, EngineState);
+
+				for (int i = 0; i < State->SkillNodesCount; i++) {
+					skill_node* Node = &State->SkillNodes[i];
+
+					Node->CircleRadius = Lerp(Node->CircleRadius, 2, 0.25f);
+					RenderCircle(Node->Position, vector2{Node->CircleRadius, Node->CircleRadius}, COLOR_WHITE, -1, Globals->GameRenderer);
+					if (Vector2Distance(Node->Position, MouseWorldFlat) < Node->CircleRadius) {
+						EngineState->GameState.NodeHovering = Node;
+					}
+
+					// Render skill tree nodes
+					for (int c = 0; c < Node->ChildrenCount; c++) {
+
+						vector2 Points[2] = {};
+						Points[0] = WorldToScreen(vector3{Node->Position.X, Node->Position.Y, 0}, &EngineState->GameCamera);
+						Points[1] = WorldToScreen(vector3{Node->Children[c]->Position.X, Node->Children[c]->Position.Y, 0}, &EngineState->GameCamera);
+						render_line Line = {};
+						Line.Points = Points;
+						Line.PointsCount = ArrayCount(Points);
+						RenderLine(Line, 3, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
+					}
 				}
 
 				if (EngineState->GameState.NodeHovering != GameNull) {

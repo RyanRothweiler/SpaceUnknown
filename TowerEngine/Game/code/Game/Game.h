@@ -184,8 +184,8 @@ namespace game {
 	struct state {
 		scene Scene;
 
-		skill_node SkillNodesRoot[1];
-		fixed_allocator::memory SkillNodesMemory;
+		skill_node SkillNodes[100];
+		int32 SkillNodesCount;
 
 		universe_time UniverseTime;
 		selection Selections[100];

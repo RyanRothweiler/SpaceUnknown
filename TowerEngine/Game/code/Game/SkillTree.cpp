@@ -1,6 +1,7 @@
-skill_node* SkillTreeNodeCreate(fixed_allocator::memory* Memory)
+skill_node* SkillTreeNodeCreate(game::state* State)
 {
-	skill_node* Node = (skill_node*)fixed_allocator::Alloc(Memory);
+	skill_node* Node = &State->SkillNodes[State->SkillNodesCount++];
+	Assert(ArrayCount(State->SkillNodes) > State->SkillNodesCount);
 
 	Node->Position = vector2{2, 2};
 	Node->ID = PlatformApi.GetGUID();
@@ -8,12 +9,12 @@ skill_node* SkillTreeNodeCreate(fixed_allocator::memory* Memory)
 	return Node;
 }
 
-void SkillTreeNodeLoad(json::json_data* JsonIn, skill_node* Parent, game::state* State)
+void SkillTreeNodeLoad(json::json_data* JsonIn, game::state* State)
 {
-	skill_node* NewNode = SkillTreeNodeCreate(&State->SkillNodesMemory);
+	skill_node* NewNode = SkillTreeNodeCreate(State);
 	NewNode->ID = 				json::GetString("id", JsonIn);
 	NewNode->Position = 		json::GetVector2("position", JsonIn);
-	Parent->AddChild(NewNode);
+	//Parent->AddChild(NewNode);
 }
 
 void SkillTreeNodeSave(skill_node* Node)
