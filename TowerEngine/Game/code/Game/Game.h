@@ -190,7 +190,7 @@ namespace game {
 		int32 SkillNodesCount;
 
 		skill_bonuses TreeBonuses;
-		uint64 Knowledge;
+		int64 Knowledge;
 
 		universe_time UniverseTime;
 		selection Selections[100];

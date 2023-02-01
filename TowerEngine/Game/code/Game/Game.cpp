@@ -314,6 +314,16 @@ namespace game {
 
 				P = P->Next;
 			}
+
+			// Update Children after all the node have been loaded
+			for (int i = 0; i < State->SkillNodesCount; i++) {
+				skill_node* Node = &State->SkillNodes[i];
+				for (int c = 0; c < ArrayCount(Node->SavedChildrenIDs); c++) {
+					if (StringLength(Node->SavedChildrenIDs[c]) > 0) {
+						Node->AddChild(SkillTreeNodeFind(Node->SavedChildrenIDs[c], State));
+					}
+				}
+			}
 		}
 
 		State->SleepingSteppers = CreateListFixed(GlobalPermMem, sizeof(stepper_ptr), 100);
@@ -487,19 +497,13 @@ namespace game {
 						EditorState->NodeSelected = SkillTreeNodeCreate(State);
 					}
 					if (ImGui::Button("Save All", ImVec2(-1, 0))) {
-						struct locals {
-							void Save(skill_node* Node)
-							{
-								SkillTreeNodeSave(Node);
-								for (int i = 0; i < Node->ChildrenCount; i++) {
-									Save(Node->Children[i]);
-								}
-							}
-						} Locals;
-
+						SkillTreeSaveAll(State);
+					}
+					if (ImGui::Button("Reset All")) {
 						for (int i = 0; i < State->SkillNodesCount; i++) {
-							Locals.Save(&State->SkillNodes[i]);
+							State->SkillNodes[i].Unlocked = false;
 						}
+						SkillTreeSaveAll(State);
 					}
 
 					ImGui::End();
@@ -640,7 +644,7 @@ namespace game {
 							Accum += Count;
 
 							real64 SimMinutes = MillisecondsToSeconds(TotalSimTime) / 60.0f;
-							string Report = "Finished " + string{i + 1} + "/" + string{Runs} + " ->" + string{Count} + " SimMinutes->" + string{SimMinutes};
+							string Report = "Finished " + string{i + 1} + " / " + string{Runs} + " ->" + string{Count} + " SimMinutes->" + string{SimMinutes};
 							ConsoleLog(Report.Array());
 						}
 
@@ -669,7 +673,7 @@ namespace game {
 			switch (State->Scene) {
 
 				case scene::universe: {
-					ImGui::SliderFloat("Zoom", &State->ZoomTarget, ZoomMin, ZoomMax, "%.3f");
+					ImGui::SliderFloat("Zoom", &State->ZoomTarget, ZoomMin, ZoomMax, " % .3f");
 
 					if (ImGui::Button("Skill Tree", ImVec2(-1, 0))) {
 						State->Scene = scene::skill_tree;
@@ -689,7 +693,7 @@ namespace game {
 
 			ImGui::Separator();
 			ImGui::Text("Resources");
-			ImGui::Text("Knowlesdge - %i", State->Knowledge);
+			ImGui::Text("Knowledge - % i", State->Knowledge);
 			ImGui::SameLine();
 
 			ImGui::End();
@@ -932,14 +936,13 @@ namespace game {
 				for (int i = 0; i < State->SkillNodesCount; i++) {
 					skill_node* Node = &State->SkillNodes[i];
 
-					Node->CircleRadius = Lerp(Node->CircleRadius, 2, 0.25f);
-					RenderCircle(Node->Position, vector2{Node->CircleRadius, Node->CircleRadius}, COLOR_WHITE, -1, Globals->GameRenderer);
-					if (Vector2Distance(Node->Position, MouseWorldFlat) < Node->CircleRadius) {
-						EngineState->GameState.NodeHovering = Node;
-					}
-
 					// Render skill tree nodes
 					for (int c = 0; c < Node->ChildrenCount; c++) {
+
+						real32 Width = 1;
+						if (Node->Unlocked) {
+							Width = 4;
+						}
 
 						vector2 Points[2] = {};
 						Points[0] = WorldToScreen(vector3{Node->Position.X, Node->Position.Y, 0}, &EngineState->GameCamera);
@@ -947,20 +950,81 @@ namespace game {
 						render_line Line = {};
 						Line.Points = Points;
 						Line.PointsCount = ArrayCount(Points);
-						RenderLine(Line, 3, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
+						RenderLine(Line, Width, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
+					}
+
+					color Color = {};
+					if (!Node->Unlocked) {
+						Color = COLOR_WHITE;
+						Color.A = 0.1f;
+					}
+					if (Node->Parent == GameNull || Node->Parent->Unlocked) {
+						Color = Color255(15, 87, 34, 1);
+					}
+					if (Node->Unlocked) {
+						Color = Color255(42, 240, 96, 1);
+					}
+
+					real32 RadiusMax = 2;
+					if (Node->Unlocked) {
+						RadiusMax = 3;
+					}
+					Node->CircleRadius = Lerp(Node->CircleRadius, RadiusMax, 0.25f);
+					RenderCircle(Node->Position, vector2{Node->CircleRadius, Node->CircleRadius}, Color, 2, Globals->GameRenderer);
+					if (Vector2Distance(Node->Position, MouseWorldFlat) < Node->CircleRadius) {
+						EngineState->GameState.NodeHovering = Node;
 					}
 				}
 
-				if (EngineState->GameState.NodeHovering != GameNull) {
-					EngineState->GameState.NodeHovering->CircleRadius = 4;
+				static skill_node* NodeSelected = {};
+
+				if (NodeSelected == GameNull && State->NodeHovering != GameNull) {
+					State->NodeHovering->CircleRadius = 4;
 
 					ImGui::SetNextWindowPos(ImVec2((float)Input->MousePos.X + 20, (float)Input->MousePos.Y));
 					bool Open = true;
 					ImGui::Begin("Info", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
-					ImGui::Text("Knowledge Cost - %i", EngineState->GameState.NodeHovering->KnowledgeCost);
+					ImGui::Text("Knowledge Cost - % i", State->NodeHovering->KnowledgeCost);
 					ImGui::End();
+
+					if (!State->NodeHovering->Unlocked && Input->MouseLeft.OnDown && !EditorState->EditorMode) {
+						ImGui::OpenPopup("Unlock");
+						NodeSelected = State->NodeHovering;
+					}
 				}
 
+				if (Input->MouseLeft.OnUp) {
+					NodeSelected = {};
+				}
+
+				if (NodeSelected != GameNull) {
+					if (ImGui::BeginPopupModal("Unlock")) {
+
+						ImGui::Text("Spend % i Knowledge to unlock this bonus ? ", NodeSelected->KnowledgeCost);
+						ImGui::Text("BONUS HERE");
+
+						if (NodeSelected->Unlocked) {
+							ImGui::Text("UNLOCKED");
+						} else {
+							ImGui::Separator();
+							real32 HW = ImGui::GetWindowWidth() * 0.47f;
+							if (State->Knowledge >= NodeSelected->KnowledgeCost) {
+								if (ImGui::Button("Yes", ImVec2(HW, 0))) {
+									ImGui::CloseCurrentPopup();
+									SkillTreeUnlock(NodeSelected, State);
+								}
+							} else {
+								ImGui::Text("Not enough Knowledge");
+							}
+
+							ImGui::SameLine();
+							if (ImGui::Button("No", ImVec2(HW, 0))) {
+								ImGui::CloseCurrentPopup();
+							}
+							ImGui::EndPopup();
+						}
+					}
+				}
 			}
 			break;
 

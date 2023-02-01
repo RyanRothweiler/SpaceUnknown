@@ -28,13 +28,14 @@ void SkillTreeNodeLoad(json::json_data* JsonIn, game::state* State)
 	NewNode->ID = 				json::GetString("id", JsonIn);
 	NewNode->Position = 		json::GetVector2("position", JsonIn);
 	NewNode->KnowledgeCost = 	json::GetInt64("knowledge_cost", JsonIn);
+	NewNode->Unlocked = 		json::GetBool("unlocked", JsonIn);
 
-	// Add Children
+	// NOTE this doesn't update the children list. Only saves the IDs
 	for (int i = 0; i < ArrayCount(NewNode->Children); i++) {
 		string Key = "child_" + i;
 		string ChildID = json::GetData(Key, JsonIn);
 		if (StringLength(ChildID) > 0) {
-			NewNode->AddChild(SkillTreeNodeFind(ChildID, State));
+			NewNode->SavedChildrenIDs[i] = ChildID;
 		}
 	}
 }
@@ -46,6 +47,7 @@ void SkillTreeNodeSave(skill_node* Node)
 	json::AddKeyPair("id", 					Node->ID, 				&JsonOut);
 	json::AddKeyPair("position", 			Node->Position, 		&JsonOut);
 	json::AddKeyPair("knowledge_cost", 		Node->KnowledgeCost, 	&JsonOut);
+	json::AddKeyPair("unlocked", 			Node->Unlocked, 		&JsonOut);
 
 	for (int i = 0; i < Node->ChildrenCount; i++) {
 		string Key = "child_" + i;
@@ -53,4 +55,28 @@ void SkillTreeNodeSave(skill_node* Node)
 	}
 
 	json::SaveToFile(&JsonOut, "T:/Game/assets/SkillTreeNodes/" + Node->ID + ".skill_node");
+}
+
+void SkillTreeSaveAll(game::state* State)
+{
+	struct locals {
+		void Save(skill_node* Node)
+		{
+			SkillTreeNodeSave(Node);
+			for (int i = 0; i < Node->ChildrenCount; i++) {
+				Save(Node->Children[i]);
+			}
+		}
+	} Locals;
+
+	for (int i = 0; i < State->SkillNodesCount; i++) {
+		Locals.Save(&State->SkillNodes[i]);
+	}
+}
+
+void SkillTreeUnlock(skill_node* Node, game::state* State)
+{
+	State->Knowledge -= Node->KnowledgeCost;
+	Node->Unlocked = true;
+	SkillTreeSaveAll(State);
 }
