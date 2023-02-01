@@ -1,7 +1,13 @@
+struct skill_bonuses {
+	real64 FuelForceAddition;
+};
+
 struct skill_node {
 	string ID;
 	vector2 Position;
 	bool32 Unlocked;
+
+	int64 KnowledgeCost;
 
 	real64 CircleRadius = 2;
 

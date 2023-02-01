@@ -302,24 +302,17 @@ namespace game {
 	{
 		game::state* State = &EngineState->GameState;
 
-		// Setup skill tree
+		// Load skill nodes
 		{
-			skill_node* Root = SkillTreeNodeCreate(State);
-			Root->ID = "ROOT";
-			Root->Position = {};
+			path_list NodeFiles = {};
+			PlatformApi.GetPathsForFileType(".skill_node", EngineState->RootAssetPath.Array(), GlobalTransMem, &NodeFiles);
 
-			// Load skill nodes
-			{
-				path_list NodeFiles = {};
-				PlatformApi.GetPathsForFileType(".skill_node", EngineState->RootAssetPath.Array(), GlobalTransMem, &NodeFiles);
+			path_list* P = &NodeFiles;
+			while (StringLength(P->Path) > 0) {
+				json::json_data json = json::LoadFile(P->Path, GlobalTransMem);
+				SkillTreeNodeLoad(&json, State);
 
-				path_list* P = &NodeFiles;
-				while (StringLength(P->Path) > 0) {
-					json::json_data json = json::LoadFile(P->Path, GlobalTransMem);
-					SkillTreeNodeLoad(&json, State);
-
-					P = P->Next;
-				}
+				P = P->Next;
 			}
 		}
 
@@ -361,6 +354,8 @@ namespace game {
 	{
 		game::state* State = &EngineState->GameState;
 		game::editor_state* EditorState = &EngineState->EditorState;
+
+		TreeBonuses = &State->TreeBonuses;
 
 		State->Zoom = (real32)Lerp(State->Zoom, State->ZoomTarget, 0.5f);
 		float Curve = 3.5f;
@@ -456,6 +451,11 @@ namespace game {
 
 					if (EditorState->NodeSelected != GameNull) {
 						ImGui::Text(EditorState->NodeSelected->ID.Array());
+
+						int Num = (int)EditorState->NodeSelected->KnowledgeCost;
+						ImGui::DragInt("Knowledge Cost", &Num, 1, 0, 1000000, "%i");
+						EditorState->NodeSelected->KnowledgeCost = (int64)Num;
+
 						for (int i = 0; i < EditorState->NodeSelected->ChildrenCount; i++) {
 							ImGui::Text(EditorState->NodeSelected->Children[i]->ID.Array());
 							ImGui::SameLine();
@@ -478,6 +478,10 @@ namespace game {
 					}
 
 					ImGui::Dummy(ImVec2(0, 30));
+
+					if (ImGui::Button("Knowledge +5 ", ImVec2(-1, 0))) {
+						State->Knowledge += 5;
+					}
 
 					if (ImGui::Button("++ New ++ ", ImVec2(-1, 0))) {
 						EditorState->NodeSelected = SkillTreeNodeCreate(State);
@@ -682,6 +686,11 @@ namespace game {
 
 				INVALID_DEFAULT;
 			}
+
+			ImGui::Separator();
+			ImGui::Text("Resources");
+			ImGui::Text("Knowlesdge - %i", State->Knowledge);
+			ImGui::SameLine();
 
 			ImGui::End();
 		}
@@ -944,6 +953,12 @@ namespace game {
 
 				if (EngineState->GameState.NodeHovering != GameNull) {
 					EngineState->GameState.NodeHovering->CircleRadius = 4;
+
+					ImGui::SetNextWindowPos(ImVec2((float)Input->MousePos.X + 20, (float)Input->MousePos.Y));
+					bool Open = true;
+					ImGui::Begin("Info", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
+					ImGui::Text("Knowledge Cost - %i", EngineState->GameState.NodeHovering->KnowledgeCost);
+					ImGui::End();
 				}
 
 			}

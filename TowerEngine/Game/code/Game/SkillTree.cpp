@@ -27,6 +27,7 @@ void SkillTreeNodeLoad(json::json_data* JsonIn, game::state* State)
 	skill_node* NewNode = SkillTreeNodeCreate(State);
 	NewNode->ID = 				json::GetString("id", JsonIn);
 	NewNode->Position = 		json::GetVector2("position", JsonIn);
+	NewNode->KnowledgeCost = 	json::GetInt64("knowledge_cost", JsonIn);
 
 	// Add Children
 	for (int i = 0; i < ArrayCount(NewNode->Children); i++) {
@@ -42,8 +43,9 @@ void SkillTreeNodeSave(skill_node* Node)
 {
 	json::json_data JsonOut = json::GetJson(GlobalTransMem);
 
-	json::AddKeyPair("position", Node->Position, &JsonOut);
-	json::AddKeyPair("id", Node->ID, &JsonOut);
+	json::AddKeyPair("id", 					Node->ID, 				&JsonOut);
+	json::AddKeyPair("position", 			Node->Position, 		&JsonOut);
+	json::AddKeyPair("knowledge_cost", 		Node->KnowledgeCost, 	&JsonOut);
 
 	for (int i = 0; i < Node->ChildrenCount; i++) {
 		string Key = "child_" + i;
