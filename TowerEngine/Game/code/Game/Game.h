@@ -117,7 +117,7 @@ namespace game {
 #include "Station.h"
 #include "SkillTree.h"
 
-	skill_bonuses* TreeBonuses = {};
+	skill_bonuses* TreeBonusesTotal = {};
 
 	// This also dictates the priority
 	enum class selection_type { none, ship, station };
@@ -189,7 +189,7 @@ namespace game {
 		skill_node SkillNodes[100];
 		int32 SkillNodesCount;
 
-		skill_bonuses TreeBonuses;
+		skill_bonuses TreeBonusesTotal;
 		int64 Knowledge;
 
 		universe_time UniverseTime;

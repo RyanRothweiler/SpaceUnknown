@@ -42,8 +42,10 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, ga
 	real64 fuelForce = Mov->CachedFuelForce;
 	vector2 dirToTargetForce = Mov->CachedDirToTargetForce;
 	if (TimeMS != Mov->CachedTime) {
+		real64 FuelForceFinal = fuelForcePerGallon + (fuelForcePerGallon * TreeBonusesTotal->FuelForceAddition);
+
 		fuelToUse = Ship->Definition.FuelRateMassPerSecond * TimeSeconds;
-		fuelForce = fuelToUse * fuelForcePerGallon;
+		fuelForce = fuelToUse * FuelForceFinal;
 		dirToTargetForce = Mov->DirToEnd * fuelForce;
 
 		Mov->CachedTime = TimeMS;

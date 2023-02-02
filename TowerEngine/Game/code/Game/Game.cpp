@@ -365,7 +365,7 @@ namespace game {
 		game::state* State = &EngineState->GameState;
 		game::editor_state* EditorState = &EngineState->EditorState;
 
-		TreeBonuses = &State->TreeBonuses;
+		TreeBonusesTotal = &State->TreeBonusesTotal;
 
 		State->Zoom = (real32)Lerp(State->Zoom, State->ZoomTarget, 0.5f);
 		float Curve = 3.5f;
@@ -462,9 +462,13 @@ namespace game {
 					if (EditorState->NodeSelected != GameNull) {
 						ImGui::Text(EditorState->NodeSelected->ID.Array());
 
-						int Num = (int)EditorState->NodeSelected->KnowledgeCost;
-						ImGui::DragInt("Knowledge Cost", &Num, 1, 0, 1000000, "%i");
-						EditorState->NodeSelected->KnowledgeCost = (int64)Num;
+						{
+							int Num = (int)EditorState->NodeSelected->KnowledgeCost;
+							ImGui::DragInt("Knowledge Cost", &Num, 1, 0, 1000000, "%i");
+							EditorState->NodeSelected->KnowledgeCost = (int64)Num;
+						}
+
+						ImGui::Separator();
 
 						for (int i = 0; i < EditorState->NodeSelected->ChildrenCount; i++) {
 							ImGui::Text(EditorState->NodeSelected->Children[i]->ID.Array());
@@ -485,6 +489,12 @@ namespace game {
 						} else {
 							ImGui::Text("!! CLICK CHILD !!");
 						}
+
+						ImGui::Separator();
+
+						ImGui::Text("Bonuses");
+
+						ImGui::DragFloat("FuelForceAddition", &EditorState->NodeSelected->BonusAdditions.FuelForceAddition, 0.001f);
 					}
 
 					ImGui::Dummy(ImVec2(0, 30));
@@ -985,6 +995,7 @@ namespace game {
 					bool Open = true;
 					ImGui::Begin("Info", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
 					ImGui::Text("Knowledge Cost - % i", State->NodeHovering->KnowledgeCost);
+					SkillTreeImguiDisplayBonuses(State->NodeHovering->BonusAdditions);
 					ImGui::End();
 
 					if (!State->NodeHovering->Unlocked && Input->MouseLeft.OnDown && !EditorState->EditorMode) {
@@ -1001,7 +1012,7 @@ namespace game {
 					if (ImGui::BeginPopupModal("Unlock")) {
 
 						ImGui::Text("Spend % i Knowledge to unlock this bonus ? ", NodeSelected->KnowledgeCost);
-						ImGui::Text("BONUS HERE");
+						SkillTreeImguiDisplayBonuses(NodeSelected->BonusAdditions);
 
 						if (NodeSelected->Unlocked) {
 							ImGui::Text("UNLOCKED");

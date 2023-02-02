@@ -1,5 +1,24 @@
+
+/*
+	When adding new fields
+	- Add Field
+	- Add to saving / loading serialization
+	- Add to operators in skill_bonuses struct
+	- Add to displays when hovering
+*/
 struct skill_bonuses {
-	real64 FuelForceAddition;
+	float FuelForceAddition;
+
+	/* Ideas
+		- Decreased activation duration for specific module types
+	*/	
+
+	skill_bonuses operator+(skill_bonuses Input)
+	{
+		skill_bonuses Ret = {};
+		Ret.FuelForceAddition = FuelForceAddition + Input.FuelForceAddition;
+		return Ret;
+	}
 };
 
 struct skill_node {
@@ -11,6 +30,8 @@ struct skill_node {
 	int64 KnowledgeCost;
 
 	real64 CircleRadius = 2;
+
+	skill_bonuses BonusAdditions;
 
 	// used only for loading the children ids
 	string SavedChildrenIDs[10];

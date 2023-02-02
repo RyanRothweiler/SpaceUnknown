@@ -30,6 +30,8 @@ void SkillTreeNodeLoad(json::json_data* JsonIn, game::state* State)
 	NewNode->KnowledgeCost = 	json::GetInt64("knowledge_cost", JsonIn);
 	NewNode->Unlocked = 		json::GetBool("unlocked", JsonIn);
 
+	NewNode->BonusAdditions.FuelForceAddition = 		(float)json::GetReal64("bonus_fuel_force_addition", JsonIn);
+
 	// NOTE this doesn't update the children list. Only saves the IDs
 	for (int i = 0; i < ArrayCount(NewNode->Children); i++) {
 		string Key = "child_" + i;
@@ -48,6 +50,8 @@ void SkillTreeNodeSave(skill_node* Node)
 	json::AddKeyPair("position", 			Node->Position, 		&JsonOut);
 	json::AddKeyPair("knowledge_cost", 		Node->KnowledgeCost, 	&JsonOut);
 	json::AddKeyPair("unlocked", 			Node->Unlocked, 		&JsonOut);
+
+	json::AddKeyPair("bonus_fuel_force_addition", 			Node->BonusAdditions.FuelForceAddition, 		&JsonOut);
 
 	for (int i = 0; i < Node->ChildrenCount; i++) {
 		string Key = "child_" + i;
@@ -79,4 +83,13 @@ void SkillTreeUnlock(skill_node* Node, game::state* State)
 	State->Knowledge -= Node->KnowledgeCost;
 	Node->Unlocked = true;
 	SkillTreeSaveAll(State);
+
+	State->TreeBonusesTotal = State->TreeBonusesTotal + Node->BonusAdditions;
+}
+
+void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
+{
+	if (Bonuses.FuelForceAddition > 0) {
+		ImGui::Text("Additional force per fuel unit %i%%", (int)((Bonuses.FuelForceAddition) * 100.0f));
+	}
 }
