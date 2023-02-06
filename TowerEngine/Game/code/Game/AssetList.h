@@ -111,6 +111,7 @@ struct assets_list {
 	game::ship_definition Definition_Ship_First = {};
 	game::recipe RecipeDefinitions[100];
 	loaded_image* AsteroidImages[3];
+	loaded_image* SalvageImages[2];
 
 	loaded_image* ShipModuleTypeIcons[100];
 	loaded_image* ShipModuleIcons[100];

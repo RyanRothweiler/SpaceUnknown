@@ -186,6 +186,7 @@ namespace game {
 
 #include "Definitions.cpp"
 #include "Asteroid.cpp"
+#include "Salvage.cpp"
 #include "Item.cpp"
 #include "Recipe.cpp"
 #include "Station.cpp"
@@ -336,6 +337,10 @@ namespace game {
 		Globals->AssetsList.AsteroidImages[0] = assets::GetImage("Asteroid1");
 		Globals->AssetsList.AsteroidImages[1] = assets::GetImage("Asteroid2");
 		Globals->AssetsList.AsteroidImages[2] = assets::GetImage("Asteroid3");
+
+		// Load salvage images
+		Globals->AssetsList.SalvageImages[0] = assets::GetImage("Salvage1");
+		Globals->AssetsList.SalvageImages[1] = assets::GetImage("Salvage2");
 
 		ShipSetup(State, vector2{0, 0});
 		AsteroidCreateCluster(vector2{0, 0}, 30.0f, State);
@@ -879,6 +884,23 @@ namespace game {
 							    RenderLayerPlanet, Model, Globals->GameRenderer);
 						}
 					}
+				}
+
+				// Render salvage
+				for (int i = 0; i < State->SalvagesCount; i++) {
+					salvage* Salvage = &State->Salvages[i];
+
+					//Clust->Asteroids[a].Rotation += Clust->Asteroids[a].RotationRate * EngineState->DeltaTimeMS * 0.0002f;
+
+					//m4y4 Model = m4y4Identity();
+					//Model = Rotate(Model, vector3{0, 0, Clust->Asteroids[a].Rotation});
+
+					RenderTextureAll(
+					    Salvage->Position,
+					    vector2{Clust->Asteroids[a].Size, Clust->Asteroids[a].Size},
+					    Color255(79.0f, 60.0f, 48.0f, 1.0f),
+					    Clust->Asteroids[a].Image->GLID,
+					    RenderLayerPlanet, Model, Globals->GameRenderer);
 				}
 
 				// Render stations

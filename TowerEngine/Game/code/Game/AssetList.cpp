@@ -359,6 +359,8 @@ namespace assets {
 			{"Asteroid1", 			"Asteroids/Asteroid1.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Asteroid2", 			"Asteroids/Asteroid2.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Asteroid3", 			"Asteroids/Asteroid3.png", 			gl_blend_type::linear, correct_gamma::no},
+			{"Salvage1", 			"Salvage/Salvage1.png", 			gl_blend_type::linear, correct_gamma::no},
+			{"Salvage2", 			"Salvage/Salvage2.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Station", 			"Station.png", 						gl_blend_type::linear, correct_gamma::no},
 
 			{"Icon_Venigen", 		"Icons/Icon_Venigen.png", 			gl_blend_type::linear, correct_gamma::no},

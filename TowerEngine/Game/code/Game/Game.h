@@ -111,6 +111,7 @@ namespace game {
 	};
 
 #include "Asteroid.h"
+#include "Salvage.h"
 #include "Item.h"
 #include "Recipe.h"
 #include "Ship.h"
@@ -201,6 +202,9 @@ namespace game {
 
 		asteroid_cluster Asteroids[100];
 		int32 ClustersCount;
+
+		salvage Salvages[100];
+		int32 SalvagesCount;
 
 		station Stations[100];
 		int32 StationsCount;
