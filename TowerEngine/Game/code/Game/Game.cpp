@@ -345,6 +345,10 @@ namespace game {
 		ShipSetup(State, vector2{0, 0});
 		AsteroidCreateCluster(vector2{0, 0}, 30.0f, State);
 
+		// Salvage
+		SalvageCreate(State, vector2{ -30, -30});
+
+		// Station
 		station* Station = StationCreate(State);
 		Station->Position.X = 50;
 		Station->Position.Y = 50;
@@ -897,10 +901,10 @@ namespace game {
 
 					RenderTextureAll(
 					    Salvage->Position,
-					    vector2{Clust->Asteroids[a].Size, Clust->Asteroids[a].Size},
-					    Color255(79.0f, 60.0f, 48.0f, 1.0f),
-					    Clust->Asteroids[a].Image->GLID,
-					    RenderLayerPlanet, Model, Globals->GameRenderer);
+					    vector2{10.0f, 10.0f},
+					    Color255(197.0f, 214.0f, 208.0f, 1.0f),
+					    Salvage->Image->GLID,
+					    RenderLayerPlanet, m4y4Identity(), Globals->GameRenderer);
 				}
 
 				// Render stations

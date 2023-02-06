@@ -1,10 +1,10 @@
-void SpawnSalvage(game::state* State, vector2 Position)
+void SalvageCreate(game::state* State, vector2 Position)
 {
 	salvage* Salvage = &State->Salvages[State->SalvagesCount++];
 	Assert(State->SalvagesCount < ArrayCount(State->Salvages));
 
 	Salvage->Position = Position;
 
-	int64 SpriteIndex = RandomRangeInt(0, ArrayCount(Globals->AssetsList.SalvageImages) - 1);
+	int64 SpriteIndex = RandomRangeInt(0, ArrayCount(Globals->AssetsList.SalvageImages));
 	Salvage->Image = Globals->AssetsList.SalvageImages[SpriteIndex];
 }
