@@ -4,7 +4,7 @@ void InitAsteroid(asteroid* Asteroid)
 	Asteroid->Position = {};
 	Asteroid->Size = RandomRangeFloat(5.0f, 10.0f);
 
-	int64 SpriteIndex = RandomRangeInt(0, ArrayCount(Globals->AssetsList.AsteroidImages) - 1);
+	int64 SpriteIndex = RandomRangeInt(0, ArrayCount(Globals->AssetsList.AsteroidImages));
 	Asteroid->Image = Globals->AssetsList.AsteroidImages[SpriteIndex];
 
 	real64 Rate = PI / 10.0f;

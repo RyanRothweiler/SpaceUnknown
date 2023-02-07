@@ -107,6 +107,7 @@ namespace game {
 	MetaStruct enum class ship_module_id {
 		none,
 		asteroid_miner,
+		salvager_i,
 		count
 	};
 

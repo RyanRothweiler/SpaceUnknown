@@ -17,12 +17,14 @@ string journey_step_type_NAME[] {
 string ship_module_id_NAME[] { 
 "none",
 "asteroid_miner",
+"salvager_i",
 "count",
 }; 
 string item_id_NAME[] { 
 "venigen",
 "stl",
 "sm_asteroid_miner",
+"sm_salvager_i",
 "count",
 }; 
 string recipe_id_NAME[] { 

@@ -164,7 +164,7 @@ void ItemDisplayHold(string Title, item_hold* Hold, game::state* State, game_inp
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiShipModuleUnequippingDraggingID)) {
 				ship_module* Inst = State->ModuleUnequipping;
 
-				ItemGive(Hold, item_id::sm_asteroid_miner, 1);
+				ItemGive(Hold, Inst->Definition.ItemID, 1);
 				ShipRemoveModule(Inst, State);
 			}
 

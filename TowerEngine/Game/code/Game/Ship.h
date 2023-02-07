@@ -7,12 +7,14 @@ MetaStruct enum class ship_status {
 };
 
 enum class ship_module_slot_type {
-	industrial, structural,
+	industrial, structural, science,
 	count
 };
 
 struct ship_module_definition {
 	ship_module_id ID;
+	item_id ItemID;
+
 	ship_module_slot_type SlotType;
 	string DisplayName;
 	real64 ActivationTimeMS;

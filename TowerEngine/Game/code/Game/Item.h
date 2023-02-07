@@ -3,6 +3,7 @@ MetaStruct enum class item_id {
 	venigen,
 	stl,
 	sm_asteroid_miner,
+	sm_salvager_i,
 	count,
 };
 

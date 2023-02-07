@@ -589,6 +589,7 @@ game::ship* ShipSetup(game::state * State, vector2 Pos)
 			Ship->FuelTank.Setup(20);
 
 			ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
+			ShipAddModule(&Ship->EquippedModules[3], ship_module_id::salvager_i, Ship, State);
 
 			game::RegisterStepper(&Ship->Stepper, &ShipStep, (void*)Ship, State);
 			game::RegisterSelectable(selection_type::ship, &Ship->Position, &Ship->Size, (void*)Ship, State,
