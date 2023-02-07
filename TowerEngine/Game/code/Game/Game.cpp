@@ -184,7 +184,6 @@ namespace game {
 		ConsoleLog("Game Saved");
 	}
 
-#include "Definitions.cpp"
 #include "Asteroid.cpp"
 #include "Salvage.cpp"
 #include "Item.cpp"
@@ -192,6 +191,8 @@ namespace game {
 #include "Station.cpp"
 #include "Ship.cpp"
 #include "SkillTree.cpp"
+
+#include "Definitions.cpp"
 
 	void LoadGame(game::state* State)
 	{
@@ -947,10 +948,10 @@ namespace game {
 					// Render ship module effects
 					for (int m = 0; m < ArrayCount(Ship->EquippedModules); m++) {
 						ship_module* Module = &Ship->EquippedModules[m];
-						if (Module->Filled && Module->Target != GameNull) {
+						if (Module->Filled && Module->Target.HasTarget()) {
 							vector2 Points[2] = {};
 							Points[0] = WorldToScreen(vector3{Ship->Position.X, Ship->Position.Y, 0}, &EngineState->GameCamera);
-							Points[1] = WorldToScreen(vector3{Module->Target->Position.X, Module->Target->Position.Y, 0}, &EngineState->GameCamera);
+							Points[1] = WorldToScreen(vector3{Module->Target.GetAsteroid()->Position.X, Module->Target.GetAsteroid()->Position.Y, 0}, &EngineState->GameCamera);
 							render_line Line = {};
 							Line.Points = Points;
 							Line.PointsCount = ArrayCount(Points);

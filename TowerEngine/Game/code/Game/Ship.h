@@ -15,10 +15,59 @@ struct ship_module_definition {
 	ship_module_id ID;
 	item_id ItemID;
 
+	step_func ActivationStepMethod;
+
 	ship_module_slot_type SlotType;
 	string DisplayName;
 	real64 ActivationTimeMS;
 	real64 ActivationRange;
+};
+
+enum class world_target_type {
+	none, asteroid, salvage
+};
+
+struct world_target {
+	world_target_type Type;
+
+	union {
+		asteroid* Asteroid;
+		salvage* Salvage;
+	};
+
+	void Set(asteroid* Input)
+	{
+		Asteroid = Input;
+		Type = world_target_type::asteroid;
+	}
+
+	void Set(salvage* Input)
+	{
+		Salvage = Input;
+		Type = world_target_type::salvage;
+	}
+
+	void Clear()
+	{
+		Type = world_target_type::none;
+	}
+
+	bool32 HasTarget()
+	{
+		return Type != world_target_type::none;
+	}
+
+	asteroid* GetAsteroid()
+	{
+		Assert(Type == world_target_type::asteroid);
+		return Asteroid;
+	}
+
+	salvage* GetSalvage()
+	{
+		Assert(Type == world_target_type::salvage);
+		return Salvage;
+	}
 };
 
 struct ship_module {
@@ -29,7 +78,7 @@ struct ship_module {
 	real64 ActivationTimerMS;
 	ship* Owner;
 
-	asteroid* Target;
+	world_target Target;
 };
 
 struct ship_definition {

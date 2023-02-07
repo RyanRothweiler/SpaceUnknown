@@ -187,11 +187,11 @@ void ShipStep(void* SelfData, real64 Time, game::state* State)
 	}
 }
 
-void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
+void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, game::state* State)
 {
 	ship_module* Module = (ship_module*)SelfData;
 
-	Module->Target = GameNull;
+	Module->Target.Clear();
 
 	bool32 Skip = false;
 
@@ -207,27 +207,72 @@ void ModuleUpdate(void* SelfData, real64 Time, game::state* State)
 	}
 
 
-	for (int i = 0; i < State->ClustersCount && Module->Target == GameNull; i++) {
+	for (int i = 0; i < State->ClustersCount && !Module->Target.HasTarget(); i++) {
 		asteroid_cluster* Cluster = &State->Asteroids[i];
-		for (int a = 0; a < ArrayCount(Cluster->Asteroids) && Module->Target == GameNull; a++) {
+		for (int a = 0; a < ArrayCount(Cluster->Asteroids) && !Module->Target.HasTarget(); a++) {
 			asteroid* Roid = &Cluster->Asteroids[a];
 			if (Roid->Using) {
 				real64 Dist = Vector2Distance(Roid->Position, Module->Owner->Position);
 				if (Dist < Module->Definition.ActivationRange) {
-					Module->Target = Roid;
+					Module->Target.Set(Roid);
 				}
 			}
 		}
 	}
 
-	if (Module->Target != GameNull) {
+	if (Module->Target.HasTarget()) {
 		Module->ActivationTimerMS += Time;
 		if (Module->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
 			Module->ActivationTimerMS = 0.0f;
-			Module->Target->Using = false;
+			Module->Target.GetAsteroid()->Using = false;
 
 			// Do module thing
 			ItemGive(&Module->Owner->Hold, item_id::venigen, 2);
+		}
+	} else {
+		Module->ActivationTimerMS = 0.0f;
+	}
+}
+
+void ModuleUpdateSalvager(void* SelfData, real64 Time, game::state* State)
+{
+	ship_module* Module = (ship_module*)SelfData;
+
+	Module->Target.Clear();
+
+	bool32 Skip = false;
+
+	// If no cargo space then do nothing
+	if (Module->Owner->Hold.MassCurrent == Module->Owner->Hold.MassLimit) { Skip = true; }
+
+	// Can only work when the ship is idle
+	if (Module->Owner->Status != ship_status::idle) { Skip = true; }
+
+	if (Skip) {
+		Module->ActivationTimerMS = 0.0f;
+		return;
+	}
+
+
+	for (int i = 0; i < State->SalvagesCount && !Module->Target.HasTarget(); i++) {
+		salvage* Sal = &State->Salvages[i];
+
+		real64 Dist = Vector2Distance(Sal->Position, Module->Owner->Position);
+		if (Dist < Module->Definition.ActivationRange) {
+			Module->Target.Set(Sal);
+		}
+	}
+
+	if (!Module->Target.HasTarget()) {
+		Module->ActivationTimerMS += Time;
+		if (Module->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
+			Module->ActivationTimerMS = 0.0f;
+
+			// TODO clear away the salvage maybe. Do unified thing for this?
+			//Module->Target->Using = false;
+
+			// Do module thing
+			State->Knowledge += 2;
 		}
 	} else {
 		Module->ActivationTimerMS = 0.0f;
@@ -273,7 +318,7 @@ void ShipAddModule(ship_module* Dest, ship_module_id ModuleID, ship* Ship, game:
 	Dest->Definition = Globals->AssetsList.ShipModuleDefinitions[(int)ModuleID];
 	Dest->Owner = Ship;
 
-	game::RegisterStepper(&Dest->Stepper, &ModuleUpdate, (void*)(Dest), State);
+	game::RegisterStepper(&Dest->Stepper, Dest->Definition.ActivationStepMethod, (void*)(Dest), State);
 }
 
 void ShipRemoveModule(ship_module* Module, game::state* State)
