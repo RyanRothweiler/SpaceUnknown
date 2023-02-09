@@ -951,11 +951,11 @@ namespace game {
 						if (Module->Filled && Module->Target.HasTarget()) {
 							vector2 Points[2] = {};
 							Points[0] = WorldToScreen(vector3{Ship->Position.X, Ship->Position.Y, 0}, &EngineState->GameCamera);
-							Points[1] = WorldToScreen(vector3{Module->Target.GetAsteroid()->Position.X, Module->Target.GetAsteroid()->Position.Y, 0}, &EngineState->GameCamera);
+							Points[1] = WorldToScreen(vector3{Module->Target.GetTargetPosition().X, Module->Target.GetTargetPosition().Y, 0}, &EngineState->GameCamera);
 							render_line Line = {};
 							Line.Points = Points;
 							Line.PointsCount = ArrayCount(Points);
-							RenderLine(Line, 1.5f, color{1, 0, 0, 0.2f}, &EngineState->UIRenderer, false);
+							RenderLine(Line, 2.0f, color{1, 0, 0, 0.5f}, &EngineState->UIRenderer, false);
 						}
 					}
 				}

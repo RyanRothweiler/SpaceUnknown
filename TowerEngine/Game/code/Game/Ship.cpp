@@ -263,7 +263,7 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, game::state* State)
 		}
 	}
 
-	if (!Module->Target.HasTarget()) {
+	if (Module->Target.HasTarget()) {
 		Module->ActivationTimerMS += Time;
 		if (Module->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
 			Module->ActivationTimerMS = 0.0f;
