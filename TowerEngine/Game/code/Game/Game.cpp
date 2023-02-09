@@ -884,46 +884,6 @@ namespace game {
 					                  RenderLayerPlanet, Model, Globals->GameRenderer);
 				}
 
-				/*
-				// Render asteroids
-				for (int i = 0; i < State->ClustersCount; i++) {
-					asteroid_cluster* Clust = &State->Asteroids[i];
-					for (int a = 0; a < ArrayCount(Clust->Asteroids); a++) {
-						if (Clust->Asteroids[a].Using) {
-
-							Clust->Asteroids[a].Rotation += Clust->Asteroids[a].RotationRate * EngineState->DeltaTimeMS * 0.0002f;
-
-							m4y4 Model = m4y4Identity();
-							Model = Rotate(Model, vector3{0, 0, Clust->Asteroids[a].Rotation});
-
-							RenderTextureAll(
-							    Clust->Asteroids[a].Position,
-							    vector2{Clust->Asteroids[a].Size, Clust->Asteroids[a].Size},
-							    Color255(79.0f, 60.0f, 48.0f, 1.0f),
-							    Clust->Asteroids[a].Image->GLID,
-							    RenderLayerPlanet, Model, Globals->GameRenderer);
-						}
-					}
-				}
-				*/
-
-				// Render salvage
-				for (int i = 0; i < State->SalvagesCount; i++) {
-					salvage* Salvage = &State->Salvages[i];
-
-					//Clust->Asteroids[a].Rotation += Clust->Asteroids[a].RotationRate * EngineState->DeltaTimeMS * 0.0002f;
-
-					//m4y4 Model = m4y4Identity();
-					//Model = Rotate(Model, vector3{0, 0, Clust->Asteroids[a].Rotation});
-
-					RenderTextureAll(
-					    Salvage->Position,
-					    vector2{10.0f, 10.0f},
-					    Color255(197.0f, 214.0f, 208.0f, 1.0f),
-					    Salvage->Image->GLID,
-					    RenderLayerPlanet, m4y4Identity(), Globals->GameRenderer);
-				}
-
 				// Render stations
 				for (int i = 0; i < State->StationsCount; i++) {
 					station* Station = &State->Stations[i];

@@ -3,7 +3,6 @@ void InitAsteroid(asteroid* Asteroid, game::state* State)
 	Asteroid->Using = true;
 
 	Asteroid->WorldObject.Color = Color255(79.0f, 60.0f, 48.0f, 1.0f);
-	;
 	Asteroid->WorldObject.Position = {};
 	Asteroid->WorldObject.Size = RandomRangeFloat(5.0f, 10.0f);
 

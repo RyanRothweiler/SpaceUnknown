@@ -257,7 +257,7 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, game::state* State)
 	for (int i = 0; i < State->SalvagesCount && !Module->Target.HasTarget(); i++) {
 		salvage* Sal = &State->Salvages[i];
 
-		real64 Dist = Vector2Distance(Sal->Position, Module->Owner->Position);
+		real64 Dist = Vector2Distance(Sal->WorldObject.Position, Module->Owner->Position);
 		if (Dist < Module->Definition.ActivationRange) {
 			Module->Target.Set(Sal);
 		}
