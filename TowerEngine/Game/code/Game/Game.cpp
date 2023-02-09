@@ -173,9 +173,9 @@ namespace game {
 				if (Cluster->Asteroids[c].Using) {
 					asteroid* Roid = &Cluster->Asteroids[c];
 
-					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", Real64ToString(Roid->Position.X, DecimalCount), &JsonOut);
-					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", Real64ToString(Roid->Position.Y, DecimalCount), &JsonOut);
-					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_size", Real64ToString(Roid->Size, DecimalCount), &JsonOut);
+					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", Real64ToString(Roid->WorldObject.Position.X, DecimalCount), &JsonOut);
+					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", Real64ToString(Roid->WorldObject.Position.Y, DecimalCount), &JsonOut);
+					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_size", Real64ToString(Roid->WorldObject.Size, DecimalCount), &JsonOut);
 				}
 			}
 		}
@@ -184,6 +184,7 @@ namespace game {
 		ConsoleLog("Game Saved");
 	}
 
+#include "WorldObject.cpp"
 #include "Asteroid.cpp"
 #include "Salvage.cpp"
 #include "Item.cpp"
@@ -258,10 +259,10 @@ namespace game {
 				json::json_pair* TestPair = GetPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
 				if (TestPair != GameNull) {
 					asteroid* Roid = &Cluster->Asteroids[c];
-					InitAsteroid(Roid);
+					InitAsteroid(Roid, State);
 
-					Roid->Position.X = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
-					Roid->Position.Y = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", &JsonIn);
+					Roid->WorldObject.Position.X = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
+					Roid->WorldObject.Position.Y = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", &JsonIn);
 				}
 			}
 		}
@@ -870,6 +871,20 @@ namespace game {
 				RenderCircle(vector2{1200, 200}, vector2{2000, 2000},
 				             COLOR_RED, RenderLayerPlanet, Globals->GameRenderer);
 
+				// Render world objects
+				for (int i = 0; i < State->WorldObjectsCount; i++)  {
+					world_object* Obj = State->WorldObjects[i];
+
+					Obj->Rotation += Obj->RotationRate * EngineState->DeltaTimeMS * 0.0002f;
+
+					m4y4 Model = m4y4Identity();
+					Model = Rotate(Model, vector3{0, 0, Obj->Rotation});
+
+					RenderTextureAll( Obj->Position, vector2{Obj->Size, Obj->Size}, Obj->Color, Obj->Image->GLID,
+					                  RenderLayerPlanet, Model, Globals->GameRenderer);
+				}
+
+				/*
 				// Render asteroids
 				for (int i = 0; i < State->ClustersCount; i++) {
 					asteroid_cluster* Clust = &State->Asteroids[i];
@@ -890,6 +905,7 @@ namespace game {
 						}
 					}
 				}
+				*/
 
 				// Render salvage
 				for (int i = 0; i < State->SalvagesCount; i++) {

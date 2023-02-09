@@ -212,7 +212,7 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, game::state* State)
 		for (int a = 0; a < ArrayCount(Cluster->Asteroids) && !Module->Target.HasTarget(); a++) {
 			asteroid* Roid = &Cluster->Asteroids[a];
 			if (Roid->Using) {
-				real64 Dist = Vector2Distance(Roid->Position, Module->Owner->Position);
+				real64 Dist = Vector2Distance(Roid->WorldObject.Position, Module->Owner->Position);
 				if (Dist < Module->Definition.ActivationRange) {
 					Module->Target.Set(Roid);
 				}

@@ -111,6 +111,7 @@ namespace game {
 		count
 	};
 
+#include "WorldObject.h"
 #include "Asteroid.h"
 #include "Salvage.h"
 #include "Item.h"
@@ -200,6 +201,9 @@ namespace game {
 		skill_node* NodeHovering = {};
 
 		ship Ships[100];
+
+		world_object* WorldObjects[1024];
+		int32 WorldObjectsCount;
 
 		asteroid_cluster Asteroids[100];
 		int32 ClustersCount;
