@@ -123,12 +123,15 @@ namespace game {
 	skill_bonuses* TreeBonusesTotal = {};
 
 	// This also dictates the priority
-	enum class selection_type { none, ship, station };
+	enum class selection_type { none, ship, station, asteroid, salvage };
 
 	struct selection;
+	struct selectable;
 
 	typedef void(*selection_update_func)(selection* Sel, engine_state* EngineState, game_input* Input);
 	typedef void(*selection_on_func)(selection* Sel, engine_state* EngineState, game_input* Input);
+	typedef void(*selection_on_hover_func)(selectable* Sel, engine_state* EngineState, game_input* Input);
+
 	struct selectable {
 
 		bool32 Selected;
@@ -138,8 +141,9 @@ namespace game {
 
 		vector2 InfoWindowPos;
 
-		selection_update_func SelectionUpdate;
-		selection_on_func OnSelection;
+		selection_update_func 		SelectionUpdate;
+		selection_on_func 			OnSelection;
+		selection_on_hover_func 	OnHover;
 		selection_type Type;
 
 		ship* GetShip()
@@ -153,6 +157,18 @@ namespace game {
 			Assert(Type == selection_type::station);
 			return (station*)Data;
 		}
+
+		asteroid* GetAsteroid()
+		{
+			Assert(Type == selection_type::asteroid);
+			return (asteroid*)Data;
+		}
+
+		salvage* GetSalvage()
+		{
+			Assert(Type == selection_type::salvage);
+			return (salvage*)Data;
+		}
 	};
 
 	struct selection {
@@ -165,6 +181,8 @@ namespace game {
 
 		ship* GetShip() { return Current->GetShip(); }
 		station* GetStation() { return Current->GetStation(); }
+		asteroid* GetAsteroid() { return Current->GetAsteroid(); }
+		salvage* GetSalvage() { return Current->GetSalvage(); }
 
 		void Clear()
 		{

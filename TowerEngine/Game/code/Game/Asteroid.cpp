@@ -1,10 +1,26 @@
+void AsteroidHovering(selectable* Sel, engine_state* EngineState, game_input* Input)
+{
+	asteroid* Asteroid = Sel->GetAsteroid();
+
+	ImGui::SetNextWindowPos(ImVec2((float)Input->MousePos.X + 20, (float)Input->MousePos.Y));
+	bool Open = true;
+	ImGui::Begin("Info", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
+
+	ImGui::Text("Asteroid");
+	ImGui::Text("2 x Venigen");
+
+	ImGui::End();
+}
+
 void InitAsteroid(asteroid* Asteroid, game::state* State)
 {
 	Asteroid->Using = true;
 
 	Asteroid->WorldObject.Color = Color255(79.0f, 60.0f, 48.0f, 1.0f);
 	Asteroid->WorldObject.Position = {};
-	Asteroid->WorldObject.Size = RandomRangeFloat(5.0f, 10.0f);
+
+	real64 S = RandomRangeFloat(5.0f, 10.0f);
+	Asteroid->WorldObject.Size = vector2{S, S};
 
 	int64 SpriteIndex = RandomRangeInt(0, ArrayCount(Globals->AssetsList.AsteroidImages));
 	Asteroid->WorldObject.Image = Globals->AssetsList.AsteroidImages[SpriteIndex];
@@ -14,6 +30,8 @@ void InitAsteroid(asteroid* Asteroid, game::state* State)
 	Asteroid->WorldObject.Rotation = RandomRangeFloat(-PI / 2.0f, PI / 2.0f);
 
 	WorldObjectRegister(State, &Asteroid->WorldObject);
+	selectable* Sel = RegisterSelectable(selection_type::asteroid, &Asteroid->WorldObject.Position, &Asteroid->WorldObject.Size, (void*)Asteroid, State);
+	Sel->OnHover = &AsteroidHovering;
 }
 
 void SpawnAsteroid(asteroid_cluster* Cluster, game::state* State)
@@ -63,6 +81,8 @@ void AsteroidSpawnStep(void* SelfData, real64 Time, game::state* State)
 
 	SpawnAsteroid(Self, State);
 	SleepStepper(State, &Self->Spawner, SecondsToMilliseconds(5));
+
+
 }
 
 void AsteroidCreateCluster(vector2 Center, real64 Radius, game::state* State)

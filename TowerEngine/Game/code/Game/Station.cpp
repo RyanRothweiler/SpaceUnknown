@@ -242,9 +242,8 @@ station* StationCreate(game::state * State)
 
 	Station->Hold.Setup(1000);
 
-	game::RegisterSelectable(selection_type::station, &Station->Position, &Station->Size, (void*)Station, State,
-	                         &StationSelected, GameNull
-	                        );
+	selectable* Sel = RegisterSelectable(selection_type::station, &Station->Position, &Station->Size, (void*)Station, State);
+	Sel->SelectionUpdate = &StationSelected;
 
 	game::RegisterStepper(&Station->Converters[0].Stepper, &ConverterUpdate, (void*)(&Station->Converters[0]), State);
 	Station->Converters[0].Owner = Station;

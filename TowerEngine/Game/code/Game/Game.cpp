@@ -100,9 +100,7 @@ namespace game {
 		UT->TimeMS += Time;
 	}
 
-	void RegisterSelectable(selection_type Type, vector2* Center, vector2* Size, void* Data, game::state* State,
-	                        selection_update_func OnSelectionUpdate,
-	                        selection_on_func OnSelection)
+	selectable* RegisterSelectable(selection_type Type, vector2* Center, vector2* Size, void* Data, game::state* State)
 	{
 		selectable* Sel = &State->Selectables[State->SelectablesCount++];
 		Assert(ArrayCount(State->Selectables) > State->SelectablesCount);
@@ -111,8 +109,8 @@ namespace game {
 		Sel->Center = Center;
 		Sel->Size = Size;
 		Sel->Data = Data;
-		Sel->SelectionUpdate = OnSelectionUpdate;
-		Sel->OnSelection = OnSelection;
+
+		return Sel;
 	}
 
 	void SaveGame(game::state* State)
@@ -175,7 +173,7 @@ namespace game {
 
 					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", Real64ToString(Roid->WorldObject.Position.X, DecimalCount), &JsonOut);
 					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", Real64ToString(Roid->WorldObject.Position.Y, DecimalCount), &JsonOut);
-					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_size", Real64ToString(Roid->WorldObject.Size, DecimalCount), &JsonOut);
+					//json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_size", Real64ToString(Roid->WorldObject.Size, DecimalCount), &JsonOut);
 				}
 			}
 		}
@@ -784,20 +782,28 @@ namespace game {
 						}
 					}
 
-					// Hover display
+					// Hovering
 					if (State->Hovering != GameNull) {
 
-						vector2 WorldCenter = *State->Hovering->Center;
-						vector2 WorldSize = *State->Hovering->Size;
+						if (State->Hovering->OnHover != GameNull) {
+							State->Hovering->OnHover(State->Hovering, EngineState, Input);
+						}
 
-						vector2 WorldTopLeft = WorldCenter + (WorldSize * 0.5f);
-						vector2 WorldBottomRight = WorldCenter - (WorldSize * 0.5f);
+						// can select display
+						if (State->Hovering->SelectionUpdate != GameNull) {
 
-						rect R = {};
-						R.TopLeft = WorldToScreen(vector3{WorldTopLeft.X, WorldTopLeft.Y, 0}, &EngineState->GameCamera);
-						R.BottomRight = WorldToScreen(vector3{WorldBottomRight.X, WorldBottomRight.Y, 0}, &EngineState->GameCamera);
+							vector2 WorldCenter = *State->Hovering->Center;
+							vector2 WorldSize = *State->Hovering->Size;
 
-						RenderRectangleOutline(R, 1, COLOR_RED, -1, &EngineState->UIRenderer);
+							vector2 WorldTopLeft = WorldCenter + (WorldSize * 0.5f);
+							vector2 WorldBottomRight = WorldCenter - (WorldSize * 0.5f);
+
+							rect R = {};
+							R.TopLeft = WorldToScreen(vector3{WorldTopLeft.X, WorldTopLeft.Y, 0}, &EngineState->GameCamera);
+							R.BottomRight = WorldToScreen(vector3{WorldBottomRight.X, WorldBottomRight.Y, 0}, &EngineState->GameCamera);
+
+							RenderRectangleOutline(R, 1, COLOR_RED, -1, &EngineState->UIRenderer);
+						}
 					}
 
 					// Selecting
@@ -880,7 +886,7 @@ namespace game {
 					m4y4 Model = m4y4Identity();
 					Model = Rotate(Model, vector3{0, 0, Obj->Rotation});
 
-					RenderTextureAll( Obj->Position, vector2{Obj->Size, Obj->Size}, Obj->Color, Obj->Image->GLID,
+					RenderTextureAll( Obj->Position, Obj->Size, Obj->Color, Obj->Image->GLID,
 					                  RenderLayerPlanet, Model, Globals->GameRenderer);
 				}
 
