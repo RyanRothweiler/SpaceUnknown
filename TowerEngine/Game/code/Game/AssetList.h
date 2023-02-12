@@ -108,8 +108,11 @@ struct assets_list {
 	// Game Definitions
 	game::item_definition ItemDefinitions[100];
 	game::ship_module_definition ShipModuleDefinitions[100];
-	game::ship_definition Definition_Ship_First = {};
+	game::ship_definition Definition_Ship_Advent = {};
+
 	game::recipe RecipeDefinitions[100];
+	game::recipe_list RecipesByService[100];
+
 	loaded_image* AsteroidImages[3];
 	loaded_image* SalvageImages[2];
 

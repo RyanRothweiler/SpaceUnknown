@@ -18,7 +18,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ID = ship_module_id::asteroid_miner;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ItemID = item_id::sm_asteroid_miner;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].DisplayName = "Asteroid Miner";
-		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationTimeMS = SecondsToMilliseconds(60.0f * 0.1f);
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationTimeMS = SecondsToMilliseconds(60.0f * 2.0f);
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationRange = 30.0f;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].SlotType = ship_module_slot_type::industrial;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationStepMethod = &ModuleUpdateAsteroidMiner;
@@ -34,14 +34,15 @@ void CreateDefinitions()
 
 	// Ships
 	{
-		Globals->AssetsList.Definition_Ship_First.FuelRateMassPerSecond = 0.5f;
-		Globals->AssetsList.Definition_Ship_First.Mass = 200;
-		Globals->AssetsList.Definition_Ship_First.FuelTankMassLimit = 300;
-		Globals->AssetsList.Definition_Ship_First.SlotsCount = 4;
-		Globals->AssetsList.Definition_Ship_First.SlotTypes[0] = ship_module_slot_type::industrial;
-		Globals->AssetsList.Definition_Ship_First.SlotTypes[1] = ship_module_slot_type::industrial;
-		Globals->AssetsList.Definition_Ship_First.SlotTypes[2] = ship_module_slot_type::structural;
-		Globals->AssetsList.Definition_Ship_First.SlotTypes[3] = ship_module_slot_type::science;
+		Globals->AssetsList.Definition_Ship_Advent.FuelRateMassPerSecond = 0.5f;
+		Globals->AssetsList.Definition_Ship_Advent.Mass = 200;
+		Globals->AssetsList.Definition_Ship_Advent.FuelTankMassLimit = 300;
+		Globals->AssetsList.Definition_Ship_Advent.HoldMass = 20;
+		Globals->AssetsList.Definition_Ship_Advent.SlotsCount = 4;
+		Globals->AssetsList.Definition_Ship_Advent.SlotTypes[0] = ship_module_slot_type::industrial;
+		Globals->AssetsList.Definition_Ship_Advent.SlotTypes[1] = ship_module_slot_type::industrial;
+		Globals->AssetsList.Definition_Ship_Advent.SlotTypes[2] = ship_module_slot_type::structural;
+		Globals->AssetsList.Definition_Ship_Advent.SlotTypes[3] = ship_module_slot_type::science;
 	}
 
 	// Items
@@ -76,9 +77,24 @@ void CreateDefinitions()
 	// Recipes
 	{
 		Assert(ArrayCount(Globals->AssetsList.RecipeDefinitions) > (int)recipe_id::count);
+		Assert(ArrayCount(Globals->AssetsList.RecipesByService) > (int)station_service::count);
+		Assert(ArrayCount(Globals->AssetsList.RecipesByService[0].IDs) > (int)recipe_id::count);
 
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].ID = recipe_id::venigen_stl;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterInput(item_id::venigen, 5.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterOutput(item_id::stl, 1.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].DurationMS = MinutesToMilliseconds(60);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].ServiceRequired = station_service::refinery;
+
+		// Organize recipes by service
+		{
+			for (int i = 0; i < (int)recipe_id::count; i++) {
+				station_service Service = Globals->AssetsList.RecipeDefinitions[i].ServiceRequired;
+
+				recipe_list* List = &Globals->AssetsList.RecipesByService[(int)Service];
+				List->IDs[List->Count++] = Globals->AssetsList.RecipeDefinitions[i].ID;
+				Assert(List->Count < ArrayCount(List->IDs));
+			}
+		}
 	}
 }

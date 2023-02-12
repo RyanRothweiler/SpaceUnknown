@@ -227,7 +227,7 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, game::state* State)
 			// Do module thing
 
 			int Amount = SubtractAvailable(&Module->Target.GetAsteroid()->OreCount, 2);
-			//ItemGive(&Module->Owner->Hold, item_id::venigen, Amount);
+			ItemGive(&Module->Owner->Hold, item_id::venigen, Amount);
 
 			if (Module->Target.GetAsteroid()->OreCount <= 0) {
 				AsteroidDestroy(Module->Target.GetAsteroid(), State);
@@ -631,10 +631,10 @@ game::ship* ShipSetup(game::state * State, vector2 Pos)
 			Ship->Using = true;
 			Ship->Position = Pos;
 			Ship->Size = vector2{5, 5};
-			Ship->Definition = Globals->AssetsList.Definition_Ship_First;
+			Ship->Definition = Globals->AssetsList.Definition_Ship_Advent;
 
-			Ship->Hold.Setup(20);
-			Ship->FuelTank.Setup(20);
+			Ship->Hold.Setup(Ship->Definition.HoldMass);
+			Ship->FuelTank.Setup(Ship->Definition.FuelTankMassLimit);
 
 			ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
 			ShipAddModule(&Ship->EquippedModules[3], ship_module_id::salvager_i, Ship, State);

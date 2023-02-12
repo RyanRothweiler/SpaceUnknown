@@ -27,9 +27,15 @@ string item_id_NAME[] {
 "sm_salvager_i",
 "count",
 }; 
+string station_service_NAME[] { 
+"refinery",
+"shipyard",
+"count",
+}; 
 string recipe_id_NAME[] { 
 "venigen_stl",
 "count",
+"none",
 }; 
 string ship_status_NAME[] { 
 "idle",

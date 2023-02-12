@@ -10,7 +10,7 @@ void AsteroidHovering(selectable* Sel, engine_state* EngineState, game_input* In
 
 	ImGui::SetNextWindowPos(ImVec2((float)Input->MousePos.X + 20, (float)Input->MousePos.Y));
 	bool Open = true;
-	ImGui::Begin("Info", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
+	ImGui::Begin("Info", &Open, SelectionHoverFlags);
 
 	ImGui::Text("Asteroid");
 	ImGui::Text("%i x Venigen", Asteroid->OreCount);

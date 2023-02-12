@@ -93,9 +93,11 @@ struct ship_module {
 };
 
 struct ship_definition {
-	real64 FuelTankMassLimit;
+	int64 FuelTankMassLimit;
 	real64 FuelRateMassPerSecond;
 	int64 Mass;
+
+	int32 HoldMass;
 
 	ship_module_slot_type SlotTypes[64];
 	int32 SlotsCount;
