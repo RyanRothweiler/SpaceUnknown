@@ -206,7 +206,6 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, game::state* State)
 		return;
 	}
 
-
 	for (int i = 0; i < State->ClustersCount && !Module->Target.HasTarget(); i++) {
 		asteroid_cluster* Cluster = &State->Asteroids[i];
 		for (int a = 0; a < ArrayCount(Cluster->Asteroids) && !Module->Target.HasTarget(); a++) {
@@ -224,10 +223,16 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, game::state* State)
 		Module->ActivationTimerMS += Time;
 		if (Module->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
 			Module->ActivationTimerMS = 0.0f;
-			Module->Target.GetAsteroid()->Using = false;
 
 			// Do module thing
-			ItemGive(&Module->Owner->Hold, item_id::venigen, 2);
+
+			int Amount = SubtractAvailable(&Module->Target.GetAsteroid()->OreCount, 2);
+			//ItemGive(&Module->Owner->Hold, item_id::venigen, Amount);
+
+			if (Module->Target.GetAsteroid()->OreCount <= 0) {
+				AsteroidDestroy(Module->Target.GetAsteroid(), State);
+			}
+
 		}
 	} else {
 		Module->ActivationTimerMS = 0.0f;
@@ -265,6 +270,7 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, game::state* State)
 			Module->ActivationTimerMS = 0.0f;
 
 			// Do module thing
+
 			int Amount = SubtractAvailable(&Module->Target.GetSalvage()->KnowledgeAmount, 2);
 			State->Knowledge += Amount;
 			if (Module->Target.GetSalvage()->KnowledgeAmount <= 0) {

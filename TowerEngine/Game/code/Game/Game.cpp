@@ -257,10 +257,10 @@ namespace game {
 				json::json_pair* TestPair = GetPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
 				if (TestPair != GameNull) {
 					asteroid* Roid = &Cluster->Asteroids[c];
-					InitAsteroid(Roid, State);
+					//InitAsteroid(Roid, State);
 
-					Roid->WorldObject.Position.X = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
-					Roid->WorldObject.Position.Y = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", &JsonIn);
+					//Roid->WorldObject.Position.X = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
+					//Roid->WorldObject.Position.Y = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", &JsonIn);
 				}
 			}
 		}

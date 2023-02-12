@@ -9,10 +9,6 @@
 struct skill_bonuses {
 	float FuelForceAddition;
 
-	/* Ideas
-		- Decreased activation duration for specific module types
-	*/	
-
 	skill_bonuses operator+(skill_bonuses Input)
 	{
 		skill_bonuses Ret = {};

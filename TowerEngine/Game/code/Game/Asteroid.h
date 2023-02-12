@@ -1,5 +1,6 @@
 struct asteroid {
 	bool32 Using;
+	int32 OreCount;
 	world_object WorldObject;
 };
 

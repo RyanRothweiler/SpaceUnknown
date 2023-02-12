@@ -1,3 +1,9 @@
+void AsteroidDestroy(asteroid* Asteroid, game::state* State)
+{
+	Asteroid->Using = false;
+	WorldObjectUnregister(State, &Asteroid->WorldObject);
+}
+
 void AsteroidHovering(selectable* Sel, engine_state* EngineState, game_input* Input)
 {
 	asteroid* Asteroid = Sel->GetAsteroid();
@@ -7,7 +13,7 @@ void AsteroidHovering(selectable* Sel, engine_state* EngineState, game_input* In
 	ImGui::Begin("Info", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
 
 	ImGui::Text("Asteroid");
-	ImGui::Text("2 x Venigen");
+	ImGui::Text("%i x Venigen", Asteroid->OreCount);
 
 	ImGui::End();
 }
@@ -15,6 +21,7 @@ void AsteroidHovering(selectable* Sel, engine_state* EngineState, game_input* In
 void InitAsteroid(asteroid* Asteroid, game::state* State)
 {
 	Asteroid->Using = true;
+	Asteroid->OreCount = 10;
 
 	Asteroid->WorldObject.Color = Color255(79.0f, 60.0f, 48.0f, 1.0f);
 	Asteroid->WorldObject.Position = {};
