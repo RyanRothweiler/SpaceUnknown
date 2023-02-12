@@ -250,7 +250,6 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, game::state* State)
 		return;
 	}
 
-
 	for (int i = 0; i < State->SalvagesCount && !Module->Target.HasTarget(); i++) {
 		salvage* Sal = &State->Salvages[i];
 
