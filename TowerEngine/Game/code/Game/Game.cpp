@@ -807,7 +807,9 @@ namespace game {
 					}
 
 					// Selecting
-					if (State->Hovering != GameNull && !State->Hovering->Selected && Input->MouseLeft.OnUp && !Input->MouseMoved()) {
+					if (State->Hovering != GameNull && !State->Hovering->Selected && State->Hovering->SelectionUpdate != GameNull &&
+					        Input->MouseLeft.OnUp && !Input->MouseMoved()
+					   ) {
 						for (int i = 0; i < ArrayCount(State->Selections); i++) {
 							selection* Sel = &State->Selections[i];
 							if (Sel->None()) {

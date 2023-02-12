@@ -242,9 +242,6 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, game::state* State)
 
 	bool32 Skip = false;
 
-	// If no cargo space then do nothing
-	if (Module->Owner->Hold.MassCurrent == Module->Owner->Hold.MassLimit) { Skip = true; }
-
 	// Can only work when the ship is idle
 	if (Module->Owner->Status != ship_status::idle) { Skip = true; }
 
@@ -268,11 +265,12 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, game::state* State)
 		if (Module->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
 			Module->ActivationTimerMS = 0.0f;
 
-			// TODO clear away the salvage maybe. Do unified thing for this?
-			//Module->Target->Using = false;
-
 			// Do module thing
-			State->Knowledge += 2;
+			int Amount = SubtractAvailable(&Module->Target.GetSalvage()->KnowledgeAmount, 2);
+			State->Knowledge += Amount;
+			if (Module->Target.GetSalvage()->KnowledgeAmount <= 0) {
+				SalvageSpawn(Module->Target.GetSalvage());
+			}
 		}
 	} else {
 		Module->ActivationTimerMS = 0.0f;

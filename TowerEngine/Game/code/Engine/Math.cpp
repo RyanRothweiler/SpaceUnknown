@@ -8,6 +8,18 @@
 
 #include <cmath>
 
+// returns how much was subtracted, doesn't go negative
+int32 SubtractAvailable(int32* Stack, int32 AmountRemoving)
+{
+	if (*Stack > AmountRemoving) {
+		*Stack = *Stack - AmountRemoving;
+		return AmountRemoving;
+	}
+
+	int Removed = *Stack;
+	*Stack = 0;
+	return Removed;
+}
 
 uint64
 Pow(uint64 Num, uint32 Expo)

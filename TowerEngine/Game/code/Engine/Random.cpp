@@ -102,6 +102,15 @@ color RandomColor()
 	return Ret;
 }
 
+vector2 RandomRadius(real64 Radius)
+{
+	vector2 Ret = {};
+	real64 Theta = RandomRangeFloat(0.0f, 1.0f);
+	Ret.X = Radius * cos(Theta);
+	Ret.Y = Radius * sin(Theta);
+	return Ret;
+}
+
 /*
 // NOTE this is my attempts at a custom bezier quality curve. It never really worked correctly.
 
