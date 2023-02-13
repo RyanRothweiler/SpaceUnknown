@@ -13,7 +13,7 @@ void AsteroidHovering(selectable* Sel, engine_state* EngineState, game_input* In
 	ImGui::Begin("Info", &Open, SelectionHoverFlags);
 
 	ImGui::Text("Asteroid");
-	ImGui::Text("%i x Venigen", Asteroid->OreCount);
+	ImGui::Text("%i x %s", Asteroid->OreCount, item_id_NAME[(int)Asteroid->OreItem]);
 
 	ImGui::End();
 }
@@ -24,7 +24,15 @@ void InitAsteroid(asteroid* Asteroid, item_id OreItem, game::state* State)
 	Asteroid->OreCount = 10;
 	Asteroid->OreItem = OreItem;
 
-	Asteroid->WorldObject.Color = Color255(79.0f, 60.0f, 48.0f, 1.0f);
+	color Col = {};
+	switch (OreItem) {
+		case item_id::venigen: { Col = Color255(79.0f, 60.0f, 48.0f, 1.0f); break; }
+		case item_id::pyrexium: { Col = Color255(135.0f, 58.0f, 45.0f, 1.0f); break; }
+
+			INVALID_DEFAULT;
+	}
+
+	Asteroid->WorldObject.Color = Col;
 	Asteroid->WorldObject.Position = {};
 
 	real64 S = RandomRangeFloat(5.0f, 10.0f);

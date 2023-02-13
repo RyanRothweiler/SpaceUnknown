@@ -346,6 +346,7 @@ namespace game {
 
 		ShipSetup(State, vector2{0, 0});
 		AsteroidCreateCluster(vector2{0, 0}, 30.0f, item_id::venigen, State);
+		AsteroidCreateCluster(vector2{ -200, 20}, 20.0f, item_id::pyrexium, State);
 
 		// Salvage
 		SalvageCreate(State, vector2{ -30, -30});
