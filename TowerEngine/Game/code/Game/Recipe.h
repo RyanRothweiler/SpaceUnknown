@@ -5,14 +5,21 @@ MetaStruct enum class station_service {
 
 MetaStruct enum class recipe_id {
 	venigen_stl,
-	
 
 	count,
 	none,
 };
 
+MetaStruct enum class recipe_member_type {
+	item, ship
+};
+
 struct item_count {
-	item_id ID;
+	recipe_member_type Type;
+
+	item_id ItemID;
+	ship_id ShipID;
+
 	real64 Count;
 };
 
@@ -22,7 +29,6 @@ struct recipe {
 
 	item_count Inputs[100];
 	int32 InputsCount;
-
 	item_count Outputs[100];
 	int32 OutputsCount;
 
@@ -31,16 +37,27 @@ struct recipe {
 	void RegisterInput(item_id ItemID, real64 Count)
 	{
 		Assert(InputsCount < ArrayCount(Inputs));
-		Inputs[InputsCount].ID = ItemID;
+		Inputs[InputsCount].ItemID = ItemID;
 		Inputs[InputsCount].Count = Count;
+		Inputs[InputsCount].Type = recipe_member_type::item;
 		InputsCount++;
 	}
 
-	void RegisterOutput(item_id ItemID, real64 Count)
+	void RegisterOutput(item_id InputID, real64 Count)
 	{
 		Assert(OutputsCount < ArrayCount(Outputs));
-		Outputs[OutputsCount].ID = ItemID;
+		Outputs[OutputsCount].ItemID = InputID;
 		Outputs[OutputsCount].Count = Count;
+		Outputs[OutputsCount].Type = recipe_member_type::item;
+		OutputsCount++;
+	}
+
+	void RegisterOutput(ship_id InputID, real64 Count)
+	{
+		Assert(OutputsCount < ArrayCount(Outputs));
+		Outputs[OutputsCount].ShipID = InputID;
+		Outputs[OutputsCount].Count = Count;
+		Outputs[OutputsCount].Type = recipe_member_type::ship;
 		OutputsCount++;
 	}
 };

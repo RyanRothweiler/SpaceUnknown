@@ -15,7 +15,7 @@ void ConverterUpdate(void* SelfData, real64 Time, game::state* State)
 				// Give items
 				for (int i = 0; i < Converter->Order.OutputsCount; i++) {
 					item_count* C = &Converter->Order.Outputs[i];
-					ItemGive(&Converter->Owner->Hold, C->ID, C->Count);
+					ItemGive(&Converter->Owner->Hold, C->ItemID, C->Count);
 				}
 			}
 		} else {
@@ -31,7 +31,7 @@ void ConverterUpdate(void* SelfData, real64 Time, game::state* State)
 					item_count* C = &Order->Inputs[i];
 
 					for (int h = 0; h < ArrayCount(Source->Items); h++) {
-						if (Source->Items[h].Definition.ID == C->ID) {
+						if (Source->Items[h].Definition.ID == C->ItemID) {
 							Source->Items[h].Count -= C->Count;
 						}
 					}
@@ -56,7 +56,7 @@ void ImGuiItemCountList(item_count * Items, int32 Count)
 		item_count* IC = &Items[inp];
 
 		ImGui::Image(
-		    (ImTextureID)((int64)Globals->AssetsList.ItemDefinitions[(int)IC->ID].Icon->GLID),
+		    (ImTextureID)((int64)Globals->AssetsList.ItemDefinitions[(int)IC->ItemID].Icon->GLID),
 		    ImGuiImageSize,
 		    ImVec2(0, 0),
 		    ImVec2(1, -1),
@@ -106,7 +106,7 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 			ImGui::ProgressBar(Progress, ImVec2(-1.0f, 0.0f), ProgDisp.Array());
 		} else {
 			for (int i = 0; i < InputsMissing.Count; i++) {
-				item_definition Def = Globals->AssetsList.ItemDefinitions[(int)InputsMissing.Items[i].ID];
+				item_definition Def = Globals->AssetsList.ItemDefinitions[(int)InputsMissing.Items[i].ItemID];
 				string Output = "Item Missing - " + Def.DisplayName + " x" + InputsMissing.Items[i].Count;
 				ImGui::TextColored(ImVec4(1, 0, 0, 1), Output.Array());
 			}
@@ -170,7 +170,7 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 		ImGui::Separator();
 		if (RecipeIDSelected != recipe_id::none) {
 			if (ImGui::Button("Submit", ImVec2(HW, 0))) {
-				ConverterAddOrder(&Station->Converters[0], Globals->AssetsList.RecipeDefinitions[(int)RecipeIDSelected]);
+				ConverterAddOrder(Converter, Globals->AssetsList.RecipeDefinitions[(int)RecipeIDSelected]);
 
 				ImGui::CloseCurrentPopup();
 			}
@@ -257,6 +257,8 @@ station* StationCreate(game::state * State)
 
 	game::RegisterStepper(&Station->Converters[0].Stepper, &ConverterUpdate, (void*)(&Station->Converters[0]), State);
 	Station->Converters[0].Owner = Station;
+	game::RegisterStepper(&Station->Converters[1].Stepper, &ConverterUpdate, (void*)(&Station->Converters[1]), State);
+	Station->Converters[1].Owner = Station;
 
 	return Station;
 }

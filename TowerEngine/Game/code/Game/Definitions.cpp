@@ -34,15 +34,18 @@ void CreateDefinitions()
 
 	// Ships
 	{
-		Globals->AssetsList.Definition_Ship_Advent.FuelRateMassPerSecond = 0.5f;
-		Globals->AssetsList.Definition_Ship_Advent.Mass = 200;
-		Globals->AssetsList.Definition_Ship_Advent.FuelTankMassLimit = 300;
-		Globals->AssetsList.Definition_Ship_Advent.HoldMass = 20;
-		Globals->AssetsList.Definition_Ship_Advent.SlotsCount = 4;
-		Globals->AssetsList.Definition_Ship_Advent.SlotTypes[0] = ship_module_slot_type::industrial;
-		Globals->AssetsList.Definition_Ship_Advent.SlotTypes[1] = ship_module_slot_type::industrial;
-		Globals->AssetsList.Definition_Ship_Advent.SlotTypes[2] = ship_module_slot_type::structural;
-		Globals->AssetsList.Definition_Ship_Advent.SlotTypes[3] = ship_module_slot_type::science;
+		Assert(ArrayCount(Globals->AssetsList.ShipDefinitions) > (int)ship_id::count);
+
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].ID = ship_id::advent;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelRateMassPerSecond = 0.5f;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Mass = 200;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelTankMassLimit = 300;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].HoldMass = 20;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotsCount = 4;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[0] = ship_module_slot_type::industrial;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[1] = ship_module_slot_type::industrial;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[2] = ship_module_slot_type::structural;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[3] = ship_module_slot_type::science;
 	}
 
 	// Items

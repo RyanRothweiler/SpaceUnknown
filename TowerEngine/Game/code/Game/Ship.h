@@ -2,6 +2,11 @@ struct ship;
 
 const real64 fuelForcePerGallon = 8.0f;
 
+MetaStruct enum class ship_id {
+	advent,
+	count
+};
+
 MetaStruct enum class ship_status {
 	idle, moving, docking, undocking, docked
 };
@@ -93,6 +98,8 @@ struct ship_module {
 };
 
 struct ship_definition {
+	ship_id ID;
+
 	int64 FuelTankMassLimit;
 	real64 FuelRateMassPerSecond;
 	int64 Mass;

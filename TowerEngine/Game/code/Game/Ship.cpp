@@ -633,7 +633,7 @@ game::ship* ShipSetup(game::state * State, vector2 Pos)
 			Ship->Using = true;
 			Ship->Position = Pos;
 			Ship->Size = vector2{5, 5};
-			Ship->Definition = Globals->AssetsList.Definition_Ship_Advent;
+			Ship->Definition = Globals->AssetsList.ShipDefinitions[(int)ship_id::advent];
 
 			Ship->Hold.Setup(Ship->Definition.HoldMass);
 			Ship->FuelTank.Setup(Ship->Definition.FuelTankMassLimit);

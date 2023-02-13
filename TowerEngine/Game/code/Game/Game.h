@@ -115,8 +115,8 @@ namespace game {
 #include "Salvage.h"
 #include "Item.h"
 #include "Asteroid.h"
-#include "Recipe.h"
 #include "Ship.h"
+#include "Recipe.h"
 #include "Station.h"
 #include "SkillTree.h"
 

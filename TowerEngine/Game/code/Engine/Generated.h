@@ -38,6 +38,14 @@ string recipe_id_NAME[] {
 "count",
 "none",
 }; 
+string recipe_member_type_NAME[] { 
+"item",
+"ship",
+}; 
+string ship_id_NAME[] { 
+"advent",
+"count",
+}; 
 string ship_status_NAME[] { 
 "idle",
 "moving",
