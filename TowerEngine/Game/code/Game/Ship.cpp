@@ -226,11 +226,13 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, game::state* State)
 
 			// Do module thing
 
-			int Amount = SubtractAvailable(&Module->Target.GetAsteroid()->OreCount, 2);
-			ItemGive(&Module->Owner->Hold, item_id::venigen, Amount);
+			asteroid* Roid = Module->Target.GetAsteroid();
 
-			if (Module->Target.GetAsteroid()->OreCount <= 0) {
-				AsteroidDestroy(Module->Target.GetAsteroid(), State);
+			int Amount = SubtractAvailable(&Roid->OreCount, 2);
+			ItemGive(&Module->Owner->Hold, Roid->OreItem, Amount);
+
+			if (Roid->OreCount <= 0) {
+				AsteroidDestroy(Roid, State);
 			}
 
 		}

@@ -18,10 +18,11 @@ void AsteroidHovering(selectable* Sel, engine_state* EngineState, game_input* In
 	ImGui::End();
 }
 
-void InitAsteroid(asteroid* Asteroid, game::state* State)
+void InitAsteroid(asteroid* Asteroid, item_id OreItem, game::state* State)
 {
 	Asteroid->Using = true;
 	Asteroid->OreCount = 10;
+	Asteroid->OreItem = OreItem;
 
 	Asteroid->WorldObject.Color = Color255(79.0f, 60.0f, 48.0f, 1.0f);
 	Asteroid->WorldObject.Position = {};
@@ -71,7 +72,7 @@ void SpawnAsteroid(asteroid_cluster* Cluster, game::state* State)
 		if (Valid) {
 			for (int i = 0; i < ArrayCount(Cluster->Asteroids); i++) {
 				if (!Cluster->Asteroids[i].Using) {
-					InitAsteroid(&Cluster->Asteroids[i], State);
+					InitAsteroid(&Cluster->Asteroids[i], Cluster->OreItem, State);
 					Cluster->Asteroids[i].WorldObject.Position = PossiblePos;
 					return;
 				}
@@ -88,15 +89,14 @@ void AsteroidSpawnStep(void* SelfData, real64 Time, game::state* State)
 
 	SpawnAsteroid(Self, State);
 	SleepStepper(State, &Self->Spawner, SecondsToMilliseconds(5));
-
-
 }
 
-void AsteroidCreateCluster(vector2 Center, real64 Radius, game::state* State)
+void AsteroidCreateCluster(vector2 Center, real64 Radius, item_id OreItem, game::state* State)
 {
 	Assert(ArrayCount(State->Asteroids) > State->ClustersCount);
 	asteroid_cluster* Cluster = &State->Asteroids[State->ClustersCount++];
 
+	Cluster->OreItem = OreItem;
 	Cluster->Center = Center;
 	Cluster->Radius = Radius;
 

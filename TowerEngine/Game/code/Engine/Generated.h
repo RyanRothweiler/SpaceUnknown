@@ -22,6 +22,7 @@ string ship_module_id_NAME[] {
 }; 
 string item_id_NAME[] { 
 "venigen",
+"pyrexium",
 "stl",
 "sm_asteroid_miner",
 "sm_salvager_i",

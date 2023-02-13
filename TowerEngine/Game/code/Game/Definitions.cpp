@@ -55,6 +55,12 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].Icon = assets::GetImage("Icon_Venigen");
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].Stackable = true;
 
+		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].ID = item_id::pyrexium;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].DisplayName = "Pyrexium";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].Mass = 5;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].Icon = assets::GetImage("Icon_Pyrexium");
+		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].Stackable = true;
+
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].ID = item_id::sm_asteroid_miner;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].DisplayName = "Asteroid Miner";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].ShipModuleID = ship_module_id::asteroid_miner;

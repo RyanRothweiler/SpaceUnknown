@@ -1,6 +1,7 @@
 // sm is short for ship_module. That is checked so its required to mark ship modules. The name matters
 MetaStruct enum class item_id {
 	venigen,
+	pyrexium,
 	stl,
 	sm_asteroid_miner,
 	sm_salvager_i,

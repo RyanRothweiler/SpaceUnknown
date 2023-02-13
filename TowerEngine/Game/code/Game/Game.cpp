@@ -345,7 +345,7 @@ namespace game {
 		Globals->AssetsList.SalvageImages[1] = assets::GetImage("Salvage2");
 
 		ShipSetup(State, vector2{0, 0});
-		AsteroidCreateCluster(vector2{0, 0}, 30.0f, State);
+		AsteroidCreateCluster(vector2{0, 0}, 30.0f, item_id::venigen, State);
 
 		// Salvage
 		SalvageCreate(State, vector2{ -30, -30});
