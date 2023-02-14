@@ -37,13 +37,13 @@ void CreateDefinitions()
 		Assert(ArrayCount(Globals->AssetsList.ShipDefinitions) > (int)ship_id::count);
 
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].ID = ship_id::advent;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Icon = assets::GetImage("Ship_Advent");
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelRateMassPerSecond = 0.5f;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Mass = 200;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelTankMassLimit = 300;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].HoldMass = 20;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotsCount = 4;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[0] = ship_module_slot_type::industrial;
-		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[1] = ship_module_slot_type::industrial;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[2] = ship_module_slot_type::structural;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[3] = ship_module_slot_type::science;
 	}
@@ -89,11 +89,19 @@ void CreateDefinitions()
 		Assert(ArrayCount(Globals->AssetsList.RecipesByService) > (int)station_service::count);
 		Assert(ArrayCount(Globals->AssetsList.RecipesByService[0].IDs) > (int)recipe_id::count);
 
+		// venigen_stl
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].ID = recipe_id::venigen_stl;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterInput(item_id::venigen, 5.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterOutput(item_id::stl, 1.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].DurationMS = MinutesToMilliseconds(60);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].ServiceRequired = station_service::refinery;
+
+		// ship_advent
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].ID = recipe_id::ship_advent;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].RegisterInput(item_id::venigen, 5.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].RegisterOutput(ship_id::advent, 1.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].DurationMS = MinutesToMilliseconds(60);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].ServiceRequired = station_service::shipyard;
 
 		// Organize recipes by service
 		{

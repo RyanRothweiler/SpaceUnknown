@@ -6,6 +6,8 @@ MetaStruct enum class station_service {
 MetaStruct enum class recipe_id {
 	venigen_stl,
 
+	ship_advent,
+
 	count,
 	none,
 };

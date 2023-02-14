@@ -12,10 +12,21 @@ void ConverterUpdate(void* SelfData, real64 Time, game::state* State)
 					Converter->IsRunning = false;
 				}
 
-				// Give items
+				// Give outputs
 				for (int i = 0; i < Converter->Order.OutputsCount; i++) {
 					item_count* C = &Converter->Order.Outputs[i];
-					ItemGive(&Converter->Owner->Hold, C->ItemID, C->Count);
+
+					switch (C->Type) {
+						case (recipe_member_type::item): {
+							ItemGive(&Converter->Owner->Hold, C->ItemID, C->Count);
+						} break;
+
+						case (recipe_member_type::ship): {
+							ShipSetup(vector2{0, 0}, C->ShipID, State);
+						} break;
+
+						INVALID_DEFAULT;
+					}
 				}
 			}
 		} else {
@@ -55,8 +66,24 @@ void ImGuiItemCountList(item_count * Items, int32 Count)
 	for (int inp = 0; inp < Count; inp++) {
 		item_count* IC = &Items[inp];
 
+		int64 IconGLID = 0;
+		switch (IC->Type) {
+			case (recipe_member_type::item): {
+				IconGLID = Globals->AssetsList.ItemDefinitions[(int)IC->ItemID].Icon->GLID;
+				break;
+			}
+
+			case (recipe_member_type::ship): {
+				IconGLID = Globals->AssetsList.ShipDefinitions[(int)IC->ShipID].Icon->GLID;
+				break;
+			}
+
+
+			INVALID_DEFAULT;
+		}
+
 		ImGui::Image(
-		    (ImTextureID)((int64)Globals->AssetsList.ItemDefinitions[(int)IC->ItemID].Icon->GLID),
+		    (ImTextureID)(IconGLID),
 		    ImGuiImageSize,
 		    ImVec2(0, 0),
 		    ImVec2(1, -1),

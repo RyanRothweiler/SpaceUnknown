@@ -622,7 +622,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	if (!Showing) { Sel->Clear(); }
 }
 
-game::ship* ShipSetup(game::state * State, vector2 Pos)
+game::ship* ShipSetup(vector2 Pos, ship_id ID, game::state * State)
 {
 	for (int i = 0; i < ArrayCount(State->Ships); i++) {
 		game::ship* Ship = &State->Ships[i];
@@ -633,7 +633,7 @@ game::ship* ShipSetup(game::state * State, vector2 Pos)
 			Ship->Using = true;
 			Ship->Position = Pos;
 			Ship->Size = vector2{5, 5};
-			Ship->Definition = Globals->AssetsList.ShipDefinitions[(int)ship_id::advent];
+			Ship->Definition = Globals->AssetsList.ShipDefinitions[(int)ID];
 
 			Ship->Hold.Setup(Ship->Definition.HoldMass);
 			Ship->FuelTank.Setup(Ship->Definition.FuelTankMassLimit);

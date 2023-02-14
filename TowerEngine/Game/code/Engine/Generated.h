@@ -35,6 +35,7 @@ string station_service_NAME[] {
 }; 
 string recipe_id_NAME[] { 
 "venigen_stl",
+"ship_advent",
 "count",
 "none",
 }; 

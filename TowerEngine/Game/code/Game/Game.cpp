@@ -344,7 +344,7 @@ namespace game {
 		Globals->AssetsList.SalvageImages[0] = assets::GetImage("Salvage1");
 		Globals->AssetsList.SalvageImages[1] = assets::GetImage("Salvage2");
 
-		ShipSetup(State, vector2{0, 0});
+		ShipSetup(vector2{0, 0}, ship_id::advent, State);
 		AsteroidCreateCluster(vector2{0, 0}, 30.0f, item_id::venigen, State);
 		AsteroidCreateCluster(vector2{ -200, 20}, 20.0f, item_id::pyrexium, State);
 
@@ -924,12 +924,11 @@ namespace game {
 						m4y4 Model = m4y4Identity();
 						Model = Rotate(Model, vector3{0, 0, Ship->Rotation});
 
-						static loaded_image* ShipImage = assets::GetImage("Ship");
 						RenderTextureAll(
 						    Pos,
 						    Ship->Size,
 						    COLOR_WHITE,
-						    ShipImage->GLID, RenderLayerShip, Model, Globals->GameRenderer);
+						    Ship->Definition.Icon->GLID, RenderLayerShip, Model, Globals->GameRenderer);
 					}
 
 					// Render ship module effects

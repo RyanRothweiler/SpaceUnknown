@@ -100,6 +100,8 @@ struct ship_module {
 struct ship_definition {
 	ship_id ID;
 
+	loaded_image* Icon;
+
 	int64 FuelTankMassLimit;
 	real64 FuelRateMassPerSecond;
 	int64 Mass;
@@ -140,3 +142,4 @@ struct ship {
 
 void ShipUpdateMass(ship* Ship);
 void ShipRemoveModule(ship_module* Module, game::state* State);
+game::ship* ShipSetup(vector2 Pos, ship_id ID, game::state * State);
