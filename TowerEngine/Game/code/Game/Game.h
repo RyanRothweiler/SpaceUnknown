@@ -248,6 +248,12 @@ namespace game {
 		item_instance* ItemDragging;
 		item_hold* HoldItemDraggingFrom;
 		ship_module* ModuleUnequipping;
+
+		// Could do better here by just having two cameras
+		vector3 UniverseCamPos;
+		real32 UniverseOrthoZoom;
+		vector3 SkillTreeCamPos;
+		real32 SkillTreeOrthoZoom;
 	};
 };
 

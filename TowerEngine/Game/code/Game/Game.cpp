@@ -740,6 +740,12 @@ namespace game {
 
 					if (ImGui::Button("Skill Tree", ImVec2(-1, 0))) {
 						State->Scene = scene::skill_tree;
+
+						State->UniverseOrthoZoom = State->Zoom;
+						State->UniverseCamPos = EngineState->GameCamera.Center;
+						EngineState->GameCamera.Center = State->SkillTreeCamPos;
+						State->Zoom = State->SkillTreeOrthoZoom;
+						State->ZoomTarget = State->Zoom;
 					}
 				}
 				break;
@@ -747,6 +753,12 @@ namespace game {
 				case scene::skill_tree: {
 					if (ImGui::Button("Universe", ImVec2(-1, 0))) {
 						State->Scene = scene::universe;
+
+						State->SkillTreeCamPos = EngineState->GameCamera.Center;
+						State->SkillTreeOrthoZoom = State->Zoom;
+						EngineState->GameCamera.Center = State->UniverseCamPos;
+						State->Zoom = State->UniverseOrthoZoom;
+						State->ZoomTarget = State->Zoom;
 					}
 				}
 				break;
