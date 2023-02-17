@@ -28,7 +28,6 @@ void SkillTreeNodeLoad(json::json_data* JsonIn, game::state* State)
 	NewNode->ID = 				json::GetString("id", JsonIn);
 	NewNode->Position = 		json::GetVector2("position", JsonIn);
 	NewNode->KnowledgeCost = 	json::GetInt64("knowledge_cost", JsonIn);
-	NewNode->Unlocked = 		json::GetBool("unlocked", JsonIn);
 
 	NewNode->BonusAdditions.FuelForceAddition = 		(float)json::GetReal64("bonus_fuel_force_addition", JsonIn);
 
@@ -49,7 +48,6 @@ void SkillTreeNodeSave(skill_node* Node)
 	json::AddKeyPair("id", 					Node->ID, 				&JsonOut);
 	json::AddKeyPair("position", 			Node->Position, 		&JsonOut);
 	json::AddKeyPair("knowledge_cost", 		Node->KnowledgeCost, 	&JsonOut);
-	json::AddKeyPair("unlocked", 			Node->Unlocked, 		&JsonOut);
 
 	json::AddKeyPair("bonus_fuel_force_addition", 			Node->BonusAdditions.FuelForceAddition, 		&JsonOut);
 

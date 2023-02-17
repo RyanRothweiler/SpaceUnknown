@@ -180,6 +180,26 @@ namespace game {
 			}
 		}
 
+		// Skill tree nodes
+		{
+			struct local {
+				void Save(skill_node* Node, json::json_data* JsonOut)
+				{
+					if (Node->Unlocked) {
+						json::AddKeyPair("node_unlocked_" + Node->ID, true, JsonOut);
+					}
+
+					for (int i = 0; i < Node->ChildrenCount; i++) {
+						Save(Node->Children[i], JsonOut);
+					}
+				}
+			} Locals;
+
+			for (int i = 0; i < State->SkillNodesCount; i++) {
+				Locals.Save(&State->SkillNodes[i], &JsonOut);
+			}
+		}
+
 		json::SaveToFile(&JsonOut, "SaveGame.sus");
 		ConsoleLog("Game Saved");
 	}
@@ -235,16 +255,16 @@ namespace game {
 				// method to load an item_hold
 				/*
 				for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
-					json::json_pair* CargoTestPair = GetPair("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
-					if (CargoTestPair != GameNull) {
+				json::json_pair* CargoTestPair = GetPair("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
+				if (CargoTestPair != GameNull) {
 
-						string IDStr = json::GetString("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
-						item_id ItemID = (item_id)StringToEnum(IDStr, &item_id_NAME[0], ArrayCount(item_id_NAME));
-						item_definition Def = GetItemDefinition(ItemID);
-						Ship->Cargo[c].Definition = Def;
+				string IDStr = json::GetString("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
+				item_id ItemID = (item_id)StringToEnum(IDStr, &item_id_NAME[0], ArrayCount(item_id_NAME));
+				item_definition Def = GetItemDefinition(ItemID);
+				Ship->Cargo[c].Definition = Def;
 
-						Ship->Cargo[c].Count = (int32)json::GetInt64("ship_" + string{i} + "_cargo_" + string{c} + "_count", &JsonIn);;
-					}
+				Ship->Cargo[c].Count = (int32)json::GetInt64("ship_" + string{i} + "_cargo_" + string{c} + "_count", &JsonIn);;
+				}
 				}
 				*/
 
@@ -264,6 +284,27 @@ namespace game {
 					//Roid->WorldObject.Position.X = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
 					//Roid->WorldObject.Position.Y = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", &JsonIn);
 				}
+			}
+		}
+
+		// Skill tree nodes
+		{
+			struct local {
+				void Load(skill_node* Node, json::json_data* JsonIn)
+				{
+					json::json_pair* TestPair = GetPair("node_unlocked_" + Node->ID, JsonIn);
+					if (TestPair != GameNull) {
+						Node->Unlocked = true;
+					}
+
+					for (int i = 0; i < Node->ChildrenCount; i++) {
+						Load(Node->Children[i], JsonIn);
+					}
+				}
+			} Locals;
+
+			for (int i = 0; i < State->SkillNodesCount; i++) {
+				Locals.Load(&State->SkillNodes[i], &JsonIn);
 			}
 		}
 
@@ -476,7 +517,7 @@ namespace game {
 
 						{
 							int Num = (int)EditorState->NodeSelected->KnowledgeCost;
-							ImGui::DragInt("Knowledge Cost", &Num, 1, 0, 1000000, "%i");
+							ImGui::DragInt("Knowledge Cost", &Num, 1, 0, 1000000, " % i");
 							EditorState->NodeSelected->KnowledgeCost = (int64)Num;
 						}
 
@@ -487,7 +528,7 @@ namespace game {
 							ImGui::SameLine();
 
 							ImGui::PushID(i);
-							if (ImGui::Button("-")) {
+							if (ImGui::Button(" - ")) {
 								RemoveSlideArray((void*)&EditorState->NodeSelected->Children[0], EditorState->NodeSelected->ChildrenCount, sizeof(EditorState->NodeSelected->Children[0]), i);
 								EditorState->NodeSelected->ChildrenCount--;
 							}
@@ -495,7 +536,7 @@ namespace game {
 						}
 
 						if (!AddingChild) {
-							if (ImGui::Button("+ Add Child + ")) {
+							if (ImGui::Button(" + Add Child + ")) {
 								AddingChild = true;
 							}
 						} else {
@@ -511,7 +552,7 @@ namespace game {
 
 					ImGui::Dummy(ImVec2(0, 30));
 
-					if (ImGui::Button("Knowledge +5 ", ImVec2(-1, 0))) {
+					if (ImGui::Button("Knowledge + 5 ", ImVec2(-1, 0))) {
 						State->Knowledge += 5;
 					}
 
