@@ -255,6 +255,17 @@ namespace game {
 		vector3 SkillTreeCamPos;
 		real32 SkillTreeOrthoZoom;
 	};
+
 };
+
+struct second {
+	int32 Boost;
+};
+
+/*
+MetaStruct struct ryan_test {
+	//int32 First;
+};
+*/
 
 #endif

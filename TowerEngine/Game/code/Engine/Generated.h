@@ -1,7 +1,25 @@
 #ifndef GENERATED 
 #define GENERATED 
  
-char* AssetsFolderStructure[] { 
+enum class meta_member_type { 
+uint32, 
+uint16, 
+uint8, 
+int32, 
+int16, 
+int8, 
+int64, 
+real32, 
+real64, 
+}; 
+ 
+ struct meta_member { meta_member_type Type;
+ string Name;
+ uint64 Offset;
+ bool32 ArrayLength;
+ };
+
+ char* AssetsFolderStructure[] { 
 "Asteroids/",
 "EngineResources/",
 "Icons/",
@@ -9,7 +27,7 @@ char* AssetsFolderStructure[] {
 "Shaders/",
 "SkillTreeNodes/",
 }; 
-
+ 
 string journey_step_type_NAME[] { 
 "movement",
 "dock_undock",

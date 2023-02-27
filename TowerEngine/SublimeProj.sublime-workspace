@@ -4,6 +4,30 @@
 		"selected_items":
 		[
 			[
+				"update",
+				"updateRequest"
+			],
+			[
+				"GetA",
+				"GetAsTextUnsafe"
+			],
+			[
+				"respon",
+				"responseData"
+			],
+			[
+				"THir",
+				"ThirdPartyLauncher"
+			],
+			[
+				"Universe",
+				"UniverseCamPos"
+			],
+			[
+				"skll",
+				"skill_node"
+			],
+			[
 				"journey_step",
 				"journey_step_type"
 			],
@@ -490,96 +514,11 @@
 			[
 				"right",
 				"rightEmitter"
-			],
-			[
-				"em",
-				"emission"
-			],
-			[
-				"grabb",
-				"grabbableItem"
-			],
-			[
-				"grab",
-				"grabbedLayer"
-			],
-			[
-				"Plane",
-				"PlaneIndex"
-			],
-			[
-				"COmman",
-				"CommandIndexStart"
-			],
-			[
-				"control",
-				"controllerMinMag"
 			]
 		]
 	},
 	"buffers":
 	[
-		{
-			"file": "Game/code/Game/Game.cpp",
-			"settings":
-			{
-				"buffer_size": 27495,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Game/code/Engine/String.cpp",
-			"settings":
-			{
-				"buffer_size": 19343,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Game/code/Game/Ship.cpp",
-			"settings":
-			{
-				"buffer_size": 17547,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Game/code/Game/Game.h",
-			"settings":
-			{
-				"buffer_size": 4104,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Game/code/Game/Ship.h",
-			"settings":
-			{
-				"buffer_size": 1172,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Game/code/Game/Asteroid.cpp",
-			"settings":
-			{
-				"buffer_size": 2014,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Game/code/Engine/LinkedList.cpp",
-			"settings":
-			{
-				"buffer_size": 18212,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -694,12 +633,30 @@
 	],
 	"file_history":
 	[
+		"/E/tripp-client - android/Assets/Journey/Scripts/LocalAvatar.cs",
+		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/AethericArts/XR/General/LinkAvatarToHelper.cs",
+		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/Pixelplacement/Surge/Utilities/Initialization.cs",
+		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/ThirdPartyLauncher.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Networking/TrippNetworkManager.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Analytics/AnalyticsManager.cs",
+		"/T/Game/code/Engine/LinkedList.cpp",
+		"/T/Game/code/Game/Asteroid.cpp",
+		"/T/Game/code/Game/Ship.h",
+		"/T/Game/code/Game/Game.h",
+		"/T/Game/code/Game/Ship.cpp",
+		"/T/Game/code/Engine/String.cpp",
+		"/T/Game/code/Game/SkillTree.cpp",
+		"/T/Game/code/Game/SkillTree.h",
+		"/T/Game/code/Engine/EngineCore.cpp",
+		"/T/Game/code/Game/Game.cpp",
+		"/T/Game/build/Windows/SaveGame.sus",
+		"/C/Users/perma/Desktop/notes.txt",
+		"/C/Users/perma/Desktop/log.txt",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Util/GlobalTuning.cs",
 		"/E/tripp-client - android/Assets/Journey/Scripts/TriggerAndTimerHelper.cs",
 		"/E/tripp-client - android/Assets/3rdParty/Scripts/Journey/JourneyTrippManager.cs",
 		"/E/tripp-client - android/Assets/Journey/Scripts/Scripts/Playback/TimedEventManager.cs",
 		"/E/tripp-client - android/Assets/Scripts/Design/ShaderFader.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Analytics/AnalyticsManager.cs",
 		"/E/tripp-client-audio - ps4/Assets/TeachingDefinitions/C2T_TransformingHabitsChallenge.txt",
 		"/E/tripp-client-audio - ps4/Assets/TeachingDefinitions/C2T_MindfulnessChallenges.txt",
 		"/E/tripp-client - android/Assets/Journey/Scripts/ScoreHelper.cs",
@@ -711,26 +668,18 @@
 		"/E/tripp-client - android/Assets/3rdParty/Scripts/Journey/JourneyExperienceManager.cs",
 		"/T/Game/code/Engine/imgui/imgui_demo.cpp",
 		"/T/Game/code/Engine/EngineCore.h",
-		"/T/Game/code/Game/Game.h",
 		"/T/Game/code/Engine/Renderer/ogles3.cpp",
 		"/T/Game/code/Engine/FixedAllocator.cpp",
 		"/E/tripp-client - android/Assets/Scripts/Input/PlayerInput.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/XR/XRUIInputModuleKeepEnabled.cs",
 		"/E/tripp-client - android/Library/PackageCache/com.unity.xr.interaction.toolkit@2.1.1/Runtime/UI/XRUIInputModule.cs",
-		"/T/Game/code/Engine/EngineCore.cpp",
-		"/T/Game/code/Game/Ship.cpp",
-		"/T/Game/code/Game/Ship.h",
 		"/T/Game/code/Engine/Math.cpp",
-		"/T/Game/code/Game/Game.cpp",
-		"/T/Game/code/Game/Asteroid.cpp",
 		"/T/Game/code/Game/Asteroid.h",
 		"/t/game/code/engine/linkedlist.h",
 		"/T/Game/code/Platform/platform_win32.cpp",
-		"/T/Game/code/Engine/LinkedList.cpp",
 		"/E/tripp-client - android/Assets/Scripts/UI/InExperience/TrippPauseMenu.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Engine/ExperienceController.cs",
 		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/SerenityGarden/UI/SanctumPauseMenu.cs",
-		"/T/Game/code/Engine/String.cpp",
 		"/T/Game/code/Game/Item.h",
 		"/E/tripp-client - android/Assets/3rdParty/Scripts/JourneyLauncher.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Engine/PlayerController.cs",
@@ -739,10 +688,7 @@
 		"/E/tripp-client - android/Assets/Scripts/HandenessManager.cs",
 		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/MMFeedbacks/MMTools/Tools/MMSingletons/MMPersistentSingleton.cs",
 		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/MMFeedbacks/MMTools/Tools/MMSingletons/MMPersistentHumbleSingleton.cs",
-		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/Pixelplacement/Surge/Utilities/Initialization.cs",
-		"/E/tripp-client - android/Assets/Journey/Scripts/LocalAvatar.cs",
 		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/AethericArts/XR/General/XRHelper.cs",
-		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/AethericArts/XR/General/LinkAvatarToHelper.cs",
 		"/E/tripp-client - android/Assets/Journey/Scripts/ShaderSwapper.cs",
 		"/E/tripp-client - android/Assets/Scripts/Input/ControllerEnabler.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/XR/XritControllerManager.cs",
@@ -762,7 +708,6 @@
 		"/T/Game/code/Game/Station.cpp",
 		"/T/Game/code/Game/Station.h",
 		"/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/Featured/MainMenuFeatured.cs",
-		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/ThirdPartyLauncher.cs",
 		"/E/tripp-client - android/Assets/3rdParty/Scripts/CrystalBowlsLauncher.cs",
 		"/E/tripp-client - android/Assets/3rdParty/Scripts/CosmicFlowLauncher.cs",
 		"/T/Game/code/Game/AssetList.cpp",
@@ -815,13 +760,7 @@
 		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/ExperienceButton.cs",
 		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/MainMenuController.cs",
 		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/ComposerPage.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/AssetManagement/ExperienceExpressionNetworking.cs",
-		"/T/Game/assets/Shaders/ImGui.fs",
-		"/t/game/code/engine/generated.h",
-		"/T/Game/build_scripts/sign_android TEMPLATE.bat",
-		"/T/Game/CMakeLists.txt",
-		"/T/Game/code/Engine/Renderer/ShaderLoader.cpp",
-		"/T/Game/code/Engine/Editor.cpp"
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/AssetManagement/ExperienceExpressionNetworking.cs"
 	],
 	"find":
 	{
@@ -967,6 +906,19 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"analyticsVersion",
+			"BQAnalytics",
+			"ZoomTarget",
+			"orthozoom",
+			"ZoomTarget",
+			"zoomtarget",
+			"gamecamera",
+			"Zoom",
+			"ZoomTarget",
+			"universe",
+			"unlocked",
+			"SkillTree",
+			"skilltree",
 			"currentstep = ",
 			"runLengthDefinition",
 			"_onFadeInComplete",
@@ -1081,20 +1033,7 @@
 			"itemdragging",
 			"ShipUpdateMass",
 			"CurrentMassTotal",
-			"ItemTransfer",
-			"focus2_amber_whitenight_quest",
-			"rb_teachingvo_optimism",
-			"white",
-			"focus2_amber_whitenight_quest",
-			"PerformPS4Build",
-			"SetDragDropPayload",
-			"ImguiShipModuleUnequippingDraggingID",
-			"SetExperienceSelected",
-			"show(",
-			"SelectWorldscape",
-			"ShowTeachings",
-			"ShowExperienceChoosePageWhenIsUpdatingContentDone",
-			"SelectWorldscape"
+			"ItemTransfer"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1158,212 +1097,8 @@
 	"groups":
 	[
 		{
-			"selected": 2,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "Game/code/Game/Game.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 27495,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								201,
-								204
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "Game/code/Engine/String.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 19343,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "Game/code/Game/Ship.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 17547,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								15697,
-								15697
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": -0.0,
-						"translation.y": 6956.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "Game/code/Game/Game.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4104,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1767,
-								1767
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "Game/code/Game/Ship.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1172,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "Game/code/Game/Asteroid.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2014,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1371,
-								1371
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "Game/code/Engine/LinkedList.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 18212,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5647,
-								5647
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 2300.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -1428,8 +1163,16 @@
 		"selected_items":
 		[
 			[
+				"engine",
+				"Game\\code\\Engine\\EngineCore.cpp"
+			],
+			[
+				"skil",
+				"Game\\code\\Game\\SkillTree.cpp"
+			],
+			[
 				"game",
-				"Game\\code\\Game\\Game.h"
+				"Game\\code\\Game\\Game.cpp"
 			],
 			[
 				"ship",
@@ -1482,10 +1225,6 @@
 			[
 				"math",
 				"Game\\code\\Engine\\Math.cpp"
-			],
-			[
-				"engine",
-				"Game\\code\\Engine\\EngineCore.cpp"
 			],
 			[
 				"fixed",
@@ -1934,10 +1673,6 @@
 			[
 				"batle",
 				"Game\\code\\Engine\\battle\\battle.h"
-			],
-			[
-				"ability",
-				"Game\\code\\Engine\\Ability\\ability.h"
 			]
 		],
 		"width": 0.0

@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <string>
+#include <vector>
 
 #define GameNull 0
 
@@ -173,6 +174,12 @@ struct method_signature {
 	uint32 MethodsCount;
 
 	token SignatureID;
+};
+
+std::vector<std::string> Types = {
+	"uint32", "uint16", "uint8",
+	"int32", "int16", "int8", "int64",
+	"real32", "real64",
 };
 
 method_signature SignatureTable[100];
@@ -546,9 +553,10 @@ void ProcessFile(char* Path)
 						}
 
 						// Check variable type
-						char* TypeStr = 0;
+						std::string TypeStr;
 						uint32 MetaLength = 18;
 						uint32 TypeStrLength = 0;
+						/*
 						if (VarType.Contents[0] == 'u' &&
 						        VarType.Contents[1] == 'i' &&
 						        VarType.Contents[2] == 'n' &&
@@ -637,12 +645,34 @@ void ProcessFile(char* Path)
 							// Invalid variable type
 							printf("\n ERROR: INVALID DATA TYPE FOR STRUCT \n");
 						}
+						*/
+
+						string TokenType = BuildString(VarType.Contents, VarType.ContentsLength);
+						bool32 Found = false;
+						for (int i = 0; i < Types.size() && !Found; i++) {
+							const char* Type = Types[i].c_str();
+							if (VarType.ContentsLength == Types[i].length()) {
+								bool32 Valid = true;
+
+								for (uint32 c = 0; c < VarType.ContentsLength && Valid; c++) {
+									if (VarType.Contents[c] != Type[c]) {
+										Valid = false;
+									}
+								}
+
+								if (Valid) {
+									Found = true;
+									TypeStr = "meta_member_type::" + Types[i];
+								}
+
+							}
+						}
 
 						// Print the line
 						printf("{%.*s, \"%.*s\", (uint64)&((%.*s *)0)->%.*s, %.*s}, \n",
 
 						       // Type
-						       TypeStrLength, TypeStr,
+						       (int)TypeStr.length(), TypeStr.c_str(),
 
 						       // Name
 						       VarName.ContentsLength, VarName.Contents,
@@ -768,12 +798,22 @@ int main(int argc, char* ars[])
 	printf("#ifndef GENERATED \n");
 	printf("#define GENERATED \n \n");
 
+	// Output the types
+	{
+		printf("enum class meta_member_type { \n");
+		for (int i = 0; i < Types.size(); i++) {
+			printf("%s, \n", Types[i].c_str());
+		}
+		printf("}; \n \n");
+
+		printf(" struct meta_member { meta_member_type Type;\n string Name;\n uint64 Offset;\n bool32 ArrayLength;\n };\n\n ");
+	}
+
 	// Save the assets folder structure for Android. Maybe skip this for other platforms to save time.
 	{
 		printf("char* AssetsFolderStructure[] { \n");
 		OutputFolders("T:/Game/assets/", "");
-		printf("}; \n");
-		printf("\n");
+		printf("}; \n \n");
 	}
 
 
@@ -831,7 +871,6 @@ int main(int argc, char* ars[])
 	for (int i = 0; i < ArrayCount(FilesToRead); i++) {
 		ProcessFile(FilesToRead[i]);
 	}
-
 
 	// Build method stubs, so that we can include the generated file anywhere
 	printf("\n");

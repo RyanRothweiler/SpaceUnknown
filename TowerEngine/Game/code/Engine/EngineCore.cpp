@@ -4,7 +4,6 @@
 
 //#include "httplib.h"
 #include "EngineCore.h"
-#include "Generated.h"
 
 render::api RenderApi;
 
@@ -57,6 +56,7 @@ vector2 NearestOnLine(line Line, vector2 Point)
 	return {};
 }
 
+
 #include "LinkedList.cpp"
 #include "Collision.cpp"
 
@@ -65,12 +65,8 @@ vector2 NearestOnLine(line Line, vector2 Point)
 #include "Grid.cpp"
 #include "Range.cpp"
 
-#include "Json.cpp"
-
 #include "Audio.cpp"
 #include "Sorts.cpp"
-
-#include "SaveData.cpp"
 
 #include "ParticleSystem.cpp"
 #include "Util.cpp"
@@ -78,6 +74,11 @@ vector2 NearestOnLine(line Line, vector2 Point)
 #include "../Game/Game.h"
 #include "../Game/AssetList.h"
 #include "CSV.cpp"
+
+#include "Generated.h"
+
+#include "Json.cpp"
+#include "SaveData.cpp"
 
 #include "Editor.h"
 #include "Renderer/ShaderLoader.cpp"
