@@ -258,14 +258,13 @@ namespace game {
 
 };
 
-struct second {
+MetaStruct struct second {
 	int32 Boost;
 };
 
-/*
 MetaStruct struct ryan_test {
-	//int32 First;
+	int32 First;
+	second Second;
 };
-*/
 
 #endif

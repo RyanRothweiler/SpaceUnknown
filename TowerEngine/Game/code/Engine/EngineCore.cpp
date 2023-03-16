@@ -75,10 +75,41 @@ vector2 NearestOnLine(line Line, vector2 Point)
 #include "../Game/AssetList.h"
 #include "CSV.cpp"
 
-#include "Generated.h"
+enum class meta_member_type {
+	uint32,
+	uint16,
+	uint8,
+	int32,
+	int16,
+	int8,
+	int64,
+	real32,
+	real64,
+	custom,
+};
+
+#include "SaveData.h"
+
+struct meta_member;
+typedef struct_string_return(*struct_to_string_func)(meta_member * MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena * Memory);
+
+struct meta_member {
+	meta_member_type Type;
+	string TypeString;
+	string Name;
+	uint64 Offset;
+	bool32 ArrayLength;
+
+	// Data for custom types
+	struct_to_string_func ToStringFunc;
+	meta_member* CustomMetaInfo;
+	int32 CustomMetaInfoCount;
+};
 
 #include "Json.cpp"
 #include "SaveData.cpp"
+
+#include "Generated.h"
 
 #include "Editor.h"
 #include "Renderer/ShaderLoader.cpp"

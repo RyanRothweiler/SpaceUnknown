@@ -4,7 +4,7 @@
 
 uint32 BoilerplateCharactersCount = 3;
 
-string StructMemberToString(meta_member* MetaInfo, void* AccData)
+string StructMemberToString(meta_member* MetaInfo, void* AccData, memory_arena* Memory)
 {
 	string DataOutput = {};
 
@@ -45,6 +45,12 @@ string StructMemberToString(meta_member* MetaInfo, void* AccData)
 		case meta_member_type::real32: {
 			real32 Data = *((real32 *)Start);
 			DataOutput = Data;
+		} break;
+
+		case meta_member_type::custom: {
+			struct_string_return Ret = MetaInfo->ToStringFunc(MetaInfo->CustomMetaInfo, MetaInfo->CustomMetaInfoCount, Start, Memory);
+
+			int x = 0;
 		} break;
 
 		default : {
@@ -97,18 +103,14 @@ uint32 StructGuessSize(meta_member* MetaInfo, uint32 MetaInfoCount)
 
 			default : {
 				//That type isn't supported yet.
-				Assert(false);
+				//Assert(false);
+				MaxSize += 10000;
 			} break;
 		}
 	}
 
 	return MaxSize;
 }
-
-struct struct_string_return {
-	char* Data;
-	uint64 DataLength;
-};
 
 // This just saves / loads structs as comma separated
 struct_string_return StructToString(meta_member* MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena* Memory)
@@ -121,7 +123,7 @@ struct_string_return StructToString(meta_member* MetaInfo, uint32 MetaInfoCount,
 
 	for (uint32 index = 0; index < MetaInfoCount; index++) {
 
-		string DataOutput = StructMemberToString(&MetaInfo[index], AccData);
+		string DataOutput = StructMemberToString(&MetaInfo[index], AccData, Memory);
 
 		uint32 DataStringLength = StringLength(DataOutput);
 		uint32 NameStringLength = StringLength(MetaInfo[index].Name);

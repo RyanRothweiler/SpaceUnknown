@@ -176,11 +176,16 @@ struct method_signature {
 	token SignatureID;
 };
 
-std::vector<std::string> Types = {
+std::vector<std::string> PrimitiveTypes = {
 	"uint32", "uint16", "uint8",
 	"int32", "int16", "int8", "int64",
 	"real32", "real64",
+
+	// not a real primitive, but kinda a primitive for our purposes. For custom types like struct / class
+	"custom",
 };
+
+//std::vector<std::string> StructTypes;
 
 method_signature SignatureTable[100];
 int32 SignatureTableCount;
@@ -554,104 +559,10 @@ void ProcessFile(char* Path)
 
 						// Check variable type
 						std::string TypeStr;
-						uint32 MetaLength = 18;
-						uint32 TypeStrLength = 0;
-						/*
-						if (VarType.Contents[0] == 'u' &&
-						        VarType.Contents[1] == 'i' &&
-						        VarType.Contents[2] == 'n' &&
-						        VarType.Contents[3] == 't' &&
-						        VarType.Contents[4] == '3' &&
-						        VarType.Contents[5] == '2') {
-							TypeStr = "meta_member_type::uint32";
-							TypeStrLength = MetaLength + 6;
-
-						} else if (VarType.Contents[0] == 'i' &&
-						           VarType.Contents[1] == 'n' &&
-						           VarType.Contents[2] == 't' &&
-						           VarType.Contents[3] == '1' &&
-						           VarType.Contents[4] == '6') {
-							TypeStr = "meta_member_type::int16";
-							TypeStrLength = MetaLength + 5;
-
-						} else if (VarType.Contents[0] == 'i' &&
-						           VarType.Contents[1] == 'n' &&
-						           VarType.Contents[2] == 't' &&
-						           VarType.Contents[3] == '8') {
-							TypeStr = "meta_member_type::int8";
-							TypeStrLength = MetaLength + 4;
-
-						} else if (VarType.Contents[0] == 'u' &&
-						           VarType.Contents[1] == 'i' &&
-						           VarType.Contents[2] == 'n' &&
-						           VarType.Contents[3] == 't' &&
-						           VarType.Contents[4] == '1' &&
-						           VarType.Contents[5] == '6') {
-							TypeStr = "meta_member_type::uint16";
-							TypeStrLength = MetaLength + 6;
-
-						} else if (VarType.Contents[0] == 'u' &&
-						           VarType.Contents[1] == 'i' &&
-						           VarType.Contents[2] == 'n' &&
-						           VarType.Contents[3] == 't' &&
-						           VarType.Contents[4] == '8') {
-							TypeStr = "meta_member_type::uint8";
-							TypeStrLength = MetaLength + 5;
-
-						} else if (VarType.Contents[0] == 'i' &&
-						           VarType.Contents[1] == 'n' &&
-						           VarType.Contents[2] == 't' &&
-						           VarType.Contents[3] == '3' &&
-						           VarType.Contents[4] == '2') {
-							TypeStr = "meta_member_type::int32";
-							TypeStrLength = MetaLength + 5;
-
-						} else if (VarType.Contents[0] == 'b' &&
-						           VarType.Contents[1] == 'o' &&
-						           VarType.Contents[2] == 'o' &&
-						           VarType.Contents[3] == 'l' &&
-						           VarType.Contents[4] == '3' &&
-						           VarType.Contents[5] == '2') {
-							TypeStr = "meta_member_type::int32";
-							TypeStrLength = MetaLength + 6;
-
-						} else if (VarType.Contents[0] == 'i' &&
-						           VarType.Contents[1] == 'n' &&
-						           VarType.Contents[2] == 't' &&
-						           VarType.Contents[3] == '6' &&
-						           VarType.Contents[4] == '4') {
-							TypeStr = "meta_member_type::int64";
-							TypeStrLength = MetaLength + 5;
-
-						} else if (VarType.Contents[0] == 'r' &&
-						           VarType.Contents[1] == 'e' &&
-						           VarType.Contents[2] == 'a' &&
-						           VarType.Contents[3] == 'l' &&
-						           VarType.Contents[4] == '3' &&
-						           VarType.Contents[5] == '2') {
-							TypeStr = "meta_member_type::real32";
-							TypeStrLength = MetaLength + 6;
-
-						} else if (VarType.Contents[0] == 'r' &&
-						           VarType.Contents[1] == 'e' &&
-						           VarType.Contents[2] == 'a' &&
-						           VarType.Contents[3] == 'l' &&
-						           VarType.Contents[4] == '6' &&
-						           VarType.Contents[5] == '4') {
-							TypeStr = "meta_member_type::real64";
-							TypeStrLength = MetaLength + 6;
-						} else {
-
-							// Invalid variable type
-							printf("\n ERROR: INVALID DATA TYPE FOR STRUCT \n");
-						}
-						*/
-
-						string TokenType = BuildString(VarType.Contents, VarType.ContentsLength);
 						bool32 Found = false;
-						for (int i = 0; i < Types.size() && !Found; i++) {
-							const char* Type = Types[i].c_str();
-							if (VarType.ContentsLength == Types[i].length()) {
+						for (int i = 0; i < PrimitiveTypes.size() && !Found; i++) {
+							const char* Type = PrimitiveTypes[i].c_str();
+							if (VarType.ContentsLength == PrimitiveTypes[i].length()) {
 								bool32 Valid = true;
 
 								for (uint32 c = 0; c < VarType.ContentsLength && Valid; c++) {
@@ -662,17 +573,25 @@ void ProcessFile(char* Path)
 
 								if (Valid) {
 									Found = true;
-									TypeStr = "meta_member_type::" + Types[i];
+									TypeStr = "meta_member_type::" + PrimitiveTypes[i];
 								}
 
 							}
 						}
 
+						// If not found then assume its a struct type
+						if (!Found) {
+							TypeStr = "meta_member_type::custom";
+						}
+
 						// Print the line
-						printf("{%.*s, \"%.*s\", (uint64)&((%.*s *)0)->%.*s, %.*s}, \n",
+						printf("{%.*s, \"%.*s\", \"%.*s\", (uint64)&((%.*s *)0)->%.*s, %.*s,",
 
 						       // Type
 						       (int)TypeStr.length(), TypeStr.c_str(),
+
+						       // Type String
+						       VarType.ContentsLength, VarType.Contents,
 
 						       // Name
 						       VarName.ContentsLength, VarName.Contents,
@@ -684,39 +603,77 @@ void ProcessFile(char* Path)
 						       // Array Length
 						       ArrayLengthToken.ContentsLength, ArrayLengthToken.Contents
 						      );
+
+						// Print struct to string method for custon types
+						if (!Found) {
+							printf("&StructToString_%.*s, &%.*s_META[0], ArrayCount(%.*s_META) ",
+
+							       // To string method
+							       VarType.ContentsLength, VarType.Contents,
+
+							       // Meta array
+							       VarType.ContentsLength, VarType.Contents,
+
+							       // Meta array count
+							       VarType.ContentsLength, VarType.Contents
+							      );
+						} else {
+							printf("{},{},{}");
+						}
+
+						printf("},\n");
 					}
 					printf("}; \n \n");
 
 					// Generate the safe allocate for this
-					printf("void M_ALLOC__%.*s(s_void* SafeVoid, memory_arena* Memory) { \n", StructType.ContentsLength, StructType.Contents);
-					printf("	SafeVoid->IsAllocated = true; \n");
-					printf("	SafeVoid->Type = %.i; \n", TypeID);
-					printf("	SafeVoid->DataSize = sizeof(%.*s); \n", StructType.ContentsLength, StructType.Contents);
-					printf("	SafeVoid->Data = ArenaAllocate(Memory, sizeof(%.*s)); \n", StructType.ContentsLength, StructType.Contents);
-					printf("	ClearMemory((uint8*)SafeVoid->Data, sizeof(%.*s)); \n", StructType.ContentsLength, StructType.Contents);
-					printf("}; \n \n");
-
+					{
+						printf("void M_ALLOC__%.*s(s_void* SafeVoid, memory_arena* Memory) { \n", StructType.ContentsLength, StructType.Contents);
+						printf("	SafeVoid->IsAllocated = true; \n");
+						printf("	SafeVoid->Type = %.i; \n", TypeID);
+						printf("	SafeVoid->DataSize = sizeof(%.*s); \n", StructType.ContentsLength, StructType.Contents);
+						printf("	SafeVoid->Data = ArenaAllocate(Memory, sizeof(%.*s)); \n", StructType.ContentsLength, StructType.Contents);
+						printf("	ClearMemory((uint8*)SafeVoid->Data, sizeof(%.*s)); \n", StructType.ContentsLength, StructType.Contents);
+						printf("};\n\n");
+					}
 
 					// The get method
-					printf("%.*s* M_GET__%.*s(s_void* SafeVoid) { \n",
-					       StructType.ContentsLength, StructType.Contents,
-					       StructType.ContentsLength, StructType.Contents);
-					printf("	if (SafeVoid->IsAllocated && SafeVoid->Type == %.i) { \n", TypeID);
-					printf("		return (%.*s*)SafeVoid->Data; \n", StructType.ContentsLength, StructType.Contents);
-					printf("	} \n");
-					printf("	return GameNull; \n");
-					printf("}; \n \n");
+					{
+						printf("%.*s* M_GET__%.*s(s_void* SafeVoid) { \n",
+						       StructType.ContentsLength, StructType.Contents,
+						       StructType.ContentsLength, StructType.Contents);
+						printf("	if (SafeVoid->IsAllocated && SafeVoid->Type == %.i) { \n", TypeID);
+						printf("		return (%.*s*)SafeVoid->Data; \n", StructType.ContentsLength, StructType.Contents);
+						printf("	} \n");
+						printf("	return GameNull; \n");
+						printf("};\n\n");
+					}
+
+					// struct to string for this
+					{
+						printf("struct_string_return StructToString_%.*s (meta_member * MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena * Memory){\n", StructType.ContentsLength, StructType.Contents);
+						//struct_string_return StructToString(meta_member * MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena * Memory)
+						printf("return StructToString(&%.*s_META[0], MetaInfoCount, AccData, Memory);\n", StructType.ContentsLength, StructType.Contents);
+						printf("}\n\n");
+					}
 
 					/*
-					ryan_testing* M_GET__ryan_testing(s_void* SafeVoid)
+					// Full data struct
 					{
-					if (SafeVoid->IsAllocated && SafeVoid->Type == 1) {
-					return (ryan_testing*)SafeVoid->Data;
-					}
+						printf("meta_member_data %.*s_DATA_META { \n", StructType.ContentsLength, StructType.Contents);
 
-					return GameNull;
+						printf("{{}, &StructToString_%.*s}, \n",
+
+						       // To String func
+						       StructType.ContentsLength, StructType.Contents
+						      );
+
+						printf("}; \n \n");
+
 					}
 					*/
+
+
+					//struct_string_return Ret = StructToString(meta_member * MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena * Memory);
 
 				} else if (Struct.Type == Token_Enum) {
 
@@ -799,15 +756,17 @@ int main(int argc, char* ars[])
 	printf("#define GENERATED \n \n");
 
 	// Output the types
+	/*
 	{
 		printf("enum class meta_member_type { \n");
-		for (int i = 0; i < Types.size(); i++) {
-			printf("%s, \n", Types[i].c_str());
+		for (int i = 0; i < PrimitiveTypes.size(); i++) {
+			printf("%s, \n", PrimitiveTypes[i].c_str());
 		}
 		printf("}; \n \n");
 
-		printf(" struct meta_member { meta_member_type Type;\n string Name;\n uint64 Offset;\n bool32 ArrayLength;\n };\n\n ");
+		printf(" struct meta_member { meta_member_type Type;\n string TypeString;\n string Name;\n uint64 Offset;\n bool32 ArrayLength;\n };\n\n ");
 	}
+	*/
 
 	// Save the assets folder structure for Android. Maybe skip this for other platforms to save time.
 	{
