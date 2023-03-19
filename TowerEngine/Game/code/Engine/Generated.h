@@ -69,9 +69,9 @@ return StructMetaFill(Dest, &second_META[0], ArrayCount(second_META), AccData);
 }
 
 meta_member ryan_test_META[] { 
-{meta_member_type::int32, "int32", "First", (uint64)&((ryan_test *)0)->First, 0,{},{},{}},
-{meta_member_type::custom, "second", "Second", (uint64)&((ryan_test *)0)->Second, 0,&StructMetaFill_second, &second_META[0], ArrayCount(second_META) },
-{meta_member_type::custom, "second", "OnceMore", (uint64)&((ryan_test *)0)->OnceMore, 0,&StructMetaFill_second, &second_META[0], ArrayCount(second_META) },
+{meta_member_type::int32, "int32", "FieldHere", (uint64)&((ryan_test *)0)->FieldHere, 0,{},{},{}},
+{meta_member_type::uint32, "uint32", "FieldHereAnother", (uint64)&((ryan_test *)0)->FieldHereAnother, 0,{},{},{}},
+{meta_member_type::real64, "real64", "Moar", (uint64)&((ryan_test *)0)->Moar, 0,{},{},{}},
 }; 
  
 void M_ALLOC__ryan_test(s_void* SafeVoid, memory_arena* Memory) { 

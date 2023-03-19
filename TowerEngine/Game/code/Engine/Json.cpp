@@ -164,15 +164,6 @@ namespace json {
 		return json_data{};
 	}
 
-	string GenerateJsonLine(string Key, string Data, bool32 AddComma)
-	{
-		// NOTE this is probably a really inefficient way to do this. Probaby a lot of strings and allocations made here for no reason.
-		string MaybeComma = "\r";
-		if (AddComma) { MaybeComma = ","; }
-		string Final = "\r \"" + Key + "\"" + ":" + "\"" + Data + "\"" + MaybeComma;
-		return (Final);
-	}
-
 	void AddKeyPair(string Key, string Data, json_data * JsonData)
 	{
 		for (int32 PairIndex = 0; PairIndex < JsonData->PairsCount; PairIndex++) {
@@ -194,6 +185,15 @@ namespace json {
 	{
 		AddKeyPair(Name + string{"_x"}, Real64ToString(Data.X, 7), JsonData);
 		AddKeyPair(Name + string{"_y"}, Real64ToString(Data.Y, 7), JsonData);
+	}
+
+	string GenerateJsonLine(string Key, string Data, bool32 AddComma)
+	{
+		// NOTE this is probably a really inefficient way to do this. Probaby a lot of strings and allocations made here for no reason.
+		string MaybeComma = "\r";
+		if (AddComma) { MaybeComma = ","; }
+		string Final = "\r \"" + Key + "\"" + ":" + "\"" + Data + "\"" + MaybeComma;
+		return (Final);
 	}
 
 	void SaveToFile(json_data * JsonData, string FileLocation)
@@ -323,6 +323,103 @@ namespace json {
 		}
 
 		SaveToFile(&JsonData, FileLoc);
+	}
+
+	void ReadIntoStruct(char* Path, string KeyParent, meta_member * MetaInfo, uint32 MetaInfoCount, void* DataDest)
+	{
+		json_data JsonData = LoadFile(Path, GlobalTransMem);
+
+		for (uint32 index = 0; index < MetaInfoCount; index++) {
+
+			meta_member* InfoCurr = &MetaInfo[index];
+
+			string Key = KeyParent + InfoCurr->Name;
+			json_pair * KeyPair = GetPair(Key, &JsonData);
+			if (KeyPair != GameNull) {
+				int x = 0;
+
+				string DataInString = KeyPair->Data;
+
+				char* FieldDest = (char*)DataDest;
+				FieldDest = FieldDest + InfoCurr->Offset;
+
+				switch (InfoCurr->Type) {
+					case meta_member_type::uint32: {
+						uint32 D = (uint32)StringToInt32(DataInString);
+						memcpy((void*)FieldDest, (void*)&D, sizeof(uint32));
+					} break;
+
+					case meta_member_type::uint16: {
+						uint16 D = (uint16)StringToInt32(DataInString);
+						memcpy((void*)FieldDest, (void*)&D, sizeof(uint16));
+					} break;
+
+					case meta_member_type::uint8: {
+						uint8 D = (uint8)StringToInt32(DataInString);
+						memcpy((void*)FieldDest, (void*)&D, sizeof(uint8));
+					} break;
+
+					case meta_member_type::int32: {
+						int32 D = StringToInt32(DataInString);
+						memcpy((void*)FieldDest, (void*)&D, sizeof(int32));
+					} break;
+
+					case meta_member_type::int16: {
+						int16 D = (int16)StringToInt32(DataInString);
+						memcpy((void*)FieldDest, (void*)&D, sizeof(int16));
+					} break;
+
+					case meta_member_type::int8: {
+						int8 D = (int8)StringToInt32(DataInString);
+						memcpy((void*)FieldDest, (void*)&D, sizeof(int8));
+					} break;
+
+					case meta_member_type::real32: {
+						real32 D = (real32)StringToReal64(DataInString);
+						memcpy((void*)FieldDest, (void*)&D, sizeof(real32));
+					} break;
+
+					case meta_member_type::real64: {
+						real64 D = (real64)StringToReal64(DataInString);
+						memcpy((void*)FieldDest, (void*)&D, sizeof(real64));
+					} break;
+
+					case meta_member_type::custom: {
+
+						/*
+						*Dest->Curr = '"'; Dest->Curr++;
+
+						uint32 NameStringLength = StringLength(MetaInfo->Name);
+						memcpy((void*)Dest->Curr, (void*)&MetaInfo->Name, NameStringLength);
+						Dest->Curr += NameStringLength;
+
+						*Dest->Curr = '"'; Dest->Curr++;
+
+						*Dest->Curr = ':'; Dest->Curr++;
+						*Dest->Curr = '{'; Dest->Curr++;
+						*Dest->Curr = '\n'; Dest->Curr++;
+
+						MetaInfo->MetaFillShim(Dest, Start);
+
+						*Dest->Curr = '}'; Dest->Curr++;
+						*Dest->Curr = ','; Dest->Curr++;
+						*Dest->Curr = '\n'; Dest->Curr++;
+						*/
+
+					} break;
+
+					INVALID_DEFAULT
+				}
+			}
+
+			/*
+			char* FileData = (char*)AccData;
+			FileData = Start + MetaInfo[index].Offset;
+
+			AddKeyPair(MetaInfo[index].Name, Data, &JsonData);
+			*/
+		}
+
 	}
 }
 
