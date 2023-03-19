@@ -265,10 +265,12 @@ MetaStruct struct third {
 
 MetaStruct struct second {
 	int32 Boost;
-	third Robot;
+	real64 HPRate;
 };
 
 MetaStruct struct ryan_test {
+	second HP;
+
 	int32 FieldHere;
 	uint32 FieldHereAnother;
 	real64 Moar;

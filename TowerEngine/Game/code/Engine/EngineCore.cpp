@@ -89,9 +89,11 @@ enum class meta_member_type {
 };
 
 #include "SaveData.h"
+#include "Json.h"
 
 struct meta_member;
 typedef void(*struct_meta_fill_shim_func)(struct_string_return* Dest, void* AccData);
+typedef void(*json_fill_struct_shim)(json::json_data* JsonData, string KeyParent, void* DataDest);
 
 struct meta_member {
 	meta_member_type Type;
@@ -102,6 +104,7 @@ struct meta_member {
 
 	// Data for custom types
 	struct_meta_fill_shim_func MetaFillShim;
+	json_fill_struct_shim JsonFillShim;
 	meta_member* CustomMetaInfo;
 	int32 CustomMetaInfoCount;
 };

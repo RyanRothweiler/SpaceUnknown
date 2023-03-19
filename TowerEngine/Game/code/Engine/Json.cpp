@@ -5,40 +5,6 @@
 
 namespace json {
 
-	struct json_data;
-
-	struct json_pair {
-		string Key;
-
-		union {
-			string Data;
-			json_data* Child;
-		};
-
-		//int32 ChildrenNodesCount;
-	};
-
-	struct json_data {
-		int32 PairsCount;
-		json_pair* Pairs;
-	};
-
-	enum class token_type {
-		close_curly,
-		open_curly,
-		quote,
-		comma,
-		colon,
-		identifier,
-		end_of_file
-	};
-
-	struct tokenizer {
-		char *Position;
-	};
-
-	const int32 Max_Pairs_Count = 100;
-
 	void MovePastWhitespace(tokenizer *Tokenizer)
 	{
 		while (*Tokenizer->Position == ' ' ||
@@ -325,16 +291,14 @@ namespace json {
 		SaveToFile(&JsonData, FileLoc);
 	}
 
-	void ReadIntoStruct(char* Path, string KeyParent, meta_member * MetaInfo, uint32 MetaInfoCount, void* DataDest)
+	void FillStruct(json_data* JsonData, string KeyParent, meta_member * MetaInfo, uint32 MetaInfoCount, void* DataDest)
 	{
-		json_data JsonData = LoadFile(Path, GlobalTransMem);
-
 		for (uint32 index = 0; index < MetaInfoCount; index++) {
 
 			meta_member* InfoCurr = &MetaInfo[index];
 
 			string Key = KeyParent + InfoCurr->Name;
-			json_pair * KeyPair = GetPair(Key, &JsonData);
+			json_pair * KeyPair = GetPair(Key, JsonData);
 			if (KeyPair != GameNull) {
 				int x = 0;
 
@@ -385,41 +349,19 @@ namespace json {
 					} break;
 
 					case meta_member_type::custom: {
-
-						/*
-						*Dest->Curr = '"'; Dest->Curr++;
-
-						uint32 NameStringLength = StringLength(MetaInfo->Name);
-						memcpy((void*)Dest->Curr, (void*)&MetaInfo->Name, NameStringLength);
-						Dest->Curr += NameStringLength;
-
-						*Dest->Curr = '"'; Dest->Curr++;
-
-						*Dest->Curr = ':'; Dest->Curr++;
-						*Dest->Curr = '{'; Dest->Curr++;
-						*Dest->Curr = '\n'; Dest->Curr++;
-
-						MetaInfo->MetaFillShim(Dest, Start);
-
-						*Dest->Curr = '}'; Dest->Curr++;
-						*Dest->Curr = ','; Dest->Curr++;
-						*Dest->Curr = '\n'; Dest->Curr++;
-						*/
-
+						InfoCurr->JsonFillShim(JsonData, InfoCurr->Name + ".", FieldDest);
 					} break;
 
 					INVALID_DEFAULT
 				}
 			}
-
-			/*
-			char* FileData = (char*)AccData;
-			FileData = Start + MetaInfo[index].Offset;
-
-			AddKeyPair(MetaInfo[index].Name, Data, &JsonData);
-			*/
 		}
+	}
 
+	void ReadIntoStruct(char* Path, meta_member * MetaInfo, uint32 MetaInfoCount, void* DataDest)
+	{
+		json_data JsonData = LoadFile(Path, GlobalTransMem);
+		FillStruct(&JsonData, "", MetaInfo, MetaInfoCount, DataDest);
 	}
 }
 
