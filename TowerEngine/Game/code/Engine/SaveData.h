@@ -1,4 +1,5 @@
 struct struct_string_return {
-	char* Data;
-	uint64 DataLength;
+	char* Start;
+	char* Curr;
+	char* Limit;
 };

@@ -258,13 +258,20 @@ namespace game {
 
 };
 
+MetaStruct struct third {
+	int32 Roger;
+	real64 Droid;
+};
+
 MetaStruct struct second {
 	int32 Boost;
+	third Robot;
 };
 
 MetaStruct struct ryan_test {
 	int32 First;
 	second Second;
+	second OnceMore;
 };
 
 #endif

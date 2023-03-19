@@ -91,7 +91,7 @@ enum class meta_member_type {
 #include "SaveData.h"
 
 struct meta_member;
-typedef struct_string_return(*struct_to_string_func)(meta_member * MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena * Memory);
+typedef void(*struct_meta_fill_shim_func)(struct_string_return* Dest, void* AccData);
 
 struct meta_member {
 	meta_member_type Type;
@@ -101,7 +101,7 @@ struct meta_member {
 	bool32 ArrayLength;
 
 	// Data for custom types
-	struct_to_string_func ToStringFunc;
+	struct_meta_fill_shim_func MetaFillShim;
 	meta_member* CustomMetaInfo;
 	int32 CustomMetaInfoCount;
 };

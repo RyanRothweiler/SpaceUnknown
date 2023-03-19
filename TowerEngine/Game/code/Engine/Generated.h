@@ -20,51 +20,77 @@ string ship_module_id_NAME[] {
 "salvager_i",
 "count",
 }; 
+meta_member third_META[] { 
+{meta_member_type::int32, "int32", "Roger", (uint64)&((third *)0)->Roger, 0,{},{},{}},
+{meta_member_type::real64, "real64", "Droid", (uint64)&((third *)0)->Droid, 0,{},{},{}},
+}; 
+ 
+void M_ALLOC__third(s_void* SafeVoid, memory_arena* Memory) { 
+	SafeVoid->IsAllocated = true; 
+	SafeVoid->Type = 1; 
+	SafeVoid->DataSize = sizeof(third); 
+	SafeVoid->Data = ArenaAllocate(Memory, sizeof(third)); 
+	ClearMemory((uint8*)SafeVoid->Data, sizeof(third)); 
+};
+
+third* M_GET__third(s_void* SafeVoid) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 1) { 
+		return (third*)SafeVoid->Data; 
+	} 
+	return GameNull; 
+};
+
+void StructMetaFill_third (struct_string_return* Dest,  void* AccData){
+return StructMetaFill(Dest, &third_META[0], ArrayCount(third_META), AccData);
+}
+
 meta_member second_META[] { 
 {meta_member_type::int32, "int32", "Boost", (uint64)&((second *)0)->Boost, 0,{},{},{}},
+{meta_member_type::custom, "third", "Robot", (uint64)&((second *)0)->Robot, 0,&StructMetaFill_third, &third_META[0], ArrayCount(third_META) },
 }; 
  
 void M_ALLOC__second(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 1; 
+	SafeVoid->Type = 2; 
 	SafeVoid->DataSize = sizeof(second); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(second)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(second)); 
 };
 
 second* M_GET__second(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 1) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 2) { 
 		return (second*)SafeVoid->Data; 
 	} 
 	return GameNull; 
 };
 
-struct_string_return StructToString_second (meta_member * MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena * Memory){
-return StructToString(&second_META[0], MetaInfoCount, AccData, Memory);
+void StructMetaFill_second (struct_string_return* Dest,  void* AccData){
+return StructMetaFill(Dest, &second_META[0], ArrayCount(second_META), AccData);
 }
 
 meta_member ryan_test_META[] { 
 {meta_member_type::int32, "int32", "First", (uint64)&((ryan_test *)0)->First, 0,{},{},{}},
-{meta_member_type::custom, "second", "Second", (uint64)&((ryan_test *)0)->Second, 0,&StructToString_second, &second_META[0], ArrayCount(second_META) },
+{meta_member_type::custom, "second", "Second", (uint64)&((ryan_test *)0)->Second, 0,&StructMetaFill_second, &second_META[0], ArrayCount(second_META) },
+{meta_member_type::custom, "second", "OnceMore", (uint64)&((ryan_test *)0)->OnceMore, 0,&StructMetaFill_second, &second_META[0], ArrayCount(second_META) },
 }; 
  
 void M_ALLOC__ryan_test(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 2; 
+	SafeVoid->Type = 3; 
 	SafeVoid->DataSize = sizeof(ryan_test); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ryan_test)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ryan_test)); 
 };
 
 ryan_test* M_GET__ryan_test(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 2) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 3) { 
 		return (ryan_test*)SafeVoid->Data; 
 	} 
 	return GameNull; 
 };
 
-struct_string_return StructToString_ryan_test (meta_member * MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena * Memory){
-return StructToString(&ryan_test_META[0], MetaInfoCount, AccData, Memory);
+void StructMetaFill_ryan_test (struct_string_return* Dest,  void* AccData){
+return StructMetaFill(Dest, &ryan_test_META[0], ArrayCount(ryan_test_META), AccData);
 }
 
 string item_id_NAME[] { 

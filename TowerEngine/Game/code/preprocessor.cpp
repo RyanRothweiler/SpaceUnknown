@@ -606,7 +606,7 @@ void ProcessFile(char* Path)
 
 						// Print struct to string method for custon types
 						if (!Found) {
-							printf("&StructToString_%.*s, &%.*s_META[0], ArrayCount(%.*s_META) ",
+							printf("&StructMetaFill_%.*s, &%.*s_META[0], ArrayCount(%.*s_META) ",
 
 							       // To string method
 							       VarType.ContentsLength, VarType.Contents,
@@ -650,9 +650,9 @@ void ProcessFile(char* Path)
 
 					// struct to string for this
 					{
-						printf("struct_string_return StructToString_%.*s (meta_member * MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena * Memory){\n", StructType.ContentsLength, StructType.Contents);
-						//struct_string_return StructToString(meta_member * MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena * Memory)
-						printf("return StructToString(&%.*s_META[0], MetaInfoCount, AccData, Memory);\n", StructType.ContentsLength, StructType.Contents);
+						printf("void StructMetaFill_%.*s (struct_string_return* Dest,  void* AccData){\n", StructType.ContentsLength, StructType.Contents);
+						//void StructMetaFill(struct_string_return* Dest, meta_member* MetaInfo, uint32 MetaInfoCount, void* AccData)
+						printf("return StructMetaFill(Dest, &%.*s_META[0], ArrayCount(%.*s_META), AccData);\n", StructType.ContentsLength, StructType.Contents, StructType.ContentsLength, StructType.Contents);
 						printf("}\n\n");
 					}
 

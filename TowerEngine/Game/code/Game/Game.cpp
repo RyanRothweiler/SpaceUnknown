@@ -350,7 +350,9 @@ namespace game {
 			ryan_test Test = {};
 			Test.First = 100;
 			Test.Second.Boost = 5;
-			struct_string_return Ret = StructToString(&ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Test, GlobalTransMem);
+			Test.OnceMore.Robot.Roger = 1;
+			Test.OnceMore.Robot.Droid = 1.5f;
+			WriteStruct("RyanOutput.json", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Test, GlobalTransMem);
 		}
 
 		// Load skill nodes

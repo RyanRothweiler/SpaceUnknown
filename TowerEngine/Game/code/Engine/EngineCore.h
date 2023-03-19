@@ -147,21 +147,6 @@ void LogToConsole(char* Tag, string Message, int32 LineNumber, char* FileName)
 }
 
 // Preprocessor member type ----------------------------------------------------
-/*
-enum class meta_member_type {
-	uint32, uint16, uint8,
-	int32, int16, int8, int64,
-	real32, real64,
-};
-
-struct meta_member {
-	meta_member_type Type;
-	string Name;
-	uint64 Offset;
-	bool32 ArrayLength;
-};
-*/
-
 struct s_void {
 	int64 Type;
 	bool32 IsAllocated;
