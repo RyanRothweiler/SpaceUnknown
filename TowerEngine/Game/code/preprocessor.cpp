@@ -412,6 +412,14 @@ token GetNextToken(tokenizer* Tokenizer)
 	return NewToken;
 }
 
+void MoveUntil(tokenizer* Tokenizer, std::vector<token_type> Types)
+{
+	token Next = GetNextToken(Tokenizer);
+	if (std::find(Types.begin(), Types.end(), Next.Type) == Types.end()) {
+		Next = GetNextToken(Tokenizer);
+	}
+}
+
 token PeekNextToken(tokenizer* Tokenizer)
 {
 	char* Curr = Tokenizer->Current;
@@ -533,13 +541,20 @@ void ProcessFile(char* Path)
 						}
 
 						token VarName = GetNextToken(&Tokenizer);
-
-						// Verify the types
-						if (VarType.Type != Token_Identifier || VarName.Type != Token_Identifier) {
-							Skipping = true;
-						}
-
 						token AfterVar = GetNextToken(&Tokenizer);
+
+						// Checks / validation
+						if (
+						    VarType.Type != Token_Identifier ||
+						    VarName.Type != Token_Identifier ||
+
+						    // Skip pointers
+						    AfterVar.Type == Token_Star
+						) {
+							Skipping = true;
+							MoveUntil(&Tokenizer, {Token_SemiColon});
+							continue;
+						}
 
 						// Check for arrays
 						uint32 ArrayLength = 0;
@@ -585,7 +600,7 @@ void ProcessFile(char* Path)
 						}
 
 						// Print the line
-						printf("{%.*s, \"%.*s\", \"%.*s\", (uint64)&((%.*s *)0)->%.*s, %.*s,",
+						printf("{%.*s, \"%.*s\", \"%.*s\", (uint64)&((%.*s *)0)->%.*s, %.*s, sizeof(%.*s),",
 
 						       // Type
 						       (int)TypeStr.length(), TypeStr.c_str(),
@@ -601,7 +616,10 @@ void ProcessFile(char* Path)
 						       VarName.ContentsLength, VarName.Contents,
 
 						       // Array Length
-						       ArrayLengthToken.ContentsLength, ArrayLengthToken.Contents
+						       ArrayLengthToken.ContentsLength, ArrayLengthToken.Contents,
+
+						       // Size
+						       VarType.ContentsLength, VarType.Contents
 						      );
 
 						// Print struct to string method for custon types
@@ -768,51 +786,20 @@ int main(int argc, char* ars[])
 	printf("#ifndef GENERATED \n");
 	printf("#define GENERATED \n \n");
 
-	// Output the types
-	/*
-	{
-		printf("enum class meta_member_type { \n");
-		for (int i = 0; i < PrimitiveTypes.size(); i++) {
-			printf("%s, \n", PrimitiveTypes[i].c_str());
-		}
-		printf("}; \n \n");
-
-		printf(" struct meta_member { meta_member_type Type;\n string TypeString;\n string Name;\n uint64 Offset;\n bool32 ArrayLength;\n };\n\n ");
-	}
-	*/
-
 	// Save the assets folder structure for Android. Maybe skip this for other platforms to save time.
+	/*
 	{
 		printf("char* AssetsFolderStructure[] { \n");
 		OutputFolders("T:/Game/assets/", "");
 		printf("}; \n \n");
 	}
-
-
-	/*
-	game_memory GameMemory = {};
-	GameMemory.PermanentMemory.Size = Megabytes(512);
-	GameMemory.TransientMemory.Size = Megabytes(512);
-	GameMemory.TotalSize = GameMemory.PermanentMemory.Size + GameMemory.TransientMemory.Size;
-
-	GameMemory.GameMemoryBlock = malloc((size_t)GameMemory.TotalSize);
-	Assert(GameMemory.GameMemoryBlock);
-
-	GameMemory.PermanentMemory.Memory = GameMemory.GameMemoryBlock;
-	GameMemory.TransientMemory.Memory = (uint8 *)GameMemory.PermanentMemory.Memory + GameMemory.PermanentMemory.Size;
-
-	GameMemory.TransientMemory.EndOfMemory = (uint8 *)GameMemory.TransientMemory.Memory + GameMemory.TransientMemory.Size;
-	GameMemory.PermanentMemory.EndOfMemory = (uint8 *)GameMemory.PermanentMemory.Memory + GameMemory.PermanentMemory.Size;
-	GameMemory.PermanentMemory.Head = (uint8 *)GameMemory.PermanentMemory.Memory + sizeof(engine_state);
 	*/
-
 
 	memory_arena PathsMemory = {};
 	int64 PathsMemorySize = Megabytes(10);
 	PathsMemory.Memory = malloc(PathsMemorySize);
 	PathsMemory.Head = (uint8*)PathsMemory.Memory;
 	PathsMemory.EndOfMemory = (uint8*)PathsMemory.Memory + PathsMemorySize;
-
 
 	{
 		path_list Paths = {};
@@ -823,6 +810,7 @@ int main(int argc, char* ars[])
 			P = P->Next;
 		}
 	}
+
 	{
 		path_list Paths = {};
 		GetPathsForFileType(".h", "T:/Game/code/Game/", &PathsMemory, &Paths);

@@ -1,15 +1,6 @@
 #ifndef GENERATED 
 #define GENERATED 
  
-char* AssetsFolderStructure[] { 
-"Asteroids/",
-"EngineResources/",
-"Icons/",
-"Salvage/",
-"Shaders/",
-"SkillTreeNodes/",
-}; 
- 
 string journey_step_type_NAME[] { 
 "movement",
 "dock_undock",
@@ -21,8 +12,8 @@ string ship_module_id_NAME[] {
 "count",
 }; 
 meta_member third_META[] { 
-{meta_member_type::int32, "int32", "Roger", (uint64)&((third *)0)->Roger, 0,{},{},{},{}},
-{meta_member_type::real64, "real64", "Droid", (uint64)&((third *)0)->Droid, 0,{},{},{},{}},
+{meta_member_type::int32, "int32", "Roger", (uint64)&((third *)0)->Roger, 0, sizeof(int32),{},{},{},{}},
+{meta_member_type::real64, "real64", "Droid", (uint64)&((third *)0)->Droid, 0, sizeof(real64),{},{},{},{}},
 }; 
  
 void M_ALLOC__third(s_void* SafeVoid, memory_arena* Memory) { 
@@ -49,8 +40,8 @@ return json::FillStruct(JsonData, KeyParent, &third_META[0], ArrayCount(third_ME
 }
 
 meta_member second_META[] { 
-{meta_member_type::int32, "int32", "Boost", (uint64)&((second *)0)->Boost, 0,{},{},{},{}},
-{meta_member_type::real64, "real64", "HPRate", (uint64)&((second *)0)->HPRate, 0,{},{},{},{}},
+{meta_member_type::int32, "int32", "Boost", (uint64)&((second *)0)->Boost, 0, sizeof(int32),{},{},{},{}},
+{meta_member_type::real64, "real64", "HPRate", (uint64)&((second *)0)->HPRate, 0, sizeof(real64),{},{},{},{}},
 }; 
  
 void M_ALLOC__second(s_void* SafeVoid, memory_arena* Memory) { 
@@ -77,10 +68,7 @@ return json::FillStruct(JsonData, KeyParent, &second_META[0], ArrayCount(second_
 }
 
 meta_member ryan_test_META[] { 
-{meta_member_type::custom, "second", "HP", (uint64)&((ryan_test *)0)->HP, 0,&StructMetaFill_second, &JsonFillStructShim_second, &second_META[0], ArrayCount(second_META) },
-{meta_member_type::int32, "int32", "FieldHere", (uint64)&((ryan_test *)0)->FieldHere, 0,{},{},{},{}},
-{meta_member_type::uint32, "uint32", "FieldHereAnother", (uint64)&((ryan_test *)0)->FieldHereAnother, 0,{},{},{},{}},
-{meta_member_type::real64, "real64", "Moar", (uint64)&((ryan_test *)0)->Moar, 0,{},{},{},{}},
+{meta_member_type::int32, "int32", "FieldHere", (uint64)&((ryan_test *)0)->FieldHere, 10, sizeof(int32),{},{},{},{}},
 }; 
  
 void M_ALLOC__ryan_test(s_void* SafeVoid, memory_arena* Memory) { 

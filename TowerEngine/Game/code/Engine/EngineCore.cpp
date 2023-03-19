@@ -101,6 +101,7 @@ struct meta_member {
 	string Name;
 	uint64 Offset;
 	bool32 ArrayLength;
+	uint32 Size;
 
 	// Data for custom types
 	struct_meta_fill_shim_func MetaFillShim;

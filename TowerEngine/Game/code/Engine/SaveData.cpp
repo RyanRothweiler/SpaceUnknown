@@ -10,19 +10,6 @@ void StructMemberFill(struct_string_return* Dest, meta_member* MetaInfo, void* A
 	struct {
 		void AddString(struct_string_return* Dest, string Input, meta_member* MetaInfo)
 		{
-			// Add Name
-			*Dest->Curr = '"'; Dest->Curr++;
-
-			uint32 NameStringLength = StringLength(MetaInfo->Name);
-			memcpy((void*)Dest->Curr, (void*)&MetaInfo->Name, NameStringLength);
-			Dest->Curr += NameStringLength;
-
-			*Dest->Curr = '"'; Dest->Curr++;
-
-			*Dest->Curr = ':'; Dest->Curr++;
-
-			Assert(Dest->Curr < Dest->Limit);
-
 			// Add Data
 			*Dest->Curr = '"'; Dest->Curr++;
 
@@ -38,74 +25,94 @@ void StructMemberFill(struct_string_return* Dest, meta_member* MetaInfo, void* A
 		}
 	} Locals;
 
-	char* Start = (char*)AccData;
-	Start = Start + MetaInfo->Offset;
+	// Add Name
+	*Dest->Curr = '"'; Dest->Curr++;
+	uint32 NameStringLength = StringLength(MetaInfo->Name);
+	memcpy((void*)Dest->Curr, (void*)&MetaInfo->Name, NameStringLength);
+	Dest->Curr += NameStringLength;
+	*Dest->Curr = '"'; Dest->Curr++;
 
-	switch (MetaInfo->Type) {
-		case meta_member_type::uint32: {
-			uint32 Data = *((uint32 *)Start);
-			Locals.AddString(Dest, Data, MetaInfo);
-		} break;
+	*Dest->Curr = ':'; Dest->Curr++;
 
-		case meta_member_type::uint16: {
-			uint16 Data = *((uint16 *)Start);
-			Locals.AddString(Dest, Data, MetaInfo);
-		} break;
+	Assert(Dest->Curr < Dest->Limit);
 
-		case meta_member_type::uint8: {
-			uint8 Data = *((uint8 *)Start);
-			Locals.AddString(Dest, Data, MetaInfo);
-		} break;
+	bool32 IsArray = MetaInfo->ArrayLength > 0;
+	int32 DataCount = 1;
 
-		case meta_member_type::int32: {
-			int32 Data = *((int32 *)Start);
-			Locals.AddString(Dest, Data, MetaInfo);
-		} break;
-
-		case meta_member_type::int16: {
-			int16 Data = *((int16 *)Start);
-			Locals.AddString(Dest, Data, MetaInfo);
-		} break;
-
-		case meta_member_type::int8: {
-			int8 Data = *((int8 *)Start);
-			Locals.AddString(Dest, Data, MetaInfo);
-		} break;
-
-		case meta_member_type::real32: {
-			real32 Data = *((real32 *)Start);
-			Locals.AddString(Dest, Data, MetaInfo);
-		} break;
-
-		case meta_member_type::real64: {
-			real64 Data = *((real64 *)Start);
-			Locals.AddString(Dest, Data, MetaInfo);
-		} break;
-
-		case meta_member_type::custom: {
-
-			*Dest->Curr = '"'; Dest->Curr++;
-
-			uint32 NameStringLength = StringLength(MetaInfo->Name);
-			memcpy((void*)Dest->Curr, (void*)&MetaInfo->Name, NameStringLength);
-			Dest->Curr += NameStringLength;
-
-			*Dest->Curr = '"'; Dest->Curr++;
-
-			*Dest->Curr = ':'; Dest->Curr++;
-			*Dest->Curr = '{'; Dest->Curr++;
-			*Dest->Curr = '\n'; Dest->Curr++;
-
-			MetaInfo->MetaFillShim(Dest, Start);
-
-			*Dest->Curr = '}'; Dest->Curr++;
-			*Dest->Curr = ','; Dest->Curr++;
-			*Dest->Curr = '\n'; Dest->Curr++;
-
-		} break;
-
-		INVALID_DEFAULT
+	if (IsArray) {
+		*Dest->Curr = '['; Dest->Curr++;
+		DataCount = MetaInfo->ArrayLength;
 	}
+
+	for (int i = 0; i < DataCount; i++) {
+
+		char* Start = (char*)AccData;
+		Start = Start + (MetaInfo->Offset + (i * MetaInfo->Size));
+
+		switch (MetaInfo->Type) {
+			case meta_member_type::uint32: {
+				uint32 Data = *((uint32 *)Start);
+				Locals.AddString(Dest, Data, MetaInfo);
+			} break;
+
+			case meta_member_type::uint16: {
+				uint16 Data = *((uint16 *)Start);
+				Locals.AddString(Dest, Data, MetaInfo);
+			} break;
+
+			case meta_member_type::uint8: {
+				uint8 Data = *((uint8 *)Start);
+				Locals.AddString(Dest, Data, MetaInfo);
+			} break;
+
+			case meta_member_type::int32: {
+				int32 Data = *((int32 *)Start);
+				Locals.AddString(Dest, Data, MetaInfo);
+			} break;
+
+			case meta_member_type::int16: {
+				int16 Data = *((int16 *)Start);
+				Locals.AddString(Dest, Data, MetaInfo);
+			} break;
+
+			case meta_member_type::int8: {
+				int8 Data = *((int8 *)Start);
+				Locals.AddString(Dest, Data, MetaInfo);
+			} break;
+
+			case meta_member_type::real32: {
+				real32 Data = *((real32 *)Start);
+				Locals.AddString(Dest, Data, MetaInfo);
+			} break;
+
+			case meta_member_type::real64: {
+				real64 Data = *((real64 *)Start);
+				Locals.AddString(Dest, Data, MetaInfo);
+			} break;
+
+			case meta_member_type::custom: {
+
+				*Dest->Curr = '{'; Dest->Curr++;
+				*Dest->Curr = '\n'; Dest->Curr++;
+
+				MetaInfo->MetaFillShim(Dest, Start);
+
+				*Dest->Curr = '}'; Dest->Curr++;
+				*Dest->Curr = ','; Dest->Curr++;
+				*Dest->Curr = '\n'; Dest->Curr++;
+
+			} break;
+
+			INVALID_DEFAULT
+		}
+	}
+
+	if (IsArray) {
+		*Dest->Curr = ']'; Dest->Curr++;
+		*Dest->Curr = ','; Dest->Curr++;
+		DataCount = MetaInfo->ArrayLength;
+	}
+
 }
 
 void StructMetaFill(struct_string_return* Dest, meta_member* MetaInfo, uint32 MetaInfoCount, void* AccData)

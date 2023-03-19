@@ -269,11 +269,7 @@ MetaStruct struct second {
 };
 
 MetaStruct struct ryan_test {
-	second HP;
-
-	int32 FieldHere;
-	uint32 FieldHereAnother;
-	real64 Moar;
+	int32 FieldHere[10];
 };
 
 #endif
