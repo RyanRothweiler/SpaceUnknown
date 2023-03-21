@@ -1,5 +1,6 @@
 namespace json {
 
+	const int32 MaxCharCount = 256;
 	const int32 Max_Pairs_Count = 100;
 #define JSON_MAX_ARRAY 512
 
@@ -43,5 +44,11 @@ namespace json {
 		{
 			return Position > End;
 		}
+	};
+
+	struct struct_string_return {
+		char* Start;
+		char* Curr;
+		char* Limit;
 	};
 }

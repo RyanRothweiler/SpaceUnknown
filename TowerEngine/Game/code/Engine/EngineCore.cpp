@@ -76,23 +76,22 @@ vector2 NearestOnLine(line Line, vector2 Point)
 #include "CSV.cpp"
 
 enum class meta_member_type {
-	uint32,
-	uint16,
-	uint8,
-	int32,
-	int16,
-	int8,
-	int64,
-	real32,
-	real64,
+	uint8, uint16, uint32,
+	int8, int16, int32, int64,
+	real32, real64,
+
+	// structs / classes / custom types
 	custom,
 };
+
+struct meta_member;
 
 #include "SaveData.h"
 #include "Json.h"
 
-struct meta_member;
-typedef void(*struct_meta_fill_shim_func)(struct_string_return* Dest, void* AccData);
+typedef void(*save_data_fill_shim)(save_data::member* Dest, string KeyParent, void* AccData, memory_arena* Memory);
+
+typedef void(*struct_meta_fill_shim_func)(json::struct_string_return* Dest, void* AccData);
 typedef void(*json_fill_struct_shim)(json::json_data* JsonData, string KeyParent, void* DataDest);
 
 struct meta_member {
@@ -106,8 +105,12 @@ struct meta_member {
 	// Data for custom types
 	struct_meta_fill_shim_func MetaFillShim;
 	json_fill_struct_shim JsonFillShim;
+
+	save_data_fill_shim SaveDataFillShim;
+
 	meta_member* CustomMetaInfo;
 	int32 CustomMetaInfoCount;
+
 };
 
 #include "Json.cpp"

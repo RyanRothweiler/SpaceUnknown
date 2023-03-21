@@ -348,14 +348,16 @@ namespace game {
 
 		{
 			ryan_test Test = {};
-			Test.FieldHere[0] = 1;
-			Test.FieldHere[1] = 2;
-			Test.FieldHere[2] = 2;
+			Test.Here = 10;
+			Test.Moar.Boost = -1;
+			Test.Moar.HPRate = 0.5f;
 
-			WriteStruct("RyanOutput.json", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Test, GlobalTransMem);
+			save_data::Write("SaveFile.su", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Test, GlobalTransMem);
+
+			//json::WriteStruct("RyanOutput.json", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Test, GlobalTransMem);
 
 			ryan_test Dest = {};
-			json::ReadIntoStruct("RyanOutput.json", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Dest);
+			//json::ReadIntoStruct("RyanOutput.json", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Dest);
 
 			int x = 0;
 		}

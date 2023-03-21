@@ -62,53 +62,6 @@ namespace json {
 		return JsonData;
 	}
 
-	/*
-	json_data LoadJsonData(tokenizer* Tokenizer, memory_arena* Memory);
-
-	void GrabData(tokenizer* Tokenizer, json_pair* Pair, memory_arena* Memory)
-	{
-		token_type Next = GetNextToken(Tokenizer);
-
-		if (Next == token_type::quote) {
-			// data string
-
-			Pair->Data = GrabUntilToken(Tokenizer, token_type::quote);
-
-		} else if (Next == token_type::open_bracket)  {
-			// an array
-
-			bool32 Running = true;
-			int32 ArrayCount = 0;
-			while (Running && Tokenizer->Valid()) {
-
-				Pair->Child[ArrayCount] = (json_data*)ArenaAllocate(Memory, sizeof(json_data));
-
-				//GrabData(tokenizer * Tokenizer, &Pair->Child[ArrayCount], Memory);
-
-				json_data Child = LoadJsonData(Tokenizer, Memory);
-				MemoryCopy((char*)Pair->Child[ArrayCount], (char*)(&Child), sizeof(json_data));
-
-				ArrayCount++;
-				Assert(ArrayCount < JSON_MAX_ARRAY);
-			}
-
-		} else if (Next == token_type::open_curly)  {
-			// an object
-
-			Pair->Child[0] = (json_data*)ArenaAllocate(Memory, sizeof(json_data));
-
-			json_data Child = LoadJsonData(Tokenizer, Memory);
-			MemoryCopy((char*)Pair->Child[0], (char*)(&Child), sizeof(json_data));
-
-		} else {
-			// data number
-
-			Tokenizer->Position -= 1;
-			Pair->Data = GrabUntilToken(Tokenizer, token_type::comma);
-		}
-	}
-	*/
-
 	json_data LoadJsonData(tokenizer* Tokenizer, bool32 IsArray, memory_arena* Memory)
 	{
 		json_data JsonData = GetJson(Memory);
@@ -453,6 +406,153 @@ namespace json {
 
 		//FillStruct(&JsonData, "", MetaInfo, MetaInfoCount, DataDest);
 	}
+
+
+	void StructMemberFill(struct_string_return* Dest, meta_member* MetaInfo, void* AccData)
+	{
+		struct {
+			void AddString(struct_string_return* Dest, string Input, meta_member* MetaInfo)
+			{
+				// Add Data
+				*Dest->Curr = '"'; Dest->Curr++;
+
+				uint32 DataStringLength = StringLength(Input);
+				memcpy((void*)Dest->Curr, (void*)&Input.CharArray, DataStringLength);
+				Dest->Curr += DataStringLength;
+
+				*Dest->Curr = '"'; Dest->Curr++;
+				*Dest->Curr = ','; Dest->Curr++;
+				*Dest->Curr = '\n'; Dest->Curr++;
+
+				Assert(Dest->Curr < Dest->Limit);
+			}
+		} Locals;
+
+		// Add Name
+		*Dest->Curr = '"'; Dest->Curr++;
+		uint32 NameStringLength = StringLength(MetaInfo->Name);
+		memcpy((void*)Dest->Curr, (void*)&MetaInfo->Name, NameStringLength);
+		Dest->Curr += NameStringLength;
+		*Dest->Curr = '"'; Dest->Curr++;
+
+		*Dest->Curr = ':'; Dest->Curr++;
+
+		Assert(Dest->Curr < Dest->Limit);
+
+		bool32 IsArray = MetaInfo->ArrayLength > 0;
+		int32 DataCount = 1;
+
+		if (IsArray) {
+			*Dest->Curr = '['; Dest->Curr++;
+			DataCount = MetaInfo->ArrayLength;
+		}
+
+		for (int i = 0; i < DataCount; i++) {
+
+			char* Start = (char*)AccData;
+			Start = Start + (MetaInfo->Offset + (i * MetaInfo->Size));
+
+			switch (MetaInfo->Type) {
+				case meta_member_type::uint32: {
+					uint32 Data = *((uint32 *)Start);
+					Locals.AddString(Dest, Data, MetaInfo);
+				} break;
+
+				case meta_member_type::uint16: {
+					uint16 Data = *((uint16 *)Start);
+					Locals.AddString(Dest, Data, MetaInfo);
+				} break;
+
+				case meta_member_type::uint8: {
+					uint8 Data = *((uint8 *)Start);
+					Locals.AddString(Dest, Data, MetaInfo);
+				} break;
+
+				case meta_member_type::int32: {
+					int32 Data = *((int32 *)Start);
+					Locals.AddString(Dest, Data, MetaInfo);
+				} break;
+
+				case meta_member_type::int16: {
+					int16 Data = *((int16 *)Start);
+					Locals.AddString(Dest, Data, MetaInfo);
+				} break;
+
+				case meta_member_type::int8: {
+					int8 Data = *((int8 *)Start);
+					Locals.AddString(Dest, Data, MetaInfo);
+				} break;
+
+				case meta_member_type::real32: {
+					real32 Data = *((real32 *)Start);
+					Locals.AddString(Dest, Data, MetaInfo);
+				} break;
+
+				case meta_member_type::real64: {
+					real64 Data = *((real64 *)Start);
+					Locals.AddString(Dest, Data, MetaInfo);
+				} break;
+
+				case meta_member_type::custom: {
+
+					*Dest->Curr = '{'; Dest->Curr++;
+					*Dest->Curr = '\n'; Dest->Curr++;
+
+					MetaInfo->MetaFillShim(Dest, Start);
+
+					*Dest->Curr = '}'; Dest->Curr++;
+					*Dest->Curr = ','; Dest->Curr++;
+					*Dest->Curr = '\n'; Dest->Curr++;
+
+				} break;
+
+				INVALID_DEFAULT
+			}
+		}
+
+		if (IsArray) {
+			*Dest->Curr = ']'; Dest->Curr++;
+			*Dest->Curr = ','; Dest->Curr++;
+			DataCount = MetaInfo->ArrayLength;
+		}
+
+	}
+
+	void StructMetaFill(struct_string_return* Dest, meta_member* MetaInfo, uint32 MetaInfoCount, void* AccData)
+	{
+		for (uint32 index = 0; index < MetaInfoCount; index++) {
+			StructMemberFill(Dest, &MetaInfo[index], AccData);
+		}
+	}
+
+	struct_string_return StructToString(meta_member* MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena* Memory)
+	{
+		struct_string_return Ret = {};
+
+		uint32 MaxSize = Megabytes(MaxCharCount);
+
+		Ret.Start = (char*)ArenaAllocate(Memory, MaxSize);
+		Ret.Curr = Ret.Start;
+		Ret.Limit = Ret.Start + MaxSize;
+
+		*Ret.Curr = '{'; Ret.Curr++;
+		*Ret.Curr = '\n'; Ret.Curr++;
+
+		StructMetaFill(&Ret, MetaInfo, MetaInfoCount, AccData);
+
+		*Ret.Curr = '\n'; Ret.Curr++;
+		*Ret.Curr = '}'; Ret.Curr++;
+
+		return Ret;
+	}
+
+	void WriteStruct(char* Dest, meta_member* MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena* Memory)
+	{
+		struct_string_return Ret = StructToString(MetaInfo, MetaInfoCount, AccData, Memory);
+		PlatformApi.WriteFile(Dest, Ret.Start, (uint32)(Ret.Curr - Ret.Start));
+	}
+
+
 }
 
 #endif

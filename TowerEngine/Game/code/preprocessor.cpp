@@ -624,12 +624,16 @@ void ProcessFile(char* Path)
 
 						// Print struct to string method for custon types
 						if (!Found) {
-							printf("&StructMetaFill_%.*s, &JsonFillStructShim_%.*s, &%.*s_META[0], ArrayCount(%.*s_META) ",
+
+							printf("&StructMetaFill_%.*s, &JsonFillStructShim_%.*s, &SaveDataFillShim_%.*s, &%.*s_META[0], ArrayCount(%.*s_META) ",
 
 							       // To string method
 							       VarType.ContentsLength, VarType.Contents,
 
 							       // Json struct fill method
+							       VarType.ContentsLength, VarType.Contents,
+
+							       // save data shim
 							       VarType.ContentsLength, VarType.Contents,
 
 							       // Meta array
@@ -639,7 +643,7 @@ void ProcessFile(char* Path)
 							       VarType.ContentsLength, VarType.Contents
 							      );
 						} else {
-							printf("{},{},{},{}");
+							printf("{},{},{},{},{}");
 						}
 
 						printf("},\n");
@@ -671,18 +675,22 @@ void ProcessFile(char* Path)
 
 					// struct to string for this
 					{
-						printf("void StructMetaFill_%.*s (struct_string_return* Dest,  void* AccData){\n", StructType.ContentsLength, StructType.Contents);
-						//void StructMetaFill(struct_string_return* Dest, meta_member* MetaInfo, uint32 MetaInfoCount, void* AccData)
-						printf("return StructMetaFill(Dest, &%.*s_META[0], ArrayCount(%.*s_META), AccData);\n", StructType.ContentsLength, StructType.Contents, StructType.ContentsLength, StructType.Contents);
+						printf("void StructMetaFill_%.*s (json::struct_string_return* Dest,  void* AccData){\n", StructType.ContentsLength, StructType.Contents);
+						printf("return json::StructMetaFill(Dest, &%.*s_META[0], ArrayCount(%.*s_META), AccData);\n", StructType.ContentsLength, StructType.Contents, StructType.ContentsLength, StructType.Contents);
+						printf("}\n\n");
+					}
+
+					// save data fill shim
+					{
+						printf("void SaveDataFillShim_%.*s (save_data::member* Dest, string KeyParent, void* AccData, memory_arena* Memory){\n", StructType.ContentsLength, StructType.Contents);
+						//void AddMembers(member* Root, string KeyParent, meta_member* MI, uint32 MICount, void* Data, memory_arena* TransMem)
+						printf("return save_data::AddMembers(Dest, KeyParent, &%.*s_META[0], ArrayCount(%.*s_META), AccData, Memory);\n", StructType.ContentsLength, StructType.Contents, StructType.ContentsLength, StructType.Contents);
 						printf("}\n\n");
 					}
 
 					// json to struct for this
 					{
-						//typedef void(*json_fill_struct_shim)(json::json_data* JsonData, string KeyParent, meta_member * MetaInfo, uint32 MetaInfoCount, void* DataDest);
 						printf("void JsonFillStructShim_%.*s (json::json_data* JsonData, string KeyParent, void* DataDest){\n", StructType.ContentsLength, StructType.Contents);
-						//json::json_data* JsonData, string KeyParent, meta_member * MetaInfo, uint32 MetaInfoCount, void* DataDest
-						//void FillStruct(json_data* JsonData, string KeyParent, meta_member * MetaInfo, uint32 MetaInfoCount, void* DataDest)
 						printf("return json::FillStruct(JsonData, KeyParent, &%.*s_META[0], ArrayCount(%.*s_META), DataDest);\n", StructType.ContentsLength, StructType.Contents, StructType.ContentsLength, StructType.Contents);
 						printf("}\n\n");
 					}
