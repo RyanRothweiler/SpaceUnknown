@@ -269,6 +269,7 @@ MetaStruct struct second {
 };
 
 MetaStruct struct ryan_test {
+	third More;
 	int32 FieldHere[10];
 };
 

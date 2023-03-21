@@ -350,12 +350,12 @@ namespace game {
 			ryan_test Test = {};
 			Test.FieldHere[0] = 1;
 			Test.FieldHere[1] = 2;
-			Test.FieldHere[2] = 200;
+			Test.FieldHere[2] = 2;
 
 			WriteStruct("RyanOutput.json", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Test, GlobalTransMem);
 
 			ryan_test Dest = {};
-			//json::ReadIntoStruct("RyanOutput.json", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Dest);
+			json::ReadIntoStruct("RyanOutput.json", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Dest);
 
 			int x = 0;
 		}

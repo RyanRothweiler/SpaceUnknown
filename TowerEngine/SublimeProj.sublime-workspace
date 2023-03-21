@@ -4,6 +4,50 @@
 		"selected_items":
 		[
 			[
+				"token",
+				"token_type"
+			],
+			[
+				"Token",
+				"Token_Star"
+			],
+			[
+				"Meta",
+				"MetaInfoCount"
+			],
+			[
+				"Json",
+				"JsonData"
+			],
+			[
+				"json",
+				"json_data"
+			],
+			[
+				"StringToi",
+				"StringToInt32"
+			],
+			[
+				"Get",
+				"GetInt32"
+			],
+			[
+				"MetaIn",
+				"MetaInfoCount"
+			],
+			[
+				"Struct",
+				"StructToString"
+			],
+			[
+				"meta",
+				"meta_member"
+			],
+			[
+				"struct",
+				"struct_string_return"
+			],
+			[
 				"update",
 				"updateRequest"
 			],
@@ -470,55 +514,83 @@
 			[
 				"Drop",
 				"DropTables"
-			],
-			[
-				"growth",
-				"growthStage"
-			],
-			[
-				"Begin",
-				"BeginMenu"
-			],
-			[
-				"Battle",
-				"BattleEnd"
-			],
-			[
-				"Paltform",
-				"PlatformApi"
-			],
-			[
-				"Scroll",
-				"ScrollRect"
-			],
-			[
-				"Final",
-				"FinalPositionAbsolute"
-			],
-			[
-				"RenderS",
-				"RenderScissorRect"
-			],
-			[
-				"TOuchS",
-				"TouchScrollSensitivity"
-			],
-			[
-				"circ",
-				"circlesCount"
-			],
-			[
-				"re",
-				"regRateOverTime"
-			],
-			[
-				"right",
-				"rightEmitter"
 			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "Game/code/Game/Game.cpp",
+			"settings":
+			{
+				"buffer_size": 37850,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/t/game/code/engine/generated.h",
+			"settings":
+			{
+				"buffer_size": 4015,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/code/Game/Game.h",
+			"settings":
+			{
+				"buffer_size": 5471,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "#pragma once\n\n#ifndef JsonCPP\n#define JsonCPP\n\nnamespace json {\n\n\tvoid MovePastWhitespace(tokenizer *Tokenizer)\n\t{\n\t\twhile (*Tokenizer->Position == ' ' ||\n\t\t        *Tokenizer->Position == '\\n' ||\n\t\t        *Tokenizer->Position == '\\r' ||\n\t\t        *Tokenizer->Position == '\\t') {\n\t\t\tTokenizer->Position++;\n\t\t}\n\t}\n\n\ttoken_type GetNextToken(tokenizer *Tokenizer)\n\t{\n\t\tMovePastWhitespace(Tokenizer);\n\n\t\ttoken_type TokenType = token_type::end_of_file;\n\t\tswitch (*Tokenizer->Position) {\n\t\t\tcase ('['): { TokenType = token_type::open_bracket; \t} break;\n\t\t\tcase (']'): { TokenType = token_type::close_bracket;\t} break;\n\t\t\tcase ('{'): { TokenType = token_type::open_curly; \t\t} break;\n\t\t\tcase ('}'): { TokenType = token_type::close_curly; \t\t} break;\n\t\t\tcase ('\"'): { TokenType = token_type::quote; \t\t\t} break;\n\t\t\tcase (','): { TokenType = token_type::comma; \t\t\t} break;\n\t\t\tcase (':'): { TokenType = token_type::colon;\t\t\t} break;\n\t\t\tcase ('*'): { TokenType = token_type::end_of_file; \t\t} break;\n\t\t\tdefault: { TokenType = token_type::identifier; \t\t\t} break;\n\t\t}\n\t\tTokenizer->Position++;\n\t\treturn (TokenType);\n\t}\n\n\tstring GrabUntilToken(tokenizer* Tokenizer, token_type EndToken)\n\t{\n\t\tchar* KeyStart = Tokenizer->Position;\n\t\twhile (GetNextToken(Tokenizer) != EndToken) { }\n\t\tchar* KeyEnd = Tokenizer->Position;\n\t\tKeyEnd -= 1;\n\n\t\tstring Identifier = {};\n\t\twhile (KeyStart < KeyEnd) {\n\t\t\tchar NextCharacter = KeyStart[0];\n\t\t\tIdentifier = Identifier + NextCharacter;\n\n\t\t\tKeyStart++;\n\t\t}\n\n\t\treturn (Identifier);\n\t}\n\n\tjson_data GetJson(memory_arena* Memory)\n\t{\n\t\tjson_data JsonData = {};\n\t\tJsonData.PairsCount = 0;\n\t\tJsonData.Pairs = (json_pair *)ArenaAllocate(Memory, sizeof(json_pair) * Max_Pairs_Count);\n\n\t\treturn JsonData;\n\t}\n\n\tjson_data LoadJsonData(tokenizer* Tokenizer, memory_arena* Memory)\n\t{\n\t\tjson_data JsonData = GetJson(Memory);\n\n\t\ttoken_type NextToken = GetNextToken(Tokenizer);\n\n\t\twhile (true) {\n\t\t\tif (NextToken == token_type::open_curly) {\n\n\t\t\t} else if (NextToken == token_type::close_curly) {\n\t\t\t\tbreak;\n\t\t\t} else if (NextToken == token_type::quote) {\n\n\t\t\t\tJsonData.Pairs[JsonData.PairsCount].Key = GrabUntilToken(Tokenizer, token_type::quote);\n\t\t\t\tTokenizer->Position += 1;\n\n\t\t\t\ttoken_type Next = GetNextToken(Tokenizer);\n\n\t\t\t\tif (Next == token_type::quote) {\n\t\t\t\t\t// data itself\n\t\t\t\t\tJsonData.Pairs[JsonData.PairsCount].Data = GrabUntilToken(Tokenizer, token_type::quote);\n\n\t\t\t\t} else if (Next == token_type::open_bracket)  {\n\t\t\t\t\t// an array\n\n\t\t\t\t\tbool32 Running = true;\n\t\t\t\t\tint32\n\t\t\t\t\twhile (Running && Tokenizer->Valid()) {\n\n\t\t\t\t\t\tJsonData.Pairs[JsonData.PairsCount].Child[0] = (json_data*)ArenaAllocate(Memory, sizeof(json_data));\n\n\t\t\t\t\t\tjson_data Child = LoadJsonData(Tokenizer, Memory);\n\t\t\t\t\t\tMemoryCopy((char*)JsonData.Pairs[JsonData.PairsCount].Child[0], (char*)(&Child), sizeof(json_data));\n\t\t\t\t\t}\n\n\t\t\t\t} else if (Next == token_type::open_curly)  {\n\t\t\t\t\t// an object\n\n\t\t\t\t\tJsonData.Pairs[JsonData.PairsCount].Child[0] = (json_data*)ArenaAllocate(Memory, sizeof(json_data));\n\n\t\t\t\t\tjson_data Child = LoadJsonData(Tokenizer, Memory);\n\t\t\t\t\tMemoryCopy((char*)JsonData.Pairs[JsonData.PairsCount].Child[0], (char*)(&Child), sizeof(json_data));\n\n\t\t\t\t} else {\n\t\t\t\t\tTokenizer->Position -= 1;\n\t\t\t\t\tJsonData.Pairs[JsonData.PairsCount].Data = GrabUntilToken(Tokenizer, token_type::comma);\n\t\t\t\t}\n\n\t\t\t\t// make sure that key isn't alraedy used\n\t\t\t\t/*\n\t\t\t\tfor (int32 KeyIndex = 0; KeyIndex < JsonData.PairsCount; KeyIndex++) {\n\t\t\t\t\tif (JsonData.Pairs[KeyIndex].Key == JsonData.Pairs[JsonData.PairsCount].Key) {\n\t\t\t\t\t\t// Duplicate key detected\n\t\t\t\t\t\t//Assert(0);\n\t\t\t\t\t\t// this could be an error\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\t*/\n\n\t\t\t\tJsonData.PairsCount++;\n\t\t\t\tAssert(JsonData.PairsCount < Max_Pairs_Count);\n\t\t\t}\n\n\t\t\tNextToken = GetNextToken(Tokenizer);\n\t\t}\n\n\t\treturn JsonData;\n\t}\n\n\tjson_data LoadFile(string Path, memory_arena * Memory)\n\t{\n\t\tread_file_result Result = PlatformApi.ReadFile(Path.CharArray, Memory);\n\n\t\tif (Result.ContentsSize > 0) {\n\t\t\ttokenizer Tokenizer = {};\n\t\t\tTokenizer.Position = (char*)Result.Contents;\n\t\t\tTokenizer.End = Tokenizer.Position + Result.ContentsSize;\n\n\t\t\ttoken_type NextToken = GetNextToken(&Tokenizer);\n\t\t\tAssert(NextToken == token_type::open_curly);\n\n\t\t\treturn LoadJsonData(&Tokenizer, Memory);\n\t\t}\n\n\t\treturn json_data{};\n\t}\n\n\tvoid AddKeyPair(string Key, string Data, json_data * JsonData)\n\t{\n\t\tfor (int32 PairIndex = 0; PairIndex < JsonData->PairsCount; PairIndex++) {\n\t\t\tif (JsonData->Pairs[PairIndex].Key == Key) {\n\t\t\t\tJsonData->Pairs[PairIndex].Data = Data;\n\t\t\t\treturn;\n\t\t\t}\n\t\t}\n\n\t\tjson_pair* NewPair = &JsonData->Pairs[JsonData->PairsCount];\n\t\tNewPair->Key = Key;\n\t\tNewPair->Data = Data;\n\n\t\tAssert(JsonData->PairsCount < Max_Pairs_Count);\n\t\tJsonData->PairsCount++;\n\t}\n\n\tvoid AddKeyPair(string Name, vector2 Data, json_data * JsonData)\n\t{\n\t\tAddKeyPair(Name + string{\"_x\"}, Real64ToString(Data.X, 7), JsonData);\n\t\tAddKeyPair(Name + string{\"_y\"}, Real64ToString(Data.Y, 7), JsonData);\n\t}\n\n\tstring GenerateJsonLine(string Key, string Data, bool32 AddComma)\n\t{\n\t\t// NOTE this is probably a really inefficient way to do this. Probaby a lot of strings and allocations made here for no reason.\n\t\tstring MaybeComma = \"\\r\";\n\t\tif (AddComma) { MaybeComma = \",\"; }\n\t\tstring Final = \"\\r \\\"\" + Key + \"\\\"\" + \":\" + \"\\\"\" + Data + \"\\\"\" + MaybeComma;\n\t\treturn (Final);\n\t}\n\n\tvoid SaveToFile(json_data * JsonData, string FileLocation)\n\t{\n\t\tchar* FinalString = (char *)ArenaAllocate(GlobalTransMem, sizeof(char) * 4096);\n\t\tFinalString[0] = '{';\n\t\tint32 FinalIndex = 1;\n\n\t\tfor (int32 PairIndex = 0; PairIndex < JsonData->PairsCount; PairIndex++) {\n\t\t\tstring NewLine = GenerateJsonLine(JsonData->Pairs[PairIndex].Key, JsonData->Pairs[PairIndex].Data, PairIndex != JsonData->PairsCount - 1);\n\t\t\tint32 NewLineLength = StringLength(NewLine);\n\t\t\tfor (int32 CharIndex = 0; CharIndex < NewLineLength; CharIndex++) {\n\t\t\t\tFinalString[FinalIndex] = NewLine.CharArray[CharIndex];\n\t\t\t\tFinalIndex++;\n\t\t\t}\n\t\t}\n\n\t\tFinalString[FinalIndex] = '}';\n\t\tFinalIndex++;\n\n\t\tPlatformApi.WriteFile(FileLocation.CharArray, FinalString, sizeof(char) * FinalIndex);\n\t}\n\n\tjson_pair* GetPair(string Key, json_data* JsonData)\n\t{\n\t\tsplit_info Split = SplitString(Key, '.', false, true, GlobalTransMem);\n\n\t\tfor (int32 PairIndex = 0; PairIndex < JsonData->PairsCount; PairIndex++) {\n\t\t\tjson_pair* Pair = &JsonData->Pairs[PairIndex];\n\n\t\t\tif (Pair->Key == Split.Strings[0]) {\n\n\t\t\t\tif (Split.StringsCount == 1) {\n\t\t\t\t\treturn Pair;\n\t\t\t\t} else {\n\n\t\t\t\t\tstring NewPath = Split.Strings[1];\n\t\t\t\t\tfor (uint32 x = 2; x < Split.StringsCount; x++) {\n\t\t\t\t\t\tNewPath = NewPath + \".\" + Split.Strings[x];\n\t\t\t\t\t}\n\n\t\t\t\t\treturn GetPair(NewPath, Pair->Child[0]);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\n\t\t// That key not found\n\t\treturn GameNull;\n\t}\n\n\tstring GetData(string Key, json_data * JsonData)\n\t{\n\t\tjson_pair* Pair = GetPair(Key, JsonData);\n\n\t\tif (Pair != GameNull) {\n\t\t\treturn Pair->Data;\n\t\t}\n\n\t\t// Did not find that pair\n\t\treturn (EmptyString);\n\t}\n\n\tstring GetString(string Key, json_data * Data)\n\t{\n\t\treturn (GetData(Key, Data));\n\t}\n\n\tbool32 GetBool(string Key, json_data* Json)\n\t{\n\t\tstring Data = GetData(Key, Json);\n\t\tif (Data == \"1\") return true;\n\n\t\t// Default for no key is false\n\t\treturn false;\n\t}\n\n\tint32 GetInt32(string Key, json_data * Data)\n\t{\n\t\tstring DataInString = GetData(Key, Data);\n\t\tint32 IntData = StringToInt32(DataInString);\n\t\treturn (IntData);\n\t}\n\n\tint64 GetInt64(string Key, json_data * Data)\n\t{\n\t\tstring DataInString = GetData(Key, Data);\n\t\tint64 IntData = StringToInt64(DataInString);\n\t\treturn (IntData);\n\t}\n\n\tint32 GetInt32Safe(string Key, json_data* Data, int32 Default)\n\t{\n\t\tstring DataInString = GetData(Key, Data);\n\t\tif (DataInString == EmptyString) {\n\t\t\treturn Default;\n\t\t}\n\n\t\tint32 IntData = StringToInt32(DataInString);\n\t\treturn (IntData);\n\t}\n\n\treal64 GetReal64(string Key, json_data* Data)\n\t{\n\t\tstring DataInString = GetData(Key, Data);\n\t\treal64 Real = StringToReal64(DataInString);\n\t\treturn (Real);\n\t}\n\n\tvector2 GetVector2(string Key, json_data* Data)\n\t{\n\t\tvector2 Ret;\n\t\tRet.X = GetReal64(Key + \"_x\", Data);\n\t\tRet.Y = GetReal64(Key + \"_y\", Data);\n\t\treturn Ret;\n\t}\n\n\tvoid WriteStruct(meta_member * MetaInfo, uint32 MetaInfoCount, void* AccData, string FileLoc)\n\t{\n\t\tjson_data JsonData = GetJson(GlobalTransMem);\n\n\t\tfor (uint32 index = 0; index < MetaInfoCount; index++) {\n\t\t\tchar* Start = (char*)AccData;\n\t\t\tStart = Start + MetaInfo[index].Offset;\n\t\t\tuint32 Data = *((uint32 *)Start);\n\n\t\t\tAddKeyPair(MetaInfo[index].Name, Data, &JsonData);\n\t\t}\n\n\t\tSaveToFile(&JsonData, FileLoc);\n\t}\n\n\tvoid FillStruct(json_data* JsonData, string KeyParent, meta_member * MetaInfo, uint32 MetaInfoCount, void* DataDest)\n\t{\n\t\tfor (uint32 index = 0; index < MetaInfoCount; index++) {\n\n\t\t\tmeta_member* InfoCurr = &MetaInfo[index];\n\n\t\t\tstring Key = KeyParent + InfoCurr->Name;\n\t\t\tjson_pair * KeyPair = GetPair(Key, JsonData);\n\t\t\tif (KeyPair != GameNull) {\n\n\t\t\t\tstring DataInString = KeyPair->Data;\n\n\t\t\t\t/*\n\t\t\t\tbool32 IsArray = MetaInfo->ArrayLength > 0;\n\t\t\t\tint32 DataCount = 1;\n\n\t\t\t\tif (IsArray) {\n\t\t\t\t*Dest->Curr = '['; Dest->Curr++;\n\t\t\t\tDataCount = MetaInfo->ArrayLength;\n\t\t\t\t}\n\n\t\t\t\tfor (int i = 0; i < DataCount; i++) {\n\n\t\t\t\tchar* Start = (char*)AccData;\n\t\t\t\tStart = Start + (MetaInfo->Offset + (i * MetaInfo->Size));\n\t\t\t\t*/\n\n\n\t\t\t\tchar* FieldDest = (char*)DataDest;\n\t\t\t\tFieldDest = FieldDest + InfoCurr->Offset;\n\n\t\t\t\tswitch (InfoCurr->Type) {\n\t\t\t\t\tcase meta_member_type::uint32: {\n\t\t\t\t\t\tuint32 D = (uint32)StringToInt32(DataInString);\n\t\t\t\t\t\tmemcpy((void*)FieldDest, (void*)&D, sizeof(uint32));\n\t\t\t\t\t} break;\n\n\t\t\t\t\tcase meta_member_type::uint16: {\n\t\t\t\t\t\tuint16 D = (uint16)StringToInt32(DataInString);\n\t\t\t\t\t\tmemcpy((void*)FieldDest, (void*)&D, sizeof(uint16));\n\t\t\t\t\t} break;\n\n\t\t\t\t\tcase meta_member_type::uint8: {\n\t\t\t\t\t\tuint8 D = (uint8)StringToInt32(DataInString);\n\t\t\t\t\t\tmemcpy((void*)FieldDest, (void*)&D, sizeof(uint8));\n\t\t\t\t\t} break;\n\n\t\t\t\t\tcase meta_member_type::int32: {\n\t\t\t\t\t\tint32 D = StringToInt32(DataInString);\n\t\t\t\t\t\tmemcpy((void*)FieldDest, (void*)&D, sizeof(int32));\n\t\t\t\t\t} break;\n\n\t\t\t\t\tcase meta_member_type::int16: {\n\t\t\t\t\t\tint16 D = (int16)StringToInt32(DataInString);\n\t\t\t\t\t\tmemcpy((void*)FieldDest, (void*)&D, sizeof(int16));\n\t\t\t\t\t} break;\n\n\t\t\t\t\tcase meta_member_type::int8: {\n\t\t\t\t\t\tint8 D = (int8)StringToInt32(DataInString);\n\t\t\t\t\t\tmemcpy((void*)FieldDest, (void*)&D, sizeof(int8));\n\t\t\t\t\t} break;\n\n\t\t\t\t\tcase meta_member_type::real32: {\n\t\t\t\t\t\treal32 D = (real32)StringToReal64(DataInString);\n\t\t\t\t\t\tmemcpy((void*)FieldDest, (void*)&D, sizeof(real32));\n\t\t\t\t\t} break;\n\n\t\t\t\t\tcase meta_member_type::real64: {\n\t\t\t\t\t\treal64 D = (real64)StringToReal64(DataInString);\n\t\t\t\t\t\tmemcpy((void*)FieldDest, (void*)&D, sizeof(real64));\n\t\t\t\t\t} break;\n\n\t\t\t\t\tcase meta_member_type::custom: {\n\t\t\t\t\t\tInfoCurr->JsonFillShim(JsonData, InfoCurr->Name + \".\", FieldDest);\n\t\t\t\t\t} break;\n\n\t\t\t\t\tINVALID_DEFAULT\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\n\tvoid ReadIntoStruct(char* Path, meta_member * MetaInfo, uint32 MetaInfoCount, void* DataDest)\n\t{\n\t\tjson_data JsonData = LoadFile(Path, GlobalTransMem);\n\n\t\tjson_pair* TestPair = GetPair(\"FieldHere[1].Droid\", &JsonData);\n\n\t\tint x = 0;\n\n\t\t//FillStruct(&JsonData, \"\", MetaInfo, MetaInfoCount, DataDest);\n\t}\n}\n\n#endif",
+			"file": "Game/code/Engine/Json.cpp",
+			"file_size": 11462,
+			"file_write_time": 133238488295336697,
+			"settings":
+			{
+				"buffer_size": 11068,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/code/Engine/EngineCore.cpp",
+			"settings":
+			{
+				"buffer_size": 36288,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/code/Engine/EngineCore.h",
+			"settings":
+			{
+				"buffer_size": 13924,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/code/Engine/Json.h",
+			"settings":
+			{
+				"buffer_size": 593,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/code/Engine/SaveData.cpp",
+			"settings":
+			{
+				"buffer_size": 6607,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -633,6 +705,48 @@
 	],
 	"file_history":
 	[
+		"/T/Game/build/Windows/RyanOutput.json",
+		"/C/Tripp/backend/firebase-backend/Tools/audiosync_psvr_stag.bat",
+		"/C/Tripp/backend/firebase-backend/Tools/UnitySync/run.js",
+		"/C/Tripp/backend/firebase-backend/Tools/UnitySync/src/UnitySync.js",
+		"/E/tripp-client-audio - ps4/Assets/Editor/ResourceManagement/ExpressionStringBuilder.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Account/ServerMedia.cs",
+		"/E/tripp-client-audio - ps4/Assets/TeachingDefinitions/C2T_NavigatingTheHolidaysWithFamilyChallenge.txt",
+		"/E/tripp-client-audio - ps4/Assets/TeachingDefinitions/C2T_LucidDreamChallenge.txt",
+		"/C/Tripp/backend/firebase-backend/Tools/audiosync_psvr_dev.bat",
+		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/MainMenuExperienceCircle.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/AssetManagement/ExperienceExpressionNetworking.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/AssetManagement/TeachingVOExpression.cs",
+		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/AssetManagement/ExperienceExpression.cs",
+		"/E/tripp-client - android/Assets/Scripts/UI/TrippComposer/TrippComposerContentManager.cs",
+		"/E/tripp-client-audio - ps4/Assets/TeachingDefinitions/C2T_LiftingOutSlump.txt",
+		"/E/tripp-client-audio - ps4/TeachingExpressionStrings/C2T_Abundance.json",
+		"/C/Tripp/backend/firebase-backend/Tools/UnitySync/README.md",
+		"/C/Tripp/backend/firebase-backend/Tools/UnitySync/src/loadYaml.js",
+		"/t/game/code/engine/renderer/shaderloader.cpp",
+		"/T/Game/code/preprocessor.cpp",
+		"/T/Game/code/Engine/SaveData.h",
+		"/T/Game/code/Platform/platform_win32.cpp",
+		"/T/Game/code/Engine/MemoryManager.cpp",
+		"/T/Game/code/Engine/String.cpp",
+		"/T/Game/code/Engine/Json.h",
+		"/T/Game/code/Engine/Json.cpp",
+		"/T/Game/code/Game/Game.cpp",
+		"/T/Game/code/Platform/platform_emscripten.cpp",
+		"/T/Game/code/Game/Game.h",
+		"/t/game/code/engine/generated.h",
+		"/T/Game/code/Engine/EngineCore.h",
+		"/T/Game/code/Engine/EngineCore.cpp",
+		"/T/Game/code/Engine/SaveData.cpp",
+		"/T/Game/code/Game/SkillTree.h",
+		"/T/Game/code/Engine/Generated.h",
+		"/E/tripp-client - android/Assets/Journey/Art/Art/Shaders/Uber/UberLibrary.cginc",
+		"/E/tripp-client - android/Assets/Journey/Art/Art/Shaders/Uber/AmberOpaque.shader",
+		"/E/tripp-client - android/Assets/Journey/Scripts/ShaderSwapper.cs",
+		"/E/tripp-client - android/Assets/Scripts/Util/TrippBootstrapper.cs",
+		"/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/MainMenuWelcomeController.cs",
+		"/C/Users/perma/Downloads/log.txt",
+		"/T/Game/code/Engine/Types.cpp",
 		"/E/tripp-client - android/Assets/Journey/Scripts/LocalAvatar.cs",
 		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/AethericArts/XR/General/LinkAvatarToHelper.cs",
 		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/Pixelplacement/Surge/Utilities/Initialization.cs",
@@ -642,13 +756,8 @@
 		"/T/Game/code/Engine/LinkedList.cpp",
 		"/T/Game/code/Game/Asteroid.cpp",
 		"/T/Game/code/Game/Ship.h",
-		"/T/Game/code/Game/Game.h",
 		"/T/Game/code/Game/Ship.cpp",
-		"/T/Game/code/Engine/String.cpp",
 		"/T/Game/code/Game/SkillTree.cpp",
-		"/T/Game/code/Game/SkillTree.h",
-		"/T/Game/code/Engine/EngineCore.cpp",
-		"/T/Game/code/Game/Game.cpp",
 		"/T/Game/build/Windows/SaveGame.sus",
 		"/C/Users/perma/Desktop/notes.txt",
 		"/C/Users/perma/Desktop/log.txt",
@@ -667,7 +776,6 @@
 		"/E/tripp-client - android/Assets/Journey/Scripts/Utils/TimeRiggFastForward.cs",
 		"/E/tripp-client - android/Assets/3rdParty/Scripts/Journey/JourneyExperienceManager.cs",
 		"/T/Game/code/Engine/imgui/imgui_demo.cpp",
-		"/T/Game/code/Engine/EngineCore.h",
 		"/T/Game/code/Engine/Renderer/ogles3.cpp",
 		"/T/Game/code/Engine/FixedAllocator.cpp",
 		"/E/tripp-client - android/Assets/Scripts/Input/PlayerInput.cs",
@@ -676,7 +784,6 @@
 		"/T/Game/code/Engine/Math.cpp",
 		"/T/Game/code/Game/Asteroid.h",
 		"/t/game/code/engine/linkedlist.h",
-		"/T/Game/code/Platform/platform_win32.cpp",
 		"/E/tripp-client - android/Assets/Scripts/UI/InExperience/TrippPauseMenu.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Engine/ExperienceController.cs",
 		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/SerenityGarden/UI/SanctumPauseMenu.cs",
@@ -689,7 +796,6 @@
 		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/MMFeedbacks/MMTools/Tools/MMSingletons/MMPersistentSingleton.cs",
 		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/MMFeedbacks/MMTools/Tools/MMSingletons/MMPersistentHumbleSingleton.cs",
 		"/E/tripp-client - android/Assets/Journey/Scripts/Plugins/AethericArts/XR/General/XRHelper.cs",
-		"/E/tripp-client - android/Assets/Journey/Scripts/ShaderSwapper.cs",
 		"/E/tripp-client - android/Assets/Scripts/Input/ControllerEnabler.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/XR/XritControllerManager.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Engine/BackgroundController.cs",
@@ -701,7 +807,6 @@
 		"/E/tripp-client - android/Library/PackageCache/com.unity.render-pipelines.core@12.1.6/Runtime/Debugging/DebugUpdater.cs",
 		"/E/tripp-client - android/Assets/Scripts/HandleVREvents.cs",
 		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/ExperienceController.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/AssetManagement/ExperienceExpression.cs",
 		"/T/Game/code/Game/Definitions.cpp",
 		"/t/game/code/game/recipe.cpp",
 		"/t/game/code/game/recipe.h",
@@ -718,49 +823,16 @@
 		"/C/Tripp/backend/firebase-backend/Tools/artsync_win64_stag.bat",
 		"/C/Tripp/backend/firebase-backend/Tools/artsync_psvr_prod.bat",
 		"/C/Tripp/backend/firebase-backend/Tools/artsync_psvr_stag.bat",
-		"/T/Game/code/Platform/platform_emscripten.cpp",
 		"/C/Users/perma/Desktop/Capture.PNG",
 		"/C/Users/perma/Desktop/file.cpp",
 		"/E/tripp-client - android/Assets/Scripts/UI/RegistrationUI.cs",
 		"/T/Game/code/Engine/imgui/imgui.h",
 		"/T/Game/code/Engine/imgui/imgui.cpp",
 		"/T/Game/code/Engine/Timer.cpp",
-		"/T/Game/code/Engine/Types.cpp",
 		"/T/Game/code/Game/AssetList.h",
-		"/T/Game/code/Engine/Generated.h",
 		"/t/game/code/game/station.cpp",
 		"/t/game/code/game/station.h",
-		"/T/Game/code/Game/Recipe.cpp",
-		"/T/Game/code/Game/Recipe.h",
-		"/T/Game/code/Game/Order.h",
-		"/T/Game/code/Game/Order.cpp",
-		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/Stage2/AditionalElements/Shaders/LightDecal.shader",
-		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/HeroStage/AditionamElements/Shaders/AmberEclips.shader",
-		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/HeroStage/AditionamElements/Shaders/Planet Lecacy Edited.shader",
-		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/HeroStage/AditionamElements/Shaders/AmberClouds.shader",
-		"/C/Program Files/Unity/Hub/Editor/2019.4.31f1/Editor/Data/CGIncludes/UnityCG.cginc",
-		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/Stage2/AditionalElements/Shaders/Clouds.shader",
-		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/Stage2/AditionalElements/Shaders/AmberLeafSeaDragonTwo.shader",
-		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/Stage2/AditionalElements/Shaders/AmberLeafSeaDragon.shader",
-		"/E/tripp-client-art-ps4/Temp/Compiled-Amber-LeafSeaDragon.shader",
-		"/E/tripp-client-art-ps4/Temp/Compiled-Amber-LeafySeaDragons V2.shader",
-		"/E/tripp-client-art-ps4/Temp/GeneratedFromSurface-Amber-LeafySeaDragons V2.shader",
-		"/E/tripp-client-art-ps4/Assets/Art/_AmberTripp/_CALM_Worldscapes/Calm_Silhouettes/Stage2/AditionalElements/Shaders/AmberTreesBillbord.shader",
-		"/T/Game/code/Engine/imgui/imstb_truetype.h",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/TRIPP/Core/Util/GlobalTuning.cs",
-		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/MainMenuDebugTrippsPanel.cs",
-		"/E/tripp-client-art/Assets/Editor/Armatures/ExperienceExpressionBuildWindow.cs",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/Util/TrippBootstrapper.cs",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/TRIPP/Core/Util/Logging.cs",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Editor/AutoBuilder.cs",
-		"/E/tripp-client - ps4/tripp-client - ps4/Assets/Scripts/TRIPP/Engine/Engine/ResourceManager.cs",
-		"/E/tripp-client-art/Library/PackageCache/com.unity.textmeshpro@3.0.6/Scripts/Editor/TMP_PackageUtilities.cs",
-		"/E/tripp-client-art/Assets/Scripts/VideoPlayerManager.cs",
-		"/E/tripp-client - android/Assets/Scripts/UI/TrippComposer/TrippComposerContentManager.cs",
-		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/ExperienceButton.cs",
-		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/MainMenuController.cs",
-		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/ComposerPage.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/AssetManagement/ExperienceExpressionNetworking.cs"
+		"/T/Game/code/Game/Recipe.cpp"
 	],
 	"find":
 	{
@@ -906,6 +978,103 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"enum class token_type",
+			"token_type",
+			"token_type::open_curly",
+			"Child",
+			"Array",
+			"array",
+			"assetBundlesPath",
+			"platform",
+			"buildtype",
+			"response",
+			"UpdateTeachingEntriesForType",
+			"teaching",
+			"ExperienceImageSize",
+			"servermedia",
+			"sizes",
+			"ExperienceImageSize",
+			"calm2Teachings",
+			"GetTeachingsForType",
+			"TeahcingVOExpressionEntry",
+			"ExperienceImageSize",
+			"TeahcingVOExpressionEntry",
+			"ExperienceExpressionString",
+			"experiencefields",
+			"pendingImageDownloadIds",
+			"GetUrlForClosestSize",
+			"experiencemenuinfo",
+			"FillAndCacheImageWhenLoaded",
+			"teaching",
+			"TeahcingVOExpressionEntry",
+			"teachingImageDirectory",
+			"teachingexpressionthumbnails",
+			"teachingImageDirectory",
+			"image",
+			"createorupdateexperiences",
+			"graphqlRequest",
+			"imageid",
+			"imagesByName",
+			"imagesBucket",
+			"uploadExperienceImages",
+			"graphqlRequest",
+			"uploadexperienceimages",
+			"logInputsInfo",
+			"image",
+			"TryCopyThumbnail",
+			"experiencesBuilt",
+			"BuildTeachingExpressionStrings",
+			"experienceImageDirectory",
+			"teachingImageDirectory",
+			"teaching",
+			"image",
+			"teachinginput",
+			"syncexperiences",
+			"uploadExperienceImages",
+			"imagesbucket",
+			"syncVersionedAssetBundles",
+			"teachingsDir",
+			"sync",
+			"uploadExperienceImages",
+			"filenames",
+			"imagesBucket",
+			"Token_SemiColon",
+			"MoveUntil",
+			"semicolon",
+			"MoveUntil",
+			"vector",
+			"until",
+			"Skipping",
+			"metastruct",
+			"token_metastruct",
+			"primitivetypes",
+			"PrimitiveTypes",
+			"primitivetye",
+			"PrimitiveTypes",
+			"ispointer",
+			"pointer",
+			"ispointer",
+			"Skill",
+			"FillStruct",
+			"shim",
+			"GetInt32",
+			"length",
+			"lengh",
+			"GetPair",
+			"SaveToFile",
+			"readfile",
+			"writefile",
+			"write",
+			"meta_member",
+			"tostringfunc",
+			"updatevisual",
+			"_initialVertexOffset",
+			"_vertexOffset",
+			"UpdateVisuals",
+			"worldspacescale",
+			"MetaInfo",
+			"struct_string_return",
+			"StructMemberToString",
 			"analyticsVersion",
 			"BQAnalytics",
 			"ZoomTarget",
@@ -936,104 +1105,7 @@
 			"OnExperienceTypeSet",
 			"experiencetype",
 			"ExperienceType",
-			"homeButton",
-			"home",
-			"defaultCameraOffset",
-			"z",
-			"LinkDealloc",
-			"ShipSimulateMovement",
-			"ShipMovementStep",
-			"ShipSimulateMovement",
-			"profiler",
-			"sleepingsteppers",
-			"AllocateLink",
-			"linked_list",
-			"fixed_allocator",
-			"InitList",
-			"globalpermmem",
-			"loadgame",
-			"vrcamera",
-			"TrackingSpaceRef",
-			"trackingspace",
-			"OnFocusAcquired",
-			"xritcontrollermanager.visibility",
-			"visibility",
-			"xrit",
-			"lefthandanchor",
-			"runid",
-			"RunID",
-			"runid",
-			"begin",
-			"onpausebutton()",
-			"onpausebutton",
-			"xrrig",
-			"pause",
-			"showpause",
-			"Show()",
-			"launcher",
-			"dirToTargetForce",
-			"ShipMovementStep",
-			"ShipSimulateMovement",
-			"ShipMovementStep",
-			"ShipSimulateMovement",
-			"CurrentJourney",
-			"currentjourney",
-			"thirdpartyexperience",
-			"driftThumbnail",
-			"experiencetype",
-			"driftDescriptionTemplate",
-			"FuelRateGallonsPerSecond",
-			"GetGUID",
-			"guid",
-			"agerequirement",
-			"agerequire",
-			"ageRequirement",
-			"birthdayInvalid",
-			"birthdayError",
-			"age",
-			"bage",
-			"birthdayInvalid",
-			"AgeRequirement",
-			"birthdayOutline",
-			"ItemDisplayHold",
-			"Fuel",
-			"editorstate",
-			"ConverterAddOrder",
-			"struct recipe",
-			"struct order",
-			"float",
-			"progressbar",
-			"mul",
-			"progressbar",
-			"progress",
-			"registerstepper",
-			"ModuleUpdate",
-			"Selectable",
-			"selectable",
-			"gamestate",
-			"\"columns\"",
-			"columns",
-			"popupbg",
-			"holdhovering = ",
-			"HoldItemDraggingFrom",
-			"beginchild",
-			"ImGuiWindowFlags",
-			"beginchild",
-			"debug.lo",
-			"MetricsRenderWindows",
-			"metricswindow",
-			"showmetricswindow",
-			"ismousehovering",
-			"ismousehoveringbox",
-			"getitemrectmin",
-			"imgui::get",
-			"//todo ",
-			"EquippedModules",
-			"ItemDragging",
-			"itemdragging",
-			"ShipUpdateMass",
-			"CurrentMassTotal",
-			"ItemTransfer"
+			"homeButton"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1097,8 +1169,241 @@
 	"groups":
 	[
 		{
+			"selected": 3,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "Game/code/Game/Game.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 37850,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11945,
+								11945
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 4380.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/t/game/code/engine/generated.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4015,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2463,
+								2463
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 375.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "Game/code/Game/Game.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5471,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5445,
+								5445
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3430.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Game/code/Engine/Json.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11068,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2487,
+								2487
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 660.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "Game/code/Engine/EngineCore.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 36288,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "Game/code/Engine/EngineCore.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13924,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2207,
+								2195
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "Game/code/Engine/Json.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 593,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								583,
+								583
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "Game/code/Engine/SaveData.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6607,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1291,
+								999
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -1163,16 +1468,92 @@
 		"selected_items":
 		[
 			[
-				"engine",
+				"en",
 				"Game\\code\\Engine\\EngineCore.cpp"
 			],
 			[
-				"skil",
-				"Game\\code\\Game\\SkillTree.cpp"
+				"save",
+				"Game\\code\\Engine\\SaveData.cpp"
+			],
+			[
+				"json",
+				"Game\\code\\Engine\\Json.cpp"
 			],
 			[
 				"game",
 				"Game\\code\\Game\\Game.cpp"
+			],
+			[
+				"unity",
+				"C:\\Tripp\\backend\\firebase-backend\\Tools\\UnitySync\\src\\UnitySync.js"
+			],
+			[
+				"sync",
+				"C:\\Tripp\\backend\\firebase-backend\\Tools\\UnitySync\\src\\UnitySync.js"
+			],
+			[
+				"run",
+				"C:\\Tripp\\backend\\firebase-backend\\Tools\\UnitySync\\run.js"
+			],
+			[
+				"ryan",
+				"T:\\Game\\build\\Windows\\RyanOutput.json"
+			],
+			[
+				"pre",
+				"Game\\code\\preprocessor.cpp"
+			],
+			[
+				"gen",
+				"Game\\code\\Engine\\Generated.h"
+			],
+			[
+				"eng",
+				"Game\\code\\Engine\\EngineCore.cpp"
+			],
+			[
+				"prep",
+				"Game\\code\\preprocessor.cpp"
+			],
+			[
+				"skil",
+				"Game\\code\\Game\\SkillTree.h"
+			],
+			[
+				"",
+				"Game\\code\\Game\\Game.cpp"
+			],
+			[
+				"j",
+				"Game\\code\\Engine\\Json.h"
+			],
+			[
+				"string",
+				"Game\\code\\Engine\\String.cpp"
+			],
+			[
+				"svae",
+				"Game\\code\\Engine\\SaveData.cpp"
+			],
+			[
+				"ems",
+				"Game\\code\\Platform\\platform_emscripten.cpp"
+			],
+			[
+				"plat",
+				"Game\\code\\Platform\\platform_win32.cpp"
+			],
+			[
+				"engin",
+				"Game\\code\\Engine\\EngineCore.h"
+			],
+			[
+				"types",
+				"Game\\code\\Engine\\Types.cpp"
+			],
+			[
+				"engine",
+				"Game\\code\\Engine\\EngineCore.cpp"
 			],
 			[
 				"ship",
@@ -1193,10 +1574,6 @@
 			[
 				"demo",
 				"Game\\code\\Engine\\imgui\\imgui_demo.cpp"
-			],
-			[
-				"string",
-				"Game\\code\\Engine\\String.cpp"
 			],
 			[
 				"asteroid",
@@ -1231,20 +1608,12 @@
 				"Game\\code\\Engine\\FixedAllocator.cpp"
 			],
 			[
-				"",
-				"Game\\code\\Engine\\LinkedList.cpp"
-			],
-			[
 				"fixe",
 				"Game\\code\\Engine\\FixedAllocator.cpp"
 			],
 			[
 				"win",
 				"Game\\code\\Platform\\platform_win32.cpp"
-			],
-			[
-				"engin",
-				"Game\\code\\Engine\\EngineCore.h"
 			],
 			[
 				"linke",
@@ -1261,10 +1630,6 @@
 			[
 				"asteroi",
 				"Game\\code\\Game\\Asteroid.cpp"
-			],
-			[
-				"en",
-				"Game\\code\\Engine\\EngineCore.cpp"
 			],
 			[
 				"ogl",
@@ -1327,10 +1692,6 @@
 				"Game\\code\\Game\\Order.h"
 			],
 			[
-				"types",
-				"Game\\code\\Engine\\Types.cpp"
-			],
-			[
 				"teyp",
 				"Game\\code\\Engine\\imgui\\imstb_truetype.h"
 			],
@@ -1361,10 +1722,6 @@
 			[
 				"shh",
 				"Game\\code\\Game\\Ship.h"
-			],
-			[
-				"gen",
-				"Game\\code\\Engine\\Generated.h"
 			],
 			[
 				"composerp",
@@ -1431,16 +1788,8 @@
 				"Game\\code\\Engine\\imgui\\imgui.cpp"
 			],
 			[
-				"eng",
-				"Game\\code\\Engine\\EngineCore.h"
-			],
-			[
 				"as",
 				"Game\\code\\Game\\AssetList.cpp"
-			],
-			[
-				"plat",
-				"Game\\code\\Platform\\platform_win32.cpp"
 			],
 			[
 				"andr",
@@ -1453,10 +1802,6 @@
 			[
 				"androi",
 				"Game\\code\\Platform\\platform_android.cpp"
-			],
-			[
-				"ems",
-				"Game\\build_scripts\\build_emscripten.bat"
 			],
 			[
 				"emsc",
@@ -1579,10 +1924,6 @@
 				"Game\\code\\Game\\Missions.cpp"
 			],
 			[
-				"json",
-				"Game\\code\\Engine\\Json.cpp"
-			],
-			[
 				"miossion",
 				"Game\\assets\\Missions\\fifth_mission.missiondefinition"
 			],
@@ -1637,42 +1978,6 @@
 			[
 				"gardencontroller",
 				"E:\\tripp-client - android\\Assets\\_SerenityGarden\\Scripts\\ProgressionController.cs"
-			],
-			[
-				"assetbundle",
-				"E:\\tripp-client - android\\Assets\\Scripts\\TRIPP\\Engine\\AssetManagement\\TrippAssetBundleManager.cs"
-			],
-			[
-				"reci",
-				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\InExperience\\ReceiveGiftPanel.cs"
-			],
-			[
-				"boot",
-				"E:\\tripp-client - android\\Assets\\Scripts\\Util\\TrippBootstrapper.cs"
-			],
-			[
-				"recie",
-				"E:\\tripp-client - android\\Assets\\Scripts\\UI\\InExperience\\ReceiveGiftPanel.cs"
-			],
-			[
-				"inventory",
-				"E:\\tripp-client - android\\Assets\\_SerenityGarden\\Scripts\\GardenGlobalInventory.cs"
-			],
-			[
-				"battle",
-				"Game\\code\\Engine\\battle\\battle.cpp"
-			],
-			[
-				"monster",
-				"Game\\code\\Engine\\monster\\monster.h"
-			],
-			[
-				"abili",
-				"Game\\code\\Engine\\Ability\\ability.h"
-			],
-			[
-				"batle",
-				"Game\\code\\Engine\\battle\\battle.h"
 			]
 		],
 		"width": 0.0

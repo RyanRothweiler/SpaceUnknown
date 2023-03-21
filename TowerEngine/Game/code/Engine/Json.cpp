@@ -21,13 +21,15 @@ namespace json {
 
 		token_type TokenType = token_type::end_of_file;
 		switch (*Tokenizer->Position) {
-			case ('{'): { TokenType = token_type::open_curly; 	} break;
-			case ('}'): { TokenType = token_type::close_curly; 	} break;
-			case ('"'): { TokenType = token_type::quote; 		} break;
-			case (','): { TokenType = token_type::comma; 		} break;
-			case (':'): { TokenType = token_type::colon;		} break;
-			case ('*'): { TokenType = token_type::end_of_file; 	} break;
-			default: { TokenType = token_type::identifier; 		} break;
+			case ('['): { TokenType = token_type::open_bracket; 	} break;
+			case (']'): { TokenType = token_type::close_bracket;	} break;
+			case ('{'): { TokenType = token_type::open_curly; 		} break;
+			case ('}'): { TokenType = token_type::close_curly; 		} break;
+			case ('"'): { TokenType = token_type::quote; 			} break;
+			case (','): { TokenType = token_type::comma; 			} break;
+			case (':'): { TokenType = token_type::colon;			} break;
+			case ('*'): { TokenType = token_type::end_of_file; 		} break;
+			default: { TokenType = token_type::identifier; 			} break;
 		}
 		Tokenizer->Position++;
 		return (TokenType);
@@ -60,32 +62,99 @@ namespace json {
 		return JsonData;
 	}
 
-	json_data LoadJsonData(tokenizer* Tokenizer, memory_arena* Memory)
+	/*
+	json_data LoadJsonData(tokenizer* Tokenizer, memory_arena* Memory);
+
+	void GrabData(tokenizer* Tokenizer, json_pair* Pair, memory_arena* Memory)
+	{
+		token_type Next = GetNextToken(Tokenizer);
+
+		if (Next == token_type::quote) {
+			// data string
+
+			Pair->Data = GrabUntilToken(Tokenizer, token_type::quote);
+
+		} else if (Next == token_type::open_bracket)  {
+			// an array
+
+			bool32 Running = true;
+			int32 ArrayCount = 0;
+			while (Running && Tokenizer->Valid()) {
+
+				Pair->Child[ArrayCount] = (json_data*)ArenaAllocate(Memory, sizeof(json_data));
+
+				//GrabData(tokenizer * Tokenizer, &Pair->Child[ArrayCount], Memory);
+
+				json_data Child = LoadJsonData(Tokenizer, Memory);
+				MemoryCopy((char*)Pair->Child[ArrayCount], (char*)(&Child), sizeof(json_data));
+
+				ArrayCount++;
+				Assert(ArrayCount < JSON_MAX_ARRAY);
+			}
+
+		} else if (Next == token_type::open_curly)  {
+			// an object
+
+			Pair->Child[0] = (json_data*)ArenaAllocate(Memory, sizeof(json_data));
+
+			json_data Child = LoadJsonData(Tokenizer, Memory);
+			MemoryCopy((char*)Pair->Child[0], (char*)(&Child), sizeof(json_data));
+
+		} else {
+			// data number
+
+			Tokenizer->Position -= 1;
+			Pair->Data = GrabUntilToken(Tokenizer, token_type::comma);
+		}
+	}
+	*/
+
+	json_data LoadJsonData(tokenizer* Tokenizer, bool32 IsArray, memory_arena* Memory)
 	{
 		json_data JsonData = GetJson(Memory);
 
 		token_type NextToken = GetNextToken(Tokenizer);
 
 		while (true) {
-			if (NextToken == token_type::open_curly) {
+			if (NextToken == token_type::open_curly || NextToken == token_type::open_bracket) {
 
-			} else if (NextToken == token_type::close_curly) {
+			} else if (NextToken == token_type::close_curly || NextToken == token_type::close_bracket) {
 				break;
 			} else if (NextToken == token_type::quote) {
 
-				JsonData.Pairs[JsonData.PairsCount].Key = GrabUntilToken(Tokenizer, token_type::quote);
-				Tokenizer->Position += 1;
+				if (!IsArray) {
+					JsonData.Pairs[JsonData.PairsCount].Key = GrabUntilToken(Tokenizer, token_type::quote);
+					Tokenizer->Position += 1;
+				} else {
+
+					// Move back to catch the previous quote
+					Tokenizer->Position -= 1;
+				}
 
 				token_type Next = GetNextToken(Tokenizer);
 
+				//GrabData(Tokenizer, &JsonData.Pairs[JsonData.PairsCount], Memory);
+
 				if (Next == token_type::quote) {
+					// data itself
 					JsonData.Pairs[JsonData.PairsCount].Data = GrabUntilToken(Tokenizer, token_type::quote);
+
+
+				} else if (Next == token_type::open_bracket)  {
+					// an array
+
+					JsonData.Pairs[JsonData.PairsCount].Child[0] = (json_data*)ArenaAllocate(Memory, sizeof(json_data));
+
+					json_data Child = LoadJsonData(Tokenizer, true, Memory);
+					MemoryCopy((char*)JsonData.Pairs[JsonData.PairsCount].Child[0], (char*)(&Child), sizeof(json_data));
+
 				} else if (Next == token_type::open_curly)  {
+					// an object
 
-					JsonData.Pairs[JsonData.PairsCount].Child = (json_data*)ArenaAllocate(Memory, sizeof(json_data));
+					JsonData.Pairs[JsonData.PairsCount].Child[0] = (json_data*)ArenaAllocate(Memory, sizeof(json_data));
 
-					json_data Child = LoadJsonData(Tokenizer, Memory);
-					MemoryCopy((char*)JsonData.Pairs[JsonData.PairsCount].Child, (char*)(&Child), sizeof(json_data));
+					json_data Child = LoadJsonData(Tokenizer, false, Memory);
+					MemoryCopy((char*)JsonData.Pairs[JsonData.PairsCount].Child[0], (char*)(&Child), sizeof(json_data));
 
 				} else {
 					Tokenizer->Position -= 1;
@@ -120,11 +189,12 @@ namespace json {
 		if (Result.ContentsSize > 0) {
 			tokenizer Tokenizer = {};
 			Tokenizer.Position = (char*)Result.Contents;
+			Tokenizer.End = Tokenizer.Position + Result.ContentsSize;
 
 			token_type NextToken = GetNextToken(&Tokenizer);
 			Assert(NextToken == token_type::open_curly);
 
-			return LoadJsonData(&Tokenizer, Memory);
+			return LoadJsonData(&Tokenizer, false, Memory);
 		}
 
 		return json_data{};
@@ -201,7 +271,7 @@ namespace json {
 						NewPath = NewPath + "." + Split.Strings[x];
 					}
 
-					return GetPair(NewPath, Pair->Child);
+					return GetPair(NewPath, Pair->Child[0]);
 				}
 			}
 		}
@@ -300,9 +370,24 @@ namespace json {
 			string Key = KeyParent + InfoCurr->Name;
 			json_pair * KeyPair = GetPair(Key, JsonData);
 			if (KeyPair != GameNull) {
-				int x = 0;
 
 				string DataInString = KeyPair->Data;
+
+				/*
+				bool32 IsArray = MetaInfo->ArrayLength > 0;
+				int32 DataCount = 1;
+
+				if (IsArray) {
+				*Dest->Curr = '['; Dest->Curr++;
+				DataCount = MetaInfo->ArrayLength;
+				}
+
+				for (int i = 0; i < DataCount; i++) {
+
+				char* Start = (char*)AccData;
+				Start = Start + (MetaInfo->Offset + (i * MetaInfo->Size));
+				*/
+
 
 				char* FieldDest = (char*)DataDest;
 				FieldDest = FieldDest + InfoCurr->Offset;
@@ -361,7 +446,12 @@ namespace json {
 	void ReadIntoStruct(char* Path, meta_member * MetaInfo, uint32 MetaInfoCount, void* DataDest)
 	{
 		json_data JsonData = LoadFile(Path, GlobalTransMem);
-		FillStruct(&JsonData, "", MetaInfo, MetaInfoCount, DataDest);
+
+		json_pair* TestPair = GetPair("FieldHere[1].Droid", &JsonData);
+
+		int x = 0;
+
+		//FillStruct(&JsonData, "", MetaInfo, MetaInfoCount, DataDest);
 	}
 }
 

@@ -68,6 +68,7 @@ return json::FillStruct(JsonData, KeyParent, &second_META[0], ArrayCount(second_
 }
 
 meta_member ryan_test_META[] { 
+{meta_member_type::custom, "third", "More", (uint64)&((ryan_test *)0)->More, 0, sizeof(third),&StructMetaFill_third, &JsonFillStructShim_third, &third_META[0], ArrayCount(third_META) },
 {meta_member_type::int32, "int32", "FieldHere", (uint64)&((ryan_test *)0)->FieldHere, 10, sizeof(int32),{},{},{},{}},
 }; 
  

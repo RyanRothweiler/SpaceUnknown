@@ -1,4 +1,8 @@
 namespace json {
+
+	const int32 Max_Pairs_Count = 100;
+#define JSON_MAX_ARRAY 512
+
 	struct json_data;
 
 	struct json_pair {
@@ -6,13 +10,15 @@ namespace json {
 
 		union {
 			string Data;
-			json_data* Child;
-		};
 
-		//int32 ChildrenNodesCount;
+			// NOTE this is a pointer only to avoid circlic structures
+			json_data* Child[JSON_MAX_ARRAY];
+		};
 	};
 
 	struct json_data {
+		bool32 IsArray;
+
 		int32 PairsCount;
 		json_pair* Pairs;
 	};
@@ -20,6 +26,8 @@ namespace json {
 	enum class token_type {
 		close_curly,
 		open_curly,
+		open_bracket,
+		close_bracket,
 		quote,
 		comma,
 		colon,
@@ -28,8 +36,12 @@ namespace json {
 	};
 
 	struct tokenizer {
-		char *Position;
-	};
+		char* Position;
+		char* End;
 
-	const int32 Max_Pairs_Count = 100;
+		bool32 Valid()
+		{
+			return Position > End;
+		}
+	};
 }
