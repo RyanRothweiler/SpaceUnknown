@@ -255,24 +255,11 @@ namespace game {
 		vector3 SkillTreeCamPos;
 		real32 SkillTreeOrthoZoom;
 	};
-
 };
 
-MetaStruct struct third {
-	int32 Roger;
-	real64 Droid;
-};
-
-MetaStruct struct second {
-	int32 Boost;
-	real64 HPRate;
-	real64 Longer;
-};
-
-MetaStruct struct ryan_test {
-	second HereLonger[5];
-	int32 More;
-	int32 Another;
+MetaStruct struct save_file {
+	int64 RealTimeSaved;
+	real64 UniverseTimeMS;
 };
 
 #endif

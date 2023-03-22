@@ -85,12 +85,12 @@ namespace save_data {
 				}
 			} break;
 
-			case meta_member_type::int32: {
+			case meta_member_type::int8: {
 				if (Direction == direction::write) {
-					Pair->Data.i32 = *(int32*)Data;
+					Pair->Data.i8 = *(int8*)Data;
 				} else if (Direction == direction::read && Pair != GameNull) {
-					int32* D = (int32*)Data;
-					*D = Pair->Data.i32;
+					int8* D = (int8*)Data;
+					*D = Pair->Data.i8;
 				}
 			} break;
 
@@ -103,12 +103,21 @@ namespace save_data {
 				}
 			} break;
 
-			case meta_member_type::int8: {
+			case meta_member_type::int32: {
 				if (Direction == direction::write) {
-					Pair->Data.i8 = *(int8*)Data;
+					Pair->Data.i32 = *(int32*)Data;
 				} else if (Direction == direction::read && Pair != GameNull) {
-					int8* D = (int8*)Data;
-					*D = Pair->Data.i8;
+					int32* D = (int32*)Data;
+					*D = Pair->Data.i32;
+				}
+			} break;
+
+			case meta_member_type::int64: {
+				if (Direction == direction::write) {
+					Pair->Data.i64 = *(int64*)Data;
+				} else if (Direction == direction::read && Pair != GameNull) {
+					int64* D = (int64*)Data;
+					*D = Pair->Data.i64;
 				}
 			} break;
 
@@ -180,14 +189,21 @@ namespace save_data {
 		PlatformApi.WriteFile(FileDest, (void*)&Root, sizeof(Root) + (sizeof(pair) * Root.PairsCount));
 	}
 
-	void Read(char* FilePath, void* Dest, meta_member* MetaInfo, uint32 MetaInfoCount, memory_arena* TransMem)
+	// Returns if successful
+	bool32 Read(char* FilePath, void* Dest, meta_member* MetaInfo, uint32 MetaInfoCount, memory_arena* TransMem)
 	{
 		Direction = direction::read;
 
 		read_file_result Result = PlatformApi.ReadFile(FilePath, TransMem);
 
-		member* Root = (member*)Result.Contents;
-		AddMembers(Root, "", MetaInfo, MetaInfoCount, Dest, TransMem);
+		if (Result.ContentsSize > 0) {
+			member* Root = (member*)Result.Contents;
+			AddMembers(Root, "", MetaInfo, MetaInfoCount, Dest, TransMem);
+
+			return true;
+		}
+
+		return false;
 	}
 }
 

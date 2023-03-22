@@ -117,16 +117,18 @@ namespace game {
 
 	void SaveGame(game::state* State)
 	{
-		json::json_data JsonOut = json::GetJson(GlobalTransMem);
-		int32 DecimalCount = 7;
+		save_file SaveData = {};
 
 		using std::chrono::duration_cast;
 		using std::chrono::system_clock;
 		int64 SinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
 
-		AddKeyPair("real_time_saved", string{SinceEpoch} .Array(), &JsonOut);
-		AddKeyPair("simulation_time", string{State->UniverseTime.TimeMS}, &JsonOut);
+		SaveData.RealTimeSaved = SinceEpoch;
+		SaveData.UniverseTimeMS = State->UniverseTime.TimeMS;
 
+		save_data::Write("SpaceUnknownSave.sus", &save_file_META[0], ArrayCount(save_file_META), (void*)&SaveData, GlobalTransMem);
+
+		/*
 		// Ships
 		for (int i = 0; i < ArrayCount(State->Ships); i++) {
 			if (State->Ships[i].Using) {
@@ -140,7 +142,6 @@ namespace game {
 				//json::AddKeyPair("ship_" + string{i} + "_fuel", Real64ToString(Ship->FuelGallons, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_rotation", Real64ToString(Ship->Rotation, DecimalCount), &JsonOut);
 
-				/*
 				json::AddKeyPair("ship_" + string{i} + "_journey_end_x", Real64ToString(Ship->CurrentJourney.EndPosition.X, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_journey_end_y", Real64ToString(Ship->CurrentJourney.EndPosition.Y, DecimalCount), &JsonOut);
 				json::AddKeyPair("ship_" + string{i} + "_journey_start_x", Real64ToString(Ship->CurrentJourney.StartPosition.X, DecimalCount), &JsonOut);
@@ -151,56 +152,56 @@ namespace game {
 				json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_y", Real64ToString(Ship->CurrentJourney.DirToEnd.Y, DecimalCount), &JsonOut);
 				*/
 
-				// Add method for saving a hold
-				/*
-				for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
-					if (Ship->Cargo[c].Count > 0) {
+		// Add method for saving a hold
+		/*
+		for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
+			if (Ship->Cargo[c].Count > 0) {
 
-						string DefID = item_id_NAME[(int)Ship->Cargo[c].Definition.ID];
+				string DefID = item_id_NAME[(int)Ship->Cargo[c].Definition.ID];
 
-						json::AddKeyPair("ship_" + string{i} + "_cargo_" + string{c} + "_id", DefID, &JsonOut);
-						json::AddKeyPair("ship_" + string{i} + "_cargo_" + string{c} + "_count", string{Ship->Cargo[c].Count}, &JsonOut);
-					}
-				}
-				*/
+				json::AddKeyPair("ship_" + string{i} + "_cargo_" + string{c} + "_id", DefID, &JsonOut);
+				json::AddKeyPair("ship_" + string{i} + "_cargo_" + string{c} + "_count", string{Ship->Cargo[c].Count}, &JsonOut);
 			}
+		}
+		}
 		}
 
 		// Asteroids
 		for (int i = 0; i < State->ClustersCount; i++) {
-			asteroid_cluster* Cluster = &State->Asteroids[i];
-			for (int c = 0; c < ArrayCount(Cluster->Asteroids); c++) {
-				if (Cluster->Asteroids[c].Using) {
-					asteroid* Roid = &Cluster->Asteroids[c];
+		asteroid_cluster* Cluster = &State->Asteroids[i];
+		for (int c = 0; c < ArrayCount(Cluster->Asteroids); c++) {
+		if (Cluster->Asteroids[c].Using) {
+			asteroid* Roid = &Cluster->Asteroids[c];
 
-					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", Real64ToString(Roid->WorldObject.Position.X, DecimalCount), &JsonOut);
-					json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", Real64ToString(Roid->WorldObject.Position.Y, DecimalCount), &JsonOut);
-					//json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_size", Real64ToString(Roid->WorldObject.Size, DecimalCount), &JsonOut);
-				}
-			}
+			json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", Real64ToString(Roid->WorldObject.Position.X, DecimalCount), &JsonOut);
+			json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", Real64ToString(Roid->WorldObject.Position.Y, DecimalCount), &JsonOut);
+			//json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_size", Real64ToString(Roid->WorldObject.Size, DecimalCount), &JsonOut);
+		}
+		}
 		}
 
 		// Skill tree nodes
 		{
-			struct local {
-				void Save(skill_node* Node, json::json_data* JsonOut)
-				{
-					if (Node->Unlocked) {
-						json::AddKeyPair("node_unlocked_" + Node->ID, true, JsonOut);
-					}
-
-					for (int i = 0; i < Node->ChildrenCount; i++) {
-						Save(Node->Children[i], JsonOut);
-					}
-				}
-			} Locals;
-
-			for (int i = 0; i < State->SkillNodesCount; i++) {
-				Locals.Save(&State->SkillNodes[i], &JsonOut);
+		struct local {
+		void Save(skill_node* Node, json::json_data* JsonOut)
+		{
+			if (Node->Unlocked) {
+				json::AddKeyPair("node_unlocked_" + Node->ID, true, JsonOut);
 			}
+
+			for (int i = 0; i < Node->ChildrenCount; i++) {
+				Save(Node->Children[i], JsonOut);
+			}
+		}
+		} Locals;
+
+		for (int i = 0; i < State->SkillNodesCount; i++) {
+		Locals.Save(&State->SkillNodes[i], &JsonOut);
+		}
 		}
 
 		json::SaveToFile(&JsonOut, "SaveGame.sus");
+		*/
 		ConsoleLog("Game Saved");
 	}
 
@@ -217,6 +218,15 @@ namespace game {
 
 	void LoadGame(game::state* State)
 	{
+		save_file SaveData = {};
+		if (!save_data::Read("SpaceUnknownSave.sus", (void*)&SaveData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)) {
+			ConsoleLog("No saved data file");
+			return;
+		}
+
+		State->UniverseTime.TimeMS = SaveData.UniverseTimeMS;
+
+		/*
 		json::json_data JsonIn = json::LoadFile("SaveGame.sus", GlobalTransMem);
 
 		if (JsonIn.PairsCount == 0) {
@@ -241,7 +251,6 @@ namespace game {
 				//Ship->FuelGallons = json::GetReal64("ship_" + string{i} + "_fuel", &JsonIn);
 				Ship->Rotation = json::GetReal64("ship_" + string{i} + "_rotation", &JsonIn);
 
-				/*
 				Ship->CurrentJourney.EndPosition.X = json::GetReal64("ship_" + string{i} + "_journey_end_x", &JsonIn);
 				Ship->CurrentJourney.EndPosition.Y = json::GetReal64("ship_" + string{i} + "_journey_end_y", &JsonIn);
 				Ship->CurrentJourney.StartPosition.X = json::GetReal64("ship_" + string{i} + "_journey_start_x", &JsonIn);
@@ -252,66 +261,66 @@ namespace game {
 				Ship->CurrentJourney.DirToEnd.Y = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_y", &JsonIn);
 				*/
 
-				// method to load an item_hold
-				/*
-				for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
-				json::json_pair* CargoTestPair = GetPair("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
-				if (CargoTestPair != GameNull) {
+		// method to load an item_hold
+		/*
+		for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
+		json::json_pair* CargoTestPair = GetPair("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
+		if (CargoTestPair != GameNull) {
 
-				string IDStr = json::GetString("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
-				item_id ItemID = (item_id)StringToEnum(IDStr, &item_id_NAME[0], ArrayCount(item_id_NAME));
-				item_definition Def = GetItemDefinition(ItemID);
-				Ship->Cargo[c].Definition = Def;
+		string IDStr = json::GetString("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
+		item_id ItemID = (item_id)StringToEnum(IDStr, &item_id_NAME[0], ArrayCount(item_id_NAME));
+		item_definition Def = GetItemDefinition(ItemID);
+		Ship->Cargo[c].Definition = Def;
 
-				Ship->Cargo[c].Count = (int32)json::GetInt64("ship_" + string{i} + "_cargo_" + string{c} + "_count", &JsonIn);;
-				}
-				}
-				*/
+		Ship->Cargo[c].Count = (int32)json::GetInt64("ship_" + string{i} + "_cargo_" + string{c} + "_count", &JsonIn);;
+		}
+		}
 
-				ShipUpdateMass(Ship);
-			}
+		ShipUpdateMass(Ship);
+		}
 		}
 
 		// Asteroids
 		for (int i = 0; i < State->ClustersCount; i++) {
-			asteroid_cluster* Cluster = &State->Asteroids[i];
-			for (int c = 0; c < ArrayCount(Cluster->Asteroids); c++) {
-				json::json_pair* TestPair = GetPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
-				if (TestPair != GameNull) {
-					asteroid* Roid = &Cluster->Asteroids[c];
-					//InitAsteroid(Roid, State);
+		asteroid_cluster* Cluster = &State->Asteroids[i];
+		for (int c = 0; c < ArrayCount(Cluster->Asteroids); c++) {
+		json::json_pair* TestPair = GetPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
+		if (TestPair != GameNull) {
+			asteroid* Roid = &Cluster->Asteroids[c];
+			//InitAsteroid(Roid, State);
 
-					//Roid->WorldObject.Position.X = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
-					//Roid->WorldObject.Position.Y = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", &JsonIn);
-				}
-			}
+			//Roid->WorldObject.Position.X = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
+			//Roid->WorldObject.Position.Y = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", &JsonIn);
+		}
+		}
 		}
 
 		// Skill tree nodes
 		{
-			struct local {
-				void Load(skill_node* Node, json::json_data* JsonIn)
-				{
-					json::json_pair* TestPair = GetPair("node_unlocked_" + Node->ID, JsonIn);
-					if (TestPair != GameNull) {
-						Node->Unlocked = true;
-					}
+		struct local {
+		void Load(skill_node* Node, json::json_data* JsonIn)
+		{
+			json::json_pair* TestPair = GetPair("node_unlocked_" + Node->ID, JsonIn);
+			if (TestPair != GameNull) {
+				Node->Unlocked = true;
+			}
 
-					for (int i = 0; i < Node->ChildrenCount; i++) {
-						Load(Node->Children[i], JsonIn);
-					}
-				}
-			} Locals;
-
-			for (int i = 0; i < State->SkillNodesCount; i++) {
-				Locals.Load(&State->SkillNodes[i], &JsonIn);
+			for (int i = 0; i < Node->ChildrenCount; i++) {
+				Load(Node->Children[i], JsonIn);
 			}
 		}
+		} Locals;
+
+		for (int i = 0; i < State->SkillNodesCount; i++) {
+		Locals.Load(&State->SkillNodes[i], &JsonIn);
+		}
+		}
+		*/
 
 		using std::chrono::duration_cast;
 		using std::chrono::system_clock;
 		int64 CurrentSinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
-		int64 FileSinceEpoch = json::GetInt64("real_time_saved", &JsonIn);
+		int64 FileSinceEpoch = SaveData.RealTimeSaved;
 		real64 MissingMS = (real64)(CurrentSinceEpoch - FileSinceEpoch);
 		real64 MissingMSStart = MissingMS;
 
