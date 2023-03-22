@@ -1,4 +1,4 @@
-void ConverterUpdate(void* SelfData, real64 Time, game::state* State)
+void ConverterUpdate(void* SelfData, real64 Time, state* State)
 {
 	converter* Converter = (converter*)SelfData;
 	if (Converter->RunsCount > 0) {
@@ -213,8 +213,8 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 
 void StationSelected(selection * Sel, engine_state * EngineState, game_input * Input)
 {
-	game::state* State = &EngineState->GameState;
-	game::editor_state* EditorState = &EngineState->EditorState;
+	state* State = &EngineState->GameState;
+	editor_state* EditorState = &EngineState->EditorState;
 
 	station* CurrentStation = Sel->GetStation();
 
@@ -270,7 +270,7 @@ void StationUndockShip(ship * Ship)
 	Ship->Status = ship_status::idle;
 }
 
-station* StationCreate(game::state * State)
+station* StationCreate(state * State)
 {
 	station* Station = &State->Stations[State->StationsCount++];
 	Assert(ArrayCount(State->Stations) > State->StationsCount);
@@ -282,9 +282,9 @@ station* StationCreate(game::state * State)
 	selectable* Sel = RegisterSelectable(selection_type::station, &Station->Position, &Station->Size, (void*)Station, State);
 	Sel->SelectionUpdate = &StationSelected;
 
-	game::RegisterStepper(&Station->Converters[0].Stepper, &ConverterUpdate, (void*)(&Station->Converters[0]), State);
+	RegisterStepper(&Station->Converters[0].Stepper, &ConverterUpdate, (void*)(&Station->Converters[0]), State);
 	Station->Converters[0].Owner = Station;
-	game::RegisterStepper(&Station->Converters[1].Stepper, &ConverterUpdate, (void*)(&Station->Converters[1]), State);
+	RegisterStepper(&Station->Converters[1].Stepper, &ConverterUpdate, (void*)(&Station->Converters[1]), State);
 	Station->Converters[1].Owner = Station;
 
 	return Station;

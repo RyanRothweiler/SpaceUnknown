@@ -1,10 +1,10 @@
-void WorldObjectRegister(game::state* State, world_object* WorldObj)
+void WorldObjectRegister(state* State, world_object* WorldObj)
 {
 	State->WorldObjects[State->WorldObjectsCount++] = WorldObj;
 	Assert(ArrayCount(State->WorldObjects) > State->WorldObjectsCount);
 }
 
-void WorldObjectUnregister(game::state* State, world_object* WorldObj)
+void WorldObjectUnregister(state* State, world_object* WorldObj)
 {
 	bool32 Found = false;
 	for (int i = 0; i < State->WorldObjectsCount; i++) {

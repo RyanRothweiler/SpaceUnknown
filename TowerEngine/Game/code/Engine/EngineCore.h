@@ -586,8 +586,8 @@ struct engine_state {
 	game_assets* Assets;
 	state_to_serialize StateSerializing;
 
-	game::state GameState;
-	game::editor_state EditorState;
+	state GameState;
+	editor_state EditorState;
 
 	// TODO move ClearColor into renderer
 	color ClearColor;

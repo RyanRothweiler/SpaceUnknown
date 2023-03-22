@@ -1,4 +1,4 @@
-void AsteroidDestroy(asteroid* Asteroid, game::state* State)
+void AsteroidDestroy(asteroid* Asteroid, state* State)
 {
 	Asteroid->Using = false;
 	WorldObjectUnregister(State, &Asteroid->WorldObject);
@@ -18,7 +18,7 @@ void AsteroidHovering(selectable* Sel, engine_state* EngineState, game_input* In
 	ImGui::End();
 }
 
-void InitAsteroid(asteroid* Asteroid, item_id OreItem, game::state* State)
+void InitAsteroid(asteroid* Asteroid, item_id OreItem, state* State)
 {
 	Asteroid->Using = true;
 	Asteroid->OreCount = 10;
@@ -50,7 +50,7 @@ void InitAsteroid(asteroid* Asteroid, item_id OreItem, game::state* State)
 	Sel->OnHover = &AsteroidHovering;
 }
 
-void SpawnAsteroid(asteroid_cluster* Cluster, game::state* State)
+void SpawnAsteroid(asteroid_cluster* Cluster, state* State)
 {
 	real64 CollisionRadius = 15.0f;
 
@@ -91,15 +91,15 @@ void SpawnAsteroid(asteroid_cluster* Cluster, game::state* State)
 	// No empty space found
 }
 
-void AsteroidSpawnStep(void* SelfData, real64 Time, game::state* State)
+void AsteroidSpawnStep(void* SelfData, real64 Time, state* State)
 {
-	game::asteroid_cluster* Self = (game::asteroid_cluster*)SelfData;
+	asteroid_cluster* Self = (asteroid_cluster*)SelfData;
 
 	SpawnAsteroid(Self, State);
 	SleepStepper(State, &Self->Spawner, SecondsToMilliseconds(5));
 }
 
-void AsteroidCreateCluster(vector2 Center, real64 Radius, item_id OreItem, game::state* State)
+void AsteroidCreateCluster(vector2 Center, real64 Radius, item_id OreItem, state* State)
 {
 	Assert(ArrayCount(State->Asteroids) > State->ClustersCount);
 	asteroid_cluster* Cluster = &State->Asteroids[State->ClustersCount++];

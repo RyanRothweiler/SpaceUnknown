@@ -14,7 +14,7 @@ void SalvageHovering(selectable* Sel, engine_state* EngineState, game_input* Inp
 
 int32 SalvageOrigAmount = 20;
 
-void SalvageCreate(game::state* State, vector2 Position)
+void SalvageCreate(state* State, vector2 Position)
 {
 	salvage* Salvage = &State->Salvages[State->SalvagesCount++];
 	Assert(State->SalvagesCount < ArrayCount(State->Salvages));

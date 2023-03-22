@@ -79,7 +79,7 @@ enum class item_hold_filter {
 	any, stl,
 };
 
-void ItemDisplayHold(string Title, item_hold* Hold, game::state* State, game_input* Input, bool32 CanTransfer, item_hold_filter AllowedItems)
+void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* Input, bool32 CanTransfer, item_hold_filter AllowedItems)
 {
 	int64 CargoWeight = (int64)Hold->MassCurrent;
 	string CargoTitle = Title + " (" + string{CargoWeight} + "/" + string{(int64)Hold->MassLimit} + ")(t)###" + Hold->GUID.Array();

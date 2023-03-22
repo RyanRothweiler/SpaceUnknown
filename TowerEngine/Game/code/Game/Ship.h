@@ -141,5 +141,5 @@ struct ship {
 
 
 void ShipUpdateMass(ship* Ship);
-void ShipRemoveModule(ship_module* Module, game::state* State);
-game::ship* ShipSetup(vector2 Pos, ship_id ID, game::state * State);
+void ShipRemoveModule(ship_module* Module, state* State);
+ship* ShipSetup(vector2 Pos, ship_id ID, state * State);

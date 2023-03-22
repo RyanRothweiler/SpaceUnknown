@@ -565,7 +565,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		}
 
 		//PanelStackPush(panel_id::home, &State->PanelStack, State);
-		game::Start(GameState);
+		Start(GameState);
 
 #if UNIT_TESTING
 		LinkedListUnitTests(&Memory->TransientMemory);
@@ -933,7 +933,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	*/
 
 	ImGuiSetGameTheme();
-	game::Loop(GameState, WindowInfo, GameInput);
+	Loop(GameState, WindowInfo, GameInput);
 	ImGuiSetEditorTheme();
 
 	// Keep at the end, so it reports correctly on the frame

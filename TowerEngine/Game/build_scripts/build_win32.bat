@@ -24,7 +24,7 @@ pushd T:\Game\build\Preprocessor
 
 echo Preprocessor
 :: Build preprocessor
-cl %CommonCompilerFlags% T:\Game\code\preprocessor.cpp /EHsc
+:: cl %CommonCompilerFlags% T:\Game\code\preprocessor.cpp /EHsc
 :: Run preprocessor
 Preprocessor > T:\Game\code\Engine\Generated.h
 echo Done

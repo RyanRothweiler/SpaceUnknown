@@ -16,7 +16,7 @@ real64 ShipGetMassTotal(ship* Ship)
 	return Ship->CurrentMassTotal;
 }
 
-void ShipMovementStart(ship* Ship, journey_step* JourneyStep, game::state* State)
+void ShipMovementStart(ship* Ship, journey_step* JourneyStep, state* State)
 {
 	Ship->Status = ship_status::moving;
 
@@ -34,7 +34,7 @@ void ShipMovementStart(ship* Ship, journey_step* JourneyStep, game::state* State
 	if (Ship->Position.X < Mov->EndPosition.X) { Ship->Rotation *= -1; }
 }
 
-bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, game::state* State)
+bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, state* State)
 {
 	real64 TimeSeconds = TimeMS * 0.001f;
 
@@ -119,12 +119,12 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, ga
 	return false;
 }
 
-bool ShipMovementStep(ship* Ship, journey_step* JourneyStep, real64 Time, game::state* State)
+bool ShipMovementStep(ship* Ship, journey_step* JourneyStep, real64 Time, state* State)
 {
 	return ShipSimulateMovement(Ship, &JourneyStep->Movement, Time, State);
 }
 
-void ShipDockUndockStart(ship* Ship, journey_step* JourneyStep, game::state* State)
+void ShipDockUndockStart(ship* Ship, journey_step* JourneyStep, state* State)
 {
 	if (Ship->Status == ship_status::docked) {
 		Ship->Status = ship_status::undocking;
@@ -135,7 +135,7 @@ void ShipDockUndockStart(ship* Ship, journey_step* JourneyStep, game::state* Sta
 	JourneyStep->DockUndock.TimeAccum = 0;
 }
 
-bool ShipDockUndockStep(ship* Ship, journey_step* JourneyStep, real64 Time, game::state* State)
+bool ShipDockUndockStep(ship* Ship, journey_step* JourneyStep, real64 Time, state* State)
 {
 	JourneyStep->DockUndock.TimeAccum += Time;
 	Ship->Position = JourneyStep->DockUndock.Station->Position;
@@ -153,9 +153,9 @@ bool ShipDockUndockStep(ship* Ship, journey_step* JourneyStep, real64 Time, game
 	return false;
 }
 
-void ShipStep(void* SelfData, real64 Time, game::state* State)
+void ShipStep(void* SelfData, real64 Time, state* State)
 {
-	game::ship* Ship = (game::ship*)SelfData;
+	ship* Ship = (ship*)SelfData;
 
 	if (Ship->CurrentJourney.InProgress) {
 
@@ -187,7 +187,7 @@ void ShipStep(void* SelfData, real64 Time, game::state* State)
 	}
 }
 
-void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, game::state* State)
+void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 {
 	ship_module* Module = (ship_module*)SelfData;
 
@@ -241,7 +241,7 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, game::state* State)
 	}
 }
 
-void ModuleUpdateSalvager(void* SelfData, real64 Time, game::state* State)
+void ModuleUpdateSalvager(void* SelfData, real64 Time, state* State)
 {
 	ship_module* Module = (ship_module*)SelfData;
 
@@ -286,7 +286,7 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, game::state* State)
 
 void OnShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 {
-	game::state* State = &EngineState->GameState;
+	state* State = &EngineState->GameState;
 	ship* CurrentShip = Sel->GetShip();
 
 	if (!CurrentShip->IsMoving) {
@@ -317,26 +317,26 @@ void CreateMovementStep(ship* Ship, vector2 EndPos)
 	MovStep->Movement.EndPosition = EndPos;
 }
 
-void ShipAddModule(ship_module* Dest, ship_module_id ModuleID, ship* Ship, game::state* State)
+void ShipAddModule(ship_module* Dest, ship_module_id ModuleID, ship* Ship, state* State)
 {
 	Dest->Filled = true;
 	Dest->Definition = Globals->AssetsList.ShipModuleDefinitions[(int)ModuleID];
 	Dest->Owner = Ship;
 
-	game::RegisterStepper(&Dest->Stepper, Dest->Definition.ActivationStepMethod, (void*)(Dest), State);
+	RegisterStepper(&Dest->Stepper, Dest->Definition.ActivationStepMethod, (void*)(Dest), State);
 }
 
-void ShipRemoveModule(ship_module* Module, game::state* State)
+void ShipRemoveModule(ship_module* Module, state* State)
 {
 	Module->Filled = false;
 	Module->Definition = {};
-	game::UnregisterStepper(&Module->Stepper, State);
+	UnregisterStepper(&Module->Stepper, State);
 }
 
 void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 {
-	game::state* State = &EngineState->GameState;
-	game::editor_state* EditorState = &EngineState->EditorState;
+	state* State = &EngineState->GameState;
+	editor_state* EditorState = &EngineState->EditorState;
 
 	ship* CurrentShip = Sel->GetShip();
 
@@ -622,10 +622,10 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	if (!Showing) { Sel->Clear(); }
 }
 
-game::ship* ShipSetup(vector2 Pos, ship_id ID, game::state * State)
+ship* ShipSetup(vector2 Pos, ship_id ID, state * State)
 {
 	for (int i = 0; i < ArrayCount(State->Ships); i++) {
-		game::ship* Ship = &State->Ships[i];
+		ship* Ship = &State->Ships[i];
 		if (!Ship->Using) {
 
 			Ship->Status = ship_status::idle;

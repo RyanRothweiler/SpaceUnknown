@@ -1,4 +1,4 @@
-skill_node* SkillTreeNodeFind(string ID, game::state* State)
+skill_node* SkillTreeNodeFind(string ID, state* State)
 {
 	for (int i = 0; i < State->SkillNodesCount; i++) {
 		if (State->SkillNodes[i].ID == ID) {
@@ -11,7 +11,7 @@ skill_node* SkillTreeNodeFind(string ID, game::state* State)
 	return {};
 }
 
-skill_node* SkillTreeNodeCreate(game::state* State)
+skill_node* SkillTreeNodeCreate(state* State)
 {
 	skill_node* Node = &State->SkillNodes[State->SkillNodesCount++];
 	Assert(ArrayCount(State->SkillNodes) > State->SkillNodesCount);
@@ -22,7 +22,7 @@ skill_node* SkillTreeNodeCreate(game::state* State)
 	return Node;
 }
 
-void SkillTreeNodeLoad(json::json_data* JsonIn, game::state* State)
+void SkillTreeNodeLoad(json::json_data* JsonIn, state* State)
 {
 	skill_node* NewNode = SkillTreeNodeCreate(State);
 	NewNode->ID = 				json::GetString("id", JsonIn);
@@ -59,7 +59,7 @@ void SkillTreeNodeSave(skill_node* Node)
 	json::SaveToFile(&JsonOut, "T:/Game/assets/SkillTreeNodes/" + Node->ID + ".skill_node");
 }
 
-void SkillTreeSaveAll(game::state* State)
+void SkillTreeSaveAll(state* State)
 {
 	struct locals {
 		void Save(skill_node* Node)
@@ -76,7 +76,7 @@ void SkillTreeSaveAll(game::state* State)
 	}
 }
 
-void SkillTreeUnlock(skill_node* Node, game::state* State)
+void SkillTreeUnlock(skill_node* Node, state* State)
 {
 	State->Knowledge -= Node->KnowledgeCost;
 	Node->Unlocked = true;
