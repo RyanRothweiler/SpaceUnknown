@@ -266,11 +266,13 @@ MetaStruct struct third {
 MetaStruct struct second {
 	int32 Boost;
 	real64 HPRate;
+	real64 Longer;
 };
 
 MetaStruct struct ryan_test {
-	int32 Here;
-	second Moar;
+	second HereLonger[5];
+	int32 More;
+	int32 Another;
 };
 
 #endif

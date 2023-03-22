@@ -347,19 +347,8 @@ namespace game {
 		game::state* State = &EngineState->GameState;
 
 		{
-			ryan_test Test = {};
-			Test.Here = 10;
-			Test.Moar.Boost = -1;
-			Test.Moar.HPRate = 0.5f;
-
-			save_data::Write("SaveFile.su", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Test, GlobalTransMem);
-
-			//json::WriteStruct("RyanOutput.json", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Test, GlobalTransMem);
-
-			ryan_test Dest = {};
-			//json::ReadIntoStruct("RyanOutput.json", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Dest);
-
-			int x = 0;
+			//save_data::Write("SaveFile.su", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Test, GlobalTransMem);
+			//save_data::Read("SaveFile.su", (void*)&Dest, &ryan_test_META[0], ArrayCount(ryan_test_META), GlobalTransMem);
 		}
 
 		// Load skill nodes

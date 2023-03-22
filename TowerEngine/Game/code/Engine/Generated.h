@@ -46,6 +46,7 @@ return json::FillStruct(JsonData, KeyParent, &third_META[0], ArrayCount(third_ME
 meta_member second_META[] { 
 {meta_member_type::int32, "int32", "Boost", (uint64)&((second *)0)->Boost, 0, sizeof(int32),{},{},{},{},{}},
 {meta_member_type::real64, "real64", "HPRate", (uint64)&((second *)0)->HPRate, 0, sizeof(real64),{},{},{},{},{}},
+{meta_member_type::real64, "real64", "Longer", (uint64)&((second *)0)->Longer, 0, sizeof(real64),{},{},{},{},{}},
 }; 
  
 void M_ALLOC__second(s_void* SafeVoid, memory_arena* Memory) { 
@@ -76,8 +77,9 @@ return json::FillStruct(JsonData, KeyParent, &second_META[0], ArrayCount(second_
 }
 
 meta_member ryan_test_META[] { 
-{meta_member_type::int32, "int32", "Here", (uint64)&((ryan_test *)0)->Here, 0, sizeof(int32),{},{},{},{},{}},
-{meta_member_type::custom, "second", "Moar", (uint64)&((ryan_test *)0)->Moar, 0, sizeof(second),&StructMetaFill_second, &JsonFillStructShim_second, &SaveDataFillShim_second, &second_META[0], ArrayCount(second_META) },
+{meta_member_type::custom, "second", "HereLonger", (uint64)&((ryan_test *)0)->HereLonger, 5, sizeof(second),&StructMetaFill_second, &JsonFillStructShim_second, &SaveDataFillShim_second, &second_META[0], ArrayCount(second_META) },
+{meta_member_type::int32, "int32", "More", (uint64)&((ryan_test *)0)->More, 0, sizeof(int32),{},{},{},{},{}},
+{meta_member_type::int32, "int32", "Another", (uint64)&((ryan_test *)0)->Another, 0, sizeof(int32),{},{},{},{},{}},
 }; 
  
 void M_ALLOC__ryan_test(s_void* SafeVoid, memory_arena* Memory) { 

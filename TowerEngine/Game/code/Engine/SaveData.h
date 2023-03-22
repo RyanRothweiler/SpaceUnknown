@@ -1,6 +1,6 @@
 namespace save_data {
 
-#define MEMBER_PARS_MAX 1024
+#define MEMBER_PARS_MAX 2048
 
 	struct member;
 
@@ -26,6 +26,6 @@ namespace save_data {
 
 	struct member {
 		int32 PairsCount;
-		pair* Pairs[MEMBER_PARS_MAX];
+		pair Pairs[MEMBER_PARS_MAX];
 	};
 };

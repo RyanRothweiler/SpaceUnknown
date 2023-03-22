@@ -326,22 +326,6 @@ namespace json {
 
 				string DataInString = KeyPair->Data;
 
-				/*
-				bool32 IsArray = MetaInfo->ArrayLength > 0;
-				int32 DataCount = 1;
-
-				if (IsArray) {
-				*Dest->Curr = '['; Dest->Curr++;
-				DataCount = MetaInfo->ArrayLength;
-				}
-
-				for (int i = 0; i < DataCount; i++) {
-
-				char* Start = (char*)AccData;
-				Start = Start + (MetaInfo->Offset + (i * MetaInfo->Size));
-				*/
-
-
 				char* FieldDest = (char*)DataDest;
 				FieldDest = FieldDest + InfoCurr->Offset;
 
@@ -551,7 +535,6 @@ namespace json {
 		struct_string_return Ret = StructToString(MetaInfo, MetaInfoCount, AccData, Memory);
 		PlatformApi.WriteFile(Dest, Ret.Start, (uint32)(Ret.Curr - Ret.Start));
 	}
-
 
 }
 
