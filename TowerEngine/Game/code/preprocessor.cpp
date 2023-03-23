@@ -7,11 +7,13 @@
 #include <vector>
 
 #define GameNull 0
+#include "preprocessor.h"
 
 #include "Engine/Types.cpp"
 #include "Engine/MemoryManager.h"
 #include "Engine/MemoryManager.cpp"
 #include "Engine/String.cpp"
+
 
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
@@ -803,6 +805,19 @@ int main(int argc, char* ars[])
 	}
 	*/
 
+
+	// Manually process files
+	char* FilesToRead[] = {
+		"T:/Game/code/Engine/EngineCore.h",
+		"T:/Game/code/Engine/Math.cpp",
+		"T:/Game/code/Engine/Renderer/Renderer.h",
+		"T:/Game/code/Game/AssetList.cpp",
+	};
+	for (int i = 0; i < ArrayCount(FilesToRead); i++) {
+		ProcessFile(FilesToRead[i]);
+	}
+
+
 	memory_arena PathsMemory = {};
 	int64 PathsMemorySize = Megabytes(10);
 	PathsMemory.Memory = malloc(PathsMemorySize);
@@ -827,17 +842,6 @@ int main(int argc, char* ars[])
 			ProcessFile(P->Path.CharArray);
 			P = P->Next;
 		}
-	}
-
-
-	// Manually process files
-	char* FilesToRead[] = {
-		"T:/Game/code/Engine/EngineCore.h",
-		"T:/Game/code/Engine/Renderer/Renderer.h",
-		"T:/Game/code/Game/AssetList.cpp",
-	};
-	for (int i = 0; i < ArrayCount(FilesToRead); i++) {
-		ProcessFile(FilesToRead[i]);
 	}
 
 	// Build method stubs, so that we can include the generated file anywhere

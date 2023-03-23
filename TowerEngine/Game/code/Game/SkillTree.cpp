@@ -1,7 +1,7 @@
 skill_node* SkillTreeNodeFind(string ID, state* State)
 {
 	for (int i = 0; i < State->SkillNodesCount; i++) {
-		if (State->SkillNodes[i].ID == ID) {
+		if (State->SkillNodes[i].Persist.ID == ID) {
 			return &State->SkillNodes[i];
 		}
 	}
@@ -16,21 +16,27 @@ skill_node* SkillTreeNodeCreate(state* State)
 	skill_node* Node = &State->SkillNodes[State->SkillNodesCount++];
 	Assert(ArrayCount(State->SkillNodes) > State->SkillNodesCount);
 
-	Node->Position = vector2{2, 2};
-	Node->ID = PlatformApi.GetGUID();
+	Node->Persist.Position = vector2{2, 2};
+
+	string ID = PlatformApi.GetGUID();
+	Node->Persist.ID = StringHash(ID);
 
 	return Node;
 }
 
-void SkillTreeNodeLoad(json::json_data* JsonIn, state* State)
+void SkillTreeNodeLoad(char* FilePath, state* State)
 {
 	skill_node* NewNode = SkillTreeNodeCreate(State);
-	NewNode->ID = 				json::GetString("id", JsonIn);
-	NewNode->Position = 		json::GetVector2("position", JsonIn);
-	NewNode->KnowledgeCost = 	json::GetInt64("knowledge_cost", JsonIn);
+	save_data::Read(
+	    FilePath,
+	    (void*)&NewNode->Persist,
+	    &skill_node_persistent_META[0],
+	    ArrayCount(skill_node_persistent_META),
+	    GlobalTransMem
+	);
 
-	NewNode->BonusAdditions.FuelForceAddition = 		(float)json::GetReal64("bonus_fuel_force_addition", JsonIn);
 
+	/*
 	// NOTE this doesn't update the children list. Only saves the IDs
 	for (int i = 0; i < ArrayCount(NewNode->Children); i++) {
 		string Key = "child_" + i;
@@ -39,27 +45,31 @@ void SkillTreeNodeLoad(json::json_data* JsonIn, state* State)
 			NewNode->SavedChildrenIDs[i] = ChildID;
 		}
 	}
+	*/
 }
 
-void SkillTreeNodeSave(skill_node* Node)
+void SkillTreeNodeSave(skill_node * Node)
 {
-	json::json_data JsonOut = json::GetJson(GlobalTransMem);
+	string Path = "T:/Game/assets/SkillTreeNodes/" + string{Node->Persist.ID} + ".skill_node";
+	save_data::Write(
+	    Path.Array(),
+	    &skill_node_persistent_META[0],
+	    ArrayCount(skill_node_persistent_META),
+	    (void*)&Node->Persist,
+	    GlobalTransMem
+	);
 
-	json::AddKeyPair("id", 					Node->ID, 				&JsonOut);
-	json::AddKeyPair("position", 			Node->Position, 		&JsonOut);
-	json::AddKeyPair("knowledge_cost", 		Node->KnowledgeCost, 	&JsonOut);
-
-	json::AddKeyPair("bonus_fuel_force_addition", 			Node->BonusAdditions.FuelForceAddition, 		&JsonOut);
-
+	/*
 	for (int i = 0; i < Node->ChildrenCount; i++) {
 		string Key = "child_" + i;
 		json::AddKeyPair(Key.Array(), Node->Children[i]->ID, &JsonOut);
 	}
 
-	json::SaveToFile(&JsonOut, "T:/Game/assets/SkillTreeNodes/" + Node->ID + ".skill_node");
+	json::SaveToFile(&JsonOut, );
+	*/
 }
 
-void SkillTreeSaveAll(state* State)
+void SkillTreeSaveAll(state * State)
 {
 	struct locals {
 		void Save(skill_node* Node)
@@ -76,13 +86,13 @@ void SkillTreeSaveAll(state* State)
 	}
 }
 
-void SkillTreeUnlock(skill_node* Node, state* State)
+void SkillTreeUnlock(skill_node * Node, state * State)
 {
-	State->Knowledge -= Node->KnowledgeCost;
+	State->Knowledge -= Node->Persist.KnowledgeCost;
 	Node->Unlocked = true;
 	SkillTreeSaveAll(State);
 
-	State->TreeBonusesTotal = State->TreeBonusesTotal + Node->BonusAdditions;
+	State->TreeBonusesTotal = SkillBonusesAdd(State->TreeBonusesTotal, Node->Persist.BonusAdditions);
 }
 
 void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)

@@ -774,6 +774,22 @@ void Uppercase(string* Input)
 	}
 }
 
+uint64 StringHash(string Input)
+{
+	unsigned long hash = 5381;
+	int c;
+
+	int32 Len = StringLength(Input);
+	for (int i = 0; i < Len; i++) {
+		c = Input.Array()[i];
+		//while (c = *str++) {
+
+		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+	}
+
+	return hash;
+}
+
 #if UNIT_TESTING
 void
 StringUnitTests(memory_arena* Memory)

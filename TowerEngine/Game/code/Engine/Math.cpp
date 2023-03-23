@@ -392,7 +392,7 @@ Vector3Distance(vector3 A, vector3 B)
 
 // ----------------------------------------------------------------------------- vector2
 
-struct vector2 {
+MetaStruct struct vector2 {
 	real64 X;
 	real64 Y;
 };

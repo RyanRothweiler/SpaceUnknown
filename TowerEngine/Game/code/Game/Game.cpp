@@ -353,11 +353,6 @@ void Start(engine_state* EngineState)
 {
 	state* State = &EngineState->GameState;
 
-	{
-		//save_data::Write("SaveFile.su", &ryan_test_META[0], ArrayCount(ryan_test_META), (void*)&Test, GlobalTransMem);
-		//save_data::Read("SaveFile.su", (void*)&Dest, &ryan_test_META[0], ArrayCount(ryan_test_META), GlobalTransMem);
-	}
-
 	// Load skill nodes
 	{
 		path_list NodeFiles = {};
@@ -365,8 +360,7 @@ void Start(engine_state* EngineState)
 
 		path_list* P = &NodeFiles;
 		while (StringLength(P->Path) > 0) {
-			json::json_data json = json::LoadFile(P->Path, GlobalTransMem);
-			SkillTreeNodeLoad(&json, State);
+			SkillTreeNodeLoad(P->Path.Array(), State);
 
 			P = P->Next;
 		}
@@ -374,9 +368,11 @@ void Start(engine_state* EngineState)
 		// Update Children after all the node have been loaded
 		for (int i = 0; i < State->SkillNodesCount; i++) {
 			skill_node* Node = &State->SkillNodes[i];
-			for (int c = 0; c < ArrayCount(Node->SavedChildrenIDs); c++) {
-				if (StringLength(Node->SavedChildrenIDs[c]) > 0) {
-					Node->AddChild(SkillTreeNodeFind(Node->SavedChildrenIDs[c], State));
+			for (int c = 0; c < ArrayCount(Node->Persist.ChildrenIDs); c++) {
+				if (Node->Persist.ChildrenIDs[c] > 0) {
+					Node->AddChild(
+					    SkillTreeNodeFind(Node->Persist.ChildrenIDs[c], State)
+					);
 				}
 			}
 		}
@@ -521,22 +517,22 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				}
 				if (Input->MouseRight.IsDown && Input->MouseMoved() && NodeMoving != GameNull) {
 					vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
-					NodeMoving->Position = vector2{MouseWorld.X, MouseWorld.Y};
+					NodeMoving->Persist.Position = vector2{MouseWorld.X, MouseWorld.Y};
 				}
 
 				if (EditorState->NodeSelected != GameNull) {
-					ImGui::Text(EditorState->NodeSelected->ID.Array());
+					ImGui::Text("%i", EditorState->NodeSelected->Persist.ID);
 
 					{
-						int Num = (int)EditorState->NodeSelected->KnowledgeCost;
+						int Num = (int)EditorState->NodeSelected->Persist.KnowledgeCost;
 						ImGui::DragInt("Knowledge Cost", &Num, 1, 0, 1000000, " % i");
-						EditorState->NodeSelected->KnowledgeCost = (int64)Num;
+						EditorState->NodeSelected->Persist.KnowledgeCost = (int64)Num;
 					}
 
 					ImGui::Separator();
 
 					for (int i = 0; i < EditorState->NodeSelected->ChildrenCount; i++) {
-						ImGui::Text(EditorState->NodeSelected->Children[i]->ID.Array());
+						ImGui::Text("%i", EditorState->NodeSelected->Children[i]->Persist.ID);
 						ImGui::SameLine();
 
 						ImGui::PushID(i);
@@ -559,7 +555,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 					ImGui::Text("Bonuses");
 
-					ImGui::DragFloat("FuelForceAddition", &EditorState->NodeSelected->BonusAdditions.FuelForceAddition, 0.001f);
+					ImGui::DragFloat("FuelForceAddition", &EditorState->NodeSelected->Persist.BonusAdditions.FuelForceAddition, 0.001f);
 				}
 
 				ImGui::Dummy(ImVec2(0, 30));
@@ -1033,8 +1029,8 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 					}
 
 					vector2 Points[2] = {};
-					Points[0] = WorldToScreen(vector3{Node->Position.X, Node->Position.Y, 0}, &EngineState->GameCamera);
-					Points[1] = WorldToScreen(vector3{Node->Children[c]->Position.X, Node->Children[c]->Position.Y, 0}, &EngineState->GameCamera);
+					Points[0] = WorldToScreen(vector3{Node->Persist.Position.X, Node->Persist.Position.Y, 0}, &EngineState->GameCamera);
+					Points[1] = WorldToScreen(vector3{Node->Children[c]->Persist.Position.X, Node->Children[c]->Persist.Position.Y, 0}, &EngineState->GameCamera);
 					render_line Line = {};
 					Line.Points = Points;
 					Line.PointsCount = ArrayCount(Points);
@@ -1058,8 +1054,8 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 					RadiusMax = 3;
 				}
 				Node->CircleRadius = Lerp(Node->CircleRadius, RadiusMax, 0.25f);
-				RenderCircle(Node->Position, vector2{Node->CircleRadius, Node->CircleRadius}, Color, 2, Globals->GameRenderer);
-				if (Vector2Distance(Node->Position, MouseWorldFlat) < Node->CircleRadius) {
+				RenderCircle(Node->Persist.Position, vector2{Node->CircleRadius, Node->CircleRadius}, Color, 2, Globals->GameRenderer);
+				if (Vector2Distance(Node->Persist.Position, MouseWorldFlat) < Node->CircleRadius) {
 					EngineState->GameState.NodeHovering = Node;
 				}
 			}
@@ -1072,8 +1068,8 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				ImGui::SetNextWindowPos(ImVec2((float)Input->MousePos.X + 20, (float)Input->MousePos.Y));
 				bool Open = true;
 				ImGui::Begin("Info", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
-				ImGui::Text("Knowledge Cost - % i", State->NodeHovering->KnowledgeCost);
-				SkillTreeImguiDisplayBonuses(State->NodeHovering->BonusAdditions);
+				ImGui::Text("Knowledge Cost - % i", State->NodeHovering->Persist.KnowledgeCost);
+				SkillTreeImguiDisplayBonuses(State->NodeHovering->Persist.BonusAdditions);
 				ImGui::End();
 
 				if (!State->NodeHovering->Unlocked && Input->MouseLeft.OnDown && !EditorState->EditorMode) {
@@ -1089,15 +1085,15 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			if (NodeSelected != GameNull) {
 				if (ImGui::BeginPopupModal("Unlock")) {
 
-					ImGui::Text("Spend % i Knowledge to unlock this bonus ? ", NodeSelected->KnowledgeCost);
-					SkillTreeImguiDisplayBonuses(NodeSelected->BonusAdditions);
+					ImGui::Text("Spend % i Knowledge to unlock this bonus ? ", NodeSelected->Persist.KnowledgeCost);
+					SkillTreeImguiDisplayBonuses(NodeSelected->Persist.BonusAdditions);
 
 					if (NodeSelected->Unlocked) {
 						ImGui::Text("UNLOCKED");
 					} else {
 						ImGui::Separator();
 						real32 HW = ImGui::GetWindowWidth() * 0.47f;
-						if (State->Knowledge >= NodeSelected->KnowledgeCost) {
+						if (State->Knowledge >= NodeSelected->Persist.KnowledgeCost) {
 							if (ImGui::Button("Yes", ImVec2(HW, 0))) {
 								ImGui::CloseCurrentPopup();
 								SkillTreeUnlock(NodeSelected, State);

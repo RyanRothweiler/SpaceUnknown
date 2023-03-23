@@ -2,7 +2,6 @@
 #ifndef ENGINE_CORE
 #define ENGINE_CORE
 
-//#include "httplib.h"
 #include "EngineCore.h"
 
 render::api RenderApi;
@@ -20,7 +19,6 @@ render::api RenderApi;
 
 
 #include "Rect.cpp"
-#include "Math.cpp"
 
 // This should be used with the generated system to guarantee safety
 int32 StringToEnum(string Input, string* NamesArray, int32 EnumsCount)
