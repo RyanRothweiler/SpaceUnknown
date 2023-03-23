@@ -50,7 +50,3 @@ struct skill_node {
 		Child->Parent = this;
 	}
 };
-
-MetaStruct struct skill_node_player {
-	int64 ID;
-};

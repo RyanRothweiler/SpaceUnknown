@@ -58,6 +58,7 @@ string ship_module_id_NAME[] {
 meta_member save_file_META[] { 
 {meta_member_type::int64, "int64", "RealTimeSaved", (uint64)&((save_file *)0)->RealTimeSaved, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::real64, "real64", "UniverseTimeMS", (uint64)&((save_file *)0)->UniverseTimeMS, 0, sizeof(real64),{},{},{},{},{}},
+{meta_member_type::int64, "int64", "SkillNodesIDUnlocked", (uint64)&((save_file *)0)->SkillNodesIDUnlocked, 256, sizeof(int64),{},{},{},{},{}},
 }; 
  
 void M_ALLOC__save_file(s_void* SafeVoid, memory_arena* Memory) { 
@@ -186,37 +187,6 @@ return save_data::AddMembers(Dest, KeyParent, &skill_node_persistent_META[0], Ar
 
 void JsonFillStructShim_skill_node_persistent (json::json_data* JsonData, string KeyParent, void* DataDest){
 return json::FillStruct(JsonData, KeyParent, &skill_node_persistent_META[0], ArrayCount(skill_node_persistent_META), DataDest);
-}
-
-meta_member skill_node_player_META[] { 
-{meta_member_type::int64, "int64", "ID", (uint64)&((skill_node_player *)0)->ID, 0, sizeof(int64),{},{},{},{},{}},
-}; 
- 
-void M_ALLOC__skill_node_player(s_void* SafeVoid, memory_arena* Memory) { 
-	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 5; 
-	SafeVoid->DataSize = sizeof(skill_node_player); 
-	SafeVoid->Data = ArenaAllocate(Memory, sizeof(skill_node_player)); 
-	ClearMemory((uint8*)SafeVoid->Data, sizeof(skill_node_player)); 
-};
-
-skill_node_player* M_GET__skill_node_player(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 5) { 
-		return (skill_node_player*)SafeVoid->Data; 
-	} 
-	return GameNull; 
-};
-
-void StructMetaFill_skill_node_player (json::struct_string_return* Dest,  void* AccData){
-return json::StructMetaFill(Dest, &skill_node_player_META[0], ArrayCount(skill_node_player_META), AccData);
-}
-
-void SaveDataFillShim_skill_node_player (save_data::member* Dest, string KeyParent, void* AccData, memory_arena* Memory){
-return save_data::AddMembers(Dest, KeyParent, &skill_node_player_META[0], ArrayCount(skill_node_player_META), AccData, Memory);
-}
-
-void JsonFillStructShim_skill_node_player (json::json_data* JsonData, string KeyParent, void* DataDest){
-return json::FillStruct(JsonData, KeyParent, &skill_node_player_META[0], ArrayCount(skill_node_player_META), DataDest);
 }
 
 

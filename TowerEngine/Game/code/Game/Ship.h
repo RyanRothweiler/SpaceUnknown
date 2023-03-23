@@ -112,6 +112,10 @@ struct ship_definition {
 	int32 SlotsCount;
 };
 
+MetaStruct struct ship_persist {
+	vector2 Position;
+};
+
 struct ship {
 	ship_status Status;
 

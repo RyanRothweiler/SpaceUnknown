@@ -257,6 +257,7 @@ struct state {
 MetaStruct struct save_file {
 	int64 RealTimeSaved;
 	real64 UniverseTimeMS;
+	int64 SkillNodesIDUnlocked[256];
 };
 
 #endif

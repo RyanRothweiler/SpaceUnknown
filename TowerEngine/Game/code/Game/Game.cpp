@@ -117,12 +117,27 @@ void SaveGame(state* State)
 {
 	save_file SaveData = {};
 
-	using std::chrono::duration_cast;
-	using std::chrono::system_clock;
-	int64 SinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
+	// Time
+	{
+		using std::chrono::duration_cast;
+		using std::chrono::system_clock;
+		int64 SinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
 
-	SaveData.RealTimeSaved = SinceEpoch;
-	SaveData.UniverseTimeMS = State->UniverseTime.TimeMS;
+		SaveData.RealTimeSaved = SinceEpoch;
+		SaveData.UniverseTimeMS = State->UniverseTime.TimeMS;
+	}
+
+	// Skill nodess
+	{
+		int c = 0;
+		for (int i = 0; i < State->SkillNodesCount; i++) {
+			skill_node* Node = &State->SkillNodes[i];
+			if (Node->Unlocked) {
+				SaveData.SkillNodesIDUnlocked[c++] = Node->Persist.ID;
+				Assert(c < ArrayCount(SaveData.SkillNodesIDUnlocked));
+			}
+		}
+	}
 
 	save_data::Write("SpaceUnknownSave.sus", &save_file_META[0], ArrayCount(save_file_META), (void*)&SaveData, GlobalTransMem);
 
@@ -178,26 +193,6 @@ void SaveGame(state* State)
 	}
 	}
 
-	// Skill tree nodes
-	{
-	struct local {
-	void Save(skill_node* Node, json::json_data* JsonOut)
-	{
-		if (Node->Unlocked) {
-			json::AddKeyPair("node_unlocked_" + Node->ID, true, JsonOut);
-		}
-
-		for (int i = 0; i < Node->ChildrenCount; i++) {
-			Save(Node->Children[i], JsonOut);
-		}
-	}
-	} Locals;
-
-	for (int i = 0; i < State->SkillNodesCount; i++) {
-	Locals.Save(&State->SkillNodes[i], &JsonOut);
-	}
-	}
-
 	json::SaveToFile(&JsonOut, "SaveGame.sus");
 	*/
 	ConsoleLog("Game Saved");
@@ -224,15 +219,17 @@ void LoadGame(state* State)
 
 	State->UniverseTime.TimeMS = SaveData.UniverseTimeMS;
 
-	/*
-	json::json_data JsonIn = json::LoadFile("SaveGame.sus", GlobalTransMem);
-
-	if (JsonIn.PairsCount == 0) {
-		ConsoleLog("No saved data file");
-		return;
+	// Skill Nodes
+	{
+		for (int i = 0; i < ArrayCount(SaveData.SkillNodesIDUnlocked); i++) {
+			if (SaveData.SkillNodesIDUnlocked[i] > 0) {
+				skill_node* Node = SkillTreeNodeFind(SaveData.SkillNodesIDUnlocked[i], State);
+				Node->Unlocked = true;
+			}
+		}
 	}
 
-	State->UniverseTime.TimeMS = json::GetReal64("simulation_time", &JsonIn);
+	/*
 
 	// Ships
 	for (int i = 0; i < ArrayCount(State->Ships); i++) {
