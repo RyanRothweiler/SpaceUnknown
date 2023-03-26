@@ -258,14 +258,14 @@ void StationDockShip(station * Station, ship * Ship)
 		DockRadius * cos(DockRadians)
 	};
 
-	Ship->Position = P;
+	Ship->Persist.Position = P;
 	Ship->Status = ship_status::docked;
 	Ship->StationDocked = Station;
 }
 
 void StationUndockShip(ship * Ship)
 {
-	Ship->Position = Ship->StationDocked->Position;
+	Ship->Persist.Position = Ship->StationDocked->Position;
 	Ship->StationDocked = {};
 	Ship->Status = ship_status::idle;
 }

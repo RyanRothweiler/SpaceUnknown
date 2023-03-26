@@ -23,15 +23,15 @@ void ShipMovementStart(ship* Ship, journey_step* JourneyStep, state* State)
 	journey_movement* Mov = &JourneyStep->Movement;
 
 	Ship->Velocity = {};
-	Mov->StartPosition = Ship->Position;
-	Mov->DistFromSidesToCoast = Vector2Distance(Ship->Position, Mov->EndPosition) * 0.5f * Mov->EdgeRatio;
-	Mov->DirToEnd = Vector2Normalize(Mov->EndPosition - Ship->Position);
-	Mov->FullDistance = Vector2Distance(Mov->EndPosition, Ship->Position) + 1;
+	Mov->StartPosition = Ship->Persist.Position;
+	Mov->DistFromSidesToCoast = Vector2Distance(Ship->Persist.Position, Mov->EndPosition) * 0.5f * Mov->EdgeRatio;
+	Mov->DirToEnd = Vector2Normalize(Mov->EndPosition - Ship->Persist.Position);
+	Mov->FullDistance = Vector2Distance(Mov->EndPosition, Ship->Persist.Position) + 1;
 
 	// Update rotation
-	vector2 MoveDir = Vector2Normalize(Mov->EndPosition - Ship->Position);
-	Ship->Rotation = Vector2AngleBetween(vector2{0, 1}, MoveDir) + PI;
-	if (Ship->Position.X < Mov->EndPosition.X) { Ship->Rotation *= -1; }
+	vector2 MoveDir = Vector2Normalize(Mov->EndPosition - Ship->Persist.Position);
+	Ship->Persist.Rotation = Vector2AngleBetween(vector2{0, 1}, MoveDir) + PI;
+	if (Ship->Persist.Position.X < Mov->EndPosition.X) { Ship->Persist.Rotation *= -1; }
 }
 
 bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, state* State)
@@ -54,8 +54,8 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 		Mov->CachedDirToTargetForce = dirToTargetForce;
 	}
 
-	real64 DistToStart = Vector2Distance(Ship->Position, Mov->StartPosition);
-	real64 DistToEnd = Vector2Distance(Ship->Position, Mov->EndPosition);
+	real64 DistToStart = Vector2Distance(Ship->Persist.Position, Mov->StartPosition);
+	real64 DistToEnd = Vector2Distance(Ship->Persist.Position, Mov->EndPosition);
 
 	// close enough
 	if (DistToEnd < 0.01f) {
@@ -110,11 +110,11 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 
 			// Move ship to the point at which we want it to be when it wakes up. Probably fine maybe?
 			vector2 SlowStartingPos = Mov->EndPosition - (Mov->DirToEnd * Mov->DistFromSidesToCoast);
-			Ship->Position = SlowStartingPos;
+			Ship->Persist.Position = SlowStartingPos;
 		}
 	}
 
-	Ship->Position = Ship->Position + (Ship->Velocity * TimeSeconds);
+	Ship->Persist.Position = Ship->Persist.Position + (Ship->Velocity * TimeSeconds);
 
 	return false;
 }
@@ -138,7 +138,7 @@ void ShipDockUndockStart(ship* Ship, journey_step* JourneyStep, state* State)
 bool ShipDockUndockStep(ship* Ship, journey_step* JourneyStep, real64 Time, state* State)
 {
 	JourneyStep->DockUndock.TimeAccum += Time;
-	Ship->Position = JourneyStep->DockUndock.Station->Position;
+	Ship->Persist.Position = JourneyStep->DockUndock.Station->Position;
 
 	if (JourneyStep->DockUndock.TimeAccum >= SecondsToMilliseconds(60.0f)) {
 
@@ -211,7 +211,7 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 		for (int a = 0; a < ArrayCount(Cluster->Asteroids) && !Module->Target.HasTarget(); a++) {
 			asteroid* Roid = &Cluster->Asteroids[a];
 			if (Roid->Using) {
-				real64 Dist = Vector2Distance(Roid->WorldObject.Position, Module->Owner->Position);
+				real64 Dist = Vector2Distance(Roid->WorldObject.Position, Module->Owner->Persist.Position);
 				if (Dist < Module->Definition.ActivationRange) {
 					Module->Target.Set(Roid);
 				}
@@ -260,7 +260,7 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, state* State)
 	for (int i = 0; i < State->SalvagesCount && !Module->Target.HasTarget(); i++) {
 		salvage* Sal = &State->Salvages[i];
 
-		real64 Dist = Vector2Distance(Sal->WorldObject.Position, Module->Owner->Position);
+		real64 Dist = Vector2Distance(Sal->WorldObject.Position, Module->Owner->Persist.Position);
 		if (Dist < Module->Definition.ActivationRange) {
 			Module->Target.Set(Sal);
 		}
@@ -366,13 +366,13 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 				ImGui::Text("x");
 				ImGui::SameLine();
-				ImGui::Text(string{CurrentShip->Position.X} .Array());
+				ImGui::Text(string{CurrentShip->Persist.Position.X} .Array());
 
 				ImGui::NextColumn();
 
 				ImGui::Text("y");
 				ImGui::SameLine();
-				ImGui::Text(string{CurrentShip->Position.Y} .Array());
+				ImGui::Text(string{CurrentShip->Persist.Position.Y} .Array());
 
 				ImGui::Columns(1);
 				ImGui::PopID();
@@ -523,7 +523,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 		bool32 DockState = (CurrentShip->Status == ship_status::docked);
 		station* LastStation = {};
-		vector2 JourneyPosCurrent = CurrentShip->Position;
+		vector2 JourneyPosCurrent = CurrentShip->Persist.Position;
 
 		for (int i = 0; i < CurrentShip->CurrentJourney.StepsCount; i++) {
 
@@ -588,7 +588,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 						CreateDockUndockStep(CurrentShip, LastStation);
 					}
 
-					CreateMovementStep(CurrentShip, CurrentShip->Position);
+					CreateMovementStep(CurrentShip, CurrentShip->Persist.Position);
 				}
 
 				CurrJour->Execute();
@@ -631,7 +631,7 @@ ship* ShipSetup(vector2 Pos, ship_id ID, state * State)
 			Ship->Status = ship_status::idle;
 
 			Ship->Using = true;
-			Ship->Position = Pos;
+			Ship->Persist.Position = Pos;
 			Ship->Size = vector2{5, 5};
 			Ship->Definition = Globals->AssetsList.ShipDefinitions[(int)ID];
 
@@ -643,7 +643,7 @@ ship* ShipSetup(vector2 Pos, ship_id ID, state * State)
 
 			RegisterStepper(&Ship->Stepper, &ShipStep, (void*)Ship, State);
 
-			selectable* Sel = RegisterSelectable(selection_type::ship, &Ship->Position, &Ship->Size, (void*)Ship, State);
+			selectable* Sel = RegisterSelectable(selection_type::ship, &Ship->Persist.Position, &Ship->Size, (void*)Ship, State);
 			Sel->SelectionUpdate = &ShipSelected;
 			Sel->OnSelection = &OnShipSelected;
 

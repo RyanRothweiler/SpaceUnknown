@@ -25,9 +25,9 @@ namespace save_data {
 
 	direction Direction;
 
-	void AddMembers(member* Root, string KeyParent, meta_member* MI, uint32 MICount, char* Data, memory_arena* TransMem);
+	void AddMembers(member* Root, string KeyParent, meta_member* MI, uint32 MICount, char* Data);
 
-	void AddData(member* Root, string KeyParent, string ArrayIndex, meta_member* MI, void* Data, memory_arena* TransMem)
+	void AddData(member* Root, string KeyParent, string ArrayIndex, meta_member* MI, void* Data)
 	{
 		string KS = KeyParent + MI->Name + ArrayIndex;
 		pair* Pair = {};
@@ -139,15 +139,75 @@ namespace save_data {
 				}
 			} break;
 
+			case meta_member_type::enumeration: {
+				int64 NumData = 0;
+
+				if (Direction == direction::write) {
+					if (MI->Size == 1) {
+						char d = *(char*)Data;
+						Pair->Data.i64 = d;
+					} else if (MI->Size == 2)  {
+						int16 d = *(int16*)Data;
+						Pair->Data.i64 = d;
+					} else if (MI->Size == 4)  {
+						int32 d = *(int32*)Data;
+						Pair->Data.i64 = d;
+					} else if (MI->Size == 8)  {
+						int64 d = *(int64*)Data;
+						Pair->Data.i64 = d;
+					} else {
+						// Unknown enum size
+						Assert(false);
+					}
+				} else if (Direction == direction::read && Pair != GameNull) {
+
+					if (MI->Size == 1) {
+						char Source = (char)Pair->Data.i64;
+						char* Dest = (char*)Data;
+						*Dest = Source;
+					} else if (MI->Size == 2)  {
+						int16 Source = (int16)Pair->Data.i64;
+						int16* Dest = (int16*)Data;
+						*Dest = Source;
+					} else if (MI->Size == 4)  {
+						int32 Source = (int32)Pair->Data.i64;
+						int32* Dest = (int32*)Data;
+						*Dest = Source;
+					} else if (MI->Size == 8)  {
+						int64 Source = (int64)Pair->Data.i64;
+						int64* Dest = (int64*)Data;
+						*Dest = Source;
+					} else {
+						// Unknown enum size
+						Assert(false);
+					}
+
+
+					real64* D = (real64*)Data;
+					*D = Pair->Data.r64;
+				}
+
+
+
+				/*
+				if (Direction == direction::write) {
+					Pair->Data.r64 = *(real64*)Data;
+				} else if (Direction == direction::read && Pair != GameNull) {
+					real64* D = (real64*)Data;
+					*D = Pair->Data.r64;
+				}
+				*/
+			} break;
+
 			case meta_member_type::custom: {
-				MI->SaveDataFillShim(Root, KS + ".", (void*)Data, TransMem);
+				MI->SaveDataFillShim(Root, KS + ".", (void*)Data);
 			} break;
 
 			INVALID_DEFAULT
 		}
 	}
 
-	void AddMembers(member* Root, string KeyParent, meta_member* MI, uint32 MICount, void* Data, memory_arena* TransMem)
+	void AddMembers(member* Root, string KeyParent, meta_member* MI, uint32 MICount, void* Data)
 	{
 		for (uint32 index = 0; index < MICount; index++) {
 
@@ -173,20 +233,20 @@ namespace save_data {
 					ArrayIndexKey = ArrayIndexKey + i;
 				}
 
-				AddData(Root, Key, ArrayIndexKey, Member, Start, TransMem);
+				AddData(Root, Key, ArrayIndexKey, Member, Start);
 			}
 		}
 	}
 
 	// NOTE (Ryan) This works because trans mem will be allocated contiguously
-	void Write(char* FileDest, meta_member* MetaInfo, uint32 MetaInfoCount, void* Data, memory_arena* TransMem)
+	void Write(char* FileDest, meta_member* MetaInfo, uint32 MetaInfoCount, void* Data)
 	{
 		Direction = direction::write;
 
 		member Root = {};
-		AddMembers(&Root, "", MetaInfo, MetaInfoCount, Data, TransMem);
+		AddMembers(&Root, "", MetaInfo, MetaInfoCount, Data);
 
-		PlatformApi.WriteFile(FileDest, (void*)&Root, sizeof(Root) + (sizeof(pair) * Root.PairsCount));
+		PlatformApi.WriteFile(FileDest, (void*)&Root, sizeof(Root));
 	}
 
 	// Returns if successful
@@ -198,7 +258,7 @@ namespace save_data {
 
 		if (Result.ContentsSize > 0) {
 			member* Root = (member*)Result.Contents;
-			AddMembers(Root, "", MetaInfo, MetaInfoCount, Dest, TransMem);
+			AddMembers(Root, "", MetaInfo, MetaInfoCount, Dest);
 
 			return true;
 		}

@@ -109,6 +109,23 @@ MetaStruct enum class ship_module_id {
 	count
 };
 
+// -----------------------------------------------------------------------------
+MetaStruct struct ship_persistent {
+	vector2 Position;
+	real64 Rotation;
+};
+
+// NOTE no pointers
+MetaStruct struct save_file {
+	int64 RealTimeSaved;
+	real64 UniverseTimeMS;
+	int64 SkillNodesIDUnlocked[256];
+
+	int64 ShipsCount;
+	ship_persistent Ships[256];
+};
+// -----------------------------------------------------------------------------
+
 #include "WorldObject.h"
 #include "Salvage.h"
 #include "Item.h"
@@ -254,10 +271,16 @@ struct state {
 	real32 SkillTreeOrthoZoom;
 };
 
-MetaStruct struct save_file {
-	int64 RealTimeSaved;
-	real64 UniverseTimeMS;
-	int64 SkillNodesIDUnlocked[256];
+MetaStruct enum class ryan_enum {
+	foo = 0,
+	bar = 1,
+	count,
 };
+
+MetaStruct struct ryan_type {
+	int64 x;
+	ryan_enum nm;
+};
+
 
 #endif

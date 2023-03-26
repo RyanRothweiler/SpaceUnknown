@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #define GameNull 0
 #include "preprocessor.h"
@@ -182,12 +183,9 @@ std::vector<std::string> PrimitiveTypes = {
 	"uint32", "uint16", "uint8",
 	"int32", "int16", "int8", "int64",
 	"real32", "real64",
-
-	// not a real primitive, but kinda a primitive for our purposes. For custom types like struct / class
-	"custom",
 };
 
-//std::vector<std::string> StructTypes;
+std::vector<std::string> EnumTypes = std::vector<std::string>();
 
 method_signature SignatureTable[100];
 int32 SignatureTableCount;
@@ -576,24 +574,19 @@ void ProcessFile(char* Path)
 
 						// Check variable type
 						std::string TypeStr;
+						std::string VarString = std::string(VarType.Contents, VarType.ContentsLength);
 						bool32 Found = false;
-						for (int i = 0; i < PrimitiveTypes.size() && !Found; i++) {
-							const char* Type = PrimitiveTypes[i].c_str();
-							if (VarType.ContentsLength == PrimitiveTypes[i].length()) {
-								bool32 Valid = true;
 
-								for (uint32 c = 0; c < VarType.ContentsLength && Valid; c++) {
-									if (VarType.Contents[c] != Type[c]) {
-										Valid = false;
-									}
-								}
+						// Check for primitive types
+						if (std::find(PrimitiveTypes.begin(), PrimitiveTypes.end(), VarString) != PrimitiveTypes.end()) {
+							Found = true;
+							TypeStr = "meta_member_type::" + VarString;
+						}
 
-								if (Valid) {
-									Found = true;
-									TypeStr = "meta_member_type::" + PrimitiveTypes[i];
-								}
-
-							}
+						// Check for enum types
+						if (std::find(EnumTypes.begin(), EnumTypes.end(), VarString) != EnumTypes.end()) {
+							Found = true;
+							TypeStr = "meta_member_type::enumeration";
 						}
 
 						// If not found then assume its a struct type
@@ -684,9 +677,9 @@ void ProcessFile(char* Path)
 
 					// save data fill shim
 					{
-						printf("void SaveDataFillShim_%.*s (save_data::member* Dest, string KeyParent, void* AccData, memory_arena* Memory){\n", StructType.ContentsLength, StructType.Contents);
+						printf("void SaveDataFillShim_%.*s (save_data::member* Dest, string KeyParent, void* AccData){\n", StructType.ContentsLength, StructType.Contents);
 						//void AddMembers(member* Root, string KeyParent, meta_member* MI, uint32 MICount, void* Data, memory_arena* TransMem)
-						printf("return save_data::AddMembers(Dest, KeyParent, &%.*s_META[0], ArrayCount(%.*s_META), AccData, Memory);\n", StructType.ContentsLength, StructType.Contents, StructType.ContentsLength, StructType.Contents);
+						printf("return save_data::AddMembers(Dest, KeyParent, &%.*s_META[0], ArrayCount(%.*s_META), AccData);\n", StructType.ContentsLength, StructType.Contents, StructType.ContentsLength, StructType.Contents);
 						printf("}\n\n");
 					}
 
@@ -696,25 +689,6 @@ void ProcessFile(char* Path)
 						printf("return json::FillStruct(JsonData, KeyParent, &%.*s_META[0], ArrayCount(%.*s_META), DataDest);\n", StructType.ContentsLength, StructType.Contents, StructType.ContentsLength, StructType.Contents);
 						printf("}\n\n");
 					}
-
-					/*
-					// Full data struct
-					{
-						printf("meta_member_data %.*s_DATA_META { \n", StructType.ContentsLength, StructType.Contents);
-
-						printf("{{}, &StructToString_%.*s}, \n",
-
-						       // To String func
-						       StructType.ContentsLength, StructType.Contents
-						      );
-
-						printf("}; \n \n");
-
-					}
-					*/
-
-
-					//struct_string_return Ret = StructToString(meta_member * MetaInfo, uint32 MetaInfoCount, void* AccData, memory_arena * Memory);
 
 				} else if (Struct.Type == Token_Enum) {
 
@@ -744,12 +718,23 @@ void ProcessFile(char* Path)
 						if (Comma.Type == Token_ClosedCurly) {
 							break;
 						} else if (Comma.Type != Token_Comma) {
-							printf("Preprocessor error. Expected comma. \n");
+							MoveUntil(&Tokenizer, {Token_Comma});
+							//printf("Preprocessor error. Expected comma. \n");
 						}
 					}
 
-
 					printf("}; \n");
+
+					// enum size
+					/*
+					printf("uint64 %.*s_TOINT(%.*s Input ) { return (uint64) Input; } \n",
+					       Name.ContentsLength, Name.Contents,
+					       Name.ContentsLength, Name.Contents
+					      );
+					*/
+
+					std::string nme = std::string(Name.Contents, Name.ContentsLength);
+					EnumTypes.push_back(nme);
 
 				} else {
 					printf("Preprocessor error. Expected struct. \n");

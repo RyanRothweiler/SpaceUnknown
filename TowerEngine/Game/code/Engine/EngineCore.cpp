@@ -79,7 +79,7 @@ enum class meta_member_type {
 	real32, real64,
 
 	// structs / classes / custom types
-	custom,
+	custom, enumeration
 };
 
 struct meta_member;
@@ -87,7 +87,7 @@ struct meta_member;
 #include "SaveData.h"
 #include "Json.h"
 
-typedef void(*save_data_fill_shim)(save_data::member* Dest, string KeyParent, void* AccData, memory_arena* Memory);
+typedef void(*save_data_fill_shim)(save_data::member* Dest, string KeyParent, void* AccData);
 
 typedef void(*struct_meta_fill_shim_func)(json::struct_string_return* Dest, void* AccData);
 typedef void(*json_fill_struct_shim)(json::json_data* JsonData, string KeyParent, void* DataDest);

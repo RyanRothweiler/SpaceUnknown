@@ -82,11 +82,11 @@ enum class item_hold_filter {
 void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* Input, bool32 CanTransfer, item_hold_filter AllowedItems)
 {
 	int64 CargoWeight = (int64)Hold->MassCurrent;
-	string CargoTitle = Title + " (" + string{CargoWeight} + "/" + string{(int64)Hold->MassLimit} + ")(t)###" + Hold->GUID.Array();
+	string CargoTitle = Title + " (" + string{CargoWeight} + "/" + string{(int64)Hold->MassLimit} + ")(t)###" + string{Hold->Persist.GUID};
 	if (ImGui::CollapsingHeader(CargoTitle.Array())) {
 
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(0, 0, 0, 100));
-		string ChildID = string{"itemchild"} + Hold->GUID.Array();
+		string ChildID = string{"itemchild"} + string{Hold->Persist.GUID};
 		ImGui::BeginChild(ChildID.Array(), ImVec2(0, 300), true, ImGuiWindowFlags_None);
 
 		for (int i = 0; i < ArrayCount(Hold->Items); i++) {

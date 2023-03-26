@@ -55,8 +55,7 @@ void SkillTreeNodeSave(skill_node * Node)
 	    Path.Array(),
 	    &skill_node_persistent_META[0],
 	    ArrayCount(skill_node_persistent_META),
-	    (void*)&Node->Persist,
-	    GlobalTransMem
+	    (void*)&Node->Persist
 	);
 
 	/*
