@@ -1,13 +1,13 @@
 // Add item to a stack without exceeding the cargo mass limit
-real64 ItemStackGive(item_hold* Hold, item_instance* Inst, item_definition Def, real64 Count)
+real64 ItemStackGive(item_hold* Hold, item_instance_persistent* Inst, item_definition* Def, real64 Count)
 {
-	real64 NewMass = Hold->MassCurrent + (Def.Mass * Count);
+	real64 NewMass = Hold->MassCurrent + (Def->Mass * Count);
 	if (NewMass <= Hold->MassLimit) {
 		Inst->Count += Count;
 		return Count;
 	} else {
 		real64 MassAvail = Hold->MassLimit - Hold->MassCurrent;
-		int32 CountCanGive = (int32)(MassAvail / Def.Mass);
+		int32 CountCanGive = (int32)(MassAvail / Def->Mass);
 		Inst->Count += CountCanGive;
 		return CountCanGive;
 	}
@@ -16,25 +16,25 @@ real64 ItemStackGive(item_hold* Hold, item_instance* Inst, item_definition Def, 
 // returns amount given
 real64 ItemGive(item_hold* Hold, item_id ItemID, real64 Count)
 {
-	item_definition Def = Globals->AssetsList.ItemDefinitions[(int)ItemID];
+	item_definition* Def = &Globals->AssetsList.ItemDefinitions[(int)ItemID];
 	real64 AmountGiven = 0;
 
-	if (Def.Stackable) {
+	if (Def->Stackable) {
 		// Add to existing stack
-		for (int i = 0; i < ArrayCount(Hold->Items); i++) {
-			if (Hold->Items[i].Count > 0 && Hold->Items[i].Definition.ID == ItemID) {
-				AmountGiven = ItemStackGive(Hold, &Hold->Items[i], Def, Count);
+		for (int i = 0; i < ArrayCount(Hold->Persist.Items); i++) {
+			if (Hold->Persist.Items[i].Count > 0 && Hold->Persist.Items[i].Def->ID == ItemID) {
+				AmountGiven = ItemStackGive(Hold, &Hold->Persist.Items[i], Def, Count);
 				goto end;
 			}
 		}
 
 		// Make new stack
-		for (int i = 0; i < ArrayCount(Hold->Items); i++) {
-			if (Hold->Items[i].Count <= 0) {
+		for (int i = 0; i < ArrayCount(Hold->Persist.Items); i++) {
+			if (Hold->Persist.Items[i].Count <= 0) {
 
-				Hold->Items[i].Count = 0;
-				Hold->Items[i].Definition = Def;
-				AmountGiven = ItemStackGive(Hold, &Hold->Items[i], Def, Count);
+				Hold->Persist.Items[i].Count = 0;
+				Hold->Persist.Items[i].Def = Def;
+				AmountGiven = ItemStackGive(Hold, &Hold->Persist.Items[i], Def, Count);
 				goto end;
 			}
 		}
@@ -46,14 +46,14 @@ real64 ItemGive(item_hold* Hold, item_id ItemID, real64 Count)
 	// Not stackable, so make new stacks
 	{
 		// Verify we have space
-		if (Hold->MassCurrent + Def.Mass > Hold->MassLimit) { return 0; }
+		if (Hold->MassCurrent + Def->Mass > Hold->MassLimit) { return 0; }
 
 		// Give
 		for (int c = 0; c < Count; c++) {
-			for (int i = 0; i < ArrayCount(Hold->Items); i++) {
-				if (Hold->Items[i].Count <= 0) {
-					Hold->Items[i].Count = 1;
-					Hold->Items[i].Definition = Def;
+			for (int i = 0; i < ArrayCount(Hold->Persist.Items); i++) {
+				if (Hold->Persist.Items[i].Count <= 0) {
+					Hold->Persist.Items[i].Count = 1;
+					Hold->Persist.Items[i].Def = Def;
 					AmountGiven = 1;
 					goto end;
 				}
@@ -66,9 +66,9 @@ end:
 	return AmountGiven;
 }
 
-void ItemTransfer(item_instance* Inst, item_hold* Source, item_hold* Dest, real64 Count)
+void ItemTransfer(item_instance_persistent* Inst, item_hold* Source, item_hold* Dest, real64 Count)
 {
-	real64 CountMoving = ItemGive(Dest, Inst->Definition.ID, Count);
+	real64 CountMoving = ItemGive(Dest, Inst->Def->ID, Count);
 	Inst->Count -= CountMoving;
 
 	Source->UpdateMass();
@@ -89,16 +89,16 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 		string ChildID = string{"itemchild"} + string{Hold->Persist.GUID};
 		ImGui::BeginChild(ChildID.Array(), ImVec2(0, 300), true, ImGuiWindowFlags_None);
 
-		for (int i = 0; i < ArrayCount(Hold->Items); i++) {
+		for (int i = 0; i < ArrayCount(Hold->Persist.Items); i++) {
 
 			ImGui::PushID(i);
 
-			item_instance* Item = &Hold->Items[i];
+			item_instance_persistent* Item = &Hold->Persist.Items[i];
 			int64 ptr = (int64)Item;
 			if (Item->Count > 0) {
 
 				ImGui::Image(
-				    (ImTextureID)((int64)Item->Definition.Icon->GLID),
+				    (ImTextureID)((int64)Item->Def->Icon->GLID),
 				    ImGuiImageSize,
 				    ImVec2(0, 0),
 				    ImVec2(1, -1),
@@ -114,7 +114,7 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 					ImGui::SetDragDropPayload(ImguiItemDraggingID, &D, sizeof(D));
 
 					ImGui::Image(
-					    (ImTextureID)((int64)Item->Definition.Icon->GLID),
+					    (ImTextureID)((int64)Item->Def->Icon->GLID),
 					    ImGuiImageSize,
 					    ImVec2(0, 0),
 					    ImVec2(1, -1),
@@ -130,7 +130,7 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 
 				ImGui::BeginGroup();
 
-				ImGui::Text(Item->Definition.DisplayName.Array());
+				ImGui::Text(Item->Def->DisplayName.Array());
 				ImGui::Text("x");
 				ImGui::SameLine();
 				ImGui::Text(string{Item->Count} .Array());
@@ -148,11 +148,11 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 
 				bool32 Allowed = true;
 				if (AllowedItems == item_hold_filter::stl) {
-					Allowed = (State->ItemDragging->Definition.ID == item_id::stl);
+					Allowed = (State->ItemDragging->Def->ID == item_id::stl);
 				}
 
 				if (Allowed) {
-					item_instance* Inst = State->ItemDragging;
+					item_instance_persistent* Inst = State->ItemDragging;
 					item_hold* SourceHold = State->HoldItemDraggingFrom;
 
 					ItemTransfer(Inst, SourceHold, Hold, Inst->Count);

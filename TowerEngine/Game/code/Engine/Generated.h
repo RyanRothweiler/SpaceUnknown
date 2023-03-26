@@ -169,7 +169,7 @@ string item_id_NAME[] {
 }; 
 meta_member item_instance_persistent_META[] { 
 {meta_member_type::enumeration, "item_id", "ID", (uint64)&((item_instance_persistent *)0)->ID, 0, sizeof(item_id),{},{},{},{},{}},
-{meta_member_type::int32, "int32", "Count", (uint64)&((item_instance_persistent *)0)->Count, 0, sizeof(int32),{},{},{},{},{}},
+{meta_member_type::real64, "real64", "Count", (uint64)&((item_instance_persistent *)0)->Count, 0, sizeof(real64),{},{},{},{},{}},
 }; 
  
 void M_ALLOC__item_instance_persistent(s_void* SafeVoid, memory_arena* Memory) { 
@@ -201,6 +201,7 @@ return json::FillStruct(JsonData, KeyParent, &item_instance_persistent_META[0], 
 
 meta_member item_hold_persistent_META[] { 
 {meta_member_type::int64, "int64", "GUID", (uint64)&((item_hold_persistent *)0)->GUID, 0, sizeof(int64),{},{},{},{},{}},
+{meta_member_type::custom, "item_instance_persistent", "Items", (uint64)&((item_hold_persistent *)0)->Items, 256, sizeof(item_instance_persistent),&StructMetaFill_item_instance_persistent, &JsonFillStructShim_item_instance_persistent, &SaveDataFillShim_item_instance_persistent, &item_instance_persistent_META[0], ArrayCount(item_instance_persistent_META) },
 }; 
  
 void M_ALLOC__item_hold_persistent(s_void* SafeVoid, memory_arena* Memory) { 

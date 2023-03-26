@@ -41,9 +41,9 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 				for (int i = 0; i < Order->InputsCount; i++) {
 					item_count* C = &Order->Inputs[i];
 
-					for (int h = 0; h < ArrayCount(Source->Items); h++) {
-						if (Source->Items[h].Definition.ID == C->ItemID) {
-							Source->Items[h].Count -= C->Count;
+					for (int h = 0; h < ArrayCount(Source->Persist.Items); h++) {
+						if (Source->Persist.Items[h].Def->ID == C->ItemID) {
+							Source->Persist.Items[h].Count -= C->Count;
 						}
 					}
 				}

@@ -599,12 +599,12 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				ImGui::Begin("Debug item give");
 
 				for (int i = 0; i < (int)item_id::count; i++) {
-					item_definition Def = Globals->AssetsList.ItemDefinitions[i];
+					item_definition* Def = &Globals->AssetsList.ItemDefinitions[i];
 
 					{
 
 						ImGui::Image(
-						    (ImTextureID)((int64)Def.Icon->GLID),
+						    (ImTextureID)((int64)Def->Icon->GLID),
 						    ImGuiImageSize,
 						    ImVec2(0, 0),
 						    ImVec2(1, -1),
@@ -613,7 +613,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						);
 
 						if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-							EditorState->DebugItemDragging.Definition = Def;
+							EditorState->DebugItemDragging.Def = Def;
 							EditorState->DebugItemDragging.Count = 1;
 
 							State->ItemDragging = &EditorState->DebugItemDragging;
@@ -623,7 +623,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 							ImGui::SetDragDropPayload(ImguiItemDraggingID, &D, sizeof(D));
 
 							ImGui::Image(
-							    (ImTextureID)((int64)Def.Icon->GLID),
+							    (ImTextureID)((int64)Def->Icon->GLID),
 							    ImGuiImageSize,
 							    ImVec2(0, 0),
 							    ImVec2(1, -1),
@@ -637,7 +637,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						ImGui::SameLine();
 
 						ImGui::BeginGroup();
-						ImGui::Text(Def.DisplayName.Array());
+						ImGui::Text(Def->DisplayName.Array());
 						ImGui::Text("x1");
 						ImGui::EndGroup();
 					}
@@ -645,7 +645,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 					{
 						ImGui::Image(
-						    (ImTextureID)((int64)Def.Icon->GLID),
+						    (ImTextureID)((int64)Def->Icon->GLID),
 						    ImGuiImageSize,
 						    ImVec2(0, 0),
 						    ImVec2(1, -1),
@@ -654,7 +654,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						);
 
 						if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-							EditorState->DebugItemDragging.Definition = Def;
+							EditorState->DebugItemDragging.Def = Def;
 							EditorState->DebugItemDragging.Count = 10;
 
 							State->ItemDragging = &EditorState->DebugItemDragging;
@@ -664,7 +664,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 							ImGui::SetDragDropPayload(ImguiItemDraggingID, &D, sizeof(D));
 
 							ImGui::Image(
-							    (ImTextureID)((int64)Def.Icon->GLID),
+							    (ImTextureID)((int64)Def->Icon->GLID),
 							    ImGuiImageSize,
 							    ImVec2(0, 0),
 							    ImVec2(1, -1),
@@ -678,7 +678,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						ImGui::SameLine();
 
 						ImGui::BeginGroup();
-						ImGui::Text(Def.DisplayName.Array());
+						ImGui::Text(Def->DisplayName.Array());
 						ImGui::Text("x10");
 						ImGui::EndGroup();
 					}

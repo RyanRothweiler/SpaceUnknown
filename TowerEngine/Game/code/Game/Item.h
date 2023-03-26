@@ -24,18 +24,16 @@ struct item_definition {
 	}
 };
 
-struct item_instance {
-	item_definition Definition;
-	real64 Count;
-};
-
 MetaStruct struct item_instance_persistent {
 	item_id ID;
-	int32 Count;
+	real64 Count;
+
+	item_definition* Def;
 };
 
 MetaStruct struct item_hold_persistent {
 	int64 GUID;
+	item_instance_persistent Items[256];
 };
 
 struct item_hold {
@@ -45,7 +43,6 @@ struct item_hold {
 	real64 MassCurrent;
 	changed_flag MassChanged;
 
-	item_instance Items[256];
 	int64 MassLimit;
 
 	// Add cargo weight
@@ -54,9 +51,9 @@ struct item_hold {
 		MassChanged.MarkChanged();
 
 		MassCurrent = 0;
-		for (int i = 0; i < ArrayCount(Items); i++) {
-			if (Items[i].Count > 0) {
-				MassCurrent += Items[i].Definition.Mass * Items[i].Count;
+		for (int i = 0; i < ArrayCount(Persist.Items); i++) {
+			if (Persist.Items[i].Count > 0) {
+				MassCurrent += Persist.Items[i].Def->Mass * Persist.Items[i].Count;
 			}
 		}
 	}
@@ -71,8 +68,8 @@ struct item_hold {
 	real64 GetFuel()
 	{
 		// Assume the only item here is the stl fuel
-		if (Items[0].Definition.ID == item_id::stl) {
-			return Items[0].Count * Items[0].Definition.Mass;
+		if (Persist.Items[0].ID == item_id::stl) {
+			return Persist.Items[0].Count * Persist.Items[0].Def->Mass;
 		}
 		return 0;
 	}
@@ -80,6 +77,6 @@ struct item_hold {
 	void ConsumeFuel(real64 Count)
 	{
 		//Assert(Items[0].Definition.ID == item_id::stl);
-		Items[0].Count -= Count;
+		Persist.Items[0].Count -= Count;
 	}
 };

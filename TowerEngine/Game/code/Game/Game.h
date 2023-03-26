@@ -113,6 +113,8 @@ MetaStruct enum class ship_module_id {
 MetaStruct struct ship_persistent {
 	vector2 Position;
 	real64 Rotation;
+
+	//item_hold_persistent ItemHold;
 };
 
 // NOTE no pointers
@@ -211,7 +213,7 @@ struct editor_state {
 
 	bool32 ItemWindowOpen;
 	item_hold DebugHold;
-	item_instance DebugItemDragging;
+	item_instance_persistent DebugItemDragging;
 
 	bool32 SkillNodeWindowOpen;
 	skill_node* NodeSelected;
@@ -260,7 +262,7 @@ struct state {
 
 	bool32 ForwardSimulating;
 
-	item_instance* ItemDragging;
+	item_instance_persistent* ItemDragging;
 	item_hold* HoldItemDraggingFrom;
 	ship_module* ModuleUnequipping;
 

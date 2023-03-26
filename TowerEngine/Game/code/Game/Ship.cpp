@@ -479,18 +479,18 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				        ImGui::BeginDragDropTarget()
 				   ) {
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
-						item_instance* Inst = State->ItemDragging;
+						item_instance_persistent* Inst = State->ItemDragging;
 
-						if (Inst->Definition.IsModule()) {
+						if (Inst->Def->IsModule()) {
 
-							ship_module_slot_type DesiredType = Globals->AssetsList.ShipModuleDefinitions[(int)Inst->Definition.ShipModuleID].SlotType;
+							ship_module_slot_type DesiredType = Globals->AssetsList.ShipModuleDefinitions[(int)Inst->Def->ShipModuleID].SlotType;
 							if (DesiredType == CurrentShip->Definition.SlotTypes[i]) {
 								// Remove item
 								Inst->Count = 0;
 								CurrentShip->Hold.UpdateMass();
 
 								// Add module
-								ShipAddModule(Module, Inst->Definition.ShipModuleID, CurrentShip, State);
+								ShipAddModule(Module, Inst->Def->ShipModuleID, CurrentShip, State);
 							} else {
 								//TODO DISPLAY_ERROR
 								ConsoleLog("Slots do not match. Display error");
