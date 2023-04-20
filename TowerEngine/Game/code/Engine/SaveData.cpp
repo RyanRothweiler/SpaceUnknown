@@ -30,6 +30,7 @@ namespace save_data {
 	void AddData(member* Root, string KeyParent, string ArrayIndex, meta_member* MI, void* Data)
 	{
 		string KS = KeyParent + MI->Name + ArrayIndex;
+		int64 KeyHash = StringHash(KS);
 		pair* Pair = {};
 
 		if (Direction == direction::write) {
@@ -40,17 +41,20 @@ namespace save_data {
 				Pair = &Root->Pairs[Root->PairsCount++];
 				Assert(Root->PairsCount < MEMBER_PARS_MAX);
 
+				/*
 				Assert(ArrayCount(Pair->Key) < ArrayCount(KS.CharArray));
 				int Count = ArrayCount(Pair->Key);
 				for (int i = 0; i < Count; i++) { Pair->Key[i] = KS.Array()[i]; }
+				*/
 
+				Pair->Key = KeyHash;
 				Pair->Type = MI->Type;
 			}
 		} else if (Direction == direction::read) {
 			// if reading, then find a pair that exists
 
 			for (int i = 0; i < Root->PairsCount; i++) {
-				if (CharArraysEqual(KS.Array(), (char*)&Root->Pairs[i].Key[0])) {
+				if (Root->Pairs[i].Key == KeyHash) {
 					Pair = &Root->Pairs[i];
 					break;
 				}

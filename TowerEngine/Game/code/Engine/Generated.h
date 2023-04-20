@@ -55,21 +55,95 @@ string ship_module_id_NAME[] {
 "salvager_i",
 "count",
 }; 
+string item_id_NAME[] { 
+"venigen",
+"pyrexium",
+"stl",
+"sm_asteroid_miner",
+"sm_salvager_i",
+"count",
+}; 
+meta_member item_instance_persistent_META[] { 
+{meta_member_type::enumeration, "item_id", "ID", (uint64)&((item_instance_persistent *)0)->ID, 0, sizeof(item_id),{},{},{},{},{}},
+{meta_member_type::real64, "real64", "Count", (uint64)&((item_instance_persistent *)0)->Count, 0, sizeof(real64),{},{},{},{},{}},
+}; 
+ 
+void M_ALLOC__item_instance_persistent(s_void* SafeVoid, memory_arena* Memory) { 
+	SafeVoid->IsAllocated = true; 
+	SafeVoid->Type = 2; 
+	SafeVoid->DataSize = sizeof(item_instance_persistent); 
+	SafeVoid->Data = ArenaAllocate(Memory, sizeof(item_instance_persistent)); 
+	ClearMemory((uint8*)SafeVoid->Data, sizeof(item_instance_persistent)); 
+};
+
+item_instance_persistent* M_GET__item_instance_persistent(s_void* SafeVoid) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 2) { 
+		return (item_instance_persistent*)SafeVoid->Data; 
+	} 
+	return GameNull; 
+};
+
+void StructMetaFill_item_instance_persistent (json::struct_string_return* Dest,  void* AccData){
+return json::StructMetaFill(Dest, &item_instance_persistent_META[0], ArrayCount(item_instance_persistent_META), AccData);
+}
+
+void SaveDataFillShim_item_instance_persistent (save_data::member* Dest, string KeyParent, void* AccData){
+return save_data::AddMembers(Dest, KeyParent, &item_instance_persistent_META[0], ArrayCount(item_instance_persistent_META), AccData);
+}
+
+void JsonFillStructShim_item_instance_persistent (json::json_data* JsonData, string KeyParent, void* DataDest){
+return json::FillStruct(JsonData, KeyParent, &item_instance_persistent_META[0], ArrayCount(item_instance_persistent_META), DataDest);
+}
+
+meta_member item_hold_persistent_META[] { 
+{meta_member_type::int64, "int64", "GUID", (uint64)&((item_hold_persistent *)0)->GUID, 0, sizeof(int64),{},{},{},{},{}},
+{meta_member_type::custom, "item_instance_persistent", "Items", (uint64)&((item_hold_persistent *)0)->Items, 64, sizeof(item_instance_persistent),&StructMetaFill_item_instance_persistent, &JsonFillStructShim_item_instance_persistent, &SaveDataFillShim_item_instance_persistent, &item_instance_persistent_META[0], ArrayCount(item_instance_persistent_META) },
+}; 
+ 
+void M_ALLOC__item_hold_persistent(s_void* SafeVoid, memory_arena* Memory) { 
+	SafeVoid->IsAllocated = true; 
+	SafeVoid->Type = 3; 
+	SafeVoid->DataSize = sizeof(item_hold_persistent); 
+	SafeVoid->Data = ArenaAllocate(Memory, sizeof(item_hold_persistent)); 
+	ClearMemory((uint8*)SafeVoid->Data, sizeof(item_hold_persistent)); 
+};
+
+item_hold_persistent* M_GET__item_hold_persistent(s_void* SafeVoid) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 3) { 
+		return (item_hold_persistent*)SafeVoid->Data; 
+	} 
+	return GameNull; 
+};
+
+void StructMetaFill_item_hold_persistent (json::struct_string_return* Dest,  void* AccData){
+return json::StructMetaFill(Dest, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META), AccData);
+}
+
+void SaveDataFillShim_item_hold_persistent (save_data::member* Dest, string KeyParent, void* AccData){
+return save_data::AddMembers(Dest, KeyParent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META), AccData);
+}
+
+void JsonFillStructShim_item_hold_persistent (json::json_data* JsonData, string KeyParent, void* DataDest){
+return json::FillStruct(JsonData, KeyParent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META), DataDest);
+}
+
 meta_member ship_persistent_META[] { 
 {meta_member_type::custom, "vector2", "Position", (uint64)&((ship_persistent *)0)->Position, 0, sizeof(vector2),&StructMetaFill_vector2, &JsonFillStructShim_vector2, &SaveDataFillShim_vector2, &vector2_META[0], ArrayCount(vector2_META) },
 {meta_member_type::real64, "real64", "Rotation", (uint64)&((ship_persistent *)0)->Rotation, 0, sizeof(real64),{},{},{},{},{}},
+{meta_member_type::custom, "item_hold_persistent", "ItemHold", (uint64)&((ship_persistent *)0)->ItemHold, 0, sizeof(item_hold_persistent),&StructMetaFill_item_hold_persistent, &JsonFillStructShim_item_hold_persistent, &SaveDataFillShim_item_hold_persistent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META) },
+{meta_member_type::custom, "item_hold_persistent", "FuelHold", (uint64)&((ship_persistent *)0)->FuelHold, 0, sizeof(item_hold_persistent),&StructMetaFill_item_hold_persistent, &JsonFillStructShim_item_hold_persistent, &SaveDataFillShim_item_hold_persistent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META) },
 }; 
  
 void M_ALLOC__ship_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 2; 
+	SafeVoid->Type = 4; 
 	SafeVoid->DataSize = sizeof(ship_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ship_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ship_persistent)); 
 };
 
 ship_persistent* M_GET__ship_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 2) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 4) { 
 		return (ship_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -97,14 +171,14 @@ meta_member save_file_META[] {
  
 void M_ALLOC__save_file(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 3; 
+	SafeVoid->Type = 5; 
 	SafeVoid->DataSize = sizeof(save_file); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(save_file)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(save_file)); 
 };
 
 save_file* M_GET__save_file(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 3) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 5) { 
 		return (save_file*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -134,14 +208,14 @@ meta_member ryan_type_META[] {
  
 void M_ALLOC__ryan_type(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 4; 
+	SafeVoid->Type = 6; 
 	SafeVoid->DataSize = sizeof(ryan_type); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ryan_type)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ryan_type)); 
 };
 
 ryan_type* M_GET__ryan_type(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 4) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 6) { 
 		return (ryan_type*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -157,78 +231,6 @@ return save_data::AddMembers(Dest, KeyParent, &ryan_type_META[0], ArrayCount(rya
 
 void JsonFillStructShim_ryan_type (json::json_data* JsonData, string KeyParent, void* DataDest){
 return json::FillStruct(JsonData, KeyParent, &ryan_type_META[0], ArrayCount(ryan_type_META), DataDest);
-}
-
-string item_id_NAME[] { 
-"venigen",
-"pyrexium",
-"stl",
-"sm_asteroid_miner",
-"sm_salvager_i",
-"count",
-}; 
-meta_member item_instance_persistent_META[] { 
-{meta_member_type::enumeration, "item_id", "ID", (uint64)&((item_instance_persistent *)0)->ID, 0, sizeof(item_id),{},{},{},{},{}},
-{meta_member_type::real64, "real64", "Count", (uint64)&((item_instance_persistent *)0)->Count, 0, sizeof(real64),{},{},{},{},{}},
-}; 
- 
-void M_ALLOC__item_instance_persistent(s_void* SafeVoid, memory_arena* Memory) { 
-	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 5; 
-	SafeVoid->DataSize = sizeof(item_instance_persistent); 
-	SafeVoid->Data = ArenaAllocate(Memory, sizeof(item_instance_persistent)); 
-	ClearMemory((uint8*)SafeVoid->Data, sizeof(item_instance_persistent)); 
-};
-
-item_instance_persistent* M_GET__item_instance_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 5) { 
-		return (item_instance_persistent*)SafeVoid->Data; 
-	} 
-	return GameNull; 
-};
-
-void StructMetaFill_item_instance_persistent (json::struct_string_return* Dest,  void* AccData){
-return json::StructMetaFill(Dest, &item_instance_persistent_META[0], ArrayCount(item_instance_persistent_META), AccData);
-}
-
-void SaveDataFillShim_item_instance_persistent (save_data::member* Dest, string KeyParent, void* AccData){
-return save_data::AddMembers(Dest, KeyParent, &item_instance_persistent_META[0], ArrayCount(item_instance_persistent_META), AccData);
-}
-
-void JsonFillStructShim_item_instance_persistent (json::json_data* JsonData, string KeyParent, void* DataDest){
-return json::FillStruct(JsonData, KeyParent, &item_instance_persistent_META[0], ArrayCount(item_instance_persistent_META), DataDest);
-}
-
-meta_member item_hold_persistent_META[] { 
-{meta_member_type::int64, "int64", "GUID", (uint64)&((item_hold_persistent *)0)->GUID, 0, sizeof(int64),{},{},{},{},{}},
-{meta_member_type::custom, "item_instance_persistent", "Items", (uint64)&((item_hold_persistent *)0)->Items, 256, sizeof(item_instance_persistent),&StructMetaFill_item_instance_persistent, &JsonFillStructShim_item_instance_persistent, &SaveDataFillShim_item_instance_persistent, &item_instance_persistent_META[0], ArrayCount(item_instance_persistent_META) },
-}; 
- 
-void M_ALLOC__item_hold_persistent(s_void* SafeVoid, memory_arena* Memory) { 
-	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 6; 
-	SafeVoid->DataSize = sizeof(item_hold_persistent); 
-	SafeVoid->Data = ArenaAllocate(Memory, sizeof(item_hold_persistent)); 
-	ClearMemory((uint8*)SafeVoid->Data, sizeof(item_hold_persistent)); 
-};
-
-item_hold_persistent* M_GET__item_hold_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 6) { 
-		return (item_hold_persistent*)SafeVoid->Data; 
-	} 
-	return GameNull; 
-};
-
-void StructMetaFill_item_hold_persistent (json::struct_string_return* Dest,  void* AccData){
-return json::StructMetaFill(Dest, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META), AccData);
-}
-
-void SaveDataFillShim_item_hold_persistent (save_data::member* Dest, string KeyParent, void* AccData){
-return save_data::AddMembers(Dest, KeyParent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META), AccData);
-}
-
-void JsonFillStructShim_item_hold_persistent (json::json_data* JsonData, string KeyParent, void* DataDest){
-return json::FillStruct(JsonData, KeyParent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META), DataDest);
 }
 
 string station_service_NAME[] { 

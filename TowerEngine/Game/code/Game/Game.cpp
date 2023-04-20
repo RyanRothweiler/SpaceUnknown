@@ -143,8 +143,16 @@ void SaveGame(state* State)
 	{
 		for (int i = 0; i < ArrayCount(State->Ships); i++) {
 			if (State->Ships[i].Using) {
-				SaveData.Ships[SaveData.ShipsCount++] = State->Ships[i].Persist;
+
+				SaveData.Ships[SaveData.ShipsCount] = State->Ships[i].Persist;
+				ship_persistent* Dest = &SaveData.Ships[SaveData.ShipsCount];
+
+				SaveData.ShipsCount++;
 				Assert(SaveData.ShipsCount < ArrayCount(SaveData.Ships));
+
+				//Dest->ItemHold = State->Ships[i].Hold.Persist;
+				//Dest->ItemHold = State->Ships[i].FuelTank.Persist;
+
 			}
 		}
 	}

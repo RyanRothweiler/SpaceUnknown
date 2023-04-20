@@ -109,12 +109,55 @@ MetaStruct enum class ship_module_id {
 	count
 };
 
+// ITEM ------------------------------------------------------------------------
+
+// sm is short for ship_module. That is checked so its required to mark ship modules. The name matters
+MetaStruct enum class item_id {
+	venigen 				= 0,
+	pyrexium 				= 1,
+	stl 					= 2,
+	sm_asteroid_miner 		= 3,
+	sm_salvager_i 			= 4,
+	count 					= 5,
+};
+
+struct item_definition {
+	item_id ID;
+	string DisplayName;
+	bool32 Stackable;
+	real64 Mass;
+
+	loaded_image* Icon;
+
+	ship_module_id ShipModuleID;
+
+	bool32 IsModule()
+	{
+		return ShipModuleID != ship_module_id::none;
+	}
+};
+
+MetaStruct struct item_instance_persistent {
+	item_id ID;
+	real64 Count;
+
+	item_definition* Def;
+};
+
+MetaStruct struct item_hold_persistent {
+	int64 GUID;
+	item_instance_persistent Items[64];
+};
+
 // -----------------------------------------------------------------------------
+
+// Save Data persistence--------------------------------------------------------
 MetaStruct struct ship_persistent {
 	vector2 Position;
 	real64 Rotation;
 
-	//item_hold_persistent ItemHold;
+	item_hold_persistent ItemHold;
+	item_hold_persistent FuelHold;
 };
 
 // NOTE no pointers

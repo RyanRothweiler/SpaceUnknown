@@ -1,11 +1,11 @@
 namespace save_data {
 
-#define MEMBER_PARS_MAX 2048
+#define MEMBER_PARS_MAX 131072
 
 	struct member;
 
 	struct pair {
-		char Key[128];
+		int64 Key;
 
 		meta_member_type Type;
 
