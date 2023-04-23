@@ -113,6 +113,12 @@ selectable* RegisterSelectable(selection_type Type, vector2* Center, vector2* Si
 	return Sel;
 }
 
+bool32 GlobalTriggerSave;
+void Save()
+{
+	GlobalTriggerSave = true;
+}
+
 void SaveGame(state* State)
 {
 	save_file SaveData = {};
@@ -460,7 +466,8 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 	{
 		static real64 SaveTimer = 0;
 		SaveTimer += EngineState->DeltaTimeMS;
-		if (MillisecondsToSeconds(SaveTimer) > 5.0f) {
+		if (MillisecondsToSeconds(SaveTimer) > 5.0f || GlobalTriggerSave) {
+			GlobalTriggerSave = false;
 			SaveTimer = 0.0f;
 			SaveGame(State);
 		}

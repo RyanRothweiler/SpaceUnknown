@@ -96,6 +96,7 @@ real64 ItemGive(item_hold* Hold, item_id ItemID, real64 Count)
 end:
 
 	ItemHoldUpdateMass(Hold);
+	Save();
 	return AmountGiven;
 }
 
