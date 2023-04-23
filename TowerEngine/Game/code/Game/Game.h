@@ -170,6 +170,9 @@ MetaStruct struct save_file {
 
 	int64 ShipsCount;
 	ship_persistent Ships[256];
+
+	int64 StationsCount;
+	station_persistent Stations[256];
 };
 // -----------------------------------------------------------------------------
 

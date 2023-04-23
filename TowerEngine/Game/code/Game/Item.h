@@ -1,4 +1,3 @@
-
 struct item_hold {
 
 	item_hold_persistent* Persist;

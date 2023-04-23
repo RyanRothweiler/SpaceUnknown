@@ -15,6 +15,8 @@ struct converter {
 };
 
 struct station {
+	station_persistent Persist;
+
 	vector2 Position;
 	vector2 Size;
 	real64 Rotation;
@@ -22,7 +24,6 @@ struct station {
 	converter Converters[10];
 	int32 ConvertersCount;
 
-	item_hold_persistent HoldPersist;
 	item_hold Hold;
 
 	int32 DockedCount;

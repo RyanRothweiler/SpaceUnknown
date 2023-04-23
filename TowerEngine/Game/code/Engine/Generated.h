@@ -198,6 +198,8 @@ meta_member save_file_META[] {
 {meta_member_type::int64, "int64", "SkillNodesIDUnlocked", (uint64)&((save_file *)0)->SkillNodesIDUnlocked, 256, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::int64, "int64", "ShipsCount", (uint64)&((save_file *)0)->ShipsCount, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::custom, "ship_persistent", "Ships", (uint64)&((save_file *)0)->Ships, 256, sizeof(ship_persistent),&StructMetaFill_ship_persistent, &JsonFillStructShim_ship_persistent, &SaveDataFillShim_ship_persistent, &ship_persistent_META[0], ArrayCount(ship_persistent_META) },
+{meta_member_type::int64, "int64", "StationsCount", (uint64)&((save_file *)0)->StationsCount, 0, sizeof(int64),{},{},{},{},{}},
+{meta_member_type::custom, "station_persistent", "Stations", (uint64)&((save_file *)0)->Stations, 256, sizeof(station_persistent),&StructMetaFill_station_persistent, &JsonFillStructShim_station_persistent, &SaveDataFillShim_station_persistent, &station_persistent_META[0], ArrayCount(station_persistent_META) },
 }; 
  
 void M_ALLOC__save_file(s_void* SafeVoid, memory_arena* Memory) { 
