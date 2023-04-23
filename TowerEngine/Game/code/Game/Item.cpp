@@ -49,6 +49,7 @@ real64 ItemGive(item_hold* Hold, item_id ItemID, real64 Count)
 	real64 AmountGiven = 0;
 
 	if (Def->Stackable) {
+
 		// Add to existing stack
 		for (int i = 0; i < ArrayCount(Hold->Persist->Items); i++) {
 			if (Hold->Persist->Items[i].Count > 0 && Hold->Persist->Items[i].ID == ItemID) {
@@ -62,6 +63,8 @@ real64 ItemGive(item_hold* Hold, item_id ItemID, real64 Count)
 			if (Hold->Persist->Items[i].Count <= 0) {
 
 				Hold->Persist->Items[i].Count = 0;
+				Hold->Persist->Items[i].ID = ItemID;
+
 				AmountGiven = ItemStackGive(Hold, &Hold->Persist->Items[i], Def, Count);
 				goto end;
 			}
@@ -80,7 +83,10 @@ real64 ItemGive(item_hold* Hold, item_id ItemID, real64 Count)
 		for (int c = 0; c < Count; c++) {
 			for (int i = 0; i < ArrayCount(Hold->Persist->Items); i++) {
 				if (Hold->Persist->Items[i].Count <= 0) {
+
+					Hold->Persist->Items[i].ID = ItemID;
 					Hold->Persist->Items[i].Count = 1;
+
 					AmountGiven = 1;
 					goto end;
 				}

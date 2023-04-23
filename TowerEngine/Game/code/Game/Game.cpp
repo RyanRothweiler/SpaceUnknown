@@ -150,7 +150,6 @@ void SaveGame(state* State)
 				SaveData.ShipsCount++;
 				Assert(SaveData.ShipsCount < ArrayCount(SaveData.Ships));
 
-				//Dest->ItemHold = State->Ships[i].Hold.Persist;
 				//Dest->ItemHold = State->Ships[i].FuelTank.Persist;
 			}
 		}
@@ -250,6 +249,8 @@ void LoadGame(state* State)
 	{
 		for (int i = 0; i < SaveData.ShipsCount; i++) {
 			State->Ships[i].Persist = SaveData.Ships[i];
+
+			ItemHoldUpdateMass(&State->Ships[i].Hold);
 		}
 	}
 
@@ -604,6 +605,8 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			if (EditorState->ItemWindowOpen) {
 
 				ImGui::Begin("Debug item give");
+
+				EditorState->DebugHold.Persist = &EditorState->DebugHoldPersist;
 
 				for (int i = 0; i < (int)item_id::count; i++) {
 					item_definition* Def = &Globals->AssetsList.ItemDefinitions[i];

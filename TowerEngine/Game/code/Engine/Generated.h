@@ -161,6 +161,37 @@ void JsonFillStructShim_ship_persistent (json::json_data* JsonData, string KeyPa
 return json::FillStruct(JsonData, KeyParent, &ship_persistent_META[0], ArrayCount(ship_persistent_META), DataDest);
 }
 
+meta_member station_persistent_META[] { 
+{meta_member_type::custom, "item_hold_persistent", "ItemHold", (uint64)&((station_persistent *)0)->ItemHold, 0, sizeof(item_hold_persistent),&StructMetaFill_item_hold_persistent, &JsonFillStructShim_item_hold_persistent, &SaveDataFillShim_item_hold_persistent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META) },
+}; 
+ 
+void M_ALLOC__station_persistent(s_void* SafeVoid, memory_arena* Memory) { 
+	SafeVoid->IsAllocated = true; 
+	SafeVoid->Type = 5; 
+	SafeVoid->DataSize = sizeof(station_persistent); 
+	SafeVoid->Data = ArenaAllocate(Memory, sizeof(station_persistent)); 
+	ClearMemory((uint8*)SafeVoid->Data, sizeof(station_persistent)); 
+};
+
+station_persistent* M_GET__station_persistent(s_void* SafeVoid) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 5) { 
+		return (station_persistent*)SafeVoid->Data; 
+	} 
+	return GameNull; 
+};
+
+void StructMetaFill_station_persistent (json::struct_string_return* Dest,  void* AccData){
+return json::StructMetaFill(Dest, &station_persistent_META[0], ArrayCount(station_persistent_META), AccData);
+}
+
+void SaveDataFillShim_station_persistent (save_data::member* Dest, string KeyParent, void* AccData){
+return save_data::AddMembers(Dest, KeyParent, &station_persistent_META[0], ArrayCount(station_persistent_META), AccData);
+}
+
+void JsonFillStructShim_station_persistent (json::json_data* JsonData, string KeyParent, void* DataDest){
+return json::FillStruct(JsonData, KeyParent, &station_persistent_META[0], ArrayCount(station_persistent_META), DataDest);
+}
+
 meta_member save_file_META[] { 
 {meta_member_type::int64, "int64", "RealTimeSaved", (uint64)&((save_file *)0)->RealTimeSaved, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::real64, "real64", "UniverseTimeMS", (uint64)&((save_file *)0)->UniverseTimeMS, 0, sizeof(real64),{},{},{},{},{}},
@@ -171,14 +202,14 @@ meta_member save_file_META[] {
  
 void M_ALLOC__save_file(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 5; 
+	SafeVoid->Type = 6; 
 	SafeVoid->DataSize = sizeof(save_file); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(save_file)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(save_file)); 
 };
 
 save_file* M_GET__save_file(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 5) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 6) { 
 		return (save_file*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -208,14 +239,14 @@ meta_member ryan_type_META[] {
  
 void M_ALLOC__ryan_type(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 6; 
+	SafeVoid->Type = 7; 
 	SafeVoid->DataSize = sizeof(ryan_type); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ryan_type)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ryan_type)); 
 };
 
 ryan_type* M_GET__ryan_type(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 6) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 7) { 
 		return (ryan_type*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -265,14 +296,14 @@ meta_member skill_bonuses_META[] {
  
 void M_ALLOC__skill_bonuses(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 7; 
+	SafeVoid->Type = 8; 
 	SafeVoid->DataSize = sizeof(skill_bonuses); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(skill_bonuses)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(skill_bonuses)); 
 };
 
 skill_bonuses* M_GET__skill_bonuses(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 7) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 8) { 
 		return (skill_bonuses*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -301,14 +332,14 @@ meta_member skill_node_persistent_META[] {
  
 void M_ALLOC__skill_node_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 8; 
+	SafeVoid->Type = 9; 
 	SafeVoid->DataSize = sizeof(skill_node_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(skill_node_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(skill_node_persistent)); 
 };
 
 skill_node_persistent* M_GET__skill_node_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 8) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 9) { 
 		return (skill_node_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 

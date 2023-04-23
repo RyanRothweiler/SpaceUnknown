@@ -158,6 +158,10 @@ MetaStruct struct ship_persistent {
 	item_hold_persistent FuelHold;
 };
 
+MetaStruct struct station_persistent {
+	item_hold_persistent ItemHold;
+};
+
 // NOTE no pointers
 MetaStruct struct save_file {
 	int64 RealTimeSaved;
@@ -253,6 +257,8 @@ struct editor_state {
 	bool32 EditorMode;
 
 	bool32 ItemWindowOpen;
+
+	item_hold_persistent DebugHoldPersist;
 	item_hold DebugHold;
 	item_instance_persistent DebugItemDragging;
 
