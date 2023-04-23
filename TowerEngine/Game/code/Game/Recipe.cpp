@@ -12,16 +12,16 @@ recipe_inputs_missing_return RecipeInputsMissing(recipe* Order, item_hold* Sourc
 
 		bool32 Found = false;
 
-		for (int h = 0; h < ArrayCount(Source->Persist.Items) && !Found; h++) {
+		for (int h = 0; h < ArrayCount(Source->Persist->Items) && !Found; h++) {
 
 			// If we have the item at all
-			if (Source->Persist.Items[h].Def->ID == C->ItemID) {
+			if (Source->Persist->Items[h].ID == C->ItemID) {
 				Found = true;
 
 				// If we don't have enough, then add
-				if (Source->Persist.Items[h].Count < C->Count) {
+				if (Source->Persist->Items[h].Count < C->Count) {
 					Ret.Items[Ret.Count].ItemID = C->ItemID;
-					Ret.Items[Ret.Count].Count = C->Count - Source->Persist.Items[h].Count;
+					Ret.Items[Ret.Count].Count = C->Count - Source->Persist->Items[h].Count;
 					Ret.Count++;
 				}
 			}

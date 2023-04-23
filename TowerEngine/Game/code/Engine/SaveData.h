@@ -1,10 +1,11 @@
 namespace save_data {
 
-#define MEMBER_PARS_MAX 131072
+#define MEMBER_PARS_MAX 131'072
 
 	struct member;
 
 	struct pair {
+		b32 Used;
 		int64 Key;
 
 		meta_member_type Type;
@@ -25,7 +26,6 @@ namespace save_data {
 	};
 
 	struct member {
-		int32 PairsCount;
-		pair Pairs[MEMBER_PARS_MAX];
+		pair Pairs[MEMBER_PARS_MAX][10];
 	};
 };

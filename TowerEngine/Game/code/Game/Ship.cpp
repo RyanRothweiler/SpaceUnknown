@@ -405,9 +405,12 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 	// Fuel
 	{
-		string FuelDisp = "Fuel Tank (g) " + string{CurrentShip->FuelTank.GetFuel()} + "/" + string{CurrentShip->FuelTank.MassLimit};
+		real64 FuelCurr = ItemHoldGetFuel(&CurrentShip->FuelTank);
+
+		string FuelDisp = "Fuel Tank (g) " + string{FuelCurr} + "/" + string{CurrentShip->FuelTank.MassLimit};
 		ImGui::Text(FuelDisp.Array());
-		float Progress = (float)(CurrentShip->FuelTank.GetFuel() / CurrentShip->FuelTank.MassLimit);
+
+		float Progress = (float)(FuelCurr / CurrentShip->FuelTank.MassLimit);
 		ImGui::ProgressBar(Progress);
 	}
 	ItemDisplayHold("Fuel Tank", &CurrentShip->FuelTank, State, Input,
@@ -480,17 +483,18 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				   ) {
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
 						item_instance_persistent* Inst = State->ItemDragging;
+						item_definition* Def = GetItemDefinition(Inst->ID);
 
-						if (Inst->Def->IsModule()) {
+						if (Def->IsModule()) {
 
-							ship_module_slot_type DesiredType = Globals->AssetsList.ShipModuleDefinitions[(int)Inst->Def->ShipModuleID].SlotType;
+							ship_module_slot_type DesiredType = Globals->AssetsList.ShipModuleDefinitions[(int)Def->ShipModuleID].SlotType;
 							if (DesiredType == CurrentShip->Definition.SlotTypes[i]) {
 								// Remove item
 								Inst->Count = 0;
-								CurrentShip->Hold.UpdateMass();
+								ItemHoldUpdateMass(&CurrentShip->Hold);
 
 								// Add module
-								ShipAddModule(Module, Inst->Def->ShipModuleID, CurrentShip, State);
+								ShipAddModule(Module, Def->ShipModuleID, CurrentShip, State);
 							} else {
 								//TODO DISPLAY_ERROR
 								ConsoleLog("Slots do not match. Display error");
@@ -635,8 +639,8 @@ ship* ShipSetup(vector2 Pos, ship_id ID, state * State)
 			Ship->Size = vector2{5, 5};
 			Ship->Definition = Globals->AssetsList.ShipDefinitions[(int)ID];
 
-			Ship->Hold.Setup(Ship->Definition.HoldMass);
-			Ship->FuelTank.Setup(Ship->Definition.FuelTankMassLimit);
+			Ship->Hold.Setup(Ship->Definition.HoldMass, &Ship->Persist.ItemHold);
+			Ship->FuelTank.Setup(Ship->Definition.FuelTankMassLimit, &Ship->Persist.FuelHold);
 
 			ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
 			ShipAddModule(&Ship->EquippedModules[3], ship_module_id::salvager_i, Ship, State);

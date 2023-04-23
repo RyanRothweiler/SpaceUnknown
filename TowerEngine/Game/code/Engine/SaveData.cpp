@@ -30,35 +30,59 @@ namespace save_data {
 	void AddData(member* Root, string KeyParent, string ArrayIndex, meta_member* MI, void* Data)
 	{
 		string KS = KeyParent + MI->Name + ArrayIndex;
-		int64 KeyHash = StringHash(KS);
+		int64 KeyHashFull = StringHash(KS);
+		int64 KeyHash = KeyHashFull % MEMBER_PARS_MAX;
 		pair* Pair = {};
+
+
+		if (StringStartsWith(KS, "Ships.0.ItemHold.Items.0")) {
+			int x = 0;
+		}
 
 		if (Direction == direction::write) {
 			// if writing, then create a new pair
 
 			// only add pair for data type
 			if (MI->Type != meta_member_type::custom) {
-				Pair = &Root->Pairs[Root->PairsCount++];
-				Assert(Root->PairsCount < MEMBER_PARS_MAX);
 
-				/*
-				Assert(ArrayCount(Pair->Key) < ArrayCount(KS.CharArray));
-				int Count = ArrayCount(Pair->Key);
-				for (int i = 0; i < Count; i++) { Pair->Key[i] = KS.Array()[i]; }
-				*/
+				b32 Found = false;
+				for (int i = 0; i < ArrayCount(Root->Pairs[0]); i++) {
+					if (!Root->Pairs[KeyHash][i].Used) {
+						Pair = &Root->Pairs[KeyHash][i];
+						Found = true;
+					}
+				}
+				Assert(Found);
 
-				Pair->Key = KeyHash;
+				Pair->Key = KeyHashFull;
 				Pair->Type = MI->Type;
+				Pair->Used = true;
 			}
 		} else if (Direction == direction::read) {
 			// if reading, then find a pair that exists
 
+			b32 Found = false;
+			for (int i = 0; i < ArrayCount(Root->Pairs[0]); i++) {
+				if (Root->Pairs[KeyHash][i].Key == KeyHashFull) {
+					Pair = &Root->Pairs[KeyHash][i];
+					Found = true;
+				}
+			}
+
+			// Save data didn't have that key
+			if (!Found) {
+				//return;
+			}
+			//Assert(Found);
+
+			/*
 			for (int i = 0; i < Root->PairsCount; i++) {
 				if (Root->Pairs[i].Key == KeyHash) {
 					Pair = &Root->Pairs[i];
 					break;
 				}
 			}
+			*/
 		}
 
 		switch (MI->Type) {
@@ -247,10 +271,12 @@ namespace save_data {
 	{
 		Direction = direction::write;
 
-		member Root = {};
-		AddMembers(&Root, "", MetaInfo, MetaInfoCount, Data);
+		member* Root = (member*)ArenaAllocate(GlobalTransMem, sizeof(member));
+		ClearMemory((uint8*)Root, sizeof(member));
 
-		PlatformApi.WriteFile(FileDest, (void*)&Root, sizeof(Root));
+		AddMembers(Root, "", MetaInfo, MetaInfoCount, Data);
+
+		PlatformApi.WriteFile(FileDest, (void*)Root, sizeof(member));
 	}
 
 	// Returns if successful

@@ -152,7 +152,6 @@ void SaveGame(state* State)
 
 				//Dest->ItemHold = State->Ships[i].Hold.Persist;
 				//Dest->ItemHold = State->Ships[i].FuelTank.Persist;
-
 			}
 		}
 	}
@@ -621,7 +620,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						);
 
 						if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-							EditorState->DebugItemDragging.Def = Def;
+							EditorState->DebugItemDragging.ID = Def->ID;
 							EditorState->DebugItemDragging.Count = 1;
 
 							State->ItemDragging = &EditorState->DebugItemDragging;
@@ -662,7 +661,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						);
 
 						if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-							EditorState->DebugItemDragging.Def = Def;
+							EditorState->DebugItemDragging.ID = Def->ID;
 							EditorState->DebugItemDragging.Count = 10;
 
 							State->ItemDragging = &EditorState->DebugItemDragging;

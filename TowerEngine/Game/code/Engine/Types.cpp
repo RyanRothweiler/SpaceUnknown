@@ -36,4 +36,16 @@ int32 				typedef bool32;
 float 				typedef real32;
 double 				typedef real64;
 
+int8_t 				typedef i8;
+int16_t 			typedef i16;
+int32_t 			typedef i32;
+int64_t 			typedef i64;
+unsigned char 		typedef ui8;
+unsigned short 		typedef ui16;
+unsigned int 		typedef ui32;
+unsigned long long 	typedef ui64;
+int32 				typedef b32;
+float 				typedef r32;
+double 				typedef r64;
+
 #endif

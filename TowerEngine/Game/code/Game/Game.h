@@ -140,8 +140,6 @@ struct item_definition {
 MetaStruct struct item_instance_persistent {
 	item_id ID;
 	real64 Count;
-
-	item_definition* Def;
 };
 
 MetaStruct struct item_hold_persistent {

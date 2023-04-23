@@ -2,33 +2,35 @@
 	"folders":
 	[
 		{
-			"path": "Game",
-            "file_include_patterns": [
-                "*.cpp",
-                "*.h",
-                "*.vs",
-                "*.fs",
-                "*.txt",
-                "*.todo",
-                "*.entity",
-                "*.bat",
-                "*.monsterdefinition",
-                "*.abilitydefinition",
-                "*.statuseffectdefinition",
-                "*.battletest",
-                "*.itemdefinition",
-                "*.missiondefinition",
-            ]
+			"file_include_patterns":
+			[
+				"*.cpp",
+				"*.h",
+				"*.vs",
+				"*.fs",
+				"*.txt",
+				"*.todo",
+				"*.entity",
+				"*.bat",
+				"*.monsterdefinition",
+				"*.abilitydefinition",
+				"*.statuseffectdefinition",
+				"*.battletest",
+				"*.itemdefinition",
+				"*.missiondefinition"
+			],
+			"path": "Game"
 		},
-        {
-            "path": "Crossbow",
-            "file_include_patterns": [
-                "*.cpp",
-                "*.h",
-                "*.vs",
-                "*.fs",
-                "*.txt",
-            ]
-        }
+		{
+			"file_include_patterns":
+			[
+				"*.cpp",
+				"*.h",
+				"*.vs",
+				"*.fs",
+				"*.txt"
+			],
+			"path": "Crossbow"
+		}
 	]
 }

@@ -41,9 +41,9 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 				for (int i = 0; i < Order->InputsCount; i++) {
 					item_count* C = &Order->Inputs[i];
 
-					for (int h = 0; h < ArrayCount(Source->Persist.Items); h++) {
-						if (Source->Persist.Items[h].Def->ID == C->ItemID) {
-							Source->Persist.Items[h].Count -= C->Count;
+					for (int h = 0; h < ArrayCount(Source->Persist->Items); h++) {
+						if (Source->Persist->Items[h].ID == C->ItemID) {
+							Source->Persist->Items[h].Count -= C->Count;
 						}
 					}
 				}
@@ -277,7 +277,7 @@ station* StationCreate(state * State)
 
 	Station->Size = vector2{18.0f, 18.0f};
 
-	Station->Hold.Setup(1000);
+	Station->Hold.Setup(1000, &Station->HoldPersist);
 
 	selectable* Sel = RegisterSelectable(selection_type::station, &Station->Position, &Station->Size, (void*)Station, State);
 	Sel->SelectionUpdate = &StationSelected;

@@ -1,3 +1,32 @@
+item_definition* GetItemDefinition(item_id ItemID)
+{
+	return &Globals->AssetsList.ItemDefinitions[(int)ItemID];
+}
+
+void ItemHoldUpdateMass(item_hold* Hold)
+{
+	// Add cargo weight
+	Hold->MassChanged.MarkChanged();
+
+	Hold->MassCurrent = 0;
+	for (int i = 0; i < ArrayCount(Hold->Persist->Items); i++) {
+		if (Hold->Persist->Items[i].Count > 0) {
+			item_definition* Def = GetItemDefinition(Hold->Persist->Items[i].ID);
+			Hold->MassCurrent += Def->Mass * Hold->Persist->Items[i].Count;
+		}
+	}
+}
+
+real64 ItemHoldGetFuel(item_hold* Hold)
+{
+	// Assume the only item here is the stl fuel
+	if (Hold->Persist->Items[0].ID == item_id::stl) {
+		item_definition* Def = GetItemDefinition(Hold->Persist->Items[0].ID);
+		return Hold->Persist->Items[0].Count * Def->Mass;
+	}
+	return 0;
+}
+
 // Add item to a stack without exceeding the cargo mass limit
 real64 ItemStackGive(item_hold* Hold, item_instance_persistent* Inst, item_definition* Def, real64 Count)
 {
@@ -21,20 +50,19 @@ real64 ItemGive(item_hold* Hold, item_id ItemID, real64 Count)
 
 	if (Def->Stackable) {
 		// Add to existing stack
-		for (int i = 0; i < ArrayCount(Hold->Persist.Items); i++) {
-			if (Hold->Persist.Items[i].Count > 0 && Hold->Persist.Items[i].Def->ID == ItemID) {
-				AmountGiven = ItemStackGive(Hold, &Hold->Persist.Items[i], Def, Count);
+		for (int i = 0; i < ArrayCount(Hold->Persist->Items); i++) {
+			if (Hold->Persist->Items[i].Count > 0 && Hold->Persist->Items[i].ID == ItemID) {
+				AmountGiven = ItemStackGive(Hold, &Hold->Persist->Items[i], Def, Count);
 				goto end;
 			}
 		}
 
 		// Make new stack
-		for (int i = 0; i < ArrayCount(Hold->Persist.Items); i++) {
-			if (Hold->Persist.Items[i].Count <= 0) {
+		for (int i = 0; i < ArrayCount(Hold->Persist->Items); i++) {
+			if (Hold->Persist->Items[i].Count <= 0) {
 
-				Hold->Persist.Items[i].Count = 0;
-				Hold->Persist.Items[i].Def = Def;
-				AmountGiven = ItemStackGive(Hold, &Hold->Persist.Items[i], Def, Count);
+				Hold->Persist->Items[i].Count = 0;
+				AmountGiven = ItemStackGive(Hold, &Hold->Persist->Items[i], Def, Count);
 				goto end;
 			}
 		}
@@ -50,10 +78,9 @@ real64 ItemGive(item_hold* Hold, item_id ItemID, real64 Count)
 
 		// Give
 		for (int c = 0; c < Count; c++) {
-			for (int i = 0; i < ArrayCount(Hold->Persist.Items); i++) {
-				if (Hold->Persist.Items[i].Count <= 0) {
-					Hold->Persist.Items[i].Count = 1;
-					Hold->Persist.Items[i].Def = Def;
+			for (int i = 0; i < ArrayCount(Hold->Persist->Items); i++) {
+				if (Hold->Persist->Items[i].Count <= 0) {
+					Hold->Persist->Items[i].Count = 1;
 					AmountGiven = 1;
 					goto end;
 				}
@@ -62,17 +89,17 @@ real64 ItemGive(item_hold* Hold, item_id ItemID, real64 Count)
 	}
 end:
 
-	Hold->UpdateMass();
+	ItemHoldUpdateMass(Hold);
 	return AmountGiven;
 }
 
 void ItemTransfer(item_instance_persistent* Inst, item_hold* Source, item_hold* Dest, real64 Count)
 {
-	real64 CountMoving = ItemGive(Dest, Inst->Def->ID, Count);
+	real64 CountMoving = ItemGive(Dest, Inst->ID, Count);
 	Inst->Count -= CountMoving;
 
-	Source->UpdateMass();
-	Dest->UpdateMass();
+	ItemHoldUpdateMass(Source);
+	ItemHoldUpdateMass(Dest);
 }
 
 enum class item_hold_filter {
@@ -82,23 +109,25 @@ enum class item_hold_filter {
 void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* Input, bool32 CanTransfer, item_hold_filter AllowedItems)
 {
 	int64 CargoWeight = (int64)Hold->MassCurrent;
-	string CargoTitle = Title + " (" + string{CargoWeight} + "/" + string{(int64)Hold->MassLimit} + ")(t)###" + string{Hold->Persist.GUID};
+	string CargoTitle = Title + " (" + string{CargoWeight} + "/" + string{(int64)Hold->MassLimit} + ")(t)###" + string{Hold->Persist->GUID};
 	if (ImGui::CollapsingHeader(CargoTitle.Array())) {
 
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(0, 0, 0, 100));
-		string ChildID = string{"itemchild"} + string{Hold->Persist.GUID};
+		string ChildID = string{"itemchild"} + string{Hold->Persist->GUID};
 		ImGui::BeginChild(ChildID.Array(), ImVec2(0, 300), true, ImGuiWindowFlags_None);
 
-		for (int i = 0; i < ArrayCount(Hold->Persist.Items); i++) {
+		for (int i = 0; i < ArrayCount(Hold->Persist->Items); i++) {
 
 			ImGui::PushID(i);
 
-			item_instance_persistent* Item = &Hold->Persist.Items[i];
+			item_instance_persistent* Item = &Hold->Persist->Items[i];
+			item_definition* Def = GetItemDefinition(Item->ID);
+
 			int64 ptr = (int64)Item;
 			if (Item->Count > 0) {
 
 				ImGui::Image(
-				    (ImTextureID)((int64)Item->Def->Icon->GLID),
+				    (ImTextureID)((int64)Def->Icon->GLID),
 				    ImGuiImageSize,
 				    ImVec2(0, 0),
 				    ImVec2(1, -1),
@@ -114,7 +143,7 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 					ImGui::SetDragDropPayload(ImguiItemDraggingID, &D, sizeof(D));
 
 					ImGui::Image(
-					    (ImTextureID)((int64)Item->Def->Icon->GLID),
+					    (ImTextureID)((int64)Def->Icon->GLID),
 					    ImGuiImageSize,
 					    ImVec2(0, 0),
 					    ImVec2(1, -1),
@@ -130,7 +159,7 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 
 				ImGui::BeginGroup();
 
-				ImGui::Text(Item->Def->DisplayName.Array());
+				ImGui::Text(Def->DisplayName.Array());
 				ImGui::Text("x");
 				ImGui::SameLine();
 				ImGui::Text(string{Item->Count} .Array());
@@ -148,7 +177,7 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 
 				bool32 Allowed = true;
 				if (AllowedItems == item_hold_filter::stl) {
-					Allowed = (State->ItemDragging->Def->ID == item_id::stl);
+					Allowed = (State->ItemDragging->ID == item_id::stl);
 				}
 
 				if (Allowed) {
