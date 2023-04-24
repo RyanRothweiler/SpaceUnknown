@@ -46,7 +46,7 @@ void StepUniverse(state* State, real64 TimeMS)
 	// Check for wakeup stepper
 	if (State->SleepingSteppers->LinkCount >= 1) {
 		stepper_ptr* pt = (stepper_ptr*)GetLinkData(State->SleepingSteppers, 0);
-		if (State->UniverseTime.TimeMS >= pt->Stp->WakeupTime) {
+		if (State->PersistentData.UniverseTimeMS >= pt->Stp->WakeupTime) {
 			AddStepper(pt->Stp, State);
 			RemoveLink(State->SleepingSteppers, 0);
 		}
@@ -73,7 +73,7 @@ void SleepStepper(state* State, stepper* Stepper, real64 SleepDurationMS)
 	stepper_ptr Data = {};
 	Data.Stp = Stepper;
 
-	Stepper->WakeupTime = State->UniverseTime.TimeMS + SleepDurationMS;
+	Stepper->WakeupTime = State->PersistentData.UniverseTimeMS + SleepDurationMS;
 	UnregisterStepper(Stepper, State);
 
 	// Insert into list sorted
@@ -96,8 +96,7 @@ void SleepStepper(state* State, stepper* Stepper, real64 SleepDurationMS)
 
 void TimeStep(void* SelfData, real64 Time, state* State)
 {
-	universe_time* UT = (universe_time*)SelfData;
-	UT->TimeMS += Time;
+	State->PersistentData.UniverseTimeMS += Time;
 }
 
 selectable* RegisterSelectable(selection_type Type, vector2* Center, vector2* Size, void* Data, state* State)
@@ -121,18 +120,12 @@ void Save()
 
 void SaveGame(state* State, save_data::member* Root)
 {
-	save_file SaveData = {};
-
 	// Time
-	{
-		using std::chrono::duration_cast;
-		using std::chrono::system_clock;
-		int64 SinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
+	using std::chrono::duration_cast;
+	using std::chrono::system_clock;
+	State->PersistentData.RealTimeSaved = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();;
 
-		SaveData.RealTimeSaved = SinceEpoch;
-		SaveData.UniverseTimeMS = State->UniverseTime.TimeMS;
-	}
-
+	/*
 	// Skill nodess
 	{
 		int c = 0;
@@ -158,76 +151,10 @@ void SaveGame(state* State, save_data::member* Root)
 			}
 		}
 	}
-
-	// stations
-	{
-		for (int i = 0; i < State->StationsCount; i++) {
-			station* Station = &State->Stations[i];
-
-			SaveData.Stations[SaveData.StationsCount] = State->Stations[i].Persist;
-			station_persistent* Dest = &SaveData.Stations[SaveData.ShipsCount];
-
-			SaveData.StationsCount++;
-			Assert(SaveData.StationsCount < ArrayCount(SaveData.Stations));
-		}
-	}
-
-	save_data::Write("SpaceUnknownSave.sus", &save_file_META[0], ArrayCount(save_file_META), (void*)&SaveData, Root);
-
-	/*
-	// Ships
-	for (int i = 0; i < ArrayCount(State->Ships); i++) {
-		if (State->Ships[i].Using) {
-			ship* Ship = &State->Ships[i];
-
-			json::AddKeyPair("ship_" + string{i} + "_position_x", Real64ToString(Ship->Position.X, DecimalCount), &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_position_y", Real64ToString(Ship->Position.Y, DecimalCount), &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_velocity_x", Real64ToString(Ship->Velocity.X, DecimalCount), &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_velocity_y", Real64ToString(Ship->Velocity.Y, DecimalCount), &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_is_moving", Real64ToString(Ship->IsMoving, DecimalCount), &JsonOut);
-			//json::AddKeyPair("ship_" + string{i} + "_fuel", Real64ToString(Ship->FuelGallons, DecimalCount), &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_rotation", Real64ToString(Ship->Rotation, DecimalCount), &JsonOut);
-
-			json::AddKeyPair("ship_" + string{i} + "_journey_end_x", Real64ToString(Ship->CurrentJourney.EndPosition.X, DecimalCount), &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_journey_end_y", Real64ToString(Ship->CurrentJourney.EndPosition.Y, DecimalCount), &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_journey_start_x", Real64ToString(Ship->CurrentJourney.StartPosition.X, DecimalCount), &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_journey_start_y", Real64ToString(Ship->CurrentJourney.StartPosition.Y, DecimalCount), &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_journey_dist_from_sides_to_coast", Real64ToString(Ship->CurrentJourney.DistFromSidesToCoast, DecimalCount), &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_journey_edge_ratio", Real64ToString(Ship->CurrentJourney.EdgeRatio, DecimalCount), &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_x", Real64ToString(Ship->CurrentJourney.DirToEnd.X, DecimalCount), &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_journey_dir_to_end_y", Real64ToString(Ship->CurrentJourney.DirToEnd.Y, DecimalCount), &JsonOut);
-			*/
-
-	// Add method for saving a hold
-	/*
-	for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
-		if (Ship->Cargo[c].Count > 0) {
-
-			string DefID = item_id_NAME[(int)Ship->Cargo[c].Definition.ID];
-
-			json::AddKeyPair("ship_" + string{i} + "_cargo_" + string{c} + "_id", DefID, &JsonOut);
-			json::AddKeyPair("ship_" + string{i} + "_cargo_" + string{c} + "_count", string{Ship->Cargo[c].Count}, &JsonOut);
-		}
-	}
-	}
-	}
-
-	// Asteroids
-	for (int i = 0; i < State->ClustersCount; i++) {
-	asteroid_cluster* Cluster = &State->Asteroids[i];
-	for (int c = 0; c < ArrayCount(Cluster->Asteroids); c++) {
-	if (Cluster->Asteroids[c].Using) {
-		asteroid* Roid = &Cluster->Asteroids[c];
-
-		json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", Real64ToString(Roid->WorldObject.Position.X, DecimalCount), &JsonOut);
-		json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", Real64ToString(Roid->WorldObject.Position.Y, DecimalCount), &JsonOut);
-		//json::AddKeyPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_size", Real64ToString(Roid->WorldObject.Size, DecimalCount), &JsonOut);
-	}
-	}
-	}
-
-	json::SaveToFile(&JsonOut, "SaveGame.sus");
 	*/
+
+
+	save_data::Write("SpaceUnknownSave.sus", &save_file_META[0], ArrayCount(save_file_META), (void*)&State->PersistentData, Root);
 	ConsoleLog("Game Saved");
 }
 
@@ -244,24 +171,22 @@ void SaveGame(state* State, save_data::member* Root)
 
 void LoadGame(state* State)
 {
-	save_file SaveData = {};
-	if (!save_data::Read("SpaceUnknownSave.sus", (void*)&SaveData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)) {
+	if (!save_data::Read("SpaceUnknownSave.sus", (void*)&State->PersistentData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)) {
 		ConsoleLog("No saved data file");
 		return;
 	}
 
-	State->UniverseTime.TimeMS = SaveData.UniverseTimeMS;
-
 	// Skill Nodes
 	{
-		for (int i = 0; i < ArrayCount(SaveData.SkillNodesIDUnlocked); i++) {
-			if (SaveData.SkillNodesIDUnlocked[i] > 0) {
-				skill_node* Node = SkillTreeNodeFind(SaveData.SkillNodesIDUnlocked[i], State);
+		for (int i = 0; i < ArrayCount(State->PersistentData.SkillNodesIDUnlocked); i++) {
+			if (State->PersistentData.SkillNodesIDUnlocked[i] > 0) {
+				skill_node* Node = SkillTreeNodeFind(State->PersistentData.SkillNodesIDUnlocked[i], State);
 				Node->Unlocked = true;
 			}
 		}
 	}
 
+	/*
 	// ships
 	{
 		for (int i = 0; i < SaveData.ShipsCount; i++) {
@@ -270,11 +195,13 @@ void LoadGame(state* State)
 			ItemHoldUpdateMass(&State->Ships[i].Hold);
 		}
 	}
+	*/
 
-	// statios
+	// stations
 	{
-		for (int i = 0; i < SaveData.StationsCount; i++) {
-			State->Stations[i].Persist = SaveData.Stations[i];
+		for (int i = 0; i < State->PersistentData.StationsCount; i++) {
+			State->Stations[i].Persist = &State->PersistentData.Stations[i];
+			State->Stations[i].Hold.Setup(1000, &State->Stations[i].Persist->ItemHold);
 
 			ItemHoldUpdateMass(&State->Stations[i].Hold);
 		}
@@ -367,7 +294,7 @@ void LoadGame(state* State)
 	using std::chrono::duration_cast;
 	using std::chrono::system_clock;
 	int64 CurrentSinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
-	int64 FileSinceEpoch = SaveData.RealTimeSaved;
+	int64 FileSinceEpoch = State->PersistentData.RealTimeSaved;
 	real64 MissingMS = (real64)(CurrentSinceEpoch - FileSinceEpoch);
 	real64 MissingMSStart = MissingMS;
 
@@ -399,16 +326,15 @@ void LoadGame(state* State)
 }
 
 save_data::member* GlobalSaveDataRoot;
+b32 Saving = false;
 
-void TestWork(void* Params, int32 ThreadID)
+void SaveGameThread(void* Params, int32 ThreadID)
 {
-	SaveGame((state*)Params, GlobalSaveDataRoot);
-
-	/*
-	while (true) {
-		//ConsoleLog("Working!!");
+	if (!Saving) {
+		Saving = true;
+		SaveGame((state*)Params, GlobalSaveDataRoot);
+		Saving = false;
 	}
-	*/
 }
 
 void Start(engine_state* EngineState)
@@ -446,7 +372,7 @@ void Start(engine_state* EngineState)
 
 	CreateDefinitions();
 
-	RegisterStepper(&State->UniverseTime.Stepper, &TimeStep, (void*)(&State->UniverseTime), State);
+	RegisterStepper(&State->UniverseTimeStepper, &TimeStep, GameNull, State);
 
 	// Load asteroid images
 	Globals->AssetsList.AsteroidImages[0] = assets::GetImage("Asteroid1");
@@ -505,7 +431,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			GlobalTriggerSave = false;
 			SaveTimer = 0.0f;
 
-			PlatformApi.ThreadAddWork(&TestWork, (void*)State);
+			PlatformApi.ThreadAddWork(&SaveGameThread, (void*)State);
 			//SaveGame(State, GlobalSaveDataRoot);
 		}
 	}
@@ -803,7 +729,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 		ImGui::SameLine();
 
 		std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>> Time = {};
-		Time += std::chrono::milliseconds((int)State->UniverseTime.TimeMS);
+		Time += std::chrono::milliseconds((int)State->PersistentData.UniverseTimeMS);
 		std::chrono::seconds Diff = std::chrono::duration_cast<std::chrono::seconds>(Time.time_since_epoch());
 		string Disp = ChronoToString(Diff);
 		ImGui::Text(Disp.Array());
@@ -1026,7 +952,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			}
 
 			// Render stations
-			for (int i = 0; i < State->StationsCount; i++) {
+			for (int i = 0; i < State->PersistentData.StationsCount; i++) {
 				station* Station = &State->Stations[i];
 
 				Station->Rotation += (PI / 10.0f) * EngineState->DeltaTimeMS * 0.0002f;

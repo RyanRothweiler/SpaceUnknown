@@ -1,20 +1,23 @@
+
 void ConverterUpdate(void* SelfData, real64 Time, state* State)
 {
 	converter* Converter = (converter*)SelfData;
-	if (Converter->RunsCount > 0) {
+	if (Converter->Persist.RunsCount > 0) {
+
+		recipe Recipe = RecipeGetDefinition(Converter->Persist.RecipeID);
 
 		if (Converter->IsRunning) {
-			Converter->CurrentOrderTime += Time;
-			if (Converter->CurrentOrderTime >= Converter->Order.DurationMS) {
-				Converter->RunsCount--;
+			Converter->Persist.OrderTime += Time;
+			if (Converter->Persist.OrderTime >= Recipe.DurationMS) {
+				Converter->Persist.RunsCount--;
 
-				if (Converter->RunsCount <= 0) {
+				if (Converter->Persist.RunsCount <= 0) {
 					Converter->IsRunning = false;
 				}
 
 				// Give outputs
-				for (int i = 0; i < Converter->Order.OutputsCount; i++) {
-					item_count* C = &Converter->Order.Outputs[i];
+				for (int i = 0; i < Recipe.OutputsCount; i++) {
+					item_count* C = &Recipe.Outputs[i];
 
 					switch (C->Type) {
 						case (recipe_member_type::item): {
@@ -30,16 +33,15 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 				}
 			}
 		} else {
-			recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Converter->Order, &Converter->Owner->Hold);
+			recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Recipe, &Converter->Owner->Hold);
 			if (InputsMissing.Count == 0) {
 				Converter->IsRunning = true;
 
 				// Consume items. We can assume they exist in sufficient amounts
 				item_hold* Source = &Converter->Owner->Hold;
-				recipe* Order = &Converter->Order;
 
-				for (int i = 0; i < Order->InputsCount; i++) {
-					item_count* C = &Order->Inputs[i];
+				for (int i = 0; i < Recipe.InputsCount; i++) {
+					item_count* C = &Recipe.Inputs[i];
 
 					for (int h = 0; h < ArrayCount(Source->Persist->Items); h++) {
 						if (Source->Persist->Items[h].ID == C->ItemID) {
@@ -53,12 +55,13 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 	}
 }
 
-void ConverterAddOrder(converter * Converter, recipe Order)
+void ConverterAddOrder(converter * Converter, recipe_id ID)
 {
 	Converter->IsRunning = false;
-	Converter->RunsCount = 1;
-	Converter->CurrentOrderTime = 0.0f;
-	Converter->Order = Order;
+
+	Converter->Persist.RunsCount = 1;
+	Converter->Persist.OrderTime = 0.0f;
+	Converter->Persist.RecipeID = ID;
 }
 
 void ImGuiItemCountList(item_count * Items, int32 Count)
@@ -105,7 +108,7 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 	converter* Converter = &Station->Converters[ConverterIndex];
 
 	if (Converter->HasOrder()) {
-		recipe* Recipe = &Converter->Order;
+		recipe Recipe = RecipeGetDefinition(Converter->Persist.RecipeID);
 
 		ImGui::Columns(2, "mycolumns"); // 4-ways, with border
 
@@ -114,19 +117,19 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 		ImGui::Text("Outputs"); ImGui::NextColumn();
 		ImGui::Separator();
 
-		ImGuiItemCountList(&Recipe->Inputs[0], Recipe->InputsCount);
+		ImGuiItemCountList(&Recipe.Inputs[0], Recipe.InputsCount);
 		ImGui::NextColumn();
 
-		ImGuiItemCountList(&Recipe->Outputs[0], Recipe->OutputsCount);
+		ImGuiItemCountList(&Recipe.Outputs[0], Recipe.OutputsCount);
 		ImGui::NextColumn();
 
 		ImGui::Columns(1);
 
-		recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(Recipe, &Station->Hold);
+		recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Recipe, &Station->Hold);
 
 		if (Converter->IsRunning) {
 			// Progress
-			float Progress = (float)(Converter->CurrentOrderTime / Converter->Order.DurationMS);
+			float Progress = (float)(Converter->Persist.OrderTime / Recipe.DurationMS);
 			float PD = Progress * 100.0f;
 			string ProgStr = Real64ToString(PD, 2);
 			string ProgDisp = ProgStr + "%";
@@ -197,7 +200,7 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 		ImGui::Separator();
 		if (RecipeIDSelected != recipe_id::none) {
 			if (ImGui::Button("Submit", ImVec2(HW, 0))) {
-				ConverterAddOrder(Converter, Globals->AssetsList.RecipeDefinitions[(int)RecipeIDSelected]);
+				ConverterAddOrder(Converter, RecipeIDSelected);
 
 				ImGui::CloseCurrentPopup();
 			}
@@ -272,12 +275,12 @@ void StationUndockShip(ship * Ship)
 
 station* StationCreate(state * State)
 {
-	station* Station = &State->Stations[State->StationsCount++];
-	Assert(ArrayCount(State->Stations) > State->StationsCount);
+	station* Station = &State->Stations[State->PersistentData.StationsCount++];
+	Assert(ArrayCount(State->Stations) > State->PersistentData.StationsCount);
 
 	Station->Size = vector2{18.0f, 18.0f};
 
-	Station->Hold.Setup(1000, &Station->Persist.ItemHold);
+	//Station->Hold.Setup(1000, HoldPersist);
 
 	selectable* Sel = RegisterSelectable(selection_type::station, &Station->Position, &Station->Size, (void*)Station, State);
 	Sel->SelectionUpdate = &StationSelected;

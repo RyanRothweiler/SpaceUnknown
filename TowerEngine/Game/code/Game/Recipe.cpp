@@ -3,6 +3,11 @@ struct recipe_inputs_missing_return {
 	int32 Count;
 };
 
+recipe RecipeGetDefinition(recipe_id ID)
+{
+	return Globals->AssetsList.RecipeDefinitions[(int)ID];
+}
+
 recipe_inputs_missing_return RecipeInputsMissing(recipe* Order, item_hold* Source)
 {
 	recipe_inputs_missing_return Ret = {};

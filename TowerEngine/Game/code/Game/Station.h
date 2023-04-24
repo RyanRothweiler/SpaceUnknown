@@ -1,8 +1,7 @@
 struct converter {
-	recipe Order;
+	converter_persistent Persist;
+
 	stepper Stepper;
-	real64 CurrentOrderTime;
-	int32 RunsCount;
 
 	bool32 IsRunning;
 
@@ -10,12 +9,12 @@ struct converter {
 
 	bool32 HasOrder()
 	{
-		return RunsCount > 0;
+		return Persist.RunsCount > 0;
 	}
 };
 
 struct station {
-	station_persistent Persist;
+	station_persistent* Persist;
 
 	vector2 Position;
 	vector2 Size;

@@ -98,8 +98,6 @@ struct stepper_ptr {
 };
 
 struct universe_time {
-	stepper Stepper;
-	real64 TimeMS;
 };
 
 MetaStruct enum class ship_module_id {
@@ -147,6 +145,15 @@ MetaStruct struct item_hold_persistent {
 	item_instance_persistent Items[64];
 };
 
+MetaStruct enum class recipe_id {
+	venigen_stl,
+
+	ship_advent,
+
+	count,
+	none,
+};
+
 // -----------------------------------------------------------------------------
 
 // Save Data persistence--------------------------------------------------------
@@ -158,8 +165,15 @@ MetaStruct struct ship_persistent {
 	item_hold_persistent FuelHold;
 };
 
+MetaStruct struct converter_persistent {
+	recipe_id RecipeID;
+	real64 OrderTime;
+	int32 RunsCount;
+};
+
 MetaStruct struct station_persistent {
 	item_hold_persistent ItemHold;
+	converter_persistent Converters[10];
 };
 
 // NOTE no pointers
@@ -272,6 +286,9 @@ struct editor_state {
 };
 
 struct state {
+
+	save_file PersistentData;
+
 	game_scene Scene;
 
 	skill_node SkillNodes[100];
@@ -280,12 +297,14 @@ struct state {
 	skill_bonuses TreeBonusesTotal;
 	int64 Knowledge;
 
-	universe_time UniverseTime;
+	stepper UniverseTimeStepper;
+
 	selection Selections[100];
 	selectable* Hovering;
 	skill_node* NodeHovering = {};
 
 	ship Ships[100];
+	station Stations[100];
 
 	world_object* WorldObjects[1024];
 	int32 WorldObjectsCount;
@@ -296,8 +315,6 @@ struct state {
 	salvage Salvages[100];
 	int32 SalvagesCount;
 
-	station Stations[100];
-	int32 StationsCount;
 
 	real32 Zoom = 1.0f;
 	real32 ZoomTarget;

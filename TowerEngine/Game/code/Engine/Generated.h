@@ -127,6 +127,12 @@ void JsonFillStructShim_item_hold_persistent (json::json_data* JsonData, string 
 return json::FillStruct(JsonData, KeyParent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META), DataDest);
 }
 
+string recipe_id_NAME[] { 
+"venigen_stl",
+"ship_advent",
+"count",
+"none",
+}; 
 meta_member ship_persistent_META[] { 
 {meta_member_type::custom, "vector2", "Position", (uint64)&((ship_persistent *)0)->Position, 0, sizeof(vector2),&StructMetaFill_vector2, &JsonFillStructShim_vector2, &SaveDataFillShim_vector2, &vector2_META[0], ArrayCount(vector2_META) },
 {meta_member_type::real64, "real64", "Rotation", (uint64)&((ship_persistent *)0)->Rotation, 0, sizeof(real64),{},{},{},{},{}},
@@ -161,20 +167,54 @@ void JsonFillStructShim_ship_persistent (json::json_data* JsonData, string KeyPa
 return json::FillStruct(JsonData, KeyParent, &ship_persistent_META[0], ArrayCount(ship_persistent_META), DataDest);
 }
 
+meta_member converter_persistent_META[] { 
+{meta_member_type::enumeration, "recipe_id", "RecipeID", (uint64)&((converter_persistent *)0)->RecipeID, 0, sizeof(recipe_id),{},{},{},{},{}},
+{meta_member_type::real64, "real64", "OrderTime", (uint64)&((converter_persistent *)0)->OrderTime, 0, sizeof(real64),{},{},{},{},{}},
+{meta_member_type::int32, "int32", "RunsCount", (uint64)&((converter_persistent *)0)->RunsCount, 0, sizeof(int32),{},{},{},{},{}},
+}; 
+ 
+void M_ALLOC__converter_persistent(s_void* SafeVoid, memory_arena* Memory) { 
+	SafeVoid->IsAllocated = true; 
+	SafeVoid->Type = 5; 
+	SafeVoid->DataSize = sizeof(converter_persistent); 
+	SafeVoid->Data = ArenaAllocate(Memory, sizeof(converter_persistent)); 
+	ClearMemory((uint8*)SafeVoid->Data, sizeof(converter_persistent)); 
+};
+
+converter_persistent* M_GET__converter_persistent(s_void* SafeVoid) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 5) { 
+		return (converter_persistent*)SafeVoid->Data; 
+	} 
+	return GameNull; 
+};
+
+void StructMetaFill_converter_persistent (json::struct_string_return* Dest,  void* AccData){
+return json::StructMetaFill(Dest, &converter_persistent_META[0], ArrayCount(converter_persistent_META), AccData);
+}
+
+void SaveDataFillShim_converter_persistent (save_data::member* Dest, string KeyParent, void* AccData){
+return save_data::AddMembers(Dest, KeyParent, &converter_persistent_META[0], ArrayCount(converter_persistent_META), AccData);
+}
+
+void JsonFillStructShim_converter_persistent (json::json_data* JsonData, string KeyParent, void* DataDest){
+return json::FillStruct(JsonData, KeyParent, &converter_persistent_META[0], ArrayCount(converter_persistent_META), DataDest);
+}
+
 meta_member station_persistent_META[] { 
 {meta_member_type::custom, "item_hold_persistent", "ItemHold", (uint64)&((station_persistent *)0)->ItemHold, 0, sizeof(item_hold_persistent),&StructMetaFill_item_hold_persistent, &JsonFillStructShim_item_hold_persistent, &SaveDataFillShim_item_hold_persistent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META) },
+{meta_member_type::custom, "converter_persistent", "Converters", (uint64)&((station_persistent *)0)->Converters, 10, sizeof(converter_persistent),&StructMetaFill_converter_persistent, &JsonFillStructShim_converter_persistent, &SaveDataFillShim_converter_persistent, &converter_persistent_META[0], ArrayCount(converter_persistent_META) },
 }; 
  
 void M_ALLOC__station_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 5; 
+	SafeVoid->Type = 6; 
 	SafeVoid->DataSize = sizeof(station_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(station_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(station_persistent)); 
 };
 
 station_persistent* M_GET__station_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 5) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 6) { 
 		return (station_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -204,14 +244,14 @@ meta_member save_file_META[] {
  
 void M_ALLOC__save_file(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 6; 
+	SafeVoid->Type = 7; 
 	SafeVoid->DataSize = sizeof(save_file); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(save_file)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(save_file)); 
 };
 
 save_file* M_GET__save_file(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 6) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 7) { 
 		return (save_file*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -241,14 +281,14 @@ meta_member ryan_type_META[] {
  
 void M_ALLOC__ryan_type(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 7; 
+	SafeVoid->Type = 8; 
 	SafeVoid->DataSize = sizeof(ryan_type); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ryan_type)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ryan_type)); 
 };
 
 ryan_type* M_GET__ryan_type(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 7) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 8) { 
 		return (ryan_type*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -271,12 +311,6 @@ string station_service_NAME[] {
 "shipyard",
 "count",
 }; 
-string recipe_id_NAME[] { 
-"venigen_stl",
-"ship_advent",
-"count",
-"none",
-}; 
 string recipe_member_type_NAME[] { 
 "item",
 "ship",
@@ -298,14 +332,14 @@ meta_member skill_bonuses_META[] {
  
 void M_ALLOC__skill_bonuses(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 8; 
+	SafeVoid->Type = 9; 
 	SafeVoid->DataSize = sizeof(skill_bonuses); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(skill_bonuses)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(skill_bonuses)); 
 };
 
 skill_bonuses* M_GET__skill_bonuses(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 8) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 9) { 
 		return (skill_bonuses*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -334,14 +368,14 @@ meta_member skill_node_persistent_META[] {
  
 void M_ALLOC__skill_node_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 9; 
+	SafeVoid->Type = 10; 
 	SafeVoid->DataSize = sizeof(skill_node_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(skill_node_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(skill_node_persistent)); 
 };
 
 skill_node_persistent* M_GET__skill_node_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 9) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 10) { 
 		return (skill_node_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 

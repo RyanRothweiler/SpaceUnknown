@@ -3,15 +3,6 @@ MetaStruct enum class station_service {
 	count
 };
 
-MetaStruct enum class recipe_id {
-	venigen_stl,
-
-	ship_advent,
-
-	count,
-	none,
-};
-
 MetaStruct enum class recipe_member_type {
 	item, ship
 };
