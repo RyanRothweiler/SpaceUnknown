@@ -50,6 +50,7 @@ namespace save_data {
 					if (!Root->Pairs[KeyHash][i].Used) {
 						Pair = &Root->Pairs[KeyHash][i];
 						Found = true;
+						break;
 					}
 				}
 				Assert(Found);
@@ -267,11 +268,11 @@ namespace save_data {
 	}
 
 	// NOTE (Ryan) This works because trans mem will be allocated contiguously
-	void Write(char* FileDest, meta_member* MetaInfo, uint32 MetaInfoCount, void* Data)
+	void Write(char* FileDest, meta_member* MetaInfo, uint32 MetaInfoCount, void* Data, member* Root)
 	{
 		Direction = direction::write;
 
-		member* Root = (member*)ArenaAllocate(GlobalTransMem, sizeof(member));
+		//member* Root = (member*)ArenaAllocate(GlobalTransMem, sizeof(member));
 		ClearMemory((uint8*)Root, sizeof(member));
 
 		AddMembers(Root, "", MetaInfo, MetaInfoCount, Data);

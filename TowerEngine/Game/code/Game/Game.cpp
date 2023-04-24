@@ -119,7 +119,7 @@ void Save()
 	GlobalTriggerSave = true;
 }
 
-void SaveGame(state* State)
+void SaveGame(state* State, save_data::member* Root)
 {
 	save_file SaveData = {};
 
@@ -155,13 +155,24 @@ void SaveGame(state* State)
 
 				SaveData.ShipsCount++;
 				Assert(SaveData.ShipsCount < ArrayCount(SaveData.Ships));
-
-				//Dest->ItemHold = State->Ships[i].FuelTank.Persist;
 			}
 		}
 	}
 
-	save_data::Write("SpaceUnknownSave.sus", &save_file_META[0], ArrayCount(save_file_META), (void*)&SaveData);
+	// stations
+	{
+		for (int i = 0; i < State->StationsCount; i++) {
+			station* Station = &State->Stations[i];
+
+			SaveData.Stations[SaveData.StationsCount] = State->Stations[i].Persist;
+			station_persistent* Dest = &SaveData.Stations[SaveData.ShipsCount];
+
+			SaveData.StationsCount++;
+			Assert(SaveData.StationsCount < ArrayCount(SaveData.Stations));
+		}
+	}
+
+	save_data::Write("SpaceUnknownSave.sus", &save_file_META[0], ArrayCount(save_file_META), (void*)&SaveData, Root);
 
 	/*
 	// Ships
@@ -257,6 +268,15 @@ void LoadGame(state* State)
 			State->Ships[i].Persist = SaveData.Ships[i];
 
 			ItemHoldUpdateMass(&State->Ships[i].Hold);
+		}
+	}
+
+	// statios
+	{
+		for (int i = 0; i < SaveData.StationsCount; i++) {
+			State->Stations[i].Persist = SaveData.Stations[i];
+
+			ItemHoldUpdateMass(&State->Stations[i].Hold);
 		}
 	}
 
@@ -378,9 +398,24 @@ void LoadGame(state* State)
 	ConsoleLog("Finished");
 }
 
+save_data::member* GlobalSaveDataRoot;
+
+void TestWork(void* Params, int32 ThreadID)
+{
+	SaveGame((state*)Params, GlobalSaveDataRoot);
+
+	/*
+	while (true) {
+		//ConsoleLog("Working!!");
+	}
+	*/
+}
+
 void Start(engine_state* EngineState)
 {
 	state* State = &EngineState->GameState;
+
+	GlobalSaveDataRoot = (save_data::member*)ArenaAllocate(GlobalPermMem, sizeof(save_data::member));
 
 	// Load skill nodes
 	{
@@ -469,7 +504,9 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 		if (MillisecondsToSeconds(SaveTimer) > 5.0f || GlobalTriggerSave) {
 			GlobalTriggerSave = false;
 			SaveTimer = 0.0f;
-			SaveGame(State);
+
+			PlatformApi.ThreadAddWork(&TestWork, (void*)State);
+			//SaveGame(State, GlobalSaveDataRoot);
 		}
 	}
 
