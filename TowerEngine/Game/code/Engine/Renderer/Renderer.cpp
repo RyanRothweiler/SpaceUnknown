@@ -771,7 +771,7 @@ color IDtoCol(uint32 ID)
 
 void RenderObj(model* Mesh, material* Material, m4y4 Transform, renderer* Renderer, vao* VAO, int32 PickID, skin_controller* SkinCon = GameNull, bool32 Wireframe = false)
 {
-	TIME_BEGIN
+	//TIME_BEGIN
 
 	render_command Command = {};
 	InitRenderCommand(&Command, 0);

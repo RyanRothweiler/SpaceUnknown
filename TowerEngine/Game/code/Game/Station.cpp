@@ -25,7 +25,7 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 						} break;
 
 						case (recipe_member_type::ship): {
-							ShipSetup(vector2{0, 0}, C->ShipID, State);
+							//ShipSetup(vector2{0, 0}, C->ShipID, State);
 						} break;
 
 						INVALID_DEFAULT;
@@ -261,14 +261,14 @@ void StationDockShip(station * Station, ship * Ship)
 		DockRadius * cos(DockRadians)
 	};
 
-	Ship->Persist.Position = P;
+	Ship->Persist->Position = P;
 	Ship->Status = ship_status::docked;
 	Ship->StationDocked = Station;
 }
 
 void StationUndockShip(ship * Ship)
 {
-	Ship->Persist.Position = Ship->StationDocked->Position;
+	Ship->Persist->Position = Ship->StationDocked->Position;
 	Ship->StationDocked = {};
 	Ship->Status = ship_status::idle;
 }

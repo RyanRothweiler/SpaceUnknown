@@ -520,19 +520,10 @@
 	"buffers":
 	[
 		{
-			"file": "Game/code/Engine/EngineCore.cpp",
-			"settings":
-			{
-				"buffer_size": 36421,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "Game/code/Engine/SaveData.cpp",
 			"settings":
 			{
-				"buffer_size": 7264,
+				"buffer_size": 7373,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -547,11 +538,98 @@
 			}
 		},
 		{
+			"contents": "#pragma once\n\n#ifndef ENGINE_CORE_H\n#define ENGINE_CORE_H\n\n#define internal static\n#define global_variable static\n\n#define ID_LINE __LINE__\n#define ID_FILE __FILE__\n#define ID_METHOD __func__\n#define COUNTER __COUNTER__\n\n#define STRINGIFY(x) #x\n#define TOSTRING(x) STRINGIFY(x)\n#define AT __FILE__ \":\" TOSTRING(__LINE__)\n\n#if PLATFORM_WINDOWS\n\t#define CRASH *(int *)0 = 0;\n\t#define WIN_EXPORT extern \"C\" __declspec(dllexport)\n#endif\n\n#define Assert(Expression) if (!(Expression)) {LOG(\"!!! ASSERT !!! \"); LOG(#Expression); LOG(AT); LOG(\"!!! end !!!\"); CRASH; }\n\n#define KEY_ESC 0\n#define KEY_TAB 0x09\n#define KEY_BACK 0\n#define KEY_LEFT 0\n#define KEY_RIGHT 0\n#define KEY_UP 0\n#define KEY_DOWN 0\n#define KEY_PRIOR 0\n#define KEY_NEXT 0\n#define KEY_HOME 0\n#define KEY_END 0\n#define KEY_INSERT 0\n#define KEY_DELETE 0\n#define KEY_SPACE 0\n#define KEY_RETURN 0\n#define KEY_ESCAPE 0\n#define KEY_SHIFT 0\n\n\n//#define Assert(Expression) if (!(Expression)) { LOG(\":: ASSERT \"); LOG(#Expression); LOG(\"\\n:: LINE \"); LOG(ID_LINE); LOG(\":: FILE \"); LOG(ID_FILE); LOG(\"\\n:: FUNC \"); LOG(ID_METHOD); LOG(\"\\n\"); *(int *)0 = 0; }\n//#define Assert(Expression) if (!(Expression)) { LOG(\":: ASSERT \"); LOG(#Expression); LOG(\"\\n:: LINE \"); LOG(\":: FILE \"); LOG(ID_FILE); LOG(\"\\n:: FUNC \"); LOG(ID_METHOD); LOG(\"\\n\"); *(int *)0 = 0; }\n//#else\n//\t#define Assert(Expression)\n//\t#define AssertM(Expression, Message)\n//#endif\n\n#define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))\n\n#include \"Types.cpp\"\n#include \"../preprocessor.h\"\n\n#define ARRAY_SIZE(Array, Type) sizeof(Array) / sizeof(Type)\n#define MAX_VALUE(a) (((unsigned long long)1 << (sizeof(a) * CHAR_BIT)) - 1)\n\n#define GameNull 0\n\n// -----------------------------------------------------------------------------\n// build variables\n// -----------------------------------------------------------------------------\n#if AUTOMATED_TESTING\n\tconst bool BuildVarAutomatedTesting = true;\n#else\n\tconst bool BuildVarAutomatedTesting = false;\n#endif\n\n#if RELEASE\n\tconst bool BuildVarRelease = true;\n#else\n\tconst bool BuildVarRelease = false;\n#endif\n// -----------------------------------------------------------------------------\n\nstruct read_file_result {\n\tuint32 ContentsSize;\n\tvoid *Contents;\n};\n\n#include \"GameConstants.cpp\"\n#include \"MemoryManager.h\"\n\nmemory_arena* GlobalPermMem;\nmemory_arena* GlobalTransMem;\nmemory_arena* GlobalThreadTransMem;\n\nstruct path_list;\n\nenum class work_status {null, waiting, running, finished};\ntypedef void (*game_thread_proc)(void* Params, int32 ThreadID);\n\nstruct thread_work {\n\tgame_thread_proc WorkMethod;\n\tvoid* WorkParams;\n\twork_status Status;\n};\n\nnamespace platform {\n\tstruct api {\n\t\tvoid(*MakeDirectory)(char* Path);\n\t\tread_file_result(*ReadFile)(char *Path, memory_arena *Memory);\n\t\tbool32(*FileExists)(char *Path);\n\t\tvoid(*WriteFile)(char *FileDestination, void *Data, uint32 DataSize);\n\t\tvoid(*AppendFile)(char *FileDestination, char *Data);\n\t\tvoid(*DeleteFile)(char *Path);\n\t\tuint64(*GetClockMS)();\n\t\tuint64(*GetCycle)();\n\t\tuint32(*GetGUID)();\n\t\tvoid(*Print)(char* Message);\n\t\tuint64(*GetFileWriteTime)(char* File);\n\t\tvoid*(*GetProcAddress)(char* Name);\n\t\tvoid(*OpenFileExternal)(char* File);\n\t\tpath_list*(*GetPathsForFileType)(char* FileType, const char* Root, memory_arena* Memory, path_list* PathList);\n\t\tvoid(*OpenFileDialogue)(char* Path, int32 MaxPathLength);\n\t\tthread_work*(*ThreadAddWork)(game_thread_proc WorkMethod, void* WorkParams);\n\n\t\t// Between 0 and 1\n\t\treal64(*RandomFloat)();\n\n\t\tuint64(*QueryPerformanceCounter)();\n\t\tuint64 PerformanceCounterFrequency;\n\n\t\t// Android\n\t\tread_file_result(*AndroidReadFile)(char *Path, memory_arena *Memory);\n\n\t\treal64 ScreenDPI;\n\t\treal64 ScreenDPICo;\n\t\treal64 ScreenTypePoints()\n\t\t{\n\t\t\t// one point exuals 1/72 of an inch\n\t\t\treturn (ScreenDPI / 72.0f) * ScreenDPICo;\n\t\t}\n\t};\n}\n\nplatform::api PlatformApi;\n\n#include \"Logging.cpp\"\n#include \"MemoryManager.cpp\"\n#include \"String.cpp\"\n\nvoid LogToConsole(char* Tag, string Message, int32 LineNumber, char* FileName)\n{\n\tLogToConsole(Tag, Message.Array(), LineNumber, FileName);\n}\n\n// Preprocessor member type ----------------------------------------------------\nstruct s_void {\n\tint64 Type;\n\tbool32 IsAllocated;\n\tint64 DataSize;\n\tvoid* Data;\n\n\tvoid Clear()\n\t{\n\t\tif (IsAllocated) {\n\t\t\tClearMemory((uint8*)Data, DataSize);\n\t\t}\n\t}\n};\n\nvoid SafeVoidAlloc(s_void* SafeVoid, memory_arena* Memory, int64 Size, int32 Type)\n{\n\tSafeVoid->IsAllocated = true;\n\tSafeVoid->Type = Type;\n\tSafeVoid->DataSize = Size;\n\tSafeVoid->Data = ArenaAllocate(Memory, Size);\n\tClearMemory((uint8*)SafeVoid->Data, Size);\n};\n\n// -----------------------------------------------------------------------------\n\n#include \"Color.cpp\"\n#include \"Array.cpp\"\n\nstruct line {\n\tvector2 Start, End;\n};\n\n// Should probably go in some renederer class ----------------------------------\n\nenum class gl_blend_type {\n\tnearest, linear\n};\n\nstruct loaded_image {\n\tstring FilePath;\n\tbool32 CorrectGamma;\n\tgl_blend_type BlendType;\n\n\tint Width;\n\tint Height;\n\n\tuint32 GLID;\n\n\t// If this image was loaded successfully\n\tbool32 Valid;\n};\n\n// -----------------------------------------------------------------------------\n\nstruct path_list {\n\tstring Path;\n\tpath_list* Next;\n};\n\nint32 PathListCount(path_list* Curr)\n{\n\tint Val = 0;\n\tif (!StringIsEmpty(Curr->Path)) {\n\t\tVal++;\n\t}\n\n\tif (Curr->Next != GameNull) {\n\t\tVal += PathListCount(Curr->Next);\n\t}\n\treturn Val;\n}\n\n#include \"FixedAllocator.cpp\"\n\nstruct sprite_sheet {\n\tuint8 ColumnCount;\n\tuint8 RowCount;\n\tuint8 Padding;\n\tloaded_image Image;\n};\n\nstruct window_info {\n\tuint32 Width;\n\tuint32 Height;\n};\n\n#include \"Rect.h\"\n\n#define TRANSFORM_MAX_CHILDREN 100\n\nstruct changed_flag {\nprivate:\n\tint32 ConsumersCount;\n\tint32 ChangedFlagCount;\n\npublic:\n\tvoid RegisterConsumer()\n\t{\n\t\tConsumersCount++;\n\t}\n\n\tbool32 DidChange()\n\t{\n\t\treturn ChangedFlagCount > 0;\n\t}\n\n\tvoid MarkAccess()\n\t{\n\t\tChangedFlagCount--;\n\t}\n\n\tvoid MarkChanged()\n\t{\n\t\tChangedFlagCount = ConsumersCount;\n\t}\n};\n\nstruct transform {\n\n\tm4y4 FinalWorld;\n\n\tvector3 LocalPos;\n\tvector3 LocalRot;\n\tvector3 LocalScale;\n\n\ttransform* Children[TRANSFORM_MAX_CHILDREN];\n\tint32 ChildrenCount;\n\n\tvoid AddChild(transform* Trans)\n\t{\n\t\tChildren[ChildrenCount] = Trans;\n\t\tChildrenCount++;\n\t\tAssert(ChildrenCount < TRANSFORM_MAX_CHILDREN);\n\t}\n\n\tvoid Update(m4y4 Parent)\n\t{\n\t\tquat Q = {};\n\t\tQ.FromEuler(LocalRot);\n\t\tm4y4 Rotation = Q.ToMatrix();\n\n\t\t// Questionable\n\t\tif (LocalScale.X == 0 && LocalScale.Y == 0 && LocalScale.Z == 0) {\n\t\t\tLocalScale = vector3{1, 1, 1};\n\t\t}\n\n\t\tm4y4 Scale = {\n\t\t\t{\n\t\t\t\t{(real32)LocalScale.X, \t0,  \t\t\t\t0, \t\t\t\t\t0},\n\t\t\t\t{0, \t\t\t\t(real32)LocalScale.Y, \t0, \t\t\t\t\t0},\n\t\t\t\t{0, \t\t\t\t0, \t\t\t\t\t(real32)LocalScale.Z, \t0},\n\t\t\t\t{0, \t\t\t\t0, \t\t\t\t\t0, \t\t\t\t\t1},\n\t\t\t}\n\t\t};\n\t\tm4y4 Translate = {\n\t\t\t{\n\t\t\t\t{1, \t0,  \t0, \t\t(real32)LocalPos.X},\n\t\t\t\t{0, \t1, \t\t0, \t\t(real32)LocalPos.Y},\n\t\t\t\t{0, \t0, \t\t1, \t\t(real32)LocalPos.Z},\n\t\t\t\t{0, \t0, \t\t0, \t\t1},\n\t\t\t}\n\t\t};\n\n\t\tm4y4 Model = MatrixMultiply(Scale, Rotation);\n\t\tModel = MatrixMultiply(Model, Translate);\n\n\t\tFinalWorld = MatrixMultiply(Model, Parent);\n\n\t\tfor (int x = 0; x < ChildrenCount; x++) {\n\t\t\tChildren[x]->Update(FinalWorld);\n\t\t}\n\t}\n};\n\n\n#include \"LinkedList.h\"\n#include \"Hash.h\"\n#include \"Profiler.h\"\n#include \"Renderer/Renderer.h\"\n#include \"Font.h\"\n\n\nstruct game_memory {\n\tbool32 IsInitialized;\n\tbool32 ImguiInitialized;\n\n\tuint64 TotalSize;\n\tvoid *GameMemoryBlock;\n\n\t// NOTE required to be cleared to 0 on startup / allocation\n\tmemory_arena PermanentMemory;\n\n\t// NOTE this transient memory head is reset to the top of transient storage at the beginning of the game loop\n\t// Anything that needs to stick around for more tha one game loop should go in PermanentStorage\n\tmemory_arena TransientMemory;\n\n\tmemory_arena ThreadTransientMemory;\n\n\t// This is a subset arena of PermanentMemory\n\tmemory_arena AssetsMemory;\n\n\tint64 ElapsedCycles;\n\n\tbool32 HotReloaded;\n\n\trender::api RenderApi;\n\tplatform::api PlatformApi;\n};\n\nstruct entity {\n\tuint32 ID;\n\ttransform Transform;\n\tstring Name;\n\n\tvao VAO;\n\n\t// Model Only --------------------------------------------------------------\n\tmodel* Model;\n\n\tmaterial* Material;\n\tstring MaterialID;\n\t// -------------------------------------------------------------------------\n\n\n\t// Skinned mesh renderer. Bones --------------------------------------------\n\tskin_controller SkinController;\n\tarmature* Armature;\n\t// -------------------------------------------------------------------------\n\n\taabb AABBLocal;\n\treal32 BoundingRadius;\n\n\tentity* Children[100];\n\tint32 ChildrenCount;\n\n\tbool32 Wireframe;\n \n\tvoid AddChild(entity* Child)\n\t{\n\t\tTransform.AddChild(&Child->Transform);\n\t\tChildren[ChildrenCount] = Child;\n\n\t\tAssert(ChildrenCount < ArrayCount(Children));\n\t\tChildrenCount++;\n\t}\n\n\taabb GetScaledAABB()\n\t{\n\t\taabb Ret = AABBLocal;\n\t\tRet.XMax = Ret.XMax * Transform.LocalScale.X;\n\t\tRet.XMin = Ret.XMin * Transform.LocalScale.X;\n\n\t\tRet.YMax = Ret.YMax * Transform.LocalScale.Y;\n\t\tRet.YMin = Ret.YMin * Transform.LocalScale.Y;\n\n\t\tRet.ZMax = Ret.ZMax * Transform.LocalScale.Z;\n\t\tRet.ZMin = Ret.ZMin * Transform.LocalScale.Z;\n\t\treturn Ret;\n\t}\n};\n\nstruct loaded_sound {\n\tuint32 SampleCount;\n\tuint32 ChannelCount;\n\tint16 *Samples[2];\n};\n\nstruct game_audio_output_buffer {\n\t// NOTE this running sample index is only for creating the sinwave. We don't need this otherwise. Remove this eventually.\n\tuint32 RunningSampleIndex;\n\n\tint SamplesPerSecond;\n\tint SampleCount;\n\tuint32 BytesPerSample;\n\tint16 *Samples;\n};\n\nstruct win32_audio_output {\n\tint SamplesPerSecond;\n\tint BytesPerSample;\n\tint SecondaryBufferSize;\n\tuint32 RunningSampleIndex;\n};\n\nstruct input_state {\n\tbool32 OnDown;\n\tbool32 OnUp;\n\tbool32 IsDown;\n\tbool32 IsUp;\n\n\tbool32 Claimed;\n};\n\nenum class touch_gesture {\n\tnone,\n\ttap, // finger has tapped, and lifted without going ouside the drag threshold\n\tdrag, // finger has tappend, is down, and is outside the drag threshold\n\thold // finger has tapped, and is down, and is inside the drag threshold\n};\n\nstruct touch {\n\ttouch_gesture Gesture;\n\tvector2 Position;\n\tvector2 Origin;\n\tvector2 Delta; // Change from origin\n\tvector2 FrameDelta; // Change from last frames position\n\tvector2 PositionLastFrame;\n};\n\n// Input for touchscreens. Only support two touces for now\n#define TOUCH_COUNT 2\n\nstruct game_input {\n\tvector2 MousePos;\n\tvector2 MouseDelta;\n\tvector2 MousePosOnDown;\n\n\treal64 MouseScrollDelta;\n\tbool32 ScrollClaimed;\n\n\t// this is set by the platform, and needs to be consumed by the game each frame\n\tshort InputChar;\n\n\tinput_state MouseLeft;\n\tinput_state MouseRight;\n\tinput_state MouseMiddle;\n\n\tinput_state KeyboardInput[256];\n\tinput_state FunctionKeys[10];\n\tinput_state Escape;\n\n\tinput_state TouchStatus[TOUCH_COUNT];\n\tvector2 TouchPosition[TOUCH_COUNT];\n\n\ttouch Touches[TOUCH_COUNT]; // This is update in the game layer. Just provides easier convenience for interacting with the touch data\n\n\tbool32 MouseMoved()\n\t{\n\t\treturn Vector2Distance(MousePos, MousePosOnDown) > 10;\n\t}\n};\n\ngame_input EmptyInput = {};\n\n#include \"Range.h\"\n#include \"Hex.cpp\"\n#include \"Timer.h\"\n\n#define ImageRotationsCount 8\n\nstruct game_assets {\n\n\tshader GaussianBlurShader;\n\tshader CamBasicShader;\n\n\tentity UnitCube;\n\n\tmodel_polling ModelPolling;\n};\n\n#include \"Timer.cpp\"\n#include \"scene/scene.h\"\n#include \"ui/ui.h\"\n\nstruct monster_instance;\n\nstruct ui_panel;\nstruct panel_stack {\n\tui_panel* Panels[100];\n\tuint32 NextIndex;\n\n\tmonster_instance* Monster;\n\n\tgame_input* UIInput;\n};\n\nconst vector3 CamPlayerOffset = vector3{ -10.0f, 0, 25.0f};\nconst real64 PlayerSpeed = 0.3f;\nconst real32 PlayerRadius = 1.4f;\n\nstruct nav_mesh {\n\tstruct face {\n\t\tvector3 PointOne, PointTwo, PointThree;\n\t};\n\n\tface* Faces;\n\tint32 FacesCount;\n};\n\n// NOTE pointers in here will break state saving / loading\nstruct state_to_serialize {\n\n\tbool32 TestingDone;\n\n\tui::anim_state BackpackAnimState;\n\tui::anim_state FirstAbilityAnimState;\n\tui::anim_state SecondAbilityAnimState;\n\tui::anim_state CloseAnimState;\n\n\tlight Light;\n\tlight LightTwo;\n\n\tmaterial SkyboxMaterial;\n\n\tbool32 ShowingBackpack;\n\n\tcamera EditorCamera;\n\tcamera UICam;\n\tcamera BattleCam;\n\tcamera* ActiveCam;\n\n\t// TODO this scene should probably just be removed / phased out\n\tscene Scene;\n\n\tbool32 AudioPaused;\n\tbool32 AudioMuted;\n\n\tuint64 TimeRunningMS;\n\n\tvector3 GalaxyCamTargetPos;\n\tvector3 GalaxyCamTargetRot;\n\tbool GalaxyDetailShowing = false;\n\n\tpanel_stack PanelStack;\n};\n\nstruct globals;\nstruct engine_state;\n\n#include \"../Game/Game.h\"\n\nstruct engine_state {\n\tshader BackupShader;\n\n\tstring RootAssetPath;\n\n\tgame_assets* Assets;\n\tstate_to_serialize StateSerializing;\n\n\tstate GameState;\n\teditor_state EditorState;\n\n\t// TODO move ClearColor into renderer\n\tcolor ClearColor;\n\n\trenderer GameRenderer;\n\trenderer UIRenderer;\n\trenderer DebugUIRenderer;\n\trenderer MonsterPreviewRenderer;\n\n\tcamera GameCamera;\n\n\t// gif recording\n\tbool32 IsGifRecording;\n\tuint32 RecordingFrame;\n\n\tbool32 DebuggerPaused;\n\n\tloaded_sound TestSound;\n\tuint64 TestSoundSampleIndex;\n\n\treal64 DeltaTimeMS;\n\tint64 PrevFrameFPS;\n\n\treal64 BuildingInfoScroll;\n\n\tbool32 LockCursor;\n\n\t// This is the total cycles used in the previous frame. This includes the platform layer.\n\tuint64 TotalCyclesUsedLastFrame;\n\t// This is the number of cycles which were used doing nothing, effectively waiting just to hit a target frame rate.\n\tuint64 CyclesUsedWaiting;\n\t// The number of cycles spent rendering the opengl data on the platform layer.\n\tuint64 CyclesPlatformRendering;\n\t// Total cycles spent on game logic\n\tuint64 LogicCycles;\n\n\tglobals* Globals;\n\trender::data* RenderData;\n\n\tprofiler_data ProfilerData;\n\tprofiler_data OGLProfilerData;\n};\n\n// Game Loop\n#define GAME_LOOP(name) void name(game_memory *Memory, game_input *GameInput, window_info *WindowInfo, game_audio_output_buffer *AudioBuffer, char* RootAssetPath)\ntypedef GAME_LOOP(game_update_and_render);\n\n// Called before the window closes\n#define GAME_WINDOW_CLOSING(name) void name(game_memory *Memory)\ntypedef GAME_WINDOW_CLOSING(game_window_closing);\nGAME_WINDOW_CLOSING(GameWindowClosingStub) { }\n\n\n#endif",
 			"file": "Game/code/Engine/EngineCore.h",
+			"file_size": 14555,
+			"file_write_time": 133279997843844144,
 			"settings":
 			{
-				"buffer_size": 13912,
+				"buffer_size": 13913,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/code/Game/Game.h",
+			"settings":
+			{
+				"buffer_size": 6898,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/code/Game/Game.cpp",
+			"settings":
+			{
+				"buffer_size": 34730,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/code/Game/Item.cpp",
+			"settings":
+			{
+				"buffer_size": 5589,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Game/code/Engine/EngineCore.cpp",
+			"settings":
+			{
+				"buffer_size": 36445,
 				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/UnityNVIMTransfer.txt",
+			"settings":
+			{
+				"buffer_size": 129,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/perma/Desktop/VirbelaExercise1/Exercise1/VirbelaExercise1RyanRothweiler/Assets/Scripts/Highlight/HighlightTypeBehavior.cs",
+			"settings":
+			{
+				"buffer_size": 418,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Digital Archive/ComputerEnhanceHW/calc_haversine/test_haversines/haversines_20k.json",
+			"settings":
+			{
+				"buffer_size": 2115455,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Digital Archive/ComputerEnhanceHW/calc_haversine/test_haversines/haversines_one.json",
+			"settings":
+			{
+				"buffer_size": 153,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Digital Archive/ComputerEnhanceHW/calc_haversine/build/haversines_one.json",
+			"settings":
+			{
+				"buffer_size": 152,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "ryan testing here in file once more",
+			"file": "/C/Users/perma/AppData/Local/nvim/testfile.txt",
+			"file_size": 35,
+			"file_write_time": 133289267111040078,
+			"settings":
+			{
+				"buffer_size": 35,
 				"line_ending": "Windows"
 			}
 		},
@@ -689,6 +767,24 @@
 	],
 	"file_history":
 	[
+		"/C/Digital Archive/ComputerEnhanceHW/gen_haversine/build/output/haversines.json",
+		"/C/Digital Archive/ComputerEnhanceHW/gen_haversine/build/haversines.json",
+		"/C/Digital Archive/ComputerEnhanceHW/gen_haversine/build/output/haversines.txt",
+		"/C/Users/perma/Desktop/server_run.txt",
+		"/C/Users/perma/Desktop/hey.txt",
+		"/C/Users/perma/Desktop/info.txt",
+		"/C/Digital Archive/ComputerEnhanceHW/listings/listing_0056/listing_0056_estimating_cycles.txt",
+		"/T/Game/code/Game/Item.h",
+		"/C/Users/perma/Desktop/VirbelaExercise1/Exercise1/VirbelaExercise1RyanRothweiler/output.txt",
+		"/C/Users/perma/Downloads/nircmd/New Text Document.txt",
+		"/C/UnityNVIMTransfer.txt",
+		"/C/Users/perma/AppData/Local/nvim/output.txt",
+		"/C/Users/perma/Downloads/output.txt",
+		"/C/Users/perma/Desktop/UnityNVIMTransfer.txt",
+		"/C/Users/perma/AppData/Local/nvim/lua/ryan/testfile.txt",
+		"/C/Users/perma/Desktop/progressjson.txt",
+		"/C/Users/perma/Desktop/VirbelaExercise1/Exercise1/VirbelaExercise1RyanRothweiler/Assets/Scripts/Highlight/HighlightBehaviorBase.cs",
+		"/T/Game/code/Engine/EngineCore.cpp",
 		"/T/Game/code/Platform/platform_win32.cpp",
 		"/C/Tripp/backend/firebase-backend/Tools/UnitySync/run.js",
 		"/C/Tripp/backend/firebase-backend/Tools/UnitySync/src/UnitySync.js",
@@ -696,13 +792,11 @@
 		"/T/Game/code/Engine/SaveData.cpp",
 		"/T/Game/code/Engine/Json.h",
 		"/T/Game/code/Engine/EngineCore.h",
-		"/T/Game/code/Engine/EngineCore.cpp",
 		"/T/Game/build/Windows/RyanOutput.json",
 		"/T/Game/code/Game/Game.cpp",
 		"/t/game/code/engine/generated.h",
 		"/T/Game/code/Game/Game.h",
 		"/T/Game/code/Engine/Json.cpp",
-		"/C/Users/perma/Desktop/hey.txt",
 		"/T/Game/code/Engine/Array.cpp",
 		"/C/Tripp/backend/firebase-backend/Tools/audiosync_psvr_stag.bat",
 		"/E/tripp-client-audio - ps4/Assets/Editor/ResourceManagement/ExpressionStringBuilder.cs",
@@ -774,7 +868,6 @@
 		"/E/tripp-client - android/Assets/Scripts/UI/InExperience/TrippPauseMenu.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Engine/ExperienceController.cs",
 		"/E/tripp-client - android/Assets/_SerenityGarden/Scripts/SerenityGarden/UI/SanctumPauseMenu.cs",
-		"/T/Game/code/Game/Item.h",
 		"/E/tripp-client - android/Assets/3rdParty/Scripts/JourneyLauncher.cs",
 		"/E/tripp-client - android/Assets/Scripts/TRIPP/Engine/Engine/PlayerController.cs",
 		"/E/tripp-client - android/Assets/Art/ARTISTS/Dmitri/Drift/_Scripts/Runtime/Core/DriftExperienceManager.cs",
@@ -801,22 +894,7 @@
 		"/T/Game/code/Game/Station.h",
 		"/E/tripp-client - android/Assets/Scripts/UI/V20 MainMenu/Featured/MainMenuFeatured.cs",
 		"/E/tripp-client - android/Assets/3rdParty/Scripts/CrystalBowlsLauncher.cs",
-		"/E/tripp-client - android/Assets/3rdParty/Scripts/CosmicFlowLauncher.cs",
-		"/T/Game/code/Game/AssetList.cpp",
-		"/E/tripp-client - android/Assets/Scripts/UI/MainMenu/TrippDetailsPanel.cs",
-		"/E/tripp-client - android/Assets/Oculus/Platform/Scripts/Models/LaunchDetails.cs",
-		"/E/tripp-client - android/Assets/Scripts/TRIPP/Core/Analytics/Analytics.cs",
-		"/C/Tripp/backend/firebase-backend/Tools/artsync_win64_prod.bat",
-		"/C/Tripp/backend/firebase-backend/Tools/artsync_win64_stag.bat",
-		"/C/Tripp/backend/firebase-backend/Tools/artsync_psvr_prod.bat",
-		"/C/Tripp/backend/firebase-backend/Tools/artsync_psvr_stag.bat",
-		"/C/Users/perma/Desktop/Capture.PNG",
-		"/C/Users/perma/Desktop/file.cpp",
-		"/E/tripp-client - android/Assets/Scripts/UI/RegistrationUI.cs",
-		"/T/Game/code/Engine/imgui/imgui.h",
-		"/T/Game/code/Engine/imgui/imgui.cpp",
-		"/T/Game/code/Engine/Timer.cpp",
-		"/T/Game/code/Game/AssetList.h"
+		"/E/tripp-client - android/Assets/3rdParty/Scripts/CosmicFlowLauncher.cs"
 	],
 	"find":
 	{
@@ -962,6 +1040,11 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"Consume",
+			"consume",
+			"consumer",
+			"AddChild",
+			"thread_work",
 			"window",
 			"image",
 			"teachingsdir",
@@ -1084,12 +1167,7 @@
 			"rippletimemodd",
 			"createmovementstep",
 			"journey_step_type::movement",
-			"toggle",
-			"SimFPS",
-			"ship",
-			"LoadGame",
-			"Asteroid",
-			"AnalyticsManager"
+			"toggle"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1153,54 +1231,24 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 10,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "Game/code/Engine/EngineCore.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 36421,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								23046,
-								23106
-							]
-						],
-						"settings":
-						{
-							"history_list_is_closing": true,
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 8561.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
 					"file": "Game/code/Engine/SaveData.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7264,
+						"buffer_size": 7373,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1703,
-								1703
+								1547,
+								1547
 							]
 						],
 						"settings":
@@ -1209,14 +1257,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 339.0,
+						"translation.y": 271.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 1,
 					"file": "Game/code/Engine/SaveData.h",
 					"semi_transient": false,
 					"settings":
@@ -1241,24 +1289,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 2,
 					"file": "Game/code/Engine/EngineCore.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13912,
+						"buffer_size": 13913,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								8475,
+								8475
 							]
 						],
 						"settings":
@@ -1266,6 +1314,262 @@
 							"history_list_is_closing": true,
 							"syntax": "Packages/C++/C++.sublime-syntax",
 							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 5321.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Game/code/Game/Game.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6898,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1148,
+								1148
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "Game/code/Game/Game.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 34730,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4173,
+								4173
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "Game/code/Game/Item.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5589,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1738,
+								1738
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "Game/code/Engine/EngineCore.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 36445,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1301,
+								1301
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 75.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/C/UnityNVIMTransfer.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 129,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								129,
+								129
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/C/Users/perma/Desktop/VirbelaExercise1/Exercise1/VirbelaExercise1RyanRothweiler/Assets/Scripts/Highlight/HighlightTypeBehavior.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 418,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								418,
+								418
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/C/Digital Archive/ComputerEnhanceHW/calc_haversine/test_haversines/haversines_20k.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2115455,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2115214,
+								2115214
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 299685.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "/C/Digital Archive/ComputerEnhanceHW/calc_haversine/test_haversines/haversines_one.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 153,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								153,
+								153
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/C/Digital Archive/ComputerEnhanceHW/calc_haversine/build/haversines_one.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 152,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								152,
+								152
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1275,42 +1579,40 @@
 					"type": "text"
 				},
 				{
-					"buffer": 0,
-					"file": "Game/code/Engine/EngineCore.cpp",
+					"buffer": 12,
+					"file": "/C/Users/perma/AppData/Local/nvim/testfile.txt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 36421,
+						"buffer_size": 35,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3524,
-								3524
+								35,
+								35
 							]
 						],
 						"settings":
 						{
-							"history_list_is_closing": true,
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 2520.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 2,
 					"file": "Game/code/Engine/EngineCore.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13912,
+						"buffer_size": 13913,
 						"regions":
 						{
 						},
@@ -1328,14 +1630,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 5062.0,
+						"translation.y": 3998.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 13,
 					"file": "Game/code/Engine/LinkedList.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1357,14 +1659,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1009.0,
+						"translation.y": 797.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 14,
 					"file": "Game/code/Engine/MemoryManager.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1389,7 +1691,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 13,
 					"type": "text"
 				}
 			]
@@ -1397,7 +1699,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 38.0
+		"height": 23.0
 	},
 	"input":
 	{
@@ -1456,6 +1758,34 @@
 		"selected_items":
 		[
 			[
+				"enginecore",
+				"Game\\code\\Engine\\EngineCore.h"
+			],
+			[
+				"engineo",
+				"Game\\code\\Engine\\enginecore.cpp"
+			],
+			[
+				"eng",
+				"Game\\code\\Engine\\EngineCore.cpp"
+			],
+			[
+				"item",
+				"Game\\code\\Game\\Item.h"
+			],
+			[
+				"game",
+				"Game\\code\\Game\\Game.cpp"
+			],
+			[
+				"game.h",
+				"Game\\code\\Game\\Game.h"
+			],
+			[
+				"enign",
+				"Game\\code\\Engine\\EngineCore.h"
+			],
+			[
 				"win",
 				"Game\\code\\Platform\\platform_win32.cpp"
 			],
@@ -1488,10 +1818,6 @@
 				"Game\\code\\Engine\\Json.cpp"
 			],
 			[
-				"game",
-				"Game\\code\\Game\\Game.cpp"
-			],
-			[
 				"unity",
 				"C:\\Tripp\\backend\\firebase-backend\\Tools\\UnitySync\\src\\UnitySync.js"
 			],
@@ -1514,10 +1840,6 @@
 			[
 				"gen",
 				"Game\\code\\Engine\\Generated.h"
-			],
-			[
-				"eng",
-				"Game\\code\\Engine\\EngineCore.cpp"
 			],
 			[
 				"prep",
@@ -1630,10 +1952,6 @@
 			[
 				"ogl",
 				"Game\\code\\Engine\\Renderer\\ogles3.cpp"
-			],
-			[
-				"item",
-				"Game\\code\\Game\\Item.h"
 			],
 			[
 				"third",
@@ -1950,22 +2268,6 @@
 			[
 				"trippscen",
 				"E:\\tripp-client - android\\Assets\\Scripts\\TRIPP\\Engine\\Util\\TrippSceneManager.cs"
-			],
-			[
-				"trippscene",
-				"E:\\tripp-client - android\\Assets\\Scripts\\TRIPP\\Engine\\Util\\TrippSceneManager.cs"
-			],
-			[
-				"experien",
-				"E:\\tripp-client - android\\Assets\\_SerenityGarden\\Scripts\\ExperienceController.cs"
-			],
-			[
-				"cambria",
-				"C:\\Users\\perma\\Desktop\\CambriaPushNotes.txt"
-			],
-			[
-				"util",
-				"E:\\tripp-client - android\\Assets\\Editor\\EditorUtil.cs"
 			]
 		],
 		"width": 0.0

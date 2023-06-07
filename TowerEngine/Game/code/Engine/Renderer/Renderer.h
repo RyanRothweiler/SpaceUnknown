@@ -672,7 +672,7 @@ struct skin_controller {
 
 	void UpdateBoneTransforms(bone* Bone, m4y4 ParentTrans)
 	{
-		TIME_BEGIN
+		//TIME_BEGIN
 
 		// Cache this or something
 		int BoneIndex = GetIDForBoneName(Bone->SID);

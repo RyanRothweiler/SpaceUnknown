@@ -47,6 +47,6 @@ struct skill_node {
 		ChildrenCount++;
 		Assert(ChildrenCount < ArrayCount(Children));
 
-		Child->Parent = this;
+		Child->Parent = this;	
 	}
 };

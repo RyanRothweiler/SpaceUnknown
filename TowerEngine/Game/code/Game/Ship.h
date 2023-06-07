@@ -114,13 +114,12 @@ struct ship_definition {
 
 struct ship {
 
-	ship_persistent Persist;
+	ship_persistent* Persist;
 
 	ship_status Status;
 
 	station* StationDocked;
 
-	bool32 Using;
 	ship_definition Definition;
 
 	ship_module EquippedModules[64];

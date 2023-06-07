@@ -17,7 +17,6 @@ render::api RenderApi;
 #include "imgui/imgui_draw.cpp"
 #include "imgui/imgui_widgets.cpp"
 
-
 #include "Rect.cpp"
 
 // This should be used with the generated system to guarantee safety
@@ -31,6 +30,7 @@ int32 StringToEnum(string Input, string* NamesArray, int32 EnumsCount)
 
 	ConsoleLog("Could not convert string to enum");
 	ConsoleLog(Input.Array());
+
 	return 0;
 }
 
@@ -54,13 +54,14 @@ vector2 NearestOnLine(line Line, vector2 Point)
 	return {};
 }
 
-
 #include "LinkedList.cpp"
 #include "Collision.cpp"
 
 #include "Hash.cpp"
 #include "Random.cpp"
-#include "Grid.cpp"
+
+#include "Hash.cpp"
+#include "Random.cpp"
 #include "Range.cpp"
 
 #include "Audio.cpp"

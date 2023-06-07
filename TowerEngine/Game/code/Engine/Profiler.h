@@ -40,6 +40,7 @@ struct accum_method {
 
 	uint64 PerfCounterStart;
 	uint64 PerfCounterDuration;
+
 };
 
 void AllocateProfiler();

@@ -29,11 +29,11 @@ namespace save_data {
 
 	void AddData(member* Root, string KeyParent, string ArrayIndex, meta_member* MI, void* Data)
 	{
+
 		string KS = KeyParent + MI->Name + ArrayIndex;
 		int64 KeyHashFull = StringHash(KS);
 		int64 KeyHash = KeyHashFull % MEMBER_PARS_MAX;
 		pair* Pair = {};
-
 
 		if (StringStartsWith(KS, "Ships.0.ItemHold.Items.0")) {
 			int x = 0;

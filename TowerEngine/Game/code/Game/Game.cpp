@@ -171,9 +171,10 @@ void SaveGame(state* State, save_data::member* Root)
 
 void LoadGame(state* State)
 {
+	State->PersistentData = {};
+
 	if (!save_data::Read("SpaceUnknownSave.sus", (void*)&State->PersistentData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)) {
 		ConsoleLog("No saved data file");
-		return;
 	}
 
 	// Skill Nodes
@@ -186,13 +187,13 @@ void LoadGame(state* State)
 		}
 	}
 
-	/*
 	// ships
+	/*
 	{
-		for (int i = 0; i < SaveData.ShipsCount; i++) {
-			State->Ships[i].Persist = SaveData.Ships[i];
+		for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
+			State->Ships[i].Persist = &State->PersistentData.Ships[i];
 
-			ItemHoldUpdateMass(&State->Ships[i].Hold);
+			//ItemHoldUpdateMass(&State->Ships[i].Hold);
 		}
 	}
 	*/
@@ -383,7 +384,6 @@ void Start(engine_state* EngineState)
 	Globals->AssetsList.SalvageImages[0] = assets::GetImage("Salvage1");
 	Globals->AssetsList.SalvageImages[1] = assets::GetImage("Salvage2");
 
-	ShipSetup(vector2{0, 0}, ship_id::advent, State);
 	AsteroidCreateCluster(vector2{0, 0}, 30.0f, item_id::venigen, State);
 	AsteroidCreateCluster(vector2{ -200, 20}, 20.0f, item_id::pyrexium, State);
 
@@ -396,6 +396,8 @@ void Start(engine_state* EngineState)
 	Station->Position.Y = 50;
 
 	LoadGame(State);
+
+	ShipSetup(vector2{0, 0}, ship_id::advent, State, &State->PersistentData.Ships[0]);
 }
 
 const real32 ZoomMin = 0.0f;
@@ -688,7 +690,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						float SimFPS = 30.0f;
 						float TimeStepMS = 1.0f / SimFPS;
 
-						vector2 PosOrig = CurrentShip->Persist.Position;
+						vector2 PosOrig = CurrentShip->Persist->Position;
 						ItemGive(&CurrentShip->FuelTank, item_id::stl, 1000);
 						CurrentShip->Velocity = {};
 
@@ -701,7 +703,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 							TotalSimTime += TimeStepMS;
 						}
 
-						CurrentShip->Persist.Position = PosOrig;
+						CurrentShip->Persist->Position = PosOrig;
 						CurrentShip->Velocity = {};
 						CurrentShip->IsMoving = false;
 
@@ -909,28 +911,26 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 
 			// Update displays
-			for (int i = 0; i < ArrayCount(State->Ships); i++) {
+			for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
 				ship* Ship = &State->Ships[i];
-				if (Ship->Using) {
 
-					// Janky but whatever. Would need to use the transform scene hierarchy to improve
-					if (Ship->Status == ship_status::docked) {
-						Ship->Persist.Rotation = Ship->StationDocked->Rotation;
+				// Janky but whatever. Would need to use the transform scene hierarchy to improve
+				if (Ship->Status == ship_status::docked) {
+					Ship->Persist->Rotation = Ship->StationDocked->Rotation;
 
-						int DocksCount = 10;
-						real64 DockRel = (real64)(Ship->StationDocked->DockedCount) / (real64)DocksCount;
-						real64 DockRadians = DockRel * (2 * PI);
+					int DocksCount = 10;
+					real64 DockRel = (real64)(Ship->StationDocked->DockedCount) / (real64)DocksCount;
+					real64 DockRadians = DockRel * (2 * PI);
 
-						real64 DockRadius = Ship->StationDocked->Size.X * 0.5f * 0.9f;
-						vector2 StationOffset = Ship->StationDocked->Position + vector2 {
-							DockRadius * sin(DockRadians),
-							DockRadius * cos(DockRadians)
-						};
+					real64 DockRadius = Ship->StationDocked->Size.X * 0.5f * 0.9f;
+					vector2 StationOffset = Ship->StationDocked->Position + vector2 {
+						DockRadius * sin(DockRadians),
+						DockRadius * cos(DockRadians)
+					};
 
-						vector2 NewPos = Vector2RotatePoint(StationOffset, Ship->StationDocked->Position, DockRadians + -Ship->StationDocked->Rotation);
-						Ship->Persist.Position.X = NewPos.X;
-						Ship->Persist.Position.Y = NewPos.Y;
-					}
+					vector2 NewPos = Vector2RotatePoint(StationOffset, Ship->StationDocked->Position, DockRadians + -Ship->StationDocked->Rotation);
+					Ship->Persist->Position.X = NewPos.X;
+					Ship->Persist->Position.Y = NewPos.Y;
 				}
 			}
 
@@ -971,14 +971,14 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			}
 
 			// Render ships
-			for (int i = 0; i < ArrayCount(State->Ships); i++) {
+			for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
 				ship* Ship = &State->Ships[i];
-				if (Ship->Using) {
 
-					vector2 Pos = Ship->Persist.Position;
+				{
+					vector2 Pos = Ship->Persist->Position;
 
 					m4y4 Model = m4y4Identity();
-					Model = Rotate(Model, vector3{0, 0, Ship->Persist.Rotation});
+					Model = Rotate(Model, vector3{0, 0, Ship->Persist->Rotation});
 
 					RenderTextureAll(
 					    Pos,
@@ -992,7 +992,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 					ship_module* Module = &Ship->EquippedModules[m];
 					if (Module->Filled && Module->Target.HasTarget()) {
 						vector2 Points[2] = {};
-						Points[0] = WorldToScreen(vector3{Ship->Persist.Position.X, Ship->Persist.Position.Y, 0}, &EngineState->GameCamera);
+						Points[0] = WorldToScreen(vector3{Ship->Persist->Position.X, Ship->Persist->Position.Y, 0}, &EngineState->GameCamera);
 						Points[1] = WorldToScreen(vector3{Module->Target.GetTargetPosition().X, Module->Target.GetTargetPosition().Y, 0}, &EngineState->GameCamera);
 						render_line Line = {};
 						Line.Points = Points;

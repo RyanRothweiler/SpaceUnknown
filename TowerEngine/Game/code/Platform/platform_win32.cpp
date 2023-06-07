@@ -127,7 +127,7 @@ render_code RenderCode;
 
 void* GetProcAddressSafe(char* ProcName)
 {
-	void* Func = wglGetProcAddress(ProcName);
+	void* Func = (void*) wglGetProcAddress(ProcName);
 	if (Func == 0 ||
 	        (Func == (void*)0x1) || (Func == (void*)0x2) || (Func == (void*)0x3) ||
 	        (Func == (void*) - 1) ) {
