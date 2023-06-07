@@ -644,6 +644,9 @@ ship* ShipSetup(vector2 Pos, ship_id ID, state * State, ship_persistent* Persist
 	Ship->Hold.Setup(Ship->Definition.HoldMass, &Ship->Persist->ItemHold);
 	Ship->FuelTank.Setup(Ship->Definition.FuelTankMassLimit, &Ship->Persist->FuelHold);
 
+	ItemHoldUpdateMass(&Ship->Hold);
+	ItemHoldUpdateMass(&Ship->FuelTank);
+
 	//ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
 	ShipAddModule(&Ship->EquippedModules[3], ship_module_id::salvager_i, Ship, State);
 
