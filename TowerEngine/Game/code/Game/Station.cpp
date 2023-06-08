@@ -2,16 +2,15 @@
 void ConverterUpdate(void* SelfData, real64 Time, state* State)
 {
 	converter* Converter = (converter*)SelfData;
-	if (Converter->Persist.RunsCount > 0) {
+	if (Converter->Persist->RunsCount > 0) {
 
-		recipe Recipe = RecipeGetDefinition(Converter->Persist.RecipeID);
-
+		recipe Recipe = RecipeGetDefinition(Converter->Persist->RecipeID);
 		if (Converter->IsRunning) {
-			Converter->Persist.OrderTime += Time;
-			if (Converter->Persist.OrderTime >= Recipe.DurationMS) {
-				Converter->Persist.RunsCount--;
+			Converter->Persist->OrderTime += Time;
+			if (Converter->Persist->OrderTime >= Recipe.DurationMS) {
+				Converter->Persist->RunsCount--;
 
-				if (Converter->Persist.RunsCount <= 0) {
+				if (Converter->Persist->RunsCount <= 0) {
 					Converter->IsRunning = false;
 				}
 
@@ -59,9 +58,9 @@ void ConverterAddOrder(converter * Converter, recipe_id ID)
 {
 	Converter->IsRunning = false;
 
-	Converter->Persist.RunsCount = 1;
-	Converter->Persist.OrderTime = 0.0f;
-	Converter->Persist.RecipeID = ID;
+	Converter->Persist->RunsCount = 1;
+	Converter->Persist->OrderTime = 0.0f;
+	Converter->Persist->RecipeID = ID;
 }
 
 void ImGuiItemCountList(item_count * Items, int32 Count)
@@ -108,7 +107,7 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 	converter* Converter = &Station->Converters[ConverterIndex];
 
 	if (Converter->HasOrder()) {
-		recipe Recipe = RecipeGetDefinition(Converter->Persist.RecipeID);
+		recipe Recipe = RecipeGetDefinition(Converter->Persist->RecipeID);
 
 		ImGui::Columns(2, "mycolumns"); // 4-ways, with border
 
@@ -129,7 +128,7 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 
 		if (Converter->IsRunning) {
 			// Progress
-			float Progress = (float)(Converter->Persist.OrderTime / Recipe.DurationMS);
+			float Progress = (float)(Converter->Persist->OrderTime / Recipe.DurationMS);
 			float PD = Progress * 100.0f;
 			string ProgStr = Real64ToString(PD, 2);
 			string ProgDisp = ProgStr + "%";
@@ -275,8 +274,10 @@ void StationUndockShip(ship * Ship)
 
 station* StationCreate(state * State)
 {
-	station* Station = &State->Stations[State->PersistentData.StationsCount++];
-	Assert(ArrayCount(State->Stations) > State->PersistentData.StationsCount);
+//	station* Station = &State->Stations[State->PersistentData.StationsCount++];
+//	Assert(ArrayCount(State->Stations) > State->PersistentData.StationsCount);
+
+	station* Station = &State->Stations[0];
 
 	Station->Size = vector2{18.0f, 18.0f};
 
@@ -286,9 +287,10 @@ station* StationCreate(state * State)
 	Sel->SelectionUpdate = &StationSelected;
 
 	RegisterStepper(&Station->Converters[0].Stepper, &ConverterUpdate, (void*)(&Station->Converters[0]), State);
-	Station->Converters[0].Owner = Station;
+	Station->Converters[0].Setup(Station, &Station->Persist->Converters[0]);
+
 	RegisterStepper(&Station->Converters[1].Stepper, &ConverterUpdate, (void*)(&Station->Converters[1]), State);
-	Station->Converters[1].Owner = Station;
+	Station->Converters[1].Setup(Station, &Station->Persist->Converters[1]);
 
 	return Station;
 }

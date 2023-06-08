@@ -1,15 +1,18 @@
 struct converter {
-	converter_persistent Persist;
+	converter_persistent* Persist;
 
 	stepper Stepper;
-
 	bool32 IsRunning;
-
 	station* Owner;
 
 	bool32 HasOrder()
 	{
-		return Persist.RunsCount > 0;
+		return Persist->RunsCount > 0;
+	}
+
+	void Setup(station* Stat, converter_persistent* Per) {
+		Owner = Stat;
+		Persist = Per;
 	}
 };
 

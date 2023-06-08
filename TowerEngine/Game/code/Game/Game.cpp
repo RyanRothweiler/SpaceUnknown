@@ -187,17 +187,6 @@ void LoadGame(state* State)
 		}
 	}
 
-	// ships
-	/*
-	{
-		for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
-			State->Ships[i].Persist = &State->PersistentData.Ships[i];
-
-			//ItemHoldUpdateMass(&State->Ships[i].Hold);
-		}
-	}
-	*/
-
 	// stations
 	{
 		for (int i = 0; i < State->PersistentData.StationsCount; i++) {
@@ -390,13 +379,14 @@ void Start(engine_state* EngineState)
 	// Salvage
 	SalvageCreate(State, vector2{ -30, -30});
 
+	LoadGame(State);
+
 	// Station
 	station* Station = StationCreate(State);
 	Station->Position.X = 50;
 	Station->Position.Y = 50;
 
-	LoadGame(State);
-
+	// Ship
 	ShipSetup(vector2{0, 0}, ship_id::advent, State, &State->PersistentData.Ships[0]);
 }
 
