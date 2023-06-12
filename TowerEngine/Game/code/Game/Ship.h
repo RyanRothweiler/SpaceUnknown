@@ -7,10 +7,6 @@ MetaStruct enum class ship_id {
 	count
 };
 
-MetaStruct enum class ship_status {
-	idle, moving, docking, undocking, docked
-};
-
 enum class ship_module_slot_type {
 	industrial, structural, science,
 	count
@@ -113,10 +109,7 @@ struct ship_definition {
 };
 
 struct ship {
-
 	ship_persistent* Persist;
-
-	ship_status Status;
 
 	station* StationDocked;
 

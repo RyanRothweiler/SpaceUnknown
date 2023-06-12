@@ -8,6 +8,7 @@
 #include <chrono>
 #include <ctime>
 
+
 int64 VersionMajor = 0;
 int64 VersionMinor = 1;
 int64 VersionBuild = 0;
@@ -158,6 +159,8 @@ void SaveGame(state* State, save_data::member* Root)
 	ConsoleLog("Game Saved");
 }
 
+#include "Persistent.cpp"
+
 #include "WorldObject.cpp"
 #include "Asteroid.cpp"
 #include "Salvage.cpp"
@@ -174,8 +177,12 @@ void LoadGame(state* State)
 	State->PersistentData = {};
 
 	if (!save_data::Read("SpaceUnknownSave.sus", (void*)&State->PersistentData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)) {
+		State->LoadedFromFile = false;
 		ConsoleLog("No saved data file");
+		return;
 	}
+
+	State->LoadedFromFile = true;
 
 	// Skill Nodes
 	{
@@ -191,9 +198,6 @@ void LoadGame(state* State)
 	{
 		for (int i = 0; i < State->PersistentData.StationsCount; i++) {
 			State->Stations[i].Persist = &State->PersistentData.Stations[i];
-			State->Stations[i].Hold.Setup(1000, &State->Stations[i].Persist->ItemHold);
-
-			ItemHoldUpdateMass(&State->Stations[i].Hold);
 		}
 	}
 
@@ -281,6 +285,8 @@ void LoadGame(state* State)
 	}
 	*/
 
+
+	// Simulate forward missing time
 	using std::chrono::duration_cast;
 	using std::chrono::system_clock;
 	int64 CurrentSinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
@@ -333,6 +339,9 @@ void Start(engine_state* EngineState)
 
 	GlobalSaveDataRoot = (save_data::member*)ArenaAllocate(GlobalPermMem, sizeof(save_data::member));
 
+	// globalid hashmap
+	hash::AllocateTable(&State->PersistentPointerSources, 64, sizeof(global_id), GlobalPermMem);
+
 	// Load skill nodes
 	{
 		path_list NodeFiles = {};
@@ -379,15 +388,43 @@ void Start(engine_state* EngineState)
 	// Salvage
 	SalvageCreate(State, vector2{ -30, -30});
 
+	// Create links into persistent data 
+	{
+		// Stations
+		{
+			for (int i = 0; i < State->PersistentData.StationsCount; i++) {
+				State->Stations[i].Persist = &State->PersistentData.Stations[i];
+				State->Stations[i].Hold.Setup(1000, &State->Stations[i].Persist->ItemHold);
+
+				ItemHoldUpdateMass(&State->Stations[i].Hold);
+			}
+		}
+	}
+
 	LoadGame(State);
 
-	// Station
-	station* Station = StationCreate(State);
-	Station->Position.X = 50;
-	Station->Position.Y = 50;
+	// If no save file, then create initial setup
+	if (!State->LoadedFromFile) { 
+
+		// Station
+		station* Station = StationCreate(State);
+		Station->Persist->Position.X = 50;
+		Station->Persist->Position.Y = 50;
+
+		per::Set(&State->PersistentData.TestStation, &State->Stations[0]);
+	}
 
 	// Ship
 	ShipSetup(vector2{0, 0}, ship_id::advent, State, &State->PersistentData.Ships[0]);
+
+	// Setup stations
+	for (int i = 0; i < State->PersistentData.StationsCount; i++) {
+		StationSetup(&State->Stations[i], State);
+	}
+
+
+	station* Station = per::Get(&State->PersistentData.TestStation, State);
+	int x = 0;
 }
 
 const real32 ZoomMin = 0.0f;
@@ -905,7 +942,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				ship* Ship = &State->Ships[i];
 
 				// Janky but whatever. Would need to use the transform scene hierarchy to improve
-				if (Ship->Status == ship_status::docked) {
+				if (Ship->Persist->Status == ship_status::docked) {
 					Ship->Persist->Rotation = Ship->StationDocked->Rotation;
 
 					int DocksCount = 10;
@@ -913,12 +950,12 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 					real64 DockRadians = DockRel * (2 * PI);
 
 					real64 DockRadius = Ship->StationDocked->Size.X * 0.5f * 0.9f;
-					vector2 StationOffset = Ship->StationDocked->Position + vector2 {
+					vector2 StationOffset = Ship->StationDocked->Persist->Position + vector2 {
 						DockRadius * sin(DockRadians),
 						DockRadius * cos(DockRadians)
 					};
 
-					vector2 NewPos = Vector2RotatePoint(StationOffset, Ship->StationDocked->Position, DockRadians + -Ship->StationDocked->Rotation);
+					vector2 NewPos = Vector2RotatePoint(StationOffset, Ship->StationDocked->Persist->Position, DockRadians + -Ship->StationDocked->Rotation);
 					Ship->Persist->Position.X = NewPos.X;
 					Ship->Persist->Position.Y = NewPos.Y;
 				}
@@ -953,7 +990,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				static loaded_image* Sprite = assets::GetImage("Station");
 
 				RenderTextureAll(
-				    Station->Position,
+				    Station->Persist->Position,
 				    vector2{18.0f, 18.0f},
 				    Color255(90.0f, 99.0f, 97.0f, 255.0f),
 				    Sprite->GLID,

@@ -6,6 +6,8 @@
 #include <ctime>
 #include <chrono>
 
+#include "GlobalID.cpp"
+
 struct state;
 struct ship;
 struct journey_step;
@@ -43,7 +45,7 @@ struct journey_movement {
 	vector2 CachedDirToTargetForce;
 };
 
-struct journey_dock_undock {
+MetaStruct struct journey_dock_undock {
 	station* Station;
 	real64 TimeAccum;
 };
@@ -52,10 +54,10 @@ MetaStruct enum class journey_step_type { movement, dock_undock };
 struct journey_step {
 	journey_step_type Type;
 
-	union {
-		journey_movement Movement;
-		journey_dock_undock DockUndock;
-	};
+	// should be unioned but meta parser can't handle that yet
+	journey_movement Movement;
+	journey_dock_undock DockUndock;
+	// -----
 
 	journey_step_start_func Start;
 	journey_step_func Step;
@@ -157,7 +159,24 @@ MetaStruct enum class recipe_id {
 // -----------------------------------------------------------------------------
 
 // Save Data persistence--------------------------------------------------------
+
+MetaStruct enum class persistent_pointer_type {
+	station, 
+};
+
+MetaStruct struct persistent_pointer {
+ 	persistent_pointer_type Type;
+	uint32 GUID;
+	void* Data;
+};
+
+MetaStruct enum class ship_status {
+	idle, moving, docking, undocking, docked
+};
+
 MetaStruct struct ship_persistent {
+	ship_status Status;
+
 	vector2 Position;
 	real64 Rotation;
 
@@ -172,6 +191,10 @@ MetaStruct struct converter_persistent {
 };
 
 MetaStruct struct station_persistent {
+	int32 GUID;
+
+	vector2 Position;
+
 	item_hold_persistent ItemHold;
 	converter_persistent Converters[10];
 };
@@ -187,6 +210,8 @@ MetaStruct struct save_file {
 
 	int64 StationsCount;
 	station_persistent Stations[256];
+
+	persistent_pointer TestStation;
 };
 // -----------------------------------------------------------------------------
 
@@ -287,7 +312,10 @@ struct editor_state {
 
 struct state {
 
+	b32 LoadedFromFile;
 	save_file PersistentData;
+
+	hash::table PersistentPointerSources;
 
 	game_scene Scene;
 

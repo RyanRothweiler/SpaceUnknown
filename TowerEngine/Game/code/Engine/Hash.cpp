@@ -63,6 +63,8 @@ namespace hash {
 
 	void Add(hash::table* Table, uint32 Hash, void* Data, real32 DataSize, memory_arena* Memory)
 	{
+		Hash = Hash % Table->TableSize;
+
 		Assert(Hash < Table->TableSize);
 		Assert(DataSize == Table->DataSize);
 
@@ -72,6 +74,28 @@ namespace hash {
 		}
 
 		AddLink(List, Data, Memory);
+	}
+
+	//------------------------------------------------------------------------------
+	
+	persistent_pointer* GetPersistentPointer(hash::table* Table, uint32 Hash) {
+
+		uint32 HashMod = Hash % Table->TableSize;
+
+		if (!Table->Table[HashMod].Initialized) {
+			return GameNull;
+		}
+
+		list_link* CurrLink = Table->Table[HashMod].TopLink;
+		for (uint32 index = 0; index < Table->Table[HashMod].LinkCount; index++) {
+			persistent_pointer* Dat = (persistent_pointer*)CurrLink->Data;
+			if (Dat->GUID == Hash) {
+				return Dat;
+			}
+			CurrLink = CurrLink->NextLink;
+		}
+
+		return GameNull;
 	}
 
 	bool32 Contains_Axial(hash::table* Table, axial Data)

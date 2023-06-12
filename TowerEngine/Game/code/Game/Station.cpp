@@ -255,35 +255,48 @@ void StationDockShip(station * Station, ship * Ship)
 	real64 DockRadians = DockRel * (2 * PI);
 
 	real64 DockRadius = Station->Size.X * 0.5f * 0.9f;
-	vector2 P = Station->Position + vector2 {
+	vector2 P = Station->Persist->Position + vector2 {
 		DockRadius * sin(DockRadians),
 		DockRadius * cos(DockRadians)
 	};
 
 	Ship->Persist->Position = P;
-	Ship->Status = ship_status::docked;
+	Ship->Persist->Status = ship_status::docked;
 	Ship->StationDocked = Station;
 }
 
 void StationUndockShip(ship * Ship)
 {
-	Ship->Persist->Position = Ship->StationDocked->Position;
+	Ship->Persist->Position = Ship->StationDocked->Persist->Position;
 	Ship->StationDocked = {};
-	Ship->Status = ship_status::idle;
+	Ship->Persist->Status = ship_status::idle;
 }
 
+// Create a new station
 station* StationCreate(state * State)
 {
-//	station* Station = &State->Stations[State->PersistentData.StationsCount++];
-//	Assert(ArrayCount(State->Stations) > State->PersistentData.StationsCount);
+	station* Station = &State->Stations[State->PersistentData.StationsCount];
+	Station->Persist = &State->PersistentData.Stations[State->PersistentData.StationsCount];
 
-	station* Station = &State->Stations[0];
+	State->PersistentData.StationsCount++;
+	Assert(ArrayCount(State->PersistentData.Stations) > State->PersistentData.StationsCount);
+	Assert(ArrayCount(State->Stations) > State->PersistentData.StationsCount);
 
+	Station->Persist->GUID = PlatformApi.GetGUID();
 	Station->Size = vector2{18.0f, 18.0f};
 
-	//Station->Hold.Setup(1000, HoldPersist);
+	Station->Hold.Setup(1000, &Station->Persist->ItemHold);
 
-	selectable* Sel = RegisterSelectable(selection_type::station, &Station->Position, &Station->Size, (void*)Station, State);
+	return Station;
+}
+
+// Setup a station data. Not creating a new one
+void StationSetup(station* Station, state* State) 
+{
+	Station->Hold.Setup(1000, &Station->Persist->ItemHold);
+	ItemHoldUpdateMass(&Station->Hold);
+
+	selectable* Sel = RegisterSelectable(selection_type::station, &Station->Persist->Position, &Station->Size, (void*)Station, State);
 	Sel->SelectionUpdate = &StationSelected;
 
 	RegisterStepper(&Station->Converters[0].Stepper, &ConverterUpdate, (void*)(&Station->Converters[0]), State);
@@ -292,5 +305,5 @@ station* StationCreate(state * State)
 	RegisterStepper(&Station->Converters[1].Stepper, &ConverterUpdate, (void*)(&Station->Converters[1]), State);
 	Station->Converters[1].Setup(Station, &Station->Persist->Converters[1]);
 
-	return Station;
+	per::AddSource(Station->Persist->GUID, Station, State);
 }

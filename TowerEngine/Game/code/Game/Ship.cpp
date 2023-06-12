@@ -18,7 +18,7 @@ real64 ShipGetMassTotal(ship* Ship)
 
 void ShipMovementStart(ship* Ship, journey_step* JourneyStep, state* State)
 {
-	Ship->Status = ship_status::moving;
+	Ship->Persist->Status = ship_status::moving;
 
 	journey_movement* Mov = &JourneyStep->Movement;
 
@@ -126,10 +126,10 @@ bool ShipMovementStep(ship* Ship, journey_step* JourneyStep, real64 Time, state*
 
 void ShipDockUndockStart(ship* Ship, journey_step* JourneyStep, state* State)
 {
-	if (Ship->Status == ship_status::docked) {
-		Ship->Status = ship_status::undocking;
+	if (Ship->Persist->Status == ship_status::docked) {
+		Ship->Persist->Status = ship_status::undocking;
 	} else {
-		Ship->Status = ship_status::docking;
+		Ship->Persist->Status = ship_status::docking;
 	}
 
 	JourneyStep->DockUndock.TimeAccum = 0;
@@ -138,11 +138,11 @@ void ShipDockUndockStart(ship* Ship, journey_step* JourneyStep, state* State)
 bool ShipDockUndockStep(ship* Ship, journey_step* JourneyStep, real64 Time, state* State)
 {
 	JourneyStep->DockUndock.TimeAccum += Time;
-	Ship->Persist->Position = JourneyStep->DockUndock.Station->Position;
+	Ship->Persist->Position = JourneyStep->DockUndock.Station->Persist->Position;
 
 	if (JourneyStep->DockUndock.TimeAccum >= SecondsToMilliseconds(60.0f)) {
 
-		if (Ship->Status == ship_status::undocking) {
+		if (Ship->Persist->Status == ship_status::undocking) {
 			StationUndockShip(Ship);
 		} else {
 			StationDockShip(JourneyStep->DockUndock.Station, Ship);
@@ -178,8 +178,8 @@ void ShipStep(void* SelfData, real64 Time, state* State)
 					Ship->CurrentJourney.StepsCount = 0;
 					Ship->CurrentJourney.CurrentStep = 0;
 
-					if (Ship->Status != ship_status::docked) {
-						Ship->Status = ship_status::idle;
+					if (Ship->Persist->Status != ship_status::docked) {
+						Ship->Persist->Status = ship_status::idle;
 					}
 				}
 			}
@@ -199,7 +199,7 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 	if (Module->Owner->Hold.MassCurrent == Module->Owner->Hold.MassLimit) { Skip = true; }
 
 	// Can only work when the ship is idle
-	if (Module->Owner->Status != ship_status::idle) { Skip = true; }
+	if (Module->Owner->Persist->Status != ship_status::idle) { Skip = true; }
 
 	if (Skip) {
 		Module->ActivationTimerMS = 0.0f;
@@ -250,7 +250,7 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, state* State)
 	bool32 Skip = false;
 
 	// Can only work when the ship is idle
-	if (Module->Owner->Status != ship_status::idle) { Skip = true; }
+	if (Module->Owner->Persist->Status != ship_status::idle) { Skip = true; }
 
 	if (Skip) {
 		Module->ActivationTimerMS = 0.0f;
@@ -351,7 +351,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 	ImGui::Text("Current Status:");
 	ImGui::SameLine();
-	ImGui::Text(ship_status_NAME[(int)CurrentShip->Status].Array());
+	ImGui::Text(ship_status_NAME[(int)CurrentShip->Persist->Status].Array());
 
 	ImVec2 window_pos = ImGui::GetWindowPos();
 	Sel->Current->InfoWindowPos = vector2{window_pos.x, window_pos.y};
@@ -414,7 +414,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 		ImGui::ProgressBar(Progress);
 	}
 	ItemDisplayHold("Fuel Tank", &CurrentShip->FuelTank, State, Input,
-	                CurrentShip->Status == ship_status::docked,
+	                CurrentShip->Persist->Status == ship_status::docked,
 	                item_hold_filter::stl
 	               );
 
@@ -436,7 +436,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
 				);
 
-				if (CurrentShip->Status == ship_status::docked &&
+				if (CurrentShip->Persist->Status == ship_status::docked &&
 				        ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)
 				   ) {
 					State->ModuleUnequipping = Module;
@@ -478,7 +478,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				);
 
 				// Equipping ship module
-				if (CurrentShip->Status == ship_status::docked &&
+				if (CurrentShip->Persist->Status == ship_status::docked &&
 				        ImGui::BeginDragDropTarget()
 				   ) {
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
@@ -517,7 +517,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 	// Cargo
 	ItemDisplayHold("Cargo", &CurrentShip->Hold, State, Input,
-	                CurrentShip->Status == ship_status::docked,
+	                CurrentShip->Persist->Status == ship_status::docked,
 	                item_hold_filter::any
 	               );
 
@@ -525,7 +525,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	if (ImGui::CollapsingHeader("Commands")) {
 		ship_journey* CurrJour = &CurrentShip->CurrentJourney;
 
-		bool32 DockState = (CurrentShip->Status == ship_status::docked);
+		bool32 DockState = (CurrentShip->Persist->Status == ship_status::docked);
 		station* LastStation = {};
 		vector2 JourneyPosCurrent = CurrentShip->Persist->Position;
 
@@ -554,7 +554,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				} break;
 
 				case journey_step_type::dock_undock: {
-					JourneyPosCurrent = Step->DockUndock.Station->Position;
+					JourneyPosCurrent = Step->DockUndock.Station->Persist->Position;
 					LastStation = Step->DockUndock.Station;
 					if (DockState) {
 						ImGui::Text("Undock");
@@ -602,7 +602,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 			if (Input->MouseLeft.OnUp && !CurrentShip->IsMoving && !Input->MouseMoved()) {
 
 				if (State->Hovering == GameNull) {
-					if (CurrentShip->Status == ship_status::docked) {
+					if (CurrentShip->Persist->Status == ship_status::docked) {
 						CreateDockUndockStep(CurrentShip, CurrentShip->StationDocked);
 						CreateMovementStep(CurrentShip, MouseWorldFlat);
 					} else if (DockState) {
@@ -614,7 +614,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 				} else if (State->Hovering->Type == selection_type::station) {
 					station* Station = State->Hovering->GetStation();
-					CreateMovementStep(CurrentShip, Station->Position);
+					CreateMovementStep(CurrentShip, Station->Persist->Position);
 					CreateDockUndockStep(CurrentShip, Station);
 				}
 			}
@@ -635,7 +635,7 @@ ship* ShipSetup(vector2 Pos, ship_id ID, state * State, ship_persistent* Persist
 	//State->PersistentData.ShipsCount++;
 	//Assert(ArrayCount(State->Ships) > State->PersistentData.ShipsCount);
 
-	Ship->Status = ship_status::idle;
+	Ship->Persist->Status = ship_status::idle;
 
 	//Ship->Persist->Position = Pos;
 	Ship->Size = vector2{5, 5};

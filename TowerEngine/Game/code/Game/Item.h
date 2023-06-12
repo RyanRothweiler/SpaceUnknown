@@ -12,7 +12,7 @@ struct item_hold {
 		Persist = Per;
 
 		MassLimit = ML;
-		Persist->GUID = StringHash(PlatformApi.GetGUID());
+		Persist->GUID = PlatformApi.GetGUID();
 		MassChanged.RegisterConsumer();
 	}
 

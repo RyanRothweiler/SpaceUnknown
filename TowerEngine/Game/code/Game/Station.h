@@ -19,7 +19,6 @@ struct converter {
 struct station {
 	station_persistent* Persist;
 
-	vector2 Position;
 	vector2 Size;
 	real64 Rotation;
 
