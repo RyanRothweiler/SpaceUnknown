@@ -143,7 +143,10 @@ MetaStruct struct item_instance_persistent {
 };
 
 MetaStruct struct item_hold_persistent {
+
+	// NOTE this is here only for UI.
 	int64 GUID;
+
 	item_instance_persistent Items[64];
 };
 
@@ -160,8 +163,14 @@ MetaStruct enum class recipe_id {
 
 // Save Data persistence--------------------------------------------------------
 
+// TODO rename this to ship_type
+MetaStruct enum class ship_id {
+	advent,
+	count
+};
+
 MetaStruct enum class persistent_pointer_type {
-	station, 
+	none, station, 
 };
 
 MetaStruct struct persistent_pointer {
@@ -176,6 +185,9 @@ MetaStruct enum class ship_status {
 
 MetaStruct struct ship_persistent {
 	ship_status Status;
+	ship_id Type;
+
+	persistent_pointer StationDocked;
 
 	vector2 Position;
 	real64 Rotation;
@@ -194,6 +206,7 @@ MetaStruct struct station_persistent {
 	int32 GUID;
 
 	vector2 Position;
+	int32 DockedCount;
 
 	item_hold_persistent ItemHold;
 	converter_persistent Converters[10];
@@ -210,8 +223,6 @@ MetaStruct struct save_file {
 
 	int64 StationsCount;
 	station_persistent Stations[256];
-
-	persistent_pointer TestStation;
 };
 // -----------------------------------------------------------------------------
 

@@ -2,11 +2,6 @@ struct ship;
 
 const real64 fuelForcePerGallon = 8.0f;
 
-MetaStruct enum class ship_id {
-	advent,
-	count
-};
-
 enum class ship_module_slot_type {
 	industrial, structural, science,
 	count
@@ -91,7 +86,7 @@ struct ship_module {
 	ship* Owner;
 
 	world_target Target;
-};
+}; 
 
 struct ship_definition {
 	ship_id ID;
@@ -110,8 +105,6 @@ struct ship_definition {
 
 struct ship {
 	ship_persistent* Persist;
-
-	station* StationDocked;
 
 	ship_definition Definition;
 

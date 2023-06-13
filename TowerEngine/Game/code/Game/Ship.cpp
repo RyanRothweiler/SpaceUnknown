@@ -143,7 +143,7 @@ bool ShipDockUndockStep(ship* Ship, journey_step* JourneyStep, real64 Time, stat
 	if (JourneyStep->DockUndock.TimeAccum >= SecondsToMilliseconds(60.0f)) {
 
 		if (Ship->Persist->Status == ship_status::undocking) {
-			StationUndockShip(Ship);
+			StationUndockShip(Ship, State);
 		} else {
 			StationDockShip(JourneyStep->DockUndock.Station, Ship);
 		}
@@ -603,7 +603,10 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 				if (State->Hovering == GameNull) {
 					if (CurrentShip->Persist->Status == ship_status::docked) {
-						CreateDockUndockStep(CurrentShip, CurrentShip->StationDocked);
+						CreateDockUndockStep(
+								CurrentShip, 
+								per::Get(&CurrentShip->Persist->StationDocked, State)
+						);
 						CreateMovementStep(CurrentShip, MouseWorldFlat);
 					} else if (DockState) {
 						CreateDockUndockStep(CurrentShip, LastStation);
@@ -626,20 +629,29 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	if (!Showing) { Sel->Clear(); }
 }
 
-ship* ShipSetup(vector2 Pos, ship_id ID, state * State, ship_persistent* Persist)
-{
-	ship* Ship = &State->Ships[0];
+// Create a new ship
+ship* ShipCreate(state* State, ship_id Type) {
 
-	Ship->Persist = Persist;
+	ship* Ship = &State->Ships[State->PersistentData.ShipsCount];
+	Ship->Persist = &State->PersistentData.Ships[State->PersistentData.ShipsCount];
 
-	//State->PersistentData.ShipsCount++;
-	//Assert(ArrayCount(State->Ships) > State->PersistentData.ShipsCount);
+	State->PersistentData.ShipsCount++;
+	Assert(ArrayCount(State->PersistentData.Ships) > State->PersistentData.ShipsCount);
+	Assert(ArrayCount(State->Ships) > State->PersistentData.ShipsCount);
 
+	Ship->Persist->Type = Type;
 	Ship->Persist->Status = ship_status::idle;
 
-	//Ship->Persist->Position = Pos;
+	return Ship;
+}
+
+// Setup data for exising ship
+ship* ShipSetup(ship* Ship, ship_persistent* Persist, state* State)
+{
+	Ship->Persist = Persist;
+
 	Ship->Size = vector2{5, 5};
-	Ship->Definition = Globals->AssetsList.ShipDefinitions[(int)ID];
+	Ship->Definition = Globals->AssetsList.ShipDefinitions[(int)Ship->Persist->Type];
 
 	Ship->Hold.Setup(Ship->Definition.HoldMass, &Ship->Persist->ItemHold);
 	Ship->FuelTank.Setup(Ship->Definition.FuelTankMassLimit, &Ship->Persist->FuelHold);

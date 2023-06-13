@@ -164,7 +164,12 @@ string recipe_id_NAME[] {
 "count",
 "none",
 }; 
+string ship_id_NAME[] { 
+"advent",
+"count",
+}; 
 string persistent_pointer_type_NAME[] { 
+"none",
 "station",
 }; 
 meta_member persistent_pointer_META[] { 
@@ -208,6 +213,8 @@ string ship_status_NAME[] {
 }; 
 meta_member ship_persistent_META[] { 
 {meta_member_type::enumeration, "ship_status", "Status", (uint64)&((ship_persistent *)0)->Status, 0, sizeof(ship_status),{},{},{},{},{}},
+{meta_member_type::enumeration, "ship_id", "Type", (uint64)&((ship_persistent *)0)->Type, 0, sizeof(ship_id),{},{},{},{},{}},
+{meta_member_type::custom, "persistent_pointer", "StationDocked", (uint64)&((ship_persistent *)0)->StationDocked, 0, sizeof(persistent_pointer),&StructMetaFill_persistent_pointer, &JsonFillStructShim_persistent_pointer, &SaveDataFillShim_persistent_pointer, &persistent_pointer_META[0], ArrayCount(persistent_pointer_META) },
 {meta_member_type::custom, "vector2", "Position", (uint64)&((ship_persistent *)0)->Position, 0, sizeof(vector2),&StructMetaFill_vector2, &JsonFillStructShim_vector2, &SaveDataFillShim_vector2, &vector2_META[0], ArrayCount(vector2_META) },
 {meta_member_type::real64, "real64", "Rotation", (uint64)&((ship_persistent *)0)->Rotation, 0, sizeof(real64),{},{},{},{},{}},
 {meta_member_type::custom, "item_hold_persistent", "ItemHold", (uint64)&((ship_persistent *)0)->ItemHold, 0, sizeof(item_hold_persistent),&StructMetaFill_item_hold_persistent, &JsonFillStructShim_item_hold_persistent, &SaveDataFillShim_item_hold_persistent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META) },
@@ -277,6 +284,7 @@ return json::FillStruct(JsonData, KeyParent, &converter_persistent_META[0], Arra
 meta_member station_persistent_META[] { 
 {meta_member_type::int32, "int32", "GUID", (uint64)&((station_persistent *)0)->GUID, 0, sizeof(int32),{},{},{},{},{}},
 {meta_member_type::custom, "vector2", "Position", (uint64)&((station_persistent *)0)->Position, 0, sizeof(vector2),&StructMetaFill_vector2, &JsonFillStructShim_vector2, &SaveDataFillShim_vector2, &vector2_META[0], ArrayCount(vector2_META) },
+{meta_member_type::int32, "int32", "DockedCount", (uint64)&((station_persistent *)0)->DockedCount, 0, sizeof(int32),{},{},{},{},{}},
 {meta_member_type::custom, "item_hold_persistent", "ItemHold", (uint64)&((station_persistent *)0)->ItemHold, 0, sizeof(item_hold_persistent),&StructMetaFill_item_hold_persistent, &JsonFillStructShim_item_hold_persistent, &SaveDataFillShim_item_hold_persistent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META) },
 {meta_member_type::custom, "converter_persistent", "Converters", (uint64)&((station_persistent *)0)->Converters, 10, sizeof(converter_persistent),&StructMetaFill_converter_persistent, &JsonFillStructShim_converter_persistent, &SaveDataFillShim_converter_persistent, &converter_persistent_META[0], ArrayCount(converter_persistent_META) },
 }; 
@@ -316,7 +324,6 @@ meta_member save_file_META[] {
 {meta_member_type::custom, "ship_persistent", "Ships", (uint64)&((save_file *)0)->Ships, 256, sizeof(ship_persistent),&StructMetaFill_ship_persistent, &JsonFillStructShim_ship_persistent, &SaveDataFillShim_ship_persistent, &ship_persistent_META[0], ArrayCount(ship_persistent_META) },
 {meta_member_type::int64, "int64", "StationsCount", (uint64)&((save_file *)0)->StationsCount, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::custom, "station_persistent", "Stations", (uint64)&((save_file *)0)->Stations, 256, sizeof(station_persistent),&StructMetaFill_station_persistent, &JsonFillStructShim_station_persistent, &SaveDataFillShim_station_persistent, &station_persistent_META[0], ArrayCount(station_persistent_META) },
-{meta_member_type::custom, "persistent_pointer", "TestStation", (uint64)&((save_file *)0)->TestStation, 0, sizeof(persistent_pointer),&StructMetaFill_persistent_pointer, &JsonFillStructShim_persistent_pointer, &SaveDataFillShim_persistent_pointer, &persistent_pointer_META[0], ArrayCount(persistent_pointer_META) },
 }; 
  
 void M_ALLOC__save_file(s_void* SafeVoid, memory_arena* Memory) { 
@@ -391,10 +398,6 @@ string station_service_NAME[] {
 string recipe_member_type_NAME[] { 
 "item",
 "ship",
-}; 
-string ship_id_NAME[] { 
-"advent",
-"count",
 }; 
 meta_member skill_bonuses_META[] { 
 {meta_member_type::real32, "real32", "FuelForceAddition", (uint64)&((skill_bonuses *)0)->FuelForceAddition, 0, sizeof(real32),{},{},{},{},{}},

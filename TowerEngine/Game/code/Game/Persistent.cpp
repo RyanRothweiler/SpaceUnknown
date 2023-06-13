@@ -12,6 +12,11 @@ namespace per {
 		}
 	}
 
+	void Clear(persistent_pointer* Pointer) {
+		Pointer->Type = persistent_pointer_type::none;
+		Pointer->Data = GameNull;
+	}
+
 	// Station -----------------------
 	void AddSource(uint32 GUID, station* Data, state* State)
 	{ 
@@ -34,6 +39,7 @@ namespace per {
 		Pointer->Data = (void*)Station;
 		Pointer->GUID = Station->Persist->GUID;
 	}
+
 	//--------------------------------
 
 };

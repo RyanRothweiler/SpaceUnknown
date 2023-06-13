@@ -194,14 +194,6 @@ void LoadGame(state* State)
 		}
 	}
 
-	// stations
-	{
-		for (int i = 0; i < State->PersistentData.StationsCount; i++) {
-			State->Stations[i].Persist = &State->PersistentData.Stations[i];
-		}
-	}
-
-
 	/*
 
 	// Ships
@@ -411,20 +403,19 @@ void Start(engine_state* EngineState)
 		Station->Persist->Position.X = 50;
 		Station->Persist->Position.Y = 50;
 
-		per::Set(&State->PersistentData.TestStation, &State->Stations[0]);
+		// Ship
+		ship* Ship = ShipCreate(State, ship_id::advent);
 	}
-
-	// Ship
-	ShipSetup(vector2{0, 0}, ship_id::advent, State, &State->PersistentData.Ships[0]);
 
 	// Setup stations
 	for (int i = 0; i < State->PersistentData.StationsCount; i++) {
-		StationSetup(&State->Stations[i], State);
+		StationSetup(&State->Stations[i], &State->PersistentData.Stations[i], State);
 	}
 
-
-	station* Station = per::Get(&State->PersistentData.TestStation, State);
-	int x = 0;
+	// Setup ships
+	for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
+		ShipSetup(&State->Ships[i], &State->PersistentData.Ships[i], State);
+	}
 }
 
 const real32 ZoomMin = 0.0f;
@@ -943,19 +934,20 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 				// Janky but whatever. Would need to use the transform scene hierarchy to improve
 				if (Ship->Persist->Status == ship_status::docked) {
-					Ship->Persist->Rotation = Ship->StationDocked->Rotation;
+					station* StationDocked = per::Get(&Ship->Persist->StationDocked, State);
+					Ship->Persist->Rotation = StationDocked->Rotation;
 
 					int DocksCount = 10;
-					real64 DockRel = (real64)(Ship->StationDocked->DockedCount) / (real64)DocksCount;
+					real64 DockRel = (real64)StationDocked->Persist->DockedCount / (real64)DocksCount;
 					real64 DockRadians = DockRel * (2 * PI);
 
-					real64 DockRadius = Ship->StationDocked->Size.X * 0.5f * 0.9f;
-					vector2 StationOffset = Ship->StationDocked->Persist->Position + vector2 {
+					real64 DockRadius = StationDocked->Size.X * 0.5f * 0.9f;
+					vector2 StationOffset = StationDocked->Persist->Position + vector2 {
 						DockRadius * sin(DockRadians),
 						DockRadius * cos(DockRadians)
 					};
 
-					vector2 NewPos = Vector2RotatePoint(StationOffset, Ship->StationDocked->Persist->Position, DockRadians + -Ship->StationDocked->Rotation);
+					vector2 NewPos = Vector2RotatePoint(StationOffset, StationDocked->Persist->Position, DockRadians + -StationDocked->Rotation);
 					Ship->Persist->Position.X = NewPos.X;
 					Ship->Persist->Position.Y = NewPos.Y;
 				}

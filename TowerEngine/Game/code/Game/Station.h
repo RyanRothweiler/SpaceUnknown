@@ -26,6 +26,4 @@ struct station {
 	int32 ConvertersCount;
 
 	item_hold Hold;
-
-	int32 DockedCount;
 };

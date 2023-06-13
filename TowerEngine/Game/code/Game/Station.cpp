@@ -247,8 +247,8 @@ void StationSelected(selection * Sel, engine_state * EngineState, game_input * I
 
 void StationDockShip(station * Station, ship * Ship)
 {
-	int DockIndex = Station->DockedCount;
-	Station->DockedCount++;
+	int DockIndex = Station->Persist->DockedCount;
+	Station->Persist->DockedCount++;
 
 	int DocksCount = 10;
 	real64 DockRel = (real64)DockIndex / (real64)DocksCount;
@@ -262,13 +262,13 @@ void StationDockShip(station * Station, ship * Ship)
 
 	Ship->Persist->Position = P;
 	Ship->Persist->Status = ship_status::docked;
-	Ship->StationDocked = Station;
+	per::Set(&Ship->Persist->StationDocked, Station);
 }
 
-void StationUndockShip(ship * Ship)
+void StationUndockShip(ship * Ship, state* State)
 {
-	Ship->Persist->Position = Ship->StationDocked->Persist->Position;
-	Ship->StationDocked = {};
+	station* StationDocked = per::Get(&Ship->Persist->StationDocked, State);
+	per::Clear(&Ship->Persist->StationDocked);
 	Ship->Persist->Status = ship_status::idle;
 }
 
@@ -283,16 +283,16 @@ station* StationCreate(state * State)
 	Assert(ArrayCount(State->Stations) > State->PersistentData.StationsCount);
 
 	Station->Persist->GUID = PlatformApi.GetGUID();
-	Station->Size = vector2{18.0f, 18.0f};
-
-	Station->Hold.Setup(1000, &Station->Persist->ItemHold);
 
 	return Station;
 }
 
 // Setup a station data. Not creating a new one
-void StationSetup(station* Station, state* State) 
+void StationSetup(station* Station, station_persistent* Persist, state* State) 
 {
+	Station->Persist = Persist;
+	Station->Size = vector2{18.0f, 18.0f};
+
 	Station->Hold.Setup(1000, &Station->Persist->ItemHold);
 	ItemHoldUpdateMass(&Station->Hold);
 
