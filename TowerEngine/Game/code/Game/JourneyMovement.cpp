@@ -4,7 +4,7 @@ void ShipMovementStart(ship* Ship, journey_step* JourneyStep, state* State)
 
 	journey_movement* Mov = &JourneyStep->Movement;
 
-	Ship->Velocity = {};
+	Ship->Persist->Velocity = {};
 	Mov->StartPosition = Ship->Persist->Position;
 	Mov->DistFromSidesToCoast = Vector2Distance(Ship->Persist->Position, Mov->EndPosition) * 0.5f * Mov->EdgeRatio;
 	Mov->DirToEnd = Vector2Normalize(Mov->EndPosition - Ship->Persist->Position);

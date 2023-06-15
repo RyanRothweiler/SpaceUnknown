@@ -160,6 +160,7 @@ void SaveGame(state* State, save_data::member* Root)
 }
 
 #include "Persistent.cpp"
+#include "Journey.cpp"
 
 #include "WorldObject.cpp"
 #include "Asteroid.cpp"
@@ -179,10 +180,31 @@ void LoadGame(state* State)
 	if (!save_data::Read("SpaceUnknownSave.sus", (void*)&State->PersistentData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)) {
 		State->LoadedFromFile = false;
 		ConsoleLog("No saved data file");
-		return;
+
+		// If no save file, then create initial setup
+		if (!State->LoadedFromFile) { 
+
+			// Station
+			station* Station = StationCreate(State);
+			Station->Persist->Position.X = 50;
+			Station->Persist->Position.Y = 50;
+
+			// Ship
+			ship* Ship = ShipCreate(State, ship_id::advent);
+		}
+	} else {
+		State->LoadedFromFile = true;
 	}
 
-	State->LoadedFromFile = true;
+	// Setup stations
+	for (int i = 0; i < State->PersistentData.StationsCount; i++) {
+		StationSetup(&State->Stations[i], &State->PersistentData.Stations[i], State);
+	}
+
+	// Setup ships
+	for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
+		ShipSetup(&State->Ships[i], &State->PersistentData.Ships[i], State);
+	}
 
 	// Skill Nodes
 	{
@@ -194,122 +216,40 @@ void LoadGame(state* State)
 		}
 	}
 
-	/*
+	if (State->LoadedFromFile) {
+		// Simulate forward missing time
+		using std::chrono::duration_cast;
+		using std::chrono::system_clock;
+		int64 CurrentSinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
+		int64 FileSinceEpoch = State->PersistentData.RealTimeSaved;
+		real64 MissingMS = (real64)(CurrentSinceEpoch - FileSinceEpoch);
+		real64 MissingMSStart = MissingMS;
 
-	// Ships
-	for (int i = 0; i < ArrayCount(State->Ships); i++) {
-		json::json_pair* TestPair = GetPair("ship_" + string{i} + "_position_x", &JsonIn);
-		if (TestPair != GameNull) {
-			ship* Ship = &State->Ships[i];
-			Ship->Using = true;
+		string P = "Simulating " + string{MissingMS} + " ms of missing time";
+		ConsoleLog(P.Array());
 
-			Ship->Position.X = json::GetReal64("ship_" + string{i} + "_position_x", &JsonIn);
-			Ship->Position.Y = json::GetReal64("ship_" + string{i} + "_position_y", &JsonIn);
-			Ship->Velocity.X = json::GetReal64("ship_" + string{i} + "_velocity_x", &JsonIn);
-			Ship->Velocity.Y = json::GetReal64("ship_" + string{i} + "_velocity_y", &JsonIn);
-			Ship->IsMoving = json::GetBool("ship_" + string{i} + "_is_moving", &JsonIn);
-			//Ship->FuelGallons = json::GetReal64("ship_" + string{i} + "_fuel", &JsonIn);
-			Ship->Rotation = json::GetReal64("ship_" + string{i} + "_rotation", &JsonIn);
+		State->ForwardSimulating = true;
 
-			Ship->CurrentJourney.EndPosition.X = json::GetReal64("ship_" + string{i} + "_journey_end_x", &JsonIn);
-			Ship->CurrentJourney.EndPosition.Y = json::GetReal64("ship_" + string{i} + "_journey_end_y", &JsonIn);
-			Ship->CurrentJourney.StartPosition.X = json::GetReal64("ship_" + string{i} + "_journey_start_x", &JsonIn);
-			Ship->CurrentJourney.StartPosition.Y = json::GetReal64("ship_" + string{i} + "_journey_start_y", &JsonIn);
-			Ship->CurrentJourney.DistFromSidesToCoast = json::GetReal64("ship_" + string{i} + "_journey_dist_from_sides_to_coast", &JsonIn);
-			Ship->CurrentJourney.EdgeRatio = (real32)json::GetReal64("ship_" + string{i} + "_journey_edge_ratio", &JsonIn);
-			Ship->CurrentJourney.DirToEnd.X = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_x", &JsonIn);
-			Ship->CurrentJourney.DirToEnd.Y = json::GetReal64("ship_" + string{i} + "_journey_dir_to_end_y", &JsonIn);
-			*/
+		int32 Flicker = 2000;
 
-	// method to load an item_hold
-	/*
-	for (int c = 0; c < ArrayCount(Ship->Cargo); c++) {
-	json::json_pair* CargoTestPair = GetPair("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
-	if (CargoTestPair != GameNull) {
+		float SimFPS = 15.0f;
+		float TimeStepMS = (1.0f / SimFPS) * 1000.0f;
+		while (MissingMS > SimFPS) {
+			StepUniverse(State, TimeStepMS);
+			MissingMS -= TimeStepMS;
 
-	string IDStr = json::GetString("ship_" + string{i} + "_cargo_" + string{c} + "_id", &JsonIn);
-	item_id ItemID = (item_id)StringToEnum(IDStr, &item_id_NAME[0], ArrayCount(item_id_NAME));
-	item_definition Def = GetItemDefinition(ItemID);
-	Ship->Cargo[c].Definition = Def;
-
-	Ship->Cargo[c].Count = (int32)json::GetInt64("ship_" + string{i} + "_cargo_" + string{c} + "_count", &JsonIn);;
-	}
-	}
-
-	ShipUpdateMass(Ship);
-	}
-	}
-
-	// Asteroids
-	for (int i = 0; i < State->ClustersCount; i++) {
-	asteroid_cluster* Cluster = &State->Asteroids[i];
-	for (int c = 0; c < ArrayCount(Cluster->Asteroids); c++) {
-	json::json_pair* TestPair = GetPair("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
-	if (TestPair != GameNull) {
-		asteroid* Roid = &Cluster->Asteroids[c];
-		//InitAsteroid(Roid, State);
-
-		//Roid->WorldObject.Position.X = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_x", &JsonIn);
-		//Roid->WorldObject.Position.Y = json::GetReal64("cluster_" + string{i} + "_asteroid_" + string{c} + "_position_y", &JsonIn);
-	}
-	}
-	}
-
-	// Skill tree nodes
-	{
-	struct local {
-	void Load(skill_node* Node, json::json_data* JsonIn)
-	{
-		json::json_pair* TestPair = GetPair("node_unlocked_" + Node->ID, JsonIn);
-		if (TestPair != GameNull) {
-			Node->Unlocked = true;
+			Flicker--;
+			if (Flicker <= 0) {
+				Flicker = 2000;
+				real64 PercDone = 100.0f - ((MissingMS / MissingMSStart) * 100.0f);
+				string PercDisp = string{PercDone};
+				ConsoleLog(PercDisp);
+			}
 		}
+		StepUniverse(State, MissingMS);
 
-		for (int i = 0; i < Node->ChildrenCount; i++) {
-			Load(Node->Children[i], JsonIn);
-		}
+		State->ForwardSimulating = false;
 	}
-	} Locals;
-
-	for (int i = 0; i < State->SkillNodesCount; i++) {
-	Locals.Load(&State->SkillNodes[i], &JsonIn);
-	}
-	}
-	*/
-
-
-	// Simulate forward missing time
-	using std::chrono::duration_cast;
-	using std::chrono::system_clock;
-	int64 CurrentSinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
-	int64 FileSinceEpoch = State->PersistentData.RealTimeSaved;
-	real64 MissingMS = (real64)(CurrentSinceEpoch - FileSinceEpoch);
-	real64 MissingMSStart = MissingMS;
-
-	string P = "Simulating " + string{MissingMS} + " ms of missing time";
-	ConsoleLog(P.Array());
-
-	State->ForwardSimulating = true;
-
-	int32 Flicker = 2000;
-
-	float SimFPS = 15.0f;
-	float TimeStepMS = (1.0f / SimFPS) * 1000.0f;
-	while (MissingMS > SimFPS) {
-		StepUniverse(State, TimeStepMS);
-		MissingMS -= TimeStepMS;
-
-		Flicker--;
-		if (Flicker <= 0) {
-			Flicker = 2000;
-			real64 PercDone = 100.0f - ((MissingMS / MissingMSStart) * 100.0f);
-			string PercDisp = string{PercDone};
-			ConsoleLog(PercDisp);
-		}
-	}
-	StepUniverse(State, MissingMS);
-
-	State->ForwardSimulating = false;
 	ConsoleLog("Finished");
 }
 
@@ -394,28 +334,6 @@ void Start(engine_state* EngineState)
 	}
 
 	LoadGame(State);
-
-	// If no save file, then create initial setup
-	if (!State->LoadedFromFile) { 
-
-		// Station
-		station* Station = StationCreate(State);
-		Station->Persist->Position.X = 50;
-		Station->Persist->Position.Y = 50;
-
-		// Ship
-		ship* Ship = ShipCreate(State, ship_id::advent);
-	}
-
-	// Setup stations
-	for (int i = 0; i < State->PersistentData.StationsCount; i++) {
-		StationSetup(&State->Stations[i], &State->PersistentData.Stations[i], State);
-	}
-
-	// Setup ships
-	for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
-		ShipSetup(&State->Ships[i], &State->PersistentData.Ships[i], State);
-	}
 }
 
 const real32 ZoomMin = 0.0f;
@@ -710,20 +628,20 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 						vector2 PosOrig = CurrentShip->Persist->Position;
 						ItemGive(&CurrentShip->FuelTank, item_id::stl, 1000);
-						CurrentShip->Velocity = {};
+						CurrentShip->Persist->Velocity = {};
 
-						CurrentShip->CurrentJourney.Execute();
-						journey_methods::Start(CurrentShip->CurrentJourney.Steps[0].Type)(CurrentShip, &CurrentShip->CurrentJourney.Steps[0], State);
+						journey::Execute(&CurrentShip->Persist->CurrentJourney);
+						journey_methods::Start(CurrentShip->Persist->CurrentJourney.Steps[0].Type)(CurrentShip, &CurrentShip->Persist->CurrentJourney.Steps[0], State);
 
 						while (
-							!(journey_methods::Step(CurrentShip->CurrentJourney.Steps[0].Type)(CurrentShip, &CurrentShip->CurrentJourney.Steps[0], TimeStepMS, State))
+							!(journey_methods::Step(CurrentShip->Persist->CurrentJourney.Steps[0].Type)(CurrentShip, &CurrentShip->Persist->CurrentJourney.Steps[0], TimeStepMS, State))
 						) {
 							TotalSimTime += TimeStepMS;
 						}
 
 						CurrentShip->Persist->Position = PosOrig;
-						CurrentShip->Velocity = {};
-						CurrentShip->Persist->IsMoving = false;
+						CurrentShip->Persist->Velocity = {};
+						CurrentShip->Persist->Status = ship_status::idle;
 
 						uint64 End = PlatformApi.QueryPerformanceCounter();
 						uint64 Count = End - Start;

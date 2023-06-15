@@ -21,6 +21,17 @@ char* ImguiShipModuleUnequippingDraggingID = "SHIP_MODULE_UNEQUIP";
 
 const real64 UnitToMeters = 10.0f;
 // -----------------------------------------------------------------------------
+//
+MetaStruct enum class persistent_pointer_type {
+	none, station, 
+};
+
+MetaStruct struct persistent_pointer {
+ 	persistent_pointer_type Type;
+	uint32 GUID;
+	void* Data;
+};
+
 
 enum class game_scene { universe, skill_tree };
 
@@ -46,12 +57,12 @@ MetaStruct struct journey_movement {
 };
 
 MetaStruct struct journey_dock_undock {
-	station* Station;
+	persistent_pointer Station;
 	real64 TimeAccum;
 };
 
 MetaStruct enum class journey_step_type { movement, dock_undock };
-struct journey_step {
+MetaStruct struct journey_step {
 	journey_step_type Type;
 
 	// should be unioned but meta parser can't handle that yet
@@ -60,29 +71,16 @@ struct journey_step {
 	// -----
 };
 
-struct ship_journey {
+MetaStruct struct ship_journey {
 	bool32 InProgress;
 
-	journey_step Steps[100];
+	journey_step Steps[10];
 	int32 CurrentStep;
 	int32 StepsCount;
 
-	bool Repeat;
-
-	journey_step* AddStep()
-	{
-		journey_step* Step = &Steps[StepsCount++];
-		Assert(StepsCount < ArrayCount(Steps));
-
-		return Step;
-	}
-
-	void Execute()
-	{
-		InProgress = true;
-		CurrentStep = -1;
-	}
+	bool32 Repeat;
 };
+ 
 typedef void(*step_func)(void* SelfData, real64 time, state* State);
 
 struct stepper {
@@ -96,8 +94,6 @@ struct stepper_ptr {
 	stepper* Stp;
 };
 
-struct universe_time {
-};
 
 MetaStruct enum class ship_module_id {
 	none,
@@ -166,16 +162,6 @@ MetaStruct enum class ship_id {
 	count
 };
 
-MetaStruct enum class persistent_pointer_type {
-	none, station, 
-};
-
-MetaStruct struct persistent_pointer {
- 	persistent_pointer_type Type;
-	uint32 GUID;
-	void* Data;
-};
-
 MetaStruct enum class ship_status {
 	idle, moving, docking, undocking, docked
 };
@@ -186,10 +172,11 @@ MetaStruct struct ship_persistent {
 
 	persistent_pointer StationDocked;
 
+	ship_journey CurrentJourney;
+
 	vector2 Position;
 	real64 Rotation;
-
-	bool32 IsMoving;
+	vector2 Velocity;
 
 	item_hold_persistent ItemHold;
 	item_hold_persistent FuelHold;

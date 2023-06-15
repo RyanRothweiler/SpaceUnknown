@@ -24,7 +24,7 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 	real64 fuelForce = Mov->CachedFuelForce;
 	vector2 dirToTargetForce = Mov->CachedDirToTargetForce;
 	if (TimeMS != Mov->CachedTime) {
-		real64 FuelForceFinal = fuelForcePerGallon + (fuelForcePerGallon * TreeBonusesTotal->FuelForceAddition);
+		real64 FuelForceFinal = fuelForcePerGallon + (fuelForcePerGallon);
 
 		fuelToUse = Ship->Definition.FuelRateMassPerSecond * TimeSeconds;
 		fuelForce = fuelToUse * FuelForceFinal;
@@ -41,7 +41,7 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 
 	// close enough
 	if (DistToEnd < 0.01f) {
-		Ship->Velocity = vector2{0, 0};
+		Ship->Persist->Velocity = vector2{0, 0};
 		return true;
 	}
 
@@ -49,7 +49,7 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 	// Need a 0.1 buffer here because the two distances are equal during the journey, but not always exactly because of rounding errors
 	if (Mov->FullDistance < DistToEnd + DistToStart) {
 		// Stopping, past destination
-		Ship->Velocity = vector2{0, 0};
+		Ship->Persist->Velocity = vector2{0, 0};
 		return true;
 	}
 
@@ -69,15 +69,15 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 			Force = dirToTargetForce * -1.0f;
 
 			// slow enough
-			if (Vector2Length(Ship->Velocity) < 0.001f) {
-				Ship->Velocity = vector2{0, 0};
+			if (Vector2Length(Ship->Persist->Velocity) < 0.001f) {
+				Ship->Persist->Velocity = vector2{0, 0};
 				return true;
 			}
 		}
 
 		real64 Mass = ShipGetMassTotal(Ship);
 		vector2 acceleration = Force / (real64)Mass;
-		Ship->Velocity = Ship->Velocity + acceleration;
+		Ship->Persist->Velocity = Ship->Persist->Velocity + acceleration;
 	} else {
 
 		// If we're simulating, then we can sleep until the ship need to slow down
@@ -85,7 +85,7 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 		if (State->ForwardSimulating) {
 			// Figure out when the ship will start slowing down
 			real64 CoastDist = Mov->FullDistance - (Mov->DistFromSidesToCoast * 2.0f);
-			real64 CoastSpeed = Vector2Length(Ship->Velocity);
+			real64 CoastSpeed = Vector2Length(Ship->Persist->Velocity);
 			real64 CoastDurationSeconds = CoastDist / CoastSpeed;
 
 			SleepStepper(State, &Ship->Stepper, SecondsToMilliseconds(CoastDurationSeconds));
@@ -96,7 +96,7 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 		}
 	}
 
-	Ship->Persist->Position = Ship->Persist->Position + (Ship->Velocity * TimeSeconds);
+	Ship->Persist->Position = Ship->Persist->Position + (Ship->Persist->Velocity * TimeSeconds);
 
 	return false;
 }
@@ -110,33 +110,33 @@ void ShipStep(void* SelfData, real64 Time, state* State)
 {
 	ship* Ship = (ship*)SelfData;
 
-	if (Ship->CurrentJourney.InProgress) {
+	if (Ship->Persist->CurrentJourney.InProgress) {
 
-		journey_step* Step = &Ship->CurrentJourney.Steps[Ship->CurrentJourney.CurrentStep];
+		journey_step* Step = &Ship->Persist->CurrentJourney.Steps[Ship->Persist->CurrentJourney.CurrentStep];
 
-		if (Ship->CurrentJourney.CurrentStep < 0) {
-			Ship->CurrentJourney.CurrentStep++;
+		if (Ship->Persist->CurrentJourney.CurrentStep < 0) {
+			Ship->Persist->CurrentJourney.CurrentStep++;
 
-			Step = &Ship->CurrentJourney.Steps[Ship->CurrentJourney.CurrentStep];
+			Step = &Ship->Persist->CurrentJourney.Steps[Ship->Persist->CurrentJourney.CurrentStep];
 			journey_methods::Start(Step->Type)(Ship, Step, State);
 		}
 
 		bool32 Finished = (journey_methods::Step(Step->Type)(Ship, Step, Time, State));
 		if (Finished) {
 
-			Ship->CurrentJourney.CurrentStep++;
-			Step = &Ship->CurrentJourney.Steps[Ship->CurrentJourney.CurrentStep];
+			Ship->Persist->CurrentJourney.CurrentStep++;
+			Step = &Ship->Persist->CurrentJourney.Steps[Ship->Persist->CurrentJourney.CurrentStep];
 
-			if (Ship->CurrentJourney.CurrentStep < Ship->CurrentJourney.StepsCount) {
+			if (Ship->Persist->CurrentJourney.CurrentStep < Ship->Persist->CurrentJourney.StepsCount) {
 				journey_methods::Start(Step->Type)(Ship, Step, State);
 			} else {
 
-				if (Ship->CurrentJourney.Repeat) {
-					Ship->CurrentJourney.Execute();
+				if (Ship->Persist->CurrentJourney.Repeat) {
+					journey::Execute(&Ship->Persist->CurrentJourney);
 				} else {
-					Ship->CurrentJourney.InProgress = false;
-					Ship->CurrentJourney.StepsCount = 0;
-					Ship->CurrentJourney.CurrentStep = 0;
+					Ship->Persist->CurrentJourney.InProgress = false;
+					Ship->Persist->CurrentJourney.StepsCount = 0;
+					Ship->Persist->CurrentJourney.CurrentStep = 0;
 
 					if (Ship->Persist->Status != ship_status::docked) {
 						Ship->Persist->Status = ship_status::idle;
@@ -249,22 +249,22 @@ void OnShipSelected(selection* Sel, engine_state* EngineState, game_input* Input
 	state* State = &EngineState->GameState;
 	ship* CurrentShip = Sel->GetShip();
 
-	if (!CurrentShip->Persist->IsMoving) {
-		CurrentShip->CurrentJourney = {};
+	if (CurrentShip->Persist->Status != ship_status::moving) {
+		CurrentShip->Persist->CurrentJourney = {};
 	}
 }
 
 void CreateDockUndockStep(ship* Ship, station* Station)
 {
-	journey_step* Step = Ship->CurrentJourney.AddStep();
+	journey_step* Step = journey::AddStep(&Ship->Persist->CurrentJourney);
 	Step->Type = journey_step_type::dock_undock;
 
-	Step->DockUndock.Station = Station;
+	per::Set(&Step->DockUndock.Station, Station);
 }
 
 void CreateMovementStep(ship* Ship, vector2 EndPos)
 {
-	journey_step* MovStep = Ship->CurrentJourney.AddStep();
+	journey_step* MovStep = journey::AddStep(&Ship->Persist->CurrentJourney);
 	MovStep->Type = journey_step_type::movement;
 
 	MovStep->Movement.EdgeRatio = 0.1f;
@@ -349,7 +349,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 	// Velocity
 	{
-		string V = Humanize((int64)(Vector2Length(CurrentShip->Velocity) * UnitToMeters * 1000.0f));
+		string V = Humanize((int64)(Vector2Length(CurrentShip->Persist->Velocity) * UnitToMeters * 1000.0f));
 		ImGui::Text("Velocity (kph)");
 		ImGui::SameLine();
 		ImGui::Text(V.Array());
@@ -477,18 +477,18 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 	// Journey
 	if (ImGui::CollapsingHeader("Commands")) {
-		ship_journey* CurrJour = &CurrentShip->CurrentJourney;
+		ship_journey* CurrJour = &CurrentShip->Persist->CurrentJourney;
 
 		bool32 DockState = (CurrentShip->Persist->Status == ship_status::docked);
 		station* LastStation = {};
 		vector2 JourneyPosCurrent = CurrentShip->Persist->Position;
 
-		for (int i = 0; i < CurrentShip->CurrentJourney.StepsCount; i++) {
+		for (int i = 0; i < CurrentShip->Persist->CurrentJourney.StepsCount; i++) {
 
 			string id = "COMMAND_" + string{i};
 			ImGui::PushID(id.Array());
 
-			journey_step* Step = &CurrentShip->CurrentJourney.Steps[i];
+			journey_step* Step = &CurrentShip->Persist->CurrentJourney.Steps[i];
 			switch (Step->Type) {
 				case journey_step_type::movement: {
 					ImGui::Text("Move");
@@ -508,8 +508,8 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				} break;
 
 				case journey_step_type::dock_undock: {
-					JourneyPosCurrent = Step->DockUndock.Station->Persist->Position;
-					LastStation = Step->DockUndock.Station;
+					JourneyPosCurrent = per::Get(&Step->DockUndock.Station, State)->Persist->Position;
+					LastStation = per::Get(&Step->DockUndock.Station, State);
 					if (DockState) {
 						ImGui::Text("Undock");
 					} else {
@@ -523,8 +523,8 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 			}
 
 			if (!CurrJour->InProgress && ImGui::Button("-")) {
-				RemoveSlideArray((void*)&CurrentShip->CurrentJourney.Steps[0], CurrentShip->CurrentJourney.StepsCount, sizeof(CurrentShip->CurrentJourney.Steps[0]), i);
-				CurrentShip->CurrentJourney.StepsCount--;
+				RemoveSlideArray((void*)&CurrentShip->Persist->CurrentJourney.Steps[0], CurrentShip->Persist->CurrentJourney.StepsCount, sizeof(CurrentShip->Persist->CurrentJourney.Steps[0]), i);
+				CurrentShip->Persist->CurrentJourney.StepsCount--;
 			}
 
 			ImGui::Separator();
@@ -533,10 +533,14 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 		if (!CurrJour->InProgress) {
 			if (ImGui::Button("+ Add Step +")) {
-				journey_step* Step = CurrentShip->CurrentJourney.AddStep();
+				journey_step* Step = journey::AddStep(&CurrentShip->Persist->CurrentJourney);
 				Step->Type = journey_step_type::movement;
 			}
-			ImGui::Checkbox("Return to start and repeat", &CurrJour->Repeat);
+
+			bool r = CurrJour->Repeat;
+			ImGui::Checkbox("Return to start and repeat", &r);
+			CurrJour->Repeat = r;
+
 			if (ImGui::Button("Execute")) {
 
 				if (CurrJour->Repeat) {
@@ -549,11 +553,11 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 					CreateMovementStep(CurrentShip, CurrentShip->Persist->Position);
 				}
 
-				CurrJour->Execute();
+				journey::Execute(CurrJour);
 			}
 
 			// Click world to add movement command
-			if (Input->MouseLeft.OnUp && !CurrentShip->Persist->IsMoving && !Input->MouseMoved()) {
+			if (Input->MouseLeft.OnUp && CurrentShip->Persist->Status != ship_status::moving && !Input->MouseMoved()) {
 
 				if (State->Hovering == GameNull) {
 					if (CurrentShip->Persist->Status == ship_status::docked) {

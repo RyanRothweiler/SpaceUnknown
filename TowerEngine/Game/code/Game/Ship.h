@@ -112,10 +112,8 @@ struct ship {
 	item_hold Hold;
 	item_hold FuelTank;
 
-	vector2 Velocity;
 	vector2 Size;
 
-	ship_journey CurrentJourney;
 
 	stepper Stepper;
 
