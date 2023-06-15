@@ -77,7 +77,7 @@ vector2 NearestOnLine(line Line, vector2 Point)
 enum class meta_member_type {
 	uint8, uint16, uint32,
 	int8, int16, int32, int64,
-	real32, real64,
+	real32, real64, bool32,
 
 	// structs / classes / custom types
 	custom, enumeration

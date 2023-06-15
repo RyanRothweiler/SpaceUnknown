@@ -96,6 +96,15 @@ namespace save_data {
 				}
 			} break;
 
+			case meta_member_type::bool32: {
+				if (Direction == direction::write) {
+					Pair->Data.b32 = *(bool32*)Data;
+				} else if (Direction == direction::read && Pair != GameNull) {
+					bool32* D = (bool32*)Data;
+					*D = Pair->Data.b32;
+				}
+			} break;
+
 			case meta_member_type::uint16: {
 				if (Direction == direction::write) {
 					Pair->Data.ui16 = *(uint16*)Data;

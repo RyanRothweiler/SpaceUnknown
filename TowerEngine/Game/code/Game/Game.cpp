@@ -713,17 +713,17 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						CurrentShip->Velocity = {};
 
 						CurrentShip->CurrentJourney.Execute();
-						CurrentShip->CurrentJourney.Steps[0].Start(CurrentShip, &CurrentShip->CurrentJourney.Steps[0], State);
+						journey_methods::Start(CurrentShip->CurrentJourney.Steps[0].Type)(CurrentShip, &CurrentShip->CurrentJourney.Steps[0], State);
 
 						while (
-						    !CurrentShip->CurrentJourney.Steps[0].Step(CurrentShip, &CurrentShip->CurrentJourney.Steps[0], TimeStepMS, State)
+							!(journey_methods::Step(CurrentShip->CurrentJourney.Steps[0].Type)(CurrentShip, &CurrentShip->CurrentJourney.Steps[0], TimeStepMS, State))
 						) {
 							TotalSimTime += TimeStepMS;
 						}
 
 						CurrentShip->Persist->Position = PosOrig;
 						CurrentShip->Velocity = {};
-						CurrentShip->IsMoving = false;
+						CurrentShip->Persist->IsMoving = false;
 
 						uint64 End = PlatformApi.QueryPerformanceCounter();
 						uint64 Count = End - Start;

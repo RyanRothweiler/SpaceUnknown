@@ -183,6 +183,7 @@ std::vector<std::string> PrimitiveTypes = {
 	"uint32", "uint16", "uint8",
 	"int32", "int16", "int8", "int64",
 	"real32", "real64",
+	"bool32"
 };
 
 std::vector<std::string> EnumTypes = std::vector<std::string>();

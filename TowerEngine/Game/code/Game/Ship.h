@@ -105,7 +105,6 @@ struct ship_definition {
 
 struct ship {
 	ship_persistent* Persist;
-
 	ship_definition Definition;
 
 	ship_module EquippedModules[64];
@@ -116,7 +115,6 @@ struct ship {
 	vector2 Velocity;
 	vector2 Size;
 
-	bool32 IsMoving;
 	ship_journey CurrentJourney;
 
 	stepper Stepper;

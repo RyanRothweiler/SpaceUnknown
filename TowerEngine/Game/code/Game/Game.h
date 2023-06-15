@@ -28,10 +28,10 @@ typedef void(*journey_step_start_func)(ship* Ship, journey_step* JourneyStep, st
 // returns true if finished
 typedef bool(*journey_step_func)(ship* Ship, journey_step* JourneyStep, real64 Time, state* State);
 
-struct journey_movement {
+MetaStruct struct journey_movement {
 	// settings
 	vector2 EndPosition;
-	float EdgeRatio;
+	real64 EdgeRatio;
 
 	real64 FullDistance;
 	vector2 DirToEnd;
@@ -58,9 +58,6 @@ struct journey_step {
 	journey_movement Movement;
 	journey_dock_undock DockUndock;
 	// -----
-
-	journey_step_start_func Start;
-	journey_step_func Step;
 };
 
 struct ship_journey {
@@ -191,6 +188,8 @@ MetaStruct struct ship_persistent {
 
 	vector2 Position;
 	real64 Rotation;
+
+	bool32 IsMoving;
 
 	item_hold_persistent ItemHold;
 	item_hold_persistent FuelHold;

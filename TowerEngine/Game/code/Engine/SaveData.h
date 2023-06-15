@@ -22,6 +22,8 @@ namespace save_data {
 
 			real32 r32;
 			real64 r64;
+
+			bool32 b32;
 		} Data;
 	};
 
