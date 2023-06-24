@@ -353,6 +353,7 @@ struct state {
 	int32 SelectablesCount;
 
 	bool32 ForwardSimulating;
+	real64 ForwardSimulatingTimeRemaining;
 
 	item_instance_persistent* ItemDragging;
 	item_hold* HoldItemDraggingFrom;

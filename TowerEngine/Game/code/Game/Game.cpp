@@ -222,10 +222,11 @@ void LoadGame(state* State)
 		using std::chrono::system_clock;
 		int64 CurrentSinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
 		int64 FileSinceEpoch = State->PersistentData.RealTimeSaved;
-		real64 MissingMS = (real64)(CurrentSinceEpoch - FileSinceEpoch);
-		real64 MissingMSStart = MissingMS;
+		State->ForwardSimulatingTimeRemaining = (real64)(CurrentSinceEpoch - FileSinceEpoch);
 
-		string P = "Simulating " + string{MissingMS} + " ms of missing time";
+		real64 MissingMSStart = State->ForwardSimulatingTimeRemaining;
+
+		string P = "Simulating " + string{State->ForwardSimulatingTimeRemaining} + " ms of missing time";
 		ConsoleLog(P.Array());
 
 		State->ForwardSimulating = true;
@@ -234,19 +235,21 @@ void LoadGame(state* State)
 
 		float SimFPS = 15.0f;
 		float TimeStepMS = (1.0f / SimFPS) * 1000.0f;
-		while (MissingMS > SimFPS) {
+		while (State->ForwardSimulatingTimeRemaining > TimeStepMS) {
 			StepUniverse(State, TimeStepMS);
-			MissingMS -= TimeStepMS;
+
+			State->ForwardSimulatingTimeRemaining -= TimeStepMS;
 
 			Flicker--;
 			if (Flicker <= 0) {
 				Flicker = 2000;
-				real64 PercDone = 100.0f - ((MissingMS / MissingMSStart) * 100.0f);
+				real64 PercDone = 100.0f - ((State->ForwardSimulatingTimeRemaining / MissingMSStart) * 100.0f);
 				string PercDisp = string{PercDone};
 				ConsoleLog(PercDisp);
 			}
 		}
-		StepUniverse(State, MissingMS);
+
+		StepUniverse(State, State->ForwardSimulatingTimeRemaining);
 
 		State->ForwardSimulating = false;
 	}

@@ -23,7 +23,7 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 	real64 fuelToUse = Mov->CachedFuelToUse;
 	real64 fuelForce = Mov->CachedFuelForce;
 	vector2 dirToTargetForce = Mov->CachedDirToTargetForce;
-	if (TimeMS != Mov->CachedTime) {
+	if (TimeMS != Mov->CachedTime || true) {
 		real64 FuelForceFinal = fuelForcePerGallon + (fuelForcePerGallon);
 
 		fuelToUse = Ship->Definition.FuelRateMassPerSecond * TimeSeconds;
@@ -81,18 +81,34 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 	} else {
 
 		// If we're simulating, then we can sleep until the ship need to slow down
-		// TODO we will need to check for when the simulating ends and wake up then
 		if (State->ForwardSimulating) {
+
+			// Stop the sleep when the ships stops coasting, or when the simulating time finishes.
+			
 			// Figure out when the ship will start slowing down
 			real64 CoastDist = Mov->FullDistance - (Mov->DistFromSidesToCoast * 2.0f);
 			real64 CoastSpeed = Vector2Length(Ship->Persist->Velocity);
 			real64 CoastDurationSeconds = CoastDist / CoastSpeed;
 
-			SleepStepper(State, &Ship->Stepper, SecondsToMilliseconds(CoastDurationSeconds));
+			if (State->ForwardSimulatingTimeRemaining < SecondsToMilliseconds(CoastDurationSeconds)) {
+				// Sleep ends before the ship finishes coasting
 
-			// Move ship to the point at which we want it to be when it wakes up. Probably fine maybe?
-			vector2 SlowStartingPos = Mov->EndPosition - (Mov->DirToEnd * Mov->DistFromSidesToCoast);
-			Ship->Persist->Position = SlowStartingPos;
+				vector2 EndPos = Ship->Persist->Position + ((float)MillisecondsToSeconds(State->ForwardSimulatingTimeRemaining) * Ship->Persist->Velocity);
+				Ship->Persist->Position = EndPos;
+
+				SleepStepper(State, &Ship->Stepper, State->ForwardSimulatingTimeRemaining);
+				return false;
+
+			} else {
+				// Sleep ends after ship finishes coasting
+
+				// Move Ship to end of coast
+				vector2 SlowStartingPos = Mov->EndPosition - (Mov->DirToEnd * Mov->DistFromSidesToCoast);
+				Ship->Persist->Position = SlowStartingPos;
+
+				SleepStepper(State, &Ship->Stepper, SecondsToMilliseconds(CoastDurationSeconds));
+				return false;
+			}
 		}
 	}
 
