@@ -166,19 +166,20 @@ void ShipStep(void* SelfData, real64 Time, state* State)
 void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 {
 	ship_module* Module = (ship_module*)SelfData;
+	ship* Owner = per::GetShip(&Module->Persist->Owner, State);
 
 	Module->Target.Clear();
 
 	bool32 Skip = false;
 
 	// If no cargo space then do nothing
-	if (Module->Owner->Hold.MassCurrent == Module->Owner->Hold.MassLimit) { Skip = true; }
+	if (Owner->Hold.MassCurrent == Owner->Hold.MassLimit) { Skip = true; }
 
 	// Can only work when the ship is idle
-	if (Module->Owner->Persist->Status != ship_status::idle) { Skip = true; }
+	if (Owner->Persist->Status != ship_status::idle) { Skip = true; }
 
 	if (Skip) {
-		Module->ActivationTimerMS = 0.0f;
+		Module->Persist->ActivationTimerMS = 0.0f;
 		return;
 	}
 
@@ -187,7 +188,7 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 		for (int a = 0; a < ArrayCount(Cluster->Asteroids) && !Module->Target.HasTarget(); a++) {
 			asteroid* Roid = &Cluster->Asteroids[a];
 			if (Roid->Using) {
-				real64 Dist = Vector2Distance(Roid->WorldObject.Position, Module->Owner->Persist->Position);
+				real64 Dist = Vector2Distance(Roid->WorldObject.Position, Owner->Persist->Position);
 				if (Dist < Module->Definition.ActivationRange) {
 					Module->Target.Set(Roid);
 				}
@@ -196,16 +197,16 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 	}
 
 	if (Module->Target.HasTarget()) {
-		Module->ActivationTimerMS += Time;
-		if (Module->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
-			Module->ActivationTimerMS = 0.0f;
+		Module->Persist->ActivationTimerMS += Time;
+		if (Module->Persist->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
+			Module->Persist->ActivationTimerMS = 0.0f;
 
 			// Do module thing
 
 			asteroid* Roid = Module->Target.GetAsteroid();
 
 			int Amount = SubtractAvailable(&Roid->OreCount, 2);
-			ItemGive(&Module->Owner->Hold, Roid->OreItem, Amount);
+			ItemGive(&Owner->Hold, Roid->OreItem, Amount);
 
 			if (Roid->OreCount <= 0) {
 				AsteroidDestroy(Roid, State);
@@ -213,39 +214,40 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 
 		}
 	} else {
-		Module->ActivationTimerMS = 0.0f;
+		Module->Persist->ActivationTimerMS = 0.0f;
 	}
 }
 
 void ModuleUpdateSalvager(void* SelfData, real64 Time, state* State)
 {
 	ship_module* Module = (ship_module*)SelfData;
+	ship* Owner = per::GetShip(&Module->Persist->Owner, State);
 
 	Module->Target.Clear();
 
 	bool32 Skip = false;
 
 	// Can only work when the ship is idle
-	if (Module->Owner->Persist->Status != ship_status::idle) { Skip = true; }
+	if (Owner->Persist->Status != ship_status::idle) { Skip = true; }
 
 	if (Skip) {
-		Module->ActivationTimerMS = 0.0f;
+		Module->Persist->ActivationTimerMS = 0.0f;
 		return;
 	}
 
 	for (int i = 0; i < State->SalvagesCount && !Module->Target.HasTarget(); i++) {
 		salvage* Sal = &State->Salvages[i];
 
-		real64 Dist = Vector2Distance(Sal->WorldObject.Position, Module->Owner->Persist->Position);
+		real64 Dist = Vector2Distance(Sal->WorldObject.Position, Owner->Persist->Position);
 		if (Dist < Module->Definition.ActivationRange) {
 			Module->Target.Set(Sal);
 		}
 	}
 
 	if (Module->Target.HasTarget()) {
-		Module->ActivationTimerMS += Time;
-		if (Module->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
-			Module->ActivationTimerMS = 0.0f;
+		Module->Persist->ActivationTimerMS += Time;
+		if (Module->Persist->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
+			Module->Persist->ActivationTimerMS = 0.0f;
 
 			// Do module thing
 
@@ -256,7 +258,7 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, state* State)
 			}
 		}
 	} else {
-		Module->ActivationTimerMS = 0.0f;
+		Module->Persist->ActivationTimerMS = 0.0f;
 	}
 }
 
@@ -275,7 +277,7 @@ void CreateDockUndockStep(ship* Ship, station* Station)
 	journey_step* Step = journey::AddStep(&Ship->Persist->CurrentJourney);
 	Step->Type = journey_step_type::dock_undock;
 
-	per::Set(&Step->DockUndock.Station, Station);
+	per::SetStation(&Step->DockUndock.Station, Station);
 }
 
 void CreateMovementStep(ship* Ship, vector2 EndPos)
@@ -289,16 +291,18 @@ void CreateMovementStep(ship* Ship, vector2 EndPos)
 
 void ShipAddModule(ship_module* Dest, ship_module_id ModuleID, ship* Ship, state* State)
 {
-	Dest->Filled = true;
+	Dest->Persist->Filled = true;
+	Dest->Persist->Type = ModuleID;
+
 	Dest->Definition = Globals->AssetsList.ShipModuleDefinitions[(int)ModuleID];
-	Dest->Owner = Ship;
+	per::SetShip(&Dest->Persist->Owner, Ship);
 
 	RegisterStepper(&Dest->Stepper, Dest->Definition.ActivationStepMethod, (void*)(Dest), State);
 }
 
 void ShipRemoveModule(ship_module* Module, state* State)
 {
-	Module->Filled = false;
+	Module->Persist->Filled = false;
 	Module->Definition = {};
 	UnregisterStepper(&Module->Stepper, State);
 }
@@ -394,7 +398,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 		for (int i = 0; i < CurrentShip->Definition.SlotsCount; i++) {
 			ship_module* Module = &CurrentShip->EquippedModules[i];
 
-			if (Module->Filled != GameNull) {
+			if (Module->Persist->Filled != GameNull) {
 
 				loaded_image* Icon = Globals->AssetsList.ShipModuleIcons[(int)Module->Definition.ID];
 				ImGui::Image(
@@ -430,7 +434,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				ImGui::BeginGroup();
 
 				ImGui::Text(Module->Definition.DisplayName.Array());
-				float Progress = (float)(Module->ActivationTimerMS / Module->Definition.ActivationTimeMS);
+				float Progress = (float)(Module->Persist->ActivationTimerMS / Module->Definition.ActivationTimeMS);
 				ImGui::ProgressBar(Progress, ImVec2(-1.0f, 1.0f));
 
 				ImGui::EndGroup();
@@ -524,8 +528,8 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				} break;
 
 				case journey_step_type::dock_undock: {
-					JourneyPosCurrent = per::Get(&Step->DockUndock.Station, State)->Persist->Position;
-					LastStation = per::Get(&Step->DockUndock.Station, State);
+					JourneyPosCurrent = per::GetStation(&Step->DockUndock.Station, State)->Persist->Position;
+					LastStation = per::GetStation(&Step->DockUndock.Station, State);
 					if (DockState) {
 						ImGui::Text("Undock");
 					} else {
@@ -579,7 +583,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 					if (CurrentShip->Persist->Status == ship_status::docked) {
 						CreateDockUndockStep(
 								CurrentShip, 
-								per::Get(&CurrentShip->Persist->StationDocked, State)
+								per::GetStation(&CurrentShip->Persist->StationDocked, State)
 						);
 						CreateMovementStep(CurrentShip, MouseWorldFlat);
 					} else if (DockState) {
@@ -603,11 +607,32 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	if (!Showing) { Sel->Clear(); }
 }
 
+void ShipSetPersist(ship* Ship, ship_persistent* Persist, state* State) {
+	Ship->Persist = Persist;
+
+	// Setup modules from the persist
+	for (int i = 0; i < ArrayCount(Persist->Modules); i++) {
+		Ship->EquippedModules[i].Persist = &Persist->Modules[i];
+		Ship->EquippedModules[i].Definition = Globals->AssetsList.ShipModuleDefinitions[(int)Ship->EquippedModules[i].Persist->Type];
+
+//void ShipAddModule(ship_module* Dest, ship_module_id ModuleID, ship* Ship, state* State)
+
+		if (Ship->EquippedModules[i].Persist->Filled) { 
+			ship_module* Mod = &Ship->EquippedModules[i];
+			RegisterStepper(&Mod->Stepper, Mod->Definition.ActivationStepMethod, (void*)(Mod), State);
+		}
+	}
+}
+
 // Create a new ship
 ship* ShipCreate(state* State, ship_id Type) {
 
 	ship* Ship = &State->Ships[State->PersistentData.ShipsCount];
-	Ship->Persist = &State->PersistentData.Ships[State->PersistentData.ShipsCount];
+	ShipSetPersist(
+			Ship, 
+			&State->PersistentData.Ships[State->PersistentData.ShipsCount],
+			State
+	);
 
 	State->PersistentData.ShipsCount++;
 	Assert(ArrayCount(State->PersistentData.Ships) > State->PersistentData.ShipsCount);
@@ -616,25 +641,29 @@ ship* ShipCreate(state* State, ship_id Type) {
 	Ship->Persist->Type = Type;
 	Ship->Persist->Status = ship_status::idle;
 
+	// TODO setup modules
+	ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
+	//ShipAddModule(&Ship->EquippedModules[3], ship_module_id::salvager_i, Ship, State);
+
 	return Ship;
 }
 
 // Setup data for exising ship
 ship* ShipSetup(ship* Ship, ship_persistent* Persist, state* State)
 {
-	Ship->Persist = Persist;
+	ShipSetPersist(Ship, Persist, State);
+
+	// Validate module counts
+	Assert(ArrayCount(Ship->EquippedModules) == ArrayCount(Persist->Modules));
 
 	Ship->Size = vector2{5, 5};
 	Ship->Definition = Globals->AssetsList.ShipDefinitions[(int)Ship->Persist->Type];
 
+	// Setup item holds
 	Ship->Hold.Setup(Ship->Definition.HoldMass, &Ship->Persist->ItemHold);
 	Ship->FuelTank.Setup(Ship->Definition.FuelTankMassLimit, &Ship->Persist->FuelHold);
-
 	ItemHoldUpdateMass(&Ship->Hold);
 	ItemHoldUpdateMass(&Ship->FuelTank);
-
-	//ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
-	ShipAddModule(&Ship->EquippedModules[3], ship_module_id::salvager_i, Ship, State);
 
 	RegisterStepper(&Ship->Stepper, &ShipStep, (void*)Ship, State);
 
@@ -643,5 +672,8 @@ ship* ShipSetup(ship* Ship, ship_persistent* Persist, state* State)
 	Sel->OnSelection = &OnShipSelected;
 
 	ShipUpdateMass(Ship);
+
+	per::AddSource(Ship->Persist->GUID, Ship, State);
+
 	return Ship;
 }

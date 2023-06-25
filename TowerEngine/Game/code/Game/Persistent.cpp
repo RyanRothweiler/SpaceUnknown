@@ -17,29 +17,56 @@ namespace per {
 		Pointer->Data = GameNull;
 	}
 
-	// Station -----------------------
-	void AddSource(uint32 GUID, station* Data, state* State)
-	{ 
+	// Add source -------------
+	void AddSourceTyped(uint32 GUID, void* Data, persistent_pointer_type Type, state* State) {
 		persistent_pointer Pointer = {};
 		Pointer.GUID = GUID;
 		Pointer.Data = Data;
-		Pointer.Type = persistent_pointer_type::station;
+		Pointer.Type = Type;
 
 		hash::Add(&State->PersistentPointerSources, GUID, (void*)(&Pointer), sizeof(persistent_pointer), GlobalPermMem);
 	}
+	
+	void AddSource(uint32 GUID, station* Data, state* State)
+	{
+		AddSourceTyped(GUID, (void*)Data, persistent_pointer_type::station, State);
+	}
 
-	station* Get(persistent_pointer* Pointer, state* State)  
+	void AddSource(uint32 GUID, ship* Data, state* State)
+	{
+		AddSourceTyped(GUID, (void*)Data, persistent_pointer_type::ship, State);
+	}
+
+	//--------------------------------
+
+	// Get ----------------
+	
+	station* GetStation(persistent_pointer* Pointer, state* State)  
 	{
 		Resolve(Pointer, persistent_pointer_type::station, State);
 		return (station*)Pointer->Data;
 	}
 
-	void Set(persistent_pointer* Pointer, station* Station) {
+	ship* GetShip(persistent_pointer* Pointer, state* State)  
+	{
+		Resolve(Pointer, persistent_pointer_type::ship, State);
+		return (ship*)Pointer->Data;
+	}
+
+	//--------------------------------
+
+	// Set -----------------
+	 
+	void SetStation(persistent_pointer* Pointer, station* Station) {
 		Pointer->Type = persistent_pointer_type::station;
 		Pointer->Data = (void*)Station;
 		Pointer->GUID = Station->Persist->GUID;
 	}
 
+	void SetShip(persistent_pointer* Pointer, ship* Ship) {
+		Pointer->Type = persistent_pointer_type::ship;
+		Pointer->Data = (void*)Ship;
+		Pointer->GUID = Ship->Persist->GUID;
+	}
 	//--------------------------------
-
 };

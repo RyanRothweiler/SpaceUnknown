@@ -23,7 +23,7 @@ const real64 UnitToMeters = 10.0f;
 // -----------------------------------------------------------------------------
 //
 MetaStruct enum class persistent_pointer_type {
-	none, station, 
+	none, station, ship,
 };
 
 MetaStruct struct persistent_pointer {
@@ -166,7 +166,18 @@ MetaStruct enum class ship_status {
 	idle, moving, docking, undocking, docked
 };
 
+MetaStruct struct ship_module_persistent {
+	bool32 Filled;
+	ship_module_id Type;
+
+	persistent_pointer Owner;
+
+	real64 ActivationTimerMS;
+};
+
 MetaStruct struct ship_persistent {
+	int32 GUID;
+
 	ship_status Status;
 	ship_id Type;
 
@@ -180,6 +191,8 @@ MetaStruct struct ship_persistent {
 
 	item_hold_persistent ItemHold;
 	item_hold_persistent FuelHold;
+
+	ship_module_persistent Modules[16];
 };
 
 MetaStruct struct converter_persistent {

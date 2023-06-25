@@ -855,7 +855,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 				// Janky but whatever. Would need to use the transform scene hierarchy to improve
 				if (Ship->Persist->Status == ship_status::docked) {
-					station* StationDocked = per::Get(&Ship->Persist->StationDocked, State);
+					station* StationDocked = per::GetStation(&Ship->Persist->StationDocked, State);
 					Ship->Persist->Rotation = StationDocked->Rotation;
 
 					int DocksCount = 10;
@@ -930,7 +930,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				// Render ship module effects
 				for (int m = 0; m < ArrayCount(Ship->EquippedModules); m++) {
 					ship_module* Module = &Ship->EquippedModules[m];
-					if (Module->Filled && Module->Target.HasTarget()) {
+					if (Module->Persist->Filled && Module->Target.HasTarget()) {
 						vector2 Points[2] = {};
 						Points[0] = WorldToScreen(vector3{Ship->Persist->Position.X, Ship->Persist->Position.Y, 0}, &EngineState->GameCamera);
 						Points[1] = WorldToScreen(vector3{Module->Target.GetTargetPosition().X, Module->Target.GetTargetPosition().Y, 0}, &EngineState->GameCamera);

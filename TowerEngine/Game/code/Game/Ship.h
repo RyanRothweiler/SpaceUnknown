@@ -78,13 +78,12 @@ struct world_target {
 };
 
 struct ship_module {
-	bool32 Filled;
+	ship_module_persistent* Persist;
 
 	ship_module_definition Definition;
 	stepper Stepper;
-	real64 ActivationTimerMS;
-	ship* Owner;
 
+	// move to persist
 	world_target Target;
 }; 
 
@@ -107,7 +106,8 @@ struct ship {
 	ship_persistent* Persist;
 	ship_definition Definition;
 
-	ship_module EquippedModules[64];
+	// TODO rename this to just modules
+	ship_module EquippedModules[16];
 
 	item_hold Hold;
 	item_hold FuelTank;

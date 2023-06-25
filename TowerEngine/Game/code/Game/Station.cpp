@@ -262,12 +262,12 @@ void StationDockShip(station * Station, ship * Ship)
 
 	Ship->Persist->Position = P;
 	Ship->Persist->Status = ship_status::docked;
-	per::Set(&Ship->Persist->StationDocked, Station);
+	per::SetStation(&Ship->Persist->StationDocked, Station);
 }
 
 void StationUndockShip(ship * Ship, state* State)
 {
-	station* StationDocked = per::Get(&Ship->Persist->StationDocked, State);
+	station* StationDocked = per::GetStation(&Ship->Persist->StationDocked, State);
 	per::Clear(&Ship->Persist->StationDocked);
 	Ship->Persist->Status = ship_status::idle;
 }
