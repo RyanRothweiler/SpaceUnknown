@@ -21,9 +21,9 @@ char* ImguiShipModuleUnequippingDraggingID = "SHIP_MODULE_UNEQUIP";
 
 const real64 UnitToMeters = 10.0f;
 // -----------------------------------------------------------------------------
-//
+
 MetaStruct enum class persistent_pointer_type {
-	none, station, ship,
+	none, station, ship, asteroid
 };
 
 MetaStruct struct persistent_pointer {
@@ -32,6 +32,20 @@ MetaStruct struct persistent_pointer {
 	void* Data;
 };
 
+MetaStruct enum class world_target_type {
+	none, asteroid, salvage
+};
+
+struct asteroid;
+struct salvage;
+
+MetaStruct struct world_target_persistent {
+	world_target_type Type;
+
+	persistent_pointer Asteroid;
+	//asteroid* Asteroid;
+	salvage* Salvage;
+};
 
 enum class game_scene { universe, skill_tree };
 
@@ -196,12 +210,15 @@ MetaStruct struct ship_module_persistent {
 	bool32 Filled;
 	ship_module_id Type;
 
+	world_target_persistent Target;
 	persistent_pointer Owner;
 
 	real64 ActivationTimerMS;
 };
 
 MetaStruct struct asteroid_persistent {
+	uint32 GUID;
+
 	int32 OreCount;
 	item_id OreItem;
 	bool32 Using;

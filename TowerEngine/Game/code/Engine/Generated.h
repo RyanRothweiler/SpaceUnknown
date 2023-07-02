@@ -49,6 +49,7 @@ string persistent_pointer_type_NAME[] {
 "none",
 "station",
 "ship",
+"asteroid",
 }; 
 meta_member persistent_pointer_META[] { 
 {meta_member_type::enumeration, "persistent_pointer_type", "Type", (uint64)&((persistent_pointer *)0)->Type, 0, sizeof(persistent_pointer_type),{},{},{},{},{}},
@@ -82,6 +83,43 @@ void JsonFillStructShim_persistent_pointer (json::json_data* JsonData, string Ke
 return json::FillStruct(JsonData, KeyParent, &persistent_pointer_META[0], ArrayCount(persistent_pointer_META), DataDest);
 }
 
+string world_target_type_NAME[] { 
+"none",
+"asteroid",
+"salvage",
+}; 
+meta_member world_target_persistent_META[] { 
+{meta_member_type::enumeration, "world_target_type", "Type", (uint64)&((world_target_persistent *)0)->Type, 0, sizeof(world_target_type),{},{},{},{},{}},
+{meta_member_type::custom, "persistent_pointer", "Asteroid", (uint64)&((world_target_persistent *)0)->Asteroid, 0, sizeof(persistent_pointer),&StructMetaFill_persistent_pointer, &JsonFillStructShim_persistent_pointer, &SaveDataFillShim_persistent_pointer, &persistent_pointer_META[0], ArrayCount(persistent_pointer_META) },
+}; 
+ 
+void M_ALLOC__world_target_persistent(s_void* SafeVoid, memory_arena* Memory) { 
+	SafeVoid->IsAllocated = true; 
+	SafeVoid->Type = 3; 
+	SafeVoid->DataSize = sizeof(world_target_persistent); 
+	SafeVoid->Data = ArenaAllocate(Memory, sizeof(world_target_persistent)); 
+	ClearMemory((uint8*)SafeVoid->Data, sizeof(world_target_persistent)); 
+};
+
+world_target_persistent* M_GET__world_target_persistent(s_void* SafeVoid) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 3) { 
+		return (world_target_persistent*)SafeVoid->Data; 
+	} 
+	return GameNull; 
+};
+
+void StructMetaFill_world_target_persistent (json::struct_string_return* Dest,  void* AccData){
+return json::StructMetaFill(Dest, &world_target_persistent_META[0], ArrayCount(world_target_persistent_META), AccData);
+}
+
+void SaveDataFillShim_world_target_persistent (save_data::member* Dest, string KeyParent, void* AccData){
+return save_data::AddMembers(Dest, KeyParent, &world_target_persistent_META[0], ArrayCount(world_target_persistent_META), AccData);
+}
+
+void JsonFillStructShim_world_target_persistent (json::json_data* JsonData, string KeyParent, void* DataDest){
+return json::FillStruct(JsonData, KeyParent, &world_target_persistent_META[0], ArrayCount(world_target_persistent_META), DataDest);
+}
+
 meta_member journey_movement_META[] { 
 {meta_member_type::custom, "vector2", "EndPosition", (uint64)&((journey_movement *)0)->EndPosition, 0, sizeof(vector2),&StructMetaFill_vector2, &JsonFillStructShim_vector2, &SaveDataFillShim_vector2, &vector2_META[0], ArrayCount(vector2_META) },
 {meta_member_type::real64, "real64", "EdgeRatio", (uint64)&((journey_movement *)0)->EdgeRatio, 0, sizeof(real64),{},{},{},{},{}},
@@ -97,14 +135,14 @@ meta_member journey_movement_META[] {
  
 void M_ALLOC__journey_movement(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 3; 
+	SafeVoid->Type = 4; 
 	SafeVoid->DataSize = sizeof(journey_movement); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(journey_movement)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(journey_movement)); 
 };
 
 journey_movement* M_GET__journey_movement(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 3) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 4) { 
 		return (journey_movement*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -129,14 +167,14 @@ meta_member journey_dock_undock_META[] {
  
 void M_ALLOC__journey_dock_undock(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 4; 
+	SafeVoid->Type = 5; 
 	SafeVoid->DataSize = sizeof(journey_dock_undock); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(journey_dock_undock)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(journey_dock_undock)); 
 };
 
 journey_dock_undock* M_GET__journey_dock_undock(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 4) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 5) { 
 		return (journey_dock_undock*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -166,14 +204,14 @@ meta_member journey_step_META[] {
  
 void M_ALLOC__journey_step(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 5; 
+	SafeVoid->Type = 6; 
 	SafeVoid->DataSize = sizeof(journey_step); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(journey_step)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(journey_step)); 
 };
 
 journey_step* M_GET__journey_step(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 5) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 6) { 
 		return (journey_step*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -201,14 +239,14 @@ meta_member ship_journey_META[] {
  
 void M_ALLOC__ship_journey(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 6; 
+	SafeVoid->Type = 7; 
 	SafeVoid->DataSize = sizeof(ship_journey); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ship_journey)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ship_journey)); 
 };
 
 ship_journey* M_GET__ship_journey(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 6) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 7) { 
 		return (ship_journey*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -247,14 +285,14 @@ meta_member item_instance_persistent_META[] {
  
 void M_ALLOC__item_instance_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 7; 
+	SafeVoid->Type = 8; 
 	SafeVoid->DataSize = sizeof(item_instance_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(item_instance_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(item_instance_persistent)); 
 };
 
 item_instance_persistent* M_GET__item_instance_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 7) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 8) { 
 		return (item_instance_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -279,14 +317,14 @@ meta_member item_hold_persistent_META[] {
  
 void M_ALLOC__item_hold_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 8; 
+	SafeVoid->Type = 9; 
 	SafeVoid->DataSize = sizeof(item_hold_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(item_hold_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(item_hold_persistent)); 
 };
 
 item_hold_persistent* M_GET__item_hold_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 8) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 9) { 
 		return (item_hold_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -319,14 +357,14 @@ meta_member color_persistent_META[] {
  
 void M_ALLOC__color_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 9; 
+	SafeVoid->Type = 10; 
 	SafeVoid->DataSize = sizeof(color_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(color_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(color_persistent)); 
 };
 
 color_persistent* M_GET__color_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 9) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 10) { 
 		return (color_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -354,14 +392,14 @@ meta_member world_object_META[] {
  
 void M_ALLOC__world_object(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 10; 
+	SafeVoid->Type = 11; 
 	SafeVoid->DataSize = sizeof(world_object); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(world_object)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(world_object)); 
 };
 
 world_object* M_GET__world_object(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 10) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 11) { 
 		return (world_object*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -393,20 +431,21 @@ string ship_status_NAME[] {
 meta_member ship_module_persistent_META[] { 
 {meta_member_type::bool32, "bool32", "Filled", (uint64)&((ship_module_persistent *)0)->Filled, 0, sizeof(bool32),{},{},{},{},{}},
 {meta_member_type::enumeration, "ship_module_id", "Type", (uint64)&((ship_module_persistent *)0)->Type, 0, sizeof(ship_module_id),{},{},{},{},{}},
+{meta_member_type::custom, "world_target_persistent", "Target", (uint64)&((ship_module_persistent *)0)->Target, 0, sizeof(world_target_persistent),&StructMetaFill_world_target_persistent, &JsonFillStructShim_world_target_persistent, &SaveDataFillShim_world_target_persistent, &world_target_persistent_META[0], ArrayCount(world_target_persistent_META) },
 {meta_member_type::custom, "persistent_pointer", "Owner", (uint64)&((ship_module_persistent *)0)->Owner, 0, sizeof(persistent_pointer),&StructMetaFill_persistent_pointer, &JsonFillStructShim_persistent_pointer, &SaveDataFillShim_persistent_pointer, &persistent_pointer_META[0], ArrayCount(persistent_pointer_META) },
 {meta_member_type::real64, "real64", "ActivationTimerMS", (uint64)&((ship_module_persistent *)0)->ActivationTimerMS, 0, sizeof(real64),{},{},{},{},{}},
 }; 
  
 void M_ALLOC__ship_module_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 11; 
+	SafeVoid->Type = 12; 
 	SafeVoid->DataSize = sizeof(ship_module_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ship_module_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ship_module_persistent)); 
 };
 
 ship_module_persistent* M_GET__ship_module_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 11) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 12) { 
 		return (ship_module_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -425,6 +464,7 @@ return json::FillStruct(JsonData, KeyParent, &ship_module_persistent_META[0], Ar
 }
 
 meta_member asteroid_persistent_META[] { 
+{meta_member_type::uint32, "uint32", "GUID", (uint64)&((asteroid_persistent *)0)->GUID, 0, sizeof(uint32),{},{},{},{},{}},
 {meta_member_type::int32, "int32", "OreCount", (uint64)&((asteroid_persistent *)0)->OreCount, 0, sizeof(int32),{},{},{},{},{}},
 {meta_member_type::enumeration, "item_id", "OreItem", (uint64)&((asteroid_persistent *)0)->OreItem, 0, sizeof(item_id),{},{},{},{},{}},
 {meta_member_type::bool32, "bool32", "Using", (uint64)&((asteroid_persistent *)0)->Using, 0, sizeof(bool32),{},{},{},{},{}},
@@ -434,14 +474,14 @@ meta_member asteroid_persistent_META[] {
  
 void M_ALLOC__asteroid_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 12; 
+	SafeVoid->Type = 13; 
 	SafeVoid->DataSize = sizeof(asteroid_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(asteroid_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(asteroid_persistent)); 
 };
 
 asteroid_persistent* M_GET__asteroid_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 12) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 13) { 
 		return (asteroid_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -468,14 +508,14 @@ meta_member asteroid_cluster_persistent_META[] {
  
 void M_ALLOC__asteroid_cluster_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 13; 
+	SafeVoid->Type = 14; 
 	SafeVoid->DataSize = sizeof(asteroid_cluster_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(asteroid_cluster_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(asteroid_cluster_persistent)); 
 };
 
 asteroid_cluster_persistent* M_GET__asteroid_cluster_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 13) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 14) { 
 		return (asteroid_cluster_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -509,14 +549,14 @@ meta_member ship_persistent_META[] {
  
 void M_ALLOC__ship_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 14; 
+	SafeVoid->Type = 15; 
 	SafeVoid->DataSize = sizeof(ship_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ship_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ship_persistent)); 
 };
 
 ship_persistent* M_GET__ship_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 14) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 15) { 
 		return (ship_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -542,14 +582,14 @@ meta_member converter_persistent_META[] {
  
 void M_ALLOC__converter_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 15; 
+	SafeVoid->Type = 16; 
 	SafeVoid->DataSize = sizeof(converter_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(converter_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(converter_persistent)); 
 };
 
 converter_persistent* M_GET__converter_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 15) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 16) { 
 		return (converter_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -577,14 +617,14 @@ meta_member station_persistent_META[] {
  
 void M_ALLOC__station_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 16; 
+	SafeVoid->Type = 17; 
 	SafeVoid->DataSize = sizeof(station_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(station_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(station_persistent)); 
 };
 
 station_persistent* M_GET__station_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 16) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 17) { 
 		return (station_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -616,14 +656,14 @@ meta_member save_file_META[] {
  
 void M_ALLOC__save_file(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 17; 
+	SafeVoid->Type = 18; 
 	SafeVoid->DataSize = sizeof(save_file); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(save_file)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(save_file)); 
 };
 
 save_file* M_GET__save_file(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 17) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 18) { 
 		return (save_file*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -653,14 +693,14 @@ meta_member ryan_type_META[] {
  
 void M_ALLOC__ryan_type(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 18; 
+	SafeVoid->Type = 19; 
 	SafeVoid->DataSize = sizeof(ryan_type); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ryan_type)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ryan_type)); 
 };
 
 ryan_type* M_GET__ryan_type(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 18) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 19) { 
 		return (ryan_type*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -693,14 +733,14 @@ meta_member skill_bonuses_META[] {
  
 void M_ALLOC__skill_bonuses(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 19; 
+	SafeVoid->Type = 20; 
 	SafeVoid->DataSize = sizeof(skill_bonuses); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(skill_bonuses)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(skill_bonuses)); 
 };
 
 skill_bonuses* M_GET__skill_bonuses(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 19) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 20) { 
 		return (skill_bonuses*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -729,14 +769,14 @@ meta_member skill_node_persistent_META[] {
  
 void M_ALLOC__skill_node_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 20; 
+	SafeVoid->Type = 21; 
 	SafeVoid->DataSize = sizeof(skill_node_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(skill_node_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(skill_node_persistent)); 
 };
 
 skill_node_persistent* M_GET__skill_node_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 20) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 21) { 
 		return (skill_node_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 

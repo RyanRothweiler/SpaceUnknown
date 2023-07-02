@@ -1,3 +1,43 @@
+void WorldTargetSet(world_target_persistent* Target, asteroid* Input) { 
+	Target->Type = world_target_type::asteroid;
+	per::SetAsteroid(&Target->Asteroid, Input);
+}
+
+void WorldTargetSet(world_target_persistent* Target, salvage* Input) { 
+	Target->Type = world_target_type::salvage;
+	Target->Salvage = Input;
+}
+
+void WorldTargetClear(world_target_persistent* Target) { 
+	Target->Type = world_target_type::none;
+}
+
+bool32 WorldTargetHasTarget(world_target_persistent* Target) { 
+	return Target->Type != world_target_type::none;
+}
+
+asteroid* WorldTargetGetAsteroid(world_target_persistent* Target, state* State) {
+	Assert(Target->Type == world_target_type::asteroid);
+	return per::GetAsteroid(&Target->Asteroid, State);
+}
+
+salvage* WorldTargetGetSalvage(world_target_persistent* Target) {
+	Assert(Target->Type == world_target_type::salvage);
+	return Target->Salvage;
+}
+
+vector2 WorldTargetGetPosition(world_target_persistent* Target, state* State) {
+	switch (Target->Type) {
+		case world_target_type::asteroid: 
+			return per::GetAsteroid(&Target->Asteroid, State)->Persist->WorldObject.Position; 
+		break;
+
+		case world_target_type::salvage: return Target->Salvage->WorldObject.Position; break;
+		INVALID_DEFAULT
+	}
+	return {};
+}
+	 
 void ShipUpdateMass(ship* Ship)
 {
 	Ship->CurrentMassTotal = Ship->Hold.MassCurrent + Ship->FuelTank.MassCurrent + Ship->Definition.Mass;
@@ -168,7 +208,7 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 	ship_module* Module = (ship_module*)SelfData;
 	ship* Owner = per::GetShip(&Module->Persist->Owner, State);
 
-	Module->Target.Clear();
+	WorldTargetClear(&Module->Persist->Target);
 
 	bool32 Skip = false;
 
@@ -183,27 +223,27 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 		return;
 	}
 
-	for (int i = 0; i < State->PersistentData.AsteroidClustersCount && !Module->Target.HasTarget(); i++) {
+	for (int i = 0; i < State->PersistentData.AsteroidClustersCount && !WorldTargetHasTarget(&Module->Persist->Target); i++) {
 		asteroid_cluster* Cluster = &State->AsteroidClusters[i];
-		for (int a = 0; a < ArrayCount(Cluster->Asteroids) && !Module->Target.HasTarget(); a++) {
+		for (int a = 0; a < ArrayCount(Cluster->Asteroids) && !WorldTargetHasTarget(&Module->Persist->Target); a++) {
 			asteroid* Roid = &Cluster->Asteroids[a];
 			if (Roid->Persist->Using) {
 				real64 Dist = Vector2Distance(Roid->Persist->WorldObject.Position, Owner->Persist->Position);
 				if (Dist < Module->Definition.ActivationRange) {
-					Module->Target.Set(Roid);
+					WorldTargetSet(&Module->Persist->Target, Roid);
 				}
 			}
 		}
 	}
 
-	if (Module->Target.HasTarget()) {
+	if (WorldTargetHasTarget(&Module->Persist->Target)) {
 		Module->Persist->ActivationTimerMS += Time;
 		if (Module->Persist->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
 			Module->Persist->ActivationTimerMS = 0.0f;
 
 			// Do module thing
 
-			asteroid* Roid = Module->Target.GetAsteroid();
+			asteroid* Roid = WorldTargetGetAsteroid(&Module->Persist->Target, State);
 
 			int Amount = SubtractAvailable(&Roid->Persist->OreCount, 2);
 			ItemGive(&Owner->Hold, Roid->Persist->OreItem, Amount);
@@ -223,7 +263,7 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, state* State)
 	ship_module* Module = (ship_module*)SelfData;
 	ship* Owner = per::GetShip(&Module->Persist->Owner, State);
 
-	Module->Target.Clear();
+	WorldTargetClear(&Module->Persist->Target);
 
 	bool32 Skip = false;
 
@@ -235,26 +275,27 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, state* State)
 		return;
 	}
 
-	for (int i = 0; i < State->SalvagesCount && !Module->Target.HasTarget(); i++) {
+	for (int i = 0; i < State->SalvagesCount && !WorldTargetHasTarget(&Module->Persist->Target); i++) {
 		salvage* Sal = &State->Salvages[i];
 
 		real64 Dist = Vector2Distance(Sal->WorldObject.Position, Owner->Persist->Position);
 		if (Dist < Module->Definition.ActivationRange) {
-			Module->Target.Set(Sal);
+			WorldTargetSet(&Module->Persist->Target, Sal);
 		}
 	}
 
-	if (Module->Target.HasTarget()) {
+	if (WorldTargetHasTarget(&Module->Persist->Target)) {
 		Module->Persist->ActivationTimerMS += Time;
 		if (Module->Persist->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
 			Module->Persist->ActivationTimerMS = 0.0f;
 
 			// Do module thing
 
-			int Amount = SubtractAvailable(&Module->Target.GetSalvage()->KnowledgeAmount, 2);
+			salvage* Sal = WorldTargetGetSalvage(&Module->Persist->Target);
+			int Amount = SubtractAvailable(&Sal->KnowledgeAmount, 2);
 			State->Knowledge += Amount;
-			if (Module->Target.GetSalvage()->KnowledgeAmount <= 0) {
-				SalvageSpawn(Module->Target.GetSalvage());
+			if (Sal->KnowledgeAmount <= 0) {
+				SalvageSpawn(Sal);
 			}
 		}
 	} else {

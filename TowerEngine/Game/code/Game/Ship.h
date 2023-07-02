@@ -19,72 +19,11 @@ struct ship_module_definition {
 	real64 ActivationRange;
 };
 
-enum class world_target_type {
-	none, asteroid, salvage
-};
-
-struct world_target {
-	world_target_type Type;
-
-	union {
-		asteroid* Asteroid;
-		salvage* Salvage;
-	};
-
-	void Set(asteroid* Input)
-	{
-		Asteroid = Input;
-		Type = world_target_type::asteroid;
-	}
-
-	void Set(salvage* Input)
-	{
-		Salvage = Input;
-		Type = world_target_type::salvage;
-	}
-
-	void Clear()
-	{
-		Type = world_target_type::none;
-	}
-
-	bool32 HasTarget()
-	{
-		return Type != world_target_type::none;
-	}
-
-	asteroid* GetAsteroid()
-	{
-		Assert(Type == world_target_type::asteroid);
-		return Asteroid;
-	}
-
-	salvage* GetSalvage()
-	{
-		Assert(Type == world_target_type::salvage);
-		return Salvage;
-	}
-
-	vector2 GetTargetPosition()
-	{
-		switch (Type) {
-			case world_target_type::asteroid: return Asteroid->Persist->WorldObject.Position; break;
-			case world_target_type::salvage: return Salvage->WorldObject.Position; break;
-				INVALID_DEFAULT
-		}
-
-		return {};
-	}
-};
-
 struct ship_module {
 	ship_module_persistent* Persist;
 
 	ship_module_definition Definition;
 	stepper Stepper;
-
-	// move to persist
-	world_target Target;
 }; 
 
 struct ship_definition {

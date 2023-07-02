@@ -37,6 +37,11 @@ namespace per {
 		AddSourceTyped(GUID, (void*)Data, persistent_pointer_type::ship, State);
 	}
 
+	void AddSource(uint32 GUID, asteroid* Data, state* State)
+	{
+		AddSourceTyped(GUID, (void*)Data, persistent_pointer_type::asteroid, State);
+	}
+
 	//--------------------------------
 
 	// Get ----------------
@@ -51,6 +56,12 @@ namespace per {
 	{
 		Resolve(Pointer, persistent_pointer_type::ship, State);
 		return (ship*)Pointer->Data;
+	}
+
+	asteroid* GetAsteroid(persistent_pointer* Pointer, state* State)  
+	{
+		Resolve(Pointer, persistent_pointer_type::asteroid, State);
+		return (asteroid*)Pointer->Data;
 	}
 
 	//--------------------------------
@@ -68,5 +79,12 @@ namespace per {
 		Pointer->Data = (void*)Ship;
 		Pointer->GUID = Ship->Persist->GUID;
 	}
+
+	void SetAsteroid(persistent_pointer* Pointer, asteroid* Asteroid) {
+		Pointer->Type = persistent_pointer_type::asteroid;
+		Pointer->Data = (void*)Asteroid;
+		Pointer->GUID = Asteroid->Persist->GUID;
+	}
+
 	//--------------------------------
 };

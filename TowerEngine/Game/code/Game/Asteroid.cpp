@@ -53,6 +53,8 @@ void InitAsteroid(asteroid* Asteroid, item_id OreItem, state* State)
 	selectable* Sel = RegisterSelectable(selection_type::asteroid, &Asteroid->Persist->WorldObject.Position, &Asteroid->Persist->WorldObject.Size, (void*)Asteroid, State);
 	Sel->OnHover = &AsteroidHovering;
 
+	per::AddSource(Asteroid->Persist->GUID, Asteroid, State);
+
 	// NOTE if more is added here consider if it needs to be added to the loading from persist method also
 }
 
@@ -125,6 +127,8 @@ void AsteroidClusterSetup(asteroid_cluster* Cluster, asteroid_cluster_persistent
 		WorldObjectRegister(State, &Asteroid->Persist->WorldObject);
 		selectable* Sel = RegisterSelectable(selection_type::asteroid, &Asteroid->Persist->WorldObject.Position, &Asteroid->Persist->WorldObject.Size, (void*)Asteroid, State);
 		Sel->OnHover = &AsteroidHovering;
+		
+		per::AddSource(Asteroid->Persist->GUID, Asteroid, State);
 	}
 }
 

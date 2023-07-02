@@ -937,10 +937,13 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				// Render ship module effects
 				for (int m = 0; m < ArrayCount(Ship->EquippedModules); m++) {
 					ship_module* Module = &Ship->EquippedModules[m];
-					if (Module->Persist->Filled && Module->Target.HasTarget()) {
+					if (Module->Persist->Filled && WorldTargetHasTarget(&Module->Persist->Target)) {
+
+						vector2 WorldTargetPos = WorldTargetGetPosition(&Module->Persist->Target, State);
+
 						vector2 Points[2] = {};
 						Points[0] = WorldToScreen(vector3{Ship->Persist->Position.X, Ship->Persist->Position.Y, 0}, &EngineState->GameCamera);
-						Points[1] = WorldToScreen(vector3{Module->Target.GetTargetPosition().X, Module->Target.GetTargetPosition().Y, 0}, &EngineState->GameCamera);
+						Points[1] = WorldToScreen(vector3{WorldTargetPos.X, WorldTargetPos.Y, 0}, &EngineState->GameCamera);
 						render_line Line = {};
 						Line.Points = Points;
 						Line.PointsCount = ArrayCount(Points);
