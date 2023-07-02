@@ -383,7 +383,7 @@ struct entity {
 	int32 ChildrenCount;
 
 	bool32 Wireframe;
-
+ 
 	void AddChild(entity* Child)
 	{
 		Transform.AddChild(&Child->Transform);

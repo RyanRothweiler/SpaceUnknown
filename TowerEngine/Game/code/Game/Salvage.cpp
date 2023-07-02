@@ -21,7 +21,11 @@ void SalvageCreate(state* State, vector2 Position)
 
 	Salvage->KnowledgeAmount = SalvageOrigAmount;
 
-	Salvage->WorldObject.Color = Color255(197.0f, 214.0f, 208.0f, 1.0f);
+	Salvage->WorldObject.Color.R = 197.0f / 255.0f;
+	Salvage->WorldObject.Color.G = 214.0f / 255.0f;
+	Salvage->WorldObject.Color.B = 208.0f / 255.0f;
+	Salvage->WorldObject.Color.A = 1.0f;
+
 	Salvage->WorldObject.Position = Position;
 	Salvage->WorldObject.Size = vector2{8, 8};
 

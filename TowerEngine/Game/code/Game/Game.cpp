@@ -191,6 +191,9 @@ void LoadGame(state* State)
 
 			// Ship
 			ship* Ship = ShipCreate(State, ship_id::advent);
+
+			// Ateroids
+			AsteroidClusterCreate(vector2{0, 0}, 30.0f, item_id::venigen, State);
 		}
 	} else {
 		State->LoadedFromFile = true;
@@ -204,6 +207,11 @@ void LoadGame(state* State)
 	// Setup ships
 	for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
 		ShipSetup(&State->Ships[i], &State->PersistentData.Ships[i], State);
+	}
+
+	// Setup asteroid clusters
+	for (int i = 0; i < State->PersistentData.AsteroidClustersCount; i++) {
+		AsteroidClusterSetup(&State->AsteroidClusters[i], &State->PersistentData.AsteroidClusters[i], State);
 	}
 
 	// Skill Nodes
@@ -317,8 +325,7 @@ void Start(engine_state* EngineState)
 	Globals->AssetsList.SalvageImages[0] = assets::GetImage("Salvage1");
 	Globals->AssetsList.SalvageImages[1] = assets::GetImage("Salvage2");
 
-	AsteroidCreateCluster(vector2{0, 0}, 30.0f, item_id::venigen, State);
-	AsteroidCreateCluster(vector2{ -200, 20}, 20.0f, item_id::pyrexium, State);
+	//AsteroidCreateCluster(vector2{ -200, 20}, 20.0f, item_id::pyrexium, State);
 
 	// Salvage
 	SalvageCreate(State, vector2{ -30, -30});
@@ -887,7 +894,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				m4y4 Model = m4y4Identity();
 				Model = Rotate(Model, vector3{0, 0, Obj->Rotation});
 
-				RenderTextureAll( Obj->Position, Obj->Size, Obj->Color, Obj->Image->GLID,
+				RenderTextureAll( Obj->Position, Obj->Size, ColorPersistToColor(Obj->Color), Obj->Image->GLID,
 				                  RenderLayerPlanet, Model, Globals->GameRenderer);
 			}
 

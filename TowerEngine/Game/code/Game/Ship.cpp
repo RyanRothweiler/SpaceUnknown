@@ -183,12 +183,12 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 		return;
 	}
 
-	for (int i = 0; i < State->ClustersCount && !Module->Target.HasTarget(); i++) {
-		asteroid_cluster* Cluster = &State->Asteroids[i];
+	for (int i = 0; i < State->PersistentData.AsteroidClustersCount && !Module->Target.HasTarget(); i++) {
+		asteroid_cluster* Cluster = &State->AsteroidClusters[i];
 		for (int a = 0; a < ArrayCount(Cluster->Asteroids) && !Module->Target.HasTarget(); a++) {
 			asteroid* Roid = &Cluster->Asteroids[a];
-			if (Roid->Using) {
-				real64 Dist = Vector2Distance(Roid->WorldObject.Position, Owner->Persist->Position);
+			if (Roid->Persist->Using) {
+				real64 Dist = Vector2Distance(Roid->Persist->WorldObject.Position, Owner->Persist->Position);
 				if (Dist < Module->Definition.ActivationRange) {
 					Module->Target.Set(Roid);
 				}
@@ -205,10 +205,10 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 
 			asteroid* Roid = Module->Target.GetAsteroid();
 
-			int Amount = SubtractAvailable(&Roid->OreCount, 2);
-			ItemGive(&Owner->Hold, Roid->OreItem, Amount);
+			int Amount = SubtractAvailable(&Roid->Persist->OreCount, 2);
+			ItemGive(&Owner->Hold, Roid->Persist->OreItem, Amount);
 
-			if (Roid->OreCount <= 0) {
+			if (Roid->Persist->OreCount <= 0) {
 				AsteroidDestroy(Roid, State);
 			}
 

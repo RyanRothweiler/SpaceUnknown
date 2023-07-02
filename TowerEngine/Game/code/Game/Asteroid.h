@@ -1,15 +1,10 @@
 struct asteroid {
-	item_id OreItem;
-	int32 OreCount;
-
-	bool32 Using;
-	world_object WorldObject;
+	asteroid_persistent* Persist;
 };
 
 struct asteroid_cluster {
-	asteroid Asteroids[25];
-	item_id OreItem;
-	vector2 Center;
-	real64 Radius;
+	asteroid_cluster_persistent* Persist;
+
+	asteroid Asteroids[32];
 	stepper Spawner;
 };

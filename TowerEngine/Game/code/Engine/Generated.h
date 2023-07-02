@@ -310,6 +310,75 @@ string recipe_id_NAME[] {
 "count",
 "none",
 }; 
+meta_member color_persistent_META[] { 
+{meta_member_type::real32, "real32", "R", (uint64)&((color_persistent *)0)->R, 0, sizeof(real32),{},{},{},{},{}},
+{meta_member_type::real32, "real32", "G", (uint64)&((color_persistent *)0)->G, 0, sizeof(real32),{},{},{},{},{}},
+{meta_member_type::real32, "real32", "B", (uint64)&((color_persistent *)0)->B, 0, sizeof(real32),{},{},{},{},{}},
+{meta_member_type::real32, "real32", "A", (uint64)&((color_persistent *)0)->A, 0, sizeof(real32),{},{},{},{},{}},
+}; 
+ 
+void M_ALLOC__color_persistent(s_void* SafeVoid, memory_arena* Memory) { 
+	SafeVoid->IsAllocated = true; 
+	SafeVoid->Type = 9; 
+	SafeVoid->DataSize = sizeof(color_persistent); 
+	SafeVoid->Data = ArenaAllocate(Memory, sizeof(color_persistent)); 
+	ClearMemory((uint8*)SafeVoid->Data, sizeof(color_persistent)); 
+};
+
+color_persistent* M_GET__color_persistent(s_void* SafeVoid) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 9) { 
+		return (color_persistent*)SafeVoid->Data; 
+	} 
+	return GameNull; 
+};
+
+void StructMetaFill_color_persistent (json::struct_string_return* Dest,  void* AccData){
+return json::StructMetaFill(Dest, &color_persistent_META[0], ArrayCount(color_persistent_META), AccData);
+}
+
+void SaveDataFillShim_color_persistent (save_data::member* Dest, string KeyParent, void* AccData){
+return save_data::AddMembers(Dest, KeyParent, &color_persistent_META[0], ArrayCount(color_persistent_META), AccData);
+}
+
+void JsonFillStructShim_color_persistent (json::json_data* JsonData, string KeyParent, void* DataDest){
+return json::FillStruct(JsonData, KeyParent, &color_persistent_META[0], ArrayCount(color_persistent_META), DataDest);
+}
+
+meta_member world_object_META[] { 
+{meta_member_type::custom, "vector2", "Position", (uint64)&((world_object *)0)->Position, 0, sizeof(vector2),&StructMetaFill_vector2, &JsonFillStructShim_vector2, &SaveDataFillShim_vector2, &vector2_META[0], ArrayCount(vector2_META) },
+{meta_member_type::custom, "vector2", "Size", (uint64)&((world_object *)0)->Size, 0, sizeof(vector2),&StructMetaFill_vector2, &JsonFillStructShim_vector2, &SaveDataFillShim_vector2, &vector2_META[0], ArrayCount(vector2_META) },
+{meta_member_type::real64, "real64", "Rotation", (uint64)&((world_object *)0)->Rotation, 0, sizeof(real64),{},{},{},{},{}},
+{meta_member_type::real64, "real64", "RotationRate", (uint64)&((world_object *)0)->RotationRate, 0, sizeof(real64),{},{},{},{},{}},
+{meta_member_type::custom, "color_persistent", "Color", (uint64)&((world_object *)0)->Color, 0, sizeof(color_persistent),&StructMetaFill_color_persistent, &JsonFillStructShim_color_persistent, &SaveDataFillShim_color_persistent, &color_persistent_META[0], ArrayCount(color_persistent_META) },
+}; 
+ 
+void M_ALLOC__world_object(s_void* SafeVoid, memory_arena* Memory) { 
+	SafeVoid->IsAllocated = true; 
+	SafeVoid->Type = 10; 
+	SafeVoid->DataSize = sizeof(world_object); 
+	SafeVoid->Data = ArenaAllocate(Memory, sizeof(world_object)); 
+	ClearMemory((uint8*)SafeVoid->Data, sizeof(world_object)); 
+};
+
+world_object* M_GET__world_object(s_void* SafeVoid) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 10) { 
+		return (world_object*)SafeVoid->Data; 
+	} 
+	return GameNull; 
+};
+
+void StructMetaFill_world_object (json::struct_string_return* Dest,  void* AccData){
+return json::StructMetaFill(Dest, &world_object_META[0], ArrayCount(world_object_META), AccData);
+}
+
+void SaveDataFillShim_world_object (save_data::member* Dest, string KeyParent, void* AccData){
+return save_data::AddMembers(Dest, KeyParent, &world_object_META[0], ArrayCount(world_object_META), AccData);
+}
+
+void JsonFillStructShim_world_object (json::json_data* JsonData, string KeyParent, void* DataDest){
+return json::FillStruct(JsonData, KeyParent, &world_object_META[0], ArrayCount(world_object_META), DataDest);
+}
+
 string ship_id_NAME[] { 
 "advent",
 "count",
@@ -330,14 +399,14 @@ meta_member ship_module_persistent_META[] {
  
 void M_ALLOC__ship_module_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 9; 
+	SafeVoid->Type = 11; 
 	SafeVoid->DataSize = sizeof(ship_module_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ship_module_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ship_module_persistent)); 
 };
 
 ship_module_persistent* M_GET__ship_module_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 9) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 11) { 
 		return (ship_module_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -353,6 +422,75 @@ return save_data::AddMembers(Dest, KeyParent, &ship_module_persistent_META[0], A
 
 void JsonFillStructShim_ship_module_persistent (json::json_data* JsonData, string KeyParent, void* DataDest){
 return json::FillStruct(JsonData, KeyParent, &ship_module_persistent_META[0], ArrayCount(ship_module_persistent_META), DataDest);
+}
+
+meta_member asteroid_persistent_META[] { 
+{meta_member_type::int32, "int32", "OreCount", (uint64)&((asteroid_persistent *)0)->OreCount, 0, sizeof(int32),{},{},{},{},{}},
+{meta_member_type::enumeration, "item_id", "OreItem", (uint64)&((asteroid_persistent *)0)->OreItem, 0, sizeof(item_id),{},{},{},{},{}},
+{meta_member_type::bool32, "bool32", "Using", (uint64)&((asteroid_persistent *)0)->Using, 0, sizeof(bool32),{},{},{},{},{}},
+{meta_member_type::custom, "world_object", "WorldObject", (uint64)&((asteroid_persistent *)0)->WorldObject, 0, sizeof(world_object),&StructMetaFill_world_object, &JsonFillStructShim_world_object, &SaveDataFillShim_world_object, &world_object_META[0], ArrayCount(world_object_META) },
+{meta_member_type::int64, "int64", "SpriteIndex", (uint64)&((asteroid_persistent *)0)->SpriteIndex, 0, sizeof(int64),{},{},{},{},{}},
+}; 
+ 
+void M_ALLOC__asteroid_persistent(s_void* SafeVoid, memory_arena* Memory) { 
+	SafeVoid->IsAllocated = true; 
+	SafeVoid->Type = 12; 
+	SafeVoid->DataSize = sizeof(asteroid_persistent); 
+	SafeVoid->Data = ArenaAllocate(Memory, sizeof(asteroid_persistent)); 
+	ClearMemory((uint8*)SafeVoid->Data, sizeof(asteroid_persistent)); 
+};
+
+asteroid_persistent* M_GET__asteroid_persistent(s_void* SafeVoid) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 12) { 
+		return (asteroid_persistent*)SafeVoid->Data; 
+	} 
+	return GameNull; 
+};
+
+void StructMetaFill_asteroid_persistent (json::struct_string_return* Dest,  void* AccData){
+return json::StructMetaFill(Dest, &asteroid_persistent_META[0], ArrayCount(asteroid_persistent_META), AccData);
+}
+
+void SaveDataFillShim_asteroid_persistent (save_data::member* Dest, string KeyParent, void* AccData){
+return save_data::AddMembers(Dest, KeyParent, &asteroid_persistent_META[0], ArrayCount(asteroid_persistent_META), AccData);
+}
+
+void JsonFillStructShim_asteroid_persistent (json::json_data* JsonData, string KeyParent, void* DataDest){
+return json::FillStruct(JsonData, KeyParent, &asteroid_persistent_META[0], ArrayCount(asteroid_persistent_META), DataDest);
+}
+
+meta_member asteroid_cluster_persistent_META[] { 
+{meta_member_type::enumeration, "item_id", "OreItem", (uint64)&((asteroid_cluster_persistent *)0)->OreItem, 0, sizeof(item_id),{},{},{},{},{}},
+{meta_member_type::custom, "vector2", "Center", (uint64)&((asteroid_cluster_persistent *)0)->Center, 0, sizeof(vector2),&StructMetaFill_vector2, &JsonFillStructShim_vector2, &SaveDataFillShim_vector2, &vector2_META[0], ArrayCount(vector2_META) },
+{meta_member_type::real64, "real64", "Radius", (uint64)&((asteroid_cluster_persistent *)0)->Radius, 0, sizeof(real64),{},{},{},{},{}},
+{meta_member_type::custom, "asteroid_persistent", "Asteroids", (uint64)&((asteroid_cluster_persistent *)0)->Asteroids, 32, sizeof(asteroid_persistent),&StructMetaFill_asteroid_persistent, &JsonFillStructShim_asteroid_persistent, &SaveDataFillShim_asteroid_persistent, &asteroid_persistent_META[0], ArrayCount(asteroid_persistent_META) },
+}; 
+ 
+void M_ALLOC__asteroid_cluster_persistent(s_void* SafeVoid, memory_arena* Memory) { 
+	SafeVoid->IsAllocated = true; 
+	SafeVoid->Type = 13; 
+	SafeVoid->DataSize = sizeof(asteroid_cluster_persistent); 
+	SafeVoid->Data = ArenaAllocate(Memory, sizeof(asteroid_cluster_persistent)); 
+	ClearMemory((uint8*)SafeVoid->Data, sizeof(asteroid_cluster_persistent)); 
+};
+
+asteroid_cluster_persistent* M_GET__asteroid_cluster_persistent(s_void* SafeVoid) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 13) { 
+		return (asteroid_cluster_persistent*)SafeVoid->Data; 
+	} 
+	return GameNull; 
+};
+
+void StructMetaFill_asteroid_cluster_persistent (json::struct_string_return* Dest,  void* AccData){
+return json::StructMetaFill(Dest, &asteroid_cluster_persistent_META[0], ArrayCount(asteroid_cluster_persistent_META), AccData);
+}
+
+void SaveDataFillShim_asteroid_cluster_persistent (save_data::member* Dest, string KeyParent, void* AccData){
+return save_data::AddMembers(Dest, KeyParent, &asteroid_cluster_persistent_META[0], ArrayCount(asteroid_cluster_persistent_META), AccData);
+}
+
+void JsonFillStructShim_asteroid_cluster_persistent (json::json_data* JsonData, string KeyParent, void* DataDest){
+return json::FillStruct(JsonData, KeyParent, &asteroid_cluster_persistent_META[0], ArrayCount(asteroid_cluster_persistent_META), DataDest);
 }
 
 meta_member ship_persistent_META[] { 
@@ -371,14 +509,14 @@ meta_member ship_persistent_META[] {
  
 void M_ALLOC__ship_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 10; 
+	SafeVoid->Type = 14; 
 	SafeVoid->DataSize = sizeof(ship_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ship_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ship_persistent)); 
 };
 
 ship_persistent* M_GET__ship_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 10) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 14) { 
 		return (ship_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -404,14 +542,14 @@ meta_member converter_persistent_META[] {
  
 void M_ALLOC__converter_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 11; 
+	SafeVoid->Type = 15; 
 	SafeVoid->DataSize = sizeof(converter_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(converter_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(converter_persistent)); 
 };
 
 converter_persistent* M_GET__converter_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 11) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 15) { 
 		return (converter_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -439,14 +577,14 @@ meta_member station_persistent_META[] {
  
 void M_ALLOC__station_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 12; 
+	SafeVoid->Type = 16; 
 	SafeVoid->DataSize = sizeof(station_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(station_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(station_persistent)); 
 };
 
 station_persistent* M_GET__station_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 12) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 16) { 
 		return (station_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -472,18 +610,20 @@ meta_member save_file_META[] {
 {meta_member_type::custom, "ship_persistent", "Ships", (uint64)&((save_file *)0)->Ships, 256, sizeof(ship_persistent),&StructMetaFill_ship_persistent, &JsonFillStructShim_ship_persistent, &SaveDataFillShim_ship_persistent, &ship_persistent_META[0], ArrayCount(ship_persistent_META) },
 {meta_member_type::int64, "int64", "StationsCount", (uint64)&((save_file *)0)->StationsCount, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::custom, "station_persistent", "Stations", (uint64)&((save_file *)0)->Stations, 256, sizeof(station_persistent),&StructMetaFill_station_persistent, &JsonFillStructShim_station_persistent, &SaveDataFillShim_station_persistent, &station_persistent_META[0], ArrayCount(station_persistent_META) },
+{meta_member_type::int64, "int64", "AsteroidClustersCount", (uint64)&((save_file *)0)->AsteroidClustersCount, 0, sizeof(int64),{},{},{},{},{}},
+{meta_member_type::custom, "asteroid_cluster_persistent", "AsteroidClusters", (uint64)&((save_file *)0)->AsteroidClusters, 256, sizeof(asteroid_cluster_persistent),&StructMetaFill_asteroid_cluster_persistent, &JsonFillStructShim_asteroid_cluster_persistent, &SaveDataFillShim_asteroid_cluster_persistent, &asteroid_cluster_persistent_META[0], ArrayCount(asteroid_cluster_persistent_META) },
 }; 
  
 void M_ALLOC__save_file(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 13; 
+	SafeVoid->Type = 17; 
 	SafeVoid->DataSize = sizeof(save_file); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(save_file)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(save_file)); 
 };
 
 save_file* M_GET__save_file(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 13) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 17) { 
 		return (save_file*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -513,14 +653,14 @@ meta_member ryan_type_META[] {
  
 void M_ALLOC__ryan_type(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 14; 
+	SafeVoid->Type = 18; 
 	SafeVoid->DataSize = sizeof(ryan_type); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ryan_type)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ryan_type)); 
 };
 
 ryan_type* M_GET__ryan_type(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 14) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 18) { 
 		return (ryan_type*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -553,14 +693,14 @@ meta_member skill_bonuses_META[] {
  
 void M_ALLOC__skill_bonuses(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 15; 
+	SafeVoid->Type = 19; 
 	SafeVoid->DataSize = sizeof(skill_bonuses); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(skill_bonuses)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(skill_bonuses)); 
 };
 
 skill_bonuses* M_GET__skill_bonuses(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 15) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 19) { 
 		return (skill_bonuses*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -589,14 +729,14 @@ meta_member skill_node_persistent_META[] {
  
 void M_ALLOC__skill_node_persistent(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 16; 
+	SafeVoid->Type = 20; 
 	SafeVoid->DataSize = sizeof(skill_node_persistent); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(skill_node_persistent)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(skill_node_persistent)); 
 };
 
 skill_node_persistent* M_GET__skill_node_persistent(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 16) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 20) { 
 		return (skill_node_persistent*)SafeVoid->Data; 
 	} 
 	return GameNull; 

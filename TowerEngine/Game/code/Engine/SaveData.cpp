@@ -29,15 +29,10 @@ namespace save_data {
 
 	void AddData(member* Root, string KeyParent, string ArrayIndex, meta_member* MI, void* Data)
 	{
-
 		string KS = KeyParent + MI->Name + ArrayIndex;
 		int64 KeyHashFull = StringHash(KS);
 		int64 KeyHash = KeyHashFull % MEMBER_PARS_MAX;
 		pair* Pair = {};
-
-		if (StringStartsWith(KS, "Ships.0.ItemHold.Items.0")) {
-			int x = 0;
-		}
 
 		if (Direction == direction::write) {
 			// if writing, then create a new pair
@@ -219,22 +214,8 @@ namespace save_data {
 						// Unknown enum size
 						Assert(false);
 					}
-
-
-					real64* D = (real64*)Data;
-					*D = Pair->Data.r64;
 				}
 
-
-
-				/*
-				if (Direction == direction::write) {
-					Pair->Data.r64 = *(real64*)Data;
-				} else if (Direction == direction::read && Pair != GameNull) {
-					real64* D = (real64*)Data;
-					*D = Pair->Data.r64;
-				}
-				*/
 			} break;
 
 			case meta_member_type::custom: {
@@ -281,7 +262,6 @@ namespace save_data {
 	{
 		Direction = direction::write;
 
-		//member* Root = (member*)ArenaAllocate(GlobalTransMem, sizeof(member));
 		ClearMemory((uint8*)Root, sizeof(member));
 
 		AddMembers(Root, "", MetaInfo, MetaInfoCount, Data);

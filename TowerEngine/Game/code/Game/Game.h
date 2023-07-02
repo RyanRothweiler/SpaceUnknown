@@ -156,6 +156,32 @@ MetaStruct enum class recipe_id {
 
 // Save Data persistence--------------------------------------------------------
 
+MetaStruct struct color_persistent {
+	real32 R;
+	real32 G;
+	real32 B;
+	real32 A;
+};
+
+color ColorPersistToColor(color_persistent Col) { 
+	color Ret = {};
+	Ret.R = Col.R;
+	Ret.G = Col.G;
+	Ret.B = Col.B;
+	Ret.A = Col.A;
+	return Ret;
+}
+
+MetaStruct struct world_object {
+	vector2 Position;
+	vector2 Size;
+	real64 Rotation;
+	real64 RotationRate;
+	color_persistent Color;
+
+	loaded_image* Image;
+};
+
 // TODO rename this to ship_type
 MetaStruct enum class ship_id {
 	advent,
@@ -173,6 +199,23 @@ MetaStruct struct ship_module_persistent {
 	persistent_pointer Owner;
 
 	real64 ActivationTimerMS;
+};
+
+MetaStruct struct asteroid_persistent {
+	int32 OreCount;
+	item_id OreItem;
+	bool32 Using;
+
+	world_object WorldObject;
+	int64 SpriteIndex;
+};
+
+MetaStruct struct asteroid_cluster_persistent {
+	item_id OreItem;
+	vector2 Center;
+	real64 Radius;
+
+	asteroid_persistent Asteroids[32];
 };
 
 MetaStruct struct ship_persistent {
@@ -222,6 +265,9 @@ MetaStruct struct save_file {
 
 	int64 StationsCount;
 	station_persistent Stations[256];
+
+	int64 AsteroidClustersCount;
+	asteroid_cluster_persistent AsteroidClusters[256];
 };
 // -----------------------------------------------------------------------------
 
@@ -347,12 +393,10 @@ struct state {
 	world_object* WorldObjects[1024];
 	int32 WorldObjectsCount;
 
-	asteroid_cluster Asteroids[100];
-	int32 ClustersCount;
+	asteroid_cluster AsteroidClusters[256];
 
 	salvage Salvages[100];
 	int32 SalvagesCount;
-
 
 	real32 Zoom = 1.0f;
 	real32 ZoomTarget;

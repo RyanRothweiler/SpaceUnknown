@@ -68,7 +68,7 @@ struct world_target {
 	vector2 GetTargetPosition()
 	{
 		switch (Type) {
-			case world_target_type::asteroid: return Asteroid->WorldObject.Position; break;
+			case world_target_type::asteroid: return Asteroid->Persist->WorldObject.Position; break;
 			case world_target_type::salvage: return Salvage->WorldObject.Position; break;
 				INVALID_DEFAULT
 		}

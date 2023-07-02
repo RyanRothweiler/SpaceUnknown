@@ -1,4 +1,5 @@
-struct world_object {
+
+/*struct world_object {
 	vector2 Position;
 	loaded_image* Image;
 	vector2 Size;
@@ -6,3 +7,4 @@ struct world_object {
 	real64 RotationRate;
 	color Color;
 };
+*/
