@@ -42,6 +42,11 @@ namespace per {
 		AddSourceTyped(GUID, (void*)Data, persistent_pointer_type::asteroid, State);
 	}
 
+	void AddSource(uint32 GUID, salvage* Data, state* State)
+	{
+		AddSourceTyped(GUID, (void*)Data, persistent_pointer_type::salvage, State);
+	}
+
 	//--------------------------------
 
 	// Get ----------------
@@ -62,6 +67,12 @@ namespace per {
 	{
 		Resolve(Pointer, persistent_pointer_type::asteroid, State);
 		return (asteroid*)Pointer->Data;
+	}
+
+	salvage* GetSalvage(persistent_pointer* Pointer, state* State)  
+	{
+		Resolve(Pointer, persistent_pointer_type::salvage, State);
+		return (salvage*)Pointer->Data;
 	}
 
 	//--------------------------------
@@ -86,5 +97,10 @@ namespace per {
 		Pointer->GUID = Asteroid->Persist->GUID;
 	}
 
+	void SetSalvage(persistent_pointer* Pointer, salvage* Salvage) {
+		Pointer->Type = persistent_pointer_type::salvage;
+		Pointer->Data = (void*)Salvage;
+		Pointer->GUID = Salvage->Persist->GUID;
+	}
 	//--------------------------------
 };

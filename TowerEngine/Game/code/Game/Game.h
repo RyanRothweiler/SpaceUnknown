@@ -23,7 +23,7 @@ const real64 UnitToMeters = 10.0f;
 // -----------------------------------------------------------------------------
 
 MetaStruct enum class persistent_pointer_type {
-	none, station, ship, asteroid
+	none, station, ship, asteroid, salvage
 };
 
 MetaStruct struct persistent_pointer {
@@ -43,8 +43,7 @@ MetaStruct struct world_target_persistent {
 	world_target_type Type;
 
 	persistent_pointer Asteroid;
-	//asteroid* Asteroid;
-	salvage* Salvage;
+	persistent_pointer Salvage;
 };
 
 enum class game_scene { universe, skill_tree };
@@ -216,6 +215,17 @@ MetaStruct struct ship_module_persistent {
 	real64 ActivationTimerMS;
 };
 
+MetaStruct struct salvage_persistent {
+	uint32 GUID;
+	int32 KnowledgeAmount;
+
+	world_object WorldObject;
+	int64 SpriteIndex;
+
+	vector2 SpawnCenter;
+	real32 SpawnRadius;
+};
+
 MetaStruct struct asteroid_persistent {
 	uint32 GUID;
 
@@ -292,6 +302,9 @@ MetaStruct struct save_file {
 
 	int64 AsteroidClustersCount;
 	asteroid_cluster_persistent AsteroidClusters[256];
+
+	int64 SalvagesCount;
+	salvage_persistent Salvages[256];
 };
 // -----------------------------------------------------------------------------
 
@@ -410,14 +423,11 @@ struct state {
 
 	ship Ships[100];
 	station Stations[100];
+	asteroid_cluster AsteroidClusters[256];
+	salvage Salvages[100];
 
 	world_object* WorldObjects[1024];
 	int32 WorldObjectsCount;
-
-	asteroid_cluster AsteroidClusters[256];
-
-	salvage Salvages[100];
-	int32 SalvagesCount;
 
 	real32 Zoom = 1.0f;
 	real32 ZoomTarget;
@@ -443,17 +453,5 @@ struct state {
 	vector3 SkillTreeCamPos;
 	real32 SkillTreeOrthoZoom;
 };
-
-MetaStruct enum class ryan_enum {
-	foo = 0,
-	bar = 1,
-	count,
-};
-
-MetaStruct struct ryan_type {
-	int64 x;
-	ryan_enum nm;
-};
-
 
 #endif

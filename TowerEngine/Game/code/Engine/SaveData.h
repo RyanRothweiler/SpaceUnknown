@@ -28,6 +28,6 @@ namespace save_data {
 	};
 
 	struct member {
-		pair Pairs[MEMBER_PARS_MAX][10];
+		pair Pairs[MEMBER_PARS_MAX][20];
 	};
 };

@@ -178,6 +178,9 @@ void LoadGame(state* State)
 
 			// Ateroids
 			AsteroidClusterCreate(vector2{0, 0}, 30.0f, item_id::venigen, State);
+
+			// Salvages
+			SalvageCreate(vector2{ -30, -30}, State);
 		}
 	} else {
 		State->LoadedFromFile = true;
@@ -196,6 +199,11 @@ void LoadGame(state* State)
 	// Setup asteroid clusters
 	for (int i = 0; i < State->PersistentData.AsteroidClustersCount; i++) {
 		AsteroidClusterSetup(&State->AsteroidClusters[i], &State->PersistentData.AsteroidClusters[i], State);
+	}
+
+	// Setup salvages
+	for (int i = 0; i < State->PersistentData.SalvagesCount; i++) {
+		SalvageSetup(&State->Salvages[i], &State->PersistentData.Salvages[i], State);
 	}
 
 	// Skill Nodes
@@ -309,12 +317,9 @@ void Start(engine_state* EngineState)
 	Globals->AssetsList.SalvageImages[0] = assets::GetImage("Salvage1");
 	Globals->AssetsList.SalvageImages[1] = assets::GetImage("Salvage2");
 
-	//AsteroidCreateCluster(vector2{ -200, 20}, 20.0f, item_id::pyrexium, State);
-
-	// Salvage
-	SalvageCreate(State, vector2{ -30, -30});
 
 	// Create links into persistent data 
+	// Does this need to move into load game?
 	{
 		// Stations
 		{

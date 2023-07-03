@@ -5,7 +5,7 @@ void WorldTargetSet(world_target_persistent* Target, asteroid* Input) {
 
 void WorldTargetSet(world_target_persistent* Target, salvage* Input) { 
 	Target->Type = world_target_type::salvage;
-	Target->Salvage = Input;
+	per::SetSalvage(&Target->Salvage, Input);
 }
 
 void WorldTargetClear(world_target_persistent* Target) { 
@@ -21,9 +21,9 @@ asteroid* WorldTargetGetAsteroid(world_target_persistent* Target, state* State) 
 	return per::GetAsteroid(&Target->Asteroid, State);
 }
 
-salvage* WorldTargetGetSalvage(world_target_persistent* Target) {
+salvage* WorldTargetGetSalvage(world_target_persistent* Target, state* State) {
 	Assert(Target->Type == world_target_type::salvage);
-	return Target->Salvage;
+	return per::GetSalvage(&Target->Salvage, State);
 }
 
 vector2 WorldTargetGetPosition(world_target_persistent* Target, state* State) {
@@ -32,7 +32,10 @@ vector2 WorldTargetGetPosition(world_target_persistent* Target, state* State) {
 			return per::GetAsteroid(&Target->Asteroid, State)->Persist->WorldObject.Position; 
 		break;
 
-		case world_target_type::salvage: return Target->Salvage->WorldObject.Position; break;
+		case world_target_type::salvage: 
+			return per::GetSalvage(&Target->Salvage, State)->Persist->WorldObject.Position;
+		break;
+
 		INVALID_DEFAULT
 	}
 	return {};
@@ -275,10 +278,10 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, state* State)
 		return;
 	}
 
-	for (int i = 0; i < State->SalvagesCount && !WorldTargetHasTarget(&Module->Persist->Target); i++) {
+	for (int i = 0; i < State->PersistentData.SalvagesCount && !WorldTargetHasTarget(&Module->Persist->Target); i++) {
 		salvage* Sal = &State->Salvages[i];
 
-		real64 Dist = Vector2Distance(Sal->WorldObject.Position, Owner->Persist->Position);
+		real64 Dist = Vector2Distance(Sal->Persist->WorldObject.Position, Owner->Persist->Position);
 		if (Dist < Module->Definition.ActivationRange) {
 			WorldTargetSet(&Module->Persist->Target, Sal);
 		}
@@ -291,10 +294,10 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, state* State)
 
 			// Do module thing
 
-			salvage* Sal = WorldTargetGetSalvage(&Module->Persist->Target);
-			int Amount = SubtractAvailable(&Sal->KnowledgeAmount, 2);
+			salvage* Sal = WorldTargetGetSalvage(&Module->Persist->Target, State);
+			int Amount = SubtractAvailable(&Sal->Persist->KnowledgeAmount, 2);
 			State->PersistentData.Knowledge += Amount;
-			if (Sal->KnowledgeAmount <= 0) {
+			if (Sal->Persist->KnowledgeAmount <= 0) {
 				SalvageSpawn(Sal);
 			}
 		}
