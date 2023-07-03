@@ -271,11 +271,18 @@ MetaStruct struct station_persistent {
 	converter_persistent Converters[10];
 };
 
+MetaStruct struct skill_bonuses {
+	real32 FuelForceAddition;
+};
+
 // NOTE no pointers
 MetaStruct struct save_file {
 	int64 RealTimeSaved;
 	real64 UniverseTimeMS;
 	int64 SkillNodesIDUnlocked[256];
+
+	skill_bonuses TreeBonuses;
+	int64 Knowledge;
 
 	int64 ShipsCount;
 	ship_persistent Ships[256];
@@ -394,9 +401,6 @@ struct state {
 
 	skill_node SkillNodes[100];
 	int32 SkillNodesCount;
-
-	skill_bonuses TreeBonusesTotal;
-	int64 Knowledge;
 
 	stepper UniverseTimeStepper;
 

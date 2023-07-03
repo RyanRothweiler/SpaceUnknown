@@ -126,34 +126,17 @@ void SaveGame(state* State, save_data::member* Root)
 	using std::chrono::system_clock;
 	State->PersistentData.RealTimeSaved = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();;
 
-	/*
 	// Skill nodess
 	{
 		int c = 0;
 		for (int i = 0; i < State->SkillNodesCount; i++) {
 			skill_node* Node = &State->SkillNodes[i];
 			if (Node->Unlocked) {
-				SaveData.SkillNodesIDUnlocked[c++] = Node->Persist.ID;
-				Assert(c < ArrayCount(SaveData.SkillNodesIDUnlocked));
+				State->PersistentData.SkillNodesIDUnlocked[c++] = Node->Persist.ID;
+				Assert(c < ArrayCount(State->PersistentData.SkillNodesIDUnlocked));
 			}
 		}
 	}
-
-	// ships
-	{
-		for (int i = 0; i < ArrayCount(State->Ships); i++) {
-			if (State->Ships[i].Using) {
-
-				SaveData.Ships[SaveData.ShipsCount] = State->Ships[i].Persist;
-				ship_persistent* Dest = &SaveData.Ships[SaveData.ShipsCount];
-
-				SaveData.ShipsCount++;
-				Assert(SaveData.ShipsCount < ArrayCount(SaveData.Ships));
-			}
-		}
-	}
-	*/
-
 
 	save_data::Write("SpaceUnknownSave.sus", &save_file_META[0], ArrayCount(save_file_META), (void*)&State->PersistentData, Root);
 	ConsoleLog("Game Saved");
@@ -176,6 +159,7 @@ void SaveGame(state* State, save_data::member* Root)
 void LoadGame(state* State)
 {
 	State->PersistentData = {};
+	TreeBonusesTotal = &State->PersistentData.TreeBonuses;
 
 	if (!save_data::Read("SpaceUnknownSave.sus", (void*)&State->PersistentData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)) {
 		State->LoadedFromFile = false;
@@ -364,8 +348,6 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 	state* State = &EngineState->GameState;
 	editor_state* EditorState = &EngineState->EditorState;
 
-	TreeBonusesTotal = &State->TreeBonusesTotal;
-
 	State->Zoom = (real32)Lerp(State->Zoom, State->ZoomTarget, 0.5f);
 	float Curve = 3.5f;
 	EngineState->GameCamera.OrthoZoom = (real32)LerpCurve(ZoomRealMin, ZoomRealMax, Curve, State->Zoom);
@@ -502,7 +484,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				ImGui::Dummy(ImVec2(0, 30));
 
 				if (ImGui::Button("Knowledge + 5 ", ImVec2(-1, 0))) {
-					State->Knowledge += 5;
+					State->PersistentData.Knowledge += 5;
 				}
 
 				if (ImGui::Button("++ New ++ ", ImVec2(-1, 0))) {
@@ -719,7 +701,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 		ImGui::Separator();
 		ImGui::Text("Resources");
-		ImGui::Text("Knowledge - % i", State->Knowledge);
+		ImGui::Text("Knowledge - % i", State->PersistentData.Knowledge);
 		ImGui::SameLine();
 
 		ImGui::End();
@@ -1038,7 +1020,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 					} else {
 						ImGui::Separator();
 						real32 HW = ImGui::GetWindowWidth() * 0.47f;
-						if (State->Knowledge >= NodeSelected->Persist.KnowledgeCost) {
+						if (State->PersistentData.Knowledge >= NodeSelected->Persist.KnowledgeCost) {
 							if (ImGui::Button("Yes", ImVec2(HW, 0))) {
 								ImGui::CloseCurrentPopup();
 								SkillTreeUnlock(NodeSelected, State);

@@ -642,10 +642,43 @@ void JsonFillStructShim_station_persistent (json::json_data* JsonData, string Ke
 return json::FillStruct(JsonData, KeyParent, &station_persistent_META[0], ArrayCount(station_persistent_META), DataDest);
 }
 
+meta_member skill_bonuses_META[] { 
+{meta_member_type::real32, "real32", "FuelForceAddition", (uint64)&((skill_bonuses *)0)->FuelForceAddition, 0, sizeof(real32),{},{},{},{},{}},
+}; 
+ 
+void M_ALLOC__skill_bonuses(s_void* SafeVoid, memory_arena* Memory) { 
+	SafeVoid->IsAllocated = true; 
+	SafeVoid->Type = 18; 
+	SafeVoid->DataSize = sizeof(skill_bonuses); 
+	SafeVoid->Data = ArenaAllocate(Memory, sizeof(skill_bonuses)); 
+	ClearMemory((uint8*)SafeVoid->Data, sizeof(skill_bonuses)); 
+};
+
+skill_bonuses* M_GET__skill_bonuses(s_void* SafeVoid) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 18) { 
+		return (skill_bonuses*)SafeVoid->Data; 
+	} 
+	return GameNull; 
+};
+
+void StructMetaFill_skill_bonuses (json::struct_string_return* Dest,  void* AccData){
+return json::StructMetaFill(Dest, &skill_bonuses_META[0], ArrayCount(skill_bonuses_META), AccData);
+}
+
+void SaveDataFillShim_skill_bonuses (save_data::member* Dest, string KeyParent, void* AccData){
+return save_data::AddMembers(Dest, KeyParent, &skill_bonuses_META[0], ArrayCount(skill_bonuses_META), AccData);
+}
+
+void JsonFillStructShim_skill_bonuses (json::json_data* JsonData, string KeyParent, void* DataDest){
+return json::FillStruct(JsonData, KeyParent, &skill_bonuses_META[0], ArrayCount(skill_bonuses_META), DataDest);
+}
+
 meta_member save_file_META[] { 
 {meta_member_type::int64, "int64", "RealTimeSaved", (uint64)&((save_file *)0)->RealTimeSaved, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::real64, "real64", "UniverseTimeMS", (uint64)&((save_file *)0)->UniverseTimeMS, 0, sizeof(real64),{},{},{},{},{}},
 {meta_member_type::int64, "int64", "SkillNodesIDUnlocked", (uint64)&((save_file *)0)->SkillNodesIDUnlocked, 256, sizeof(int64),{},{},{},{},{}},
+{meta_member_type::custom, "skill_bonuses", "TreeBonuses", (uint64)&((save_file *)0)->TreeBonuses, 0, sizeof(skill_bonuses),&StructMetaFill_skill_bonuses, &JsonFillStructShim_skill_bonuses, &SaveDataFillShim_skill_bonuses, &skill_bonuses_META[0], ArrayCount(skill_bonuses_META) },
+{meta_member_type::int64, "int64", "Knowledge", (uint64)&((save_file *)0)->Knowledge, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::int64, "int64", "ShipsCount", (uint64)&((save_file *)0)->ShipsCount, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::custom, "ship_persistent", "Ships", (uint64)&((save_file *)0)->Ships, 256, sizeof(ship_persistent),&StructMetaFill_ship_persistent, &JsonFillStructShim_ship_persistent, &SaveDataFillShim_ship_persistent, &ship_persistent_META[0], ArrayCount(ship_persistent_META) },
 {meta_member_type::int64, "int64", "StationsCount", (uint64)&((save_file *)0)->StationsCount, 0, sizeof(int64),{},{},{},{},{}},
@@ -656,14 +689,14 @@ meta_member save_file_META[] {
  
 void M_ALLOC__save_file(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 18; 
+	SafeVoid->Type = 19; 
 	SafeVoid->DataSize = sizeof(save_file); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(save_file)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(save_file)); 
 };
 
 save_file* M_GET__save_file(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 18) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 19) { 
 		return (save_file*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -693,14 +726,14 @@ meta_member ryan_type_META[] {
  
 void M_ALLOC__ryan_type(s_void* SafeVoid, memory_arena* Memory) { 
 	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 19; 
+	SafeVoid->Type = 20; 
 	SafeVoid->DataSize = sizeof(ryan_type); 
 	SafeVoid->Data = ArenaAllocate(Memory, sizeof(ryan_type)); 
 	ClearMemory((uint8*)SafeVoid->Data, sizeof(ryan_type)); 
 };
 
 ryan_type* M_GET__ryan_type(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 19) { 
+	if (SafeVoid->IsAllocated && SafeVoid->Type == 20) { 
 		return (ryan_type*)SafeVoid->Data; 
 	} 
 	return GameNull; 
@@ -727,37 +760,6 @@ string recipe_member_type_NAME[] {
 "item",
 "ship",
 }; 
-meta_member skill_bonuses_META[] { 
-{meta_member_type::real32, "real32", "FuelForceAddition", (uint64)&((skill_bonuses *)0)->FuelForceAddition, 0, sizeof(real32),{},{},{},{},{}},
-}; 
- 
-void M_ALLOC__skill_bonuses(s_void* SafeVoid, memory_arena* Memory) { 
-	SafeVoid->IsAllocated = true; 
-	SafeVoid->Type = 20; 
-	SafeVoid->DataSize = sizeof(skill_bonuses); 
-	SafeVoid->Data = ArenaAllocate(Memory, sizeof(skill_bonuses)); 
-	ClearMemory((uint8*)SafeVoid->Data, sizeof(skill_bonuses)); 
-};
-
-skill_bonuses* M_GET__skill_bonuses(s_void* SafeVoid) { 
-	if (SafeVoid->IsAllocated && SafeVoid->Type == 20) { 
-		return (skill_bonuses*)SafeVoid->Data; 
-	} 
-	return GameNull; 
-};
-
-void StructMetaFill_skill_bonuses (json::struct_string_return* Dest,  void* AccData){
-return json::StructMetaFill(Dest, &skill_bonuses_META[0], ArrayCount(skill_bonuses_META), AccData);
-}
-
-void SaveDataFillShim_skill_bonuses (save_data::member* Dest, string KeyParent, void* AccData){
-return save_data::AddMembers(Dest, KeyParent, &skill_bonuses_META[0], ArrayCount(skill_bonuses_META), AccData);
-}
-
-void JsonFillStructShim_skill_bonuses (json::json_data* JsonData, string KeyParent, void* DataDest){
-return json::FillStruct(JsonData, KeyParent, &skill_bonuses_META[0], ArrayCount(skill_bonuses_META), DataDest);
-}
-
 meta_member skill_node_persistent_META[] { 
 {meta_member_type::int64, "int64", "ID", (uint64)&((skill_node_persistent *)0)->ID, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::custom, "skill_bonuses", "Bonuses", (uint64)&((skill_node_persistent *)0)->Bonuses, 0, sizeof(skill_bonuses),&StructMetaFill_skill_bonuses, &JsonFillStructShim_skill_bonuses, &SaveDataFillShim_skill_bonuses, &skill_bonuses_META[0], ArrayCount(skill_bonuses_META) },

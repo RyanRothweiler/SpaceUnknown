@@ -6,10 +6,6 @@
 	- Add to displays when hovering
 */
 
-MetaStruct struct skill_bonuses {
-	real32 FuelForceAddition;
-};
-
 skill_bonuses SkillBonusesAdd(skill_bonuses A, skill_bonuses B)
 {
 	skill_bonuses Ret = {};
