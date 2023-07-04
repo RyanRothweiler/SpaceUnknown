@@ -141,14 +141,12 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 			}
 		}
 
-		/*
 		if (ImGui::Button("Cancel Order", ImVec2(-1, 0))) {
-			Converter->RunsCount = 0;
-			Station->Converters[0] = {};
-
+			Converter->Persist->RunsCount = {};
+			Converter->Persist->RecipeID = {};
 			// TODO return consumed items
 		}
-		*/
+
 	} else {
 		if (ImGui::Button("New Order")) {
 			ImGui::OpenPopup("NewOrder");
@@ -163,22 +161,27 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(0, 0, 0, 100));
 		ImGui::BeginChild("recipes", ImVec2(500, 300));
 
-		ImGui::Columns(3, "mycolumns"); // 4-ways, with border
+		ImGui::Columns(3, "mycolumns");
 		ImGui::Separator();
 		ImGui::Text("Duration"); ImGui::NextColumn();
 		ImGui::Text("Inputs"); ImGui::NextColumn();
 		ImGui::Text("Outputs"); ImGui::NextColumn();
 		ImGui::Separator();
 
-
 		for (int i = 0; i < RecipeList->Count; i++) {
 			recipe_id ID = RecipeList->IDs[i];
+
+			ImGui::PushID(recipe_id_NAME[(int)ID].Array());
+
 			recipe* Recipe = &Globals->AssetsList.RecipeDefinitions[(int)ID];
 
 			string dur = Humanize((int64)MillisecondsToMinutes(Recipe->DurationMS)) + "(m)";
 			static bool sel = false;
 			if (ImGui::Selectable(dur.Array(), &sel, ImGuiSelectableFlags_SpanAllColumns, ImVec2(0, ImGuiImageSize.x))) {
-				RecipeIDSelected = ID;
+				//RecipeIDSelected = ID;
+				ConverterAddOrder(Converter, ID);
+				ImGui::CloseCurrentPopup();
+				sel = false;
 			}
 			ImGui::NextColumn();
 
@@ -187,6 +190,8 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 
 			ImGuiItemCountList(&Recipe->Outputs[0], Recipe->OutputsCount);
 			ImGui::NextColumn();
+
+			ImGui::PopID();
 		}
 
 		ImGui::Columns(1);
@@ -194,6 +199,7 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 		ImGui::PopStyleColor();
 
 		real32 HW = ImGui::GetWindowWidth();
+		/*
 		if (RecipeIDSelected != recipe_id::none) { HW = HW * 0.5f; }
 
 		ImGui::Separator();
@@ -206,6 +212,8 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 			ImGui::SetItemDefaultFocus();
 			ImGui::SameLine();
 		}
+		*/
+
 		if (ImGui::Button("Cancel", ImVec2(HW, 0))) {
 			ImGui::CloseCurrentPopup();
 		}

@@ -347,6 +347,7 @@ return json::FillStruct(JsonData, KeyParent, &item_hold_persistent_META[0], Arra
 string recipe_id_NAME[] { 
 "venigen_stl",
 "ship_advent",
+"sm_salvager_i",
 "count",
 "none",
 }; 

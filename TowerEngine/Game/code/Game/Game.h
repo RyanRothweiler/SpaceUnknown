@@ -161,6 +161,8 @@ MetaStruct enum class recipe_id {
 
 	ship_advent,
 
+	sm_salvager_i,
+
 	count,
 	none,
 };
