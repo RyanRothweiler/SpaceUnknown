@@ -282,7 +282,8 @@ MetaStruct struct station_persistent {
 };
 
 MetaStruct struct skill_bonuses {
-	real32 FuelForceAddition;
+	real32 FuelForce;
+	int32 ShipLimit;
 };
 
 // NOTE no pointers

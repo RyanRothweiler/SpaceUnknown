@@ -9,12 +9,14 @@
 skill_bonuses SkillBonusesAdd(skill_bonuses A, skill_bonuses B)
 {
 	skill_bonuses Ret = {};
-	Ret.FuelForceAddition = A.FuelForceAddition + B.FuelForceAddition;
+	Ret.FuelForce = A.FuelForce + B.FuelForce;
+	Ret.ShipLimit = A.ShipLimit + B.ShipLimit;
 	return Ret;
 }
 
 MetaStruct struct skill_node_persistent {
 	int64 ID;
+
 	skill_bonuses Bonuses;
 	int64 KnowledgeCost;
 	vector2 Position;

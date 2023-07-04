@@ -681,7 +681,8 @@ return json::FillStruct(JsonData, KeyParent, &station_persistent_META[0], ArrayC
 }
 
 meta_member skill_bonuses_META[] { 
-{meta_member_type::real32, "real32", "FuelForceAddition", (uint64)&((skill_bonuses *)0)->FuelForceAddition, 0, sizeof(real32),{},{},{},{},{}},
+{meta_member_type::real32, "real32", "FuelForce", (uint64)&((skill_bonuses *)0)->FuelForce, 0, sizeof(real32),{},{},{},{},{}},
+{meta_member_type::int32, "int32", "ShipLimit", (uint64)&((skill_bonuses *)0)->ShipLimit, 0, sizeof(int32),{},{},{},{},{}},
 }; 
  
 void M_ALLOC__skill_bonuses(s_void* SafeVoid, memory_arena* Memory) { 

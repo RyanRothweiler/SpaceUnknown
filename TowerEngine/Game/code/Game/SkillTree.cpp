@@ -51,18 +51,8 @@ void SkillTreeNodeSave(skill_node * Node)
 
 void SkillTreeSaveAll(state * State)
 {
-	struct locals {
-		void Save(skill_node* Node)
-		{
-			SkillTreeNodeSave(Node);
-			for (int i = 0; i < Node->ChildrenCount; i++) {
-				Save(Node->Children[i]);
-			}
-		}
-	} Locals;
-
 	for (int i = 0; i < State->SkillNodesCount; i++) {
-		Locals.Save(&State->SkillNodes[i]);
+		SkillTreeNodeSave(&State->SkillNodes[i]);
 	}
 }
 
@@ -77,7 +67,14 @@ void SkillTreeUnlock(skill_node * Node, state * State)
 
 void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
 {
-	if (Bonuses.FuelForceAddition > 0) {
-		ImGui::Text("Additional force per fuel unit %i%%", (int)((Bonuses.FuelForceAddition) * 100.0f));
+	ImGui::Separator();
+
+	if (Bonuses.FuelForce > 0) {
+		ImGui::Text("Additional force per fuel unit %i%%", (int)((Bonuses.FuelForce) * 100.0f));
 	}
+
+	if (Bonuses.ShipLimit > 0) {
+		ImGui::Text("Ship Limit Increase %i", (int)(Bonuses.ShipLimit));
+	}
+
 }

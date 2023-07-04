@@ -168,6 +168,9 @@ void LoadGame(state* State)
 		// If no save file, then create initial setup
 		if (!State->LoadedFromFile) { 
 
+			// Initial state setup
+			State->PersistentData.TreeBonuses.ShipLimit = 1;
+
 			// Station
 			station* Station = StationCreate(State);
 			Station->Persist->Position.X = 50;
@@ -445,15 +448,15 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				}
 				if (Input->MouseRight.IsDown && Input->MouseMoved() && NodeMoving != GameNull) {
 					vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
-					NodeMoving->Persist.Position = vector2{MouseWorld.X, MouseWorld.Y};
+					NodeMoving->Persist.Position = SnapVector(vector2{MouseWorld.X, MouseWorld.Y}, 3.0f);
 				}
 
 				if (EditorState->NodeSelected != GameNull) {
-					ImGui::Text("%i", EditorState->NodeSelected->Persist.ID);
+					ImGui::Text("%llu", EditorState->NodeSelected->Persist.ID);
 
 					{
 						int Num = (int)EditorState->NodeSelected->Persist.KnowledgeCost;
-						ImGui::DragInt("Knowledge Cost", &Num, 1, 0, 1000000, " % i");
+						ImGui::DragInt("Knowledge Cost", &Num, 1, 0, 1000000, "%i");
 						EditorState->NodeSelected->Persist.KnowledgeCost = (int64)Num;
 					}
 
@@ -483,7 +486,8 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 					ImGui::Text("Bonuses");
 
-					ImGui::DragFloat("FuelForceAddition", &EditorState->NodeSelected->Persist.BonusAdditions.FuelForceAddition, 0.001f);
+					ImGui::DragFloat("FuelForceAddition", &EditorState->NodeSelected->Persist.BonusAdditions.FuelForce, 0.001f);
+					ImGui::DragInt("ShipLimit", &EditorState->NodeSelected->Persist.BonusAdditions.ShipLimit, 1);
 				}
 
 				ImGui::Dummy(ImVec2(0, 30));
@@ -705,8 +709,9 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 		}
 
 		ImGui::Separator();
+		ImGui::Text("Ship Limit - %i", State->PersistentData.TreeBonuses.ShipLimit);
 		ImGui::Text("Resources");
-		ImGui::Text("Knowledge - % i", State->PersistentData.Knowledge);
+		ImGui::Text("Knowledge - %i", State->PersistentData.Knowledge);
 		ImGui::SameLine();
 
 		ImGui::End();
@@ -1000,7 +1005,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				ImGui::SetNextWindowPos(ImVec2((float)Input->MousePos.X + 20, (float)Input->MousePos.Y));
 				bool Open = true;
 				ImGui::Begin("Info", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
-				ImGui::Text("Knowledge Cost - % i", State->NodeHovering->Persist.KnowledgeCost);
+				ImGui::Text("Knowledge Cost %i", State->NodeHovering->Persist.KnowledgeCost);
 				SkillTreeImguiDisplayBonuses(State->NodeHovering->Persist.BonusAdditions);
 				ImGui::End();
 

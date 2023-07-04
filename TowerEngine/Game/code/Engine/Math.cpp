@@ -287,6 +287,9 @@ real64 Coserp(real64 y1, real64 y2, real64 mu)
 	return (y1 * (1 - mu2) + y2 * mu2);
 }
 
+real64 SnapValue(real64 Val, real64 Grid) { 
+	return Round(Val / Grid) * Grid;
+}
 
 // ----------------------------------------------------------------------------- vector3
 struct vector3 {
@@ -396,6 +399,13 @@ MetaStruct struct vector2 {
 	real64 X;
 	real64 Y;
 };
+
+vector2 SnapVector(vector2 Input, real64 Grid) {
+	return vector2{
+		SnapValue(Input.X, Grid),
+		SnapValue(Input.Y, Grid)
+	};
+}
 
 const vector2 VECTOR2_ZERO = vector2{0, 0};
 

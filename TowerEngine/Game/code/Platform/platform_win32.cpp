@@ -508,7 +508,14 @@ uint32 GetGUID()
 {
 	UUID uuid = {};
 	if (UuidCreate(&uuid) == RPC_S_OK) {
-		return uuid.Data1;
+
+		// Only return positive numbers
+		if (uuid.Data1 < 0) { 
+			return uuid.Data1 * -1;
+		} else {
+			return uuid.Data1;
+		}
+
 	} else {
 		// Error creating uuid
 		return 0;
