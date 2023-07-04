@@ -18,6 +18,7 @@ MetaStruct struct skill_node_persistent {
 	int64 ID;
 
 	skill_bonuses Bonuses;
+
 	int64 KnowledgeCost;
 	vector2 Position;
 	skill_bonuses BonusAdditions;
