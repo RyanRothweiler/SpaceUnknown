@@ -20,6 +20,8 @@ struct recipe {
 	station_service ServiceRequired;
 	recipe_id ID;
 
+	loaded_image* Icon;
+	
 	item_count Inputs[100];
 	int32 InputsCount;
 	item_count Outputs[100];
