@@ -45,6 +45,8 @@ string glsl_type_NAME[] {
 "gl_float",
 "gl_int",
 }; 
+#define gen_glsl_type_count 10 
+ 
 string persistent_pointer_type_NAME[] { 
 "none",
 "station",
@@ -52,6 +54,8 @@ string persistent_pointer_type_NAME[] {
 "asteroid",
 "salvage",
 }; 
+#define gen_persistent_pointer_type_count 5 
+ 
 meta_member persistent_pointer_META[] { 
 {meta_member_type::enumeration, "persistent_pointer_type", "Type", (uint64)&((persistent_pointer *)0)->Type, 0, sizeof(persistent_pointer_type),{},{},{},{},{}},
 {meta_member_type::uint32, "uint32", "GUID", (uint64)&((persistent_pointer *)0)->GUID, 0, sizeof(uint32),{},{},{},{},{}},
@@ -89,6 +93,8 @@ string world_target_type_NAME[] {
 "asteroid",
 "salvage",
 }; 
+#define gen_world_target_type_count 3 
+ 
 meta_member world_target_persistent_META[] { 
 {meta_member_type::enumeration, "world_target_type", "Type", (uint64)&((world_target_persistent *)0)->Type, 0, sizeof(world_target_type),{},{},{},{},{}},
 {meta_member_type::custom, "persistent_pointer", "Asteroid", (uint64)&((world_target_persistent *)0)->Asteroid, 0, sizeof(persistent_pointer),&StructMetaFill_persistent_pointer, &JsonFillStructShim_persistent_pointer, &SaveDataFillShim_persistent_pointer, &persistent_pointer_META[0], ArrayCount(persistent_pointer_META) },
@@ -198,6 +204,8 @@ string journey_step_type_NAME[] {
 "movement",
 "dock_undock",
 }; 
+#define gen_journey_step_type_count 2 
+ 
 meta_member journey_step_META[] { 
 {meta_member_type::enumeration, "journey_step_type", "Type", (uint64)&((journey_step *)0)->Type, 0, sizeof(journey_step_type),{},{},{},{},{}},
 {meta_member_type::custom, "journey_movement", "Movement", (uint64)&((journey_step *)0)->Movement, 0, sizeof(journey_movement),&StructMetaFill_journey_movement, &JsonFillStructShim_journey_movement, &SaveDataFillShim_journey_movement, &journey_movement_META[0], ArrayCount(journey_movement_META) },
@@ -272,6 +280,8 @@ string ship_module_id_NAME[] {
 "salvager_i",
 "count",
 }; 
+#define gen_ship_module_id_count 4 
+ 
 string item_id_NAME[] { 
 "venigen",
 "pyrexium",
@@ -280,6 +290,8 @@ string item_id_NAME[] {
 "sm_salvager_i",
 "count",
 }; 
+#define gen_item_id_count 6 
+ 
 meta_member item_instance_persistent_META[] { 
 {meta_member_type::enumeration, "item_id", "ID", (uint64)&((item_instance_persistent *)0)->ID, 0, sizeof(item_id),{},{},{},{},{}},
 {meta_member_type::real64, "real64", "Count", (uint64)&((item_instance_persistent *)0)->Count, 0, sizeof(real64),{},{},{},{},{}},
@@ -351,6 +363,8 @@ string recipe_id_NAME[] {
 "count",
 "none",
 }; 
+#define gen_recipe_id_count 5 
+ 
 meta_member color_persistent_META[] { 
 {meta_member_type::real32, "real32", "R", (uint64)&((color_persistent *)0)->R, 0, sizeof(real32),{},{},{},{},{}},
 {meta_member_type::real32, "real32", "G", (uint64)&((color_persistent *)0)->G, 0, sizeof(real32),{},{},{},{},{}},
@@ -424,6 +438,8 @@ string ship_id_NAME[] {
 "advent",
 "count",
 }; 
+#define gen_ship_id_count 2 
+ 
 string ship_status_NAME[] { 
 "idle",
 "moving",
@@ -431,6 +447,8 @@ string ship_status_NAME[] {
 "undocking",
 "docked",
 }; 
+#define gen_ship_status_count 5 
+ 
 meta_member ship_module_persistent_META[] { 
 {meta_member_type::bool32, "bool32", "Filled", (uint64)&((ship_module_persistent *)0)->Filled, 0, sizeof(bool32),{},{},{},{},{}},
 {meta_member_type::enumeration, "ship_module_id", "Type", (uint64)&((ship_module_persistent *)0)->Type, 0, sizeof(ship_module_id),{},{},{},{},{}},
@@ -684,6 +702,7 @@ return json::FillStruct(JsonData, KeyParent, &station_persistent_META[0], ArrayC
 meta_member skill_bonuses_META[] { 
 {meta_member_type::real32, "real32", "FuelForce", (uint64)&((skill_bonuses *)0)->FuelForce, 0, sizeof(real32),{},{},{},{},{}},
 {meta_member_type::int32, "int32", "ShipLimit", (uint64)&((skill_bonuses *)0)->ShipLimit, 0, sizeof(int32),{},{},{},{},{}},
+{meta_member_type::bool32, "bool32", "RecipeUnlocked", (uint64)&((skill_bonuses *)0)->RecipeUnlocked, recipe_id_count, sizeof(bool32),{},{},{},{},{}},
 }; 
  
 void M_ALLOC__skill_bonuses(s_void* SafeVoid, memory_arena* Memory) { 
@@ -761,13 +780,16 @@ string station_service_NAME[] {
 "shipyard",
 "count",
 }; 
+#define gen_station_service_count 3 
+ 
 string recipe_member_type_NAME[] { 
 "item",
 "ship",
 }; 
+#define gen_recipe_member_type_count 2 
+ 
 meta_member skill_node_persistent_META[] { 
 {meta_member_type::int64, "int64", "ID", (uint64)&((skill_node_persistent *)0)->ID, 0, sizeof(int64),{},{},{},{},{}},
-{meta_member_type::custom, "skill_bonuses", "Bonuses", (uint64)&((skill_node_persistent *)0)->Bonuses, 0, sizeof(skill_bonuses),&StructMetaFill_skill_bonuses, &JsonFillStructShim_skill_bonuses, &SaveDataFillShim_skill_bonuses, &skill_bonuses_META[0], ArrayCount(skill_bonuses_META) },
 {meta_member_type::int64, "int64", "KnowledgeCost", (uint64)&((skill_node_persistent *)0)->KnowledgeCost, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::custom, "vector2", "Position", (uint64)&((skill_node_persistent *)0)->Position, 0, sizeof(vector2),&StructMetaFill_vector2, &JsonFillStructShim_vector2, &SaveDataFillShim_vector2, &vector2_META[0], ArrayCount(vector2_META) },
 {meta_member_type::custom, "skill_bonuses", "BonusAdditions", (uint64)&((skill_node_persistent *)0)->BonusAdditions, 0, sizeof(skill_bonuses),&StructMetaFill_skill_bonuses, &JsonFillStructShim_skill_bonuses, &SaveDataFillShim_skill_bonuses, &skill_bonuses_META[0], ArrayCount(skill_bonuses_META) },

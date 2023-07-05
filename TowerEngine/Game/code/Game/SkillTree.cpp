@@ -74,7 +74,13 @@ void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
 	}
 
 	if (Bonuses.ShipLimit > 0) {
-		ImGui::Text("Ship Limit Increase %i", (int)(Bonuses.ShipLimit));
+		ImGui::Text("Ship limit increase %i", (int)(Bonuses.ShipLimit));
 	}
 
+	for (int i = 0; i < ArrayCount(Bonuses.RecipeUnlocked); i++) {
+		if (Bonuses.RecipeUnlocked[i]) { 
+			string Disp = "Unlock recipe " + recipe_id_NAME[i];
+			ImGui::Text(Disp.Array());
+		}
+	}
 }

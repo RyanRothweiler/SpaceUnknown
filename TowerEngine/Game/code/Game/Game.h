@@ -157,15 +157,15 @@ MetaStruct struct item_hold_persistent {
 };
 
 MetaStruct enum class recipe_id {
-	venigen_stl,
-
-	ship_advent,
-
-	sm_salvager_i,
+	venigen_stl		= 0,
+	ship_advent		= 1,
+	sm_salvager_i	= 2,
+	// increment count define
 
 	count,
 	none,
 };
+#define recipe_id_count 3
 
 // -----------------------------------------------------------------------------
 
@@ -286,6 +286,8 @@ MetaStruct struct station_persistent {
 MetaStruct struct skill_bonuses {
 	real32 FuelForce;
 	int32 ShipLimit;
+
+	bool32 RecipeUnlocked[recipe_id_count];
 };
 
 // NOTE no pointers

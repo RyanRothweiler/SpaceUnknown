@@ -725,6 +725,7 @@ void ProcessFile(char* Path)
 					}
 
 					printf("}; \n");
+					printf("#define gen_%.*s_count %i \n \n", Name.ContentsLength, Name.Contents, Count);
 
 					// enum size
 					/*

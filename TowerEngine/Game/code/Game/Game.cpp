@@ -486,8 +486,16 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 					ImGui::Text("Bonuses");
 
-					ImGui::DragFloat("FuelForceAddition", &EditorState->NodeSelected->Persist.BonusAdditions.FuelForce, 0.001f);
-					ImGui::DragInt("ShipLimit", &EditorState->NodeSelected->Persist.BonusAdditions.ShipLimit, 1);
+					skill_bonuses* Bonuses = &EditorState->NodeSelected->Persist.BonusAdditions;
+					ImGui::DragFloat("FuelForceAddition", &Bonuses->FuelForce, 0.001f);
+					ImGui::DragInt("ShipLimit", &Bonuses->ShipLimit, 1);
+					if (ImGui::CollapsingHeader("Recipe")) {
+						for (int i = 0; i < ArrayCount(Bonuses->RecipeUnlocked); i++) {
+							bool B = Bonuses->RecipeUnlocked[i];
+							ImGui::Checkbox(recipe_id_NAME[i].Array(), &B);
+							Bonuses->RecipeUnlocked[i] = B;
+						}
+					}
 				}
 
 				ImGui::Dummy(ImVec2(0, 30));
@@ -960,38 +968,54 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				// Render skill tree nodes
 				for (int c = 0; c < Node->ChildrenCount; c++) {
 
+					color Col = color{1,1,1,0.2f};
 					real32 Width = 1;
 					if (Node->Unlocked) {
-						Width = 4;
+						Width = 5;
+						Col = color{0,1,0,0.4f};
 					}
 
+					vector2 Dir = vector2{Node->Persist.Position.X, Node->Persist.Position.Y} - 
+									vector2{Node->Children[c]->Persist.Position.X, Node->Children[c]->Persist.Position.Y};
+					Dir = Vector2Normalize(Dir) * 2.0f;
+
 					vector2 Points[2] = {};
-					Points[0] = WorldToScreen(vector3{Node->Persist.Position.X, Node->Persist.Position.Y, 0}, &EngineState->GameCamera);
-					Points[1] = WorldToScreen(vector3{Node->Children[c]->Persist.Position.X, Node->Children[c]->Persist.Position.Y, 0}, &EngineState->GameCamera);
+					Points[0] = WorldToScreen(vector3{Node->Persist.Position.X - Dir.X, Node->Persist.Position.Y - Dir.Y, 0}, &EngineState->GameCamera);
+					Points[1] = WorldToScreen(vector3{Node->Children[c]->Persist.Position.X + Dir.X, Node->Children[c]->Persist.Position.Y + Dir.Y, 0}, &EngineState->GameCamera);
 					render_line Line = {};
 					Line.Points = Points;
 					Line.PointsCount = ArrayCount(Points);
-					RenderLine(Line, Width, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
+					RenderLine(Line, Width, Col, &EngineState->UIRenderer, false);
 				}
 
-				color Color = {};
+				color Color = COLOR_WHITE;
+				vector2 Size = vector2{Node->CircleRadius, Node->CircleRadius};
 				if (!Node->Unlocked) {
-					Color = COLOR_WHITE;
-					Color.A = 0.1f;
+					Color.A = 0.3f;
 				}
 				if (Node->Parent == GameNull || Node->Parent->Unlocked) {
-					Color = Color255(15, 87, 34, 1);
-				}
-				if (Node->Unlocked) {
-					Color = Color255(42, 240, 96, 1);
+					Color.A = 0.5f;
+					Size = Size * 1.1f;
 				}
 
 				real32 RadiusMax = 2;
 				if (Node->Unlocked) {
 					RadiusMax = 3;
+					Color = COLOR_WHITE;
 				}
 				Node->CircleRadius = Lerp(Node->CircleRadius, RadiusMax, 0.25f);
-				RenderCircle(Node->Persist.Position, vector2{Node->CircleRadius, Node->CircleRadius}, Color, 2, Globals->GameRenderer);
+
+				recipe_id RecipeUnlocking = Node->RecipeUnlocking();
+				if (RecipeUnlocking != recipe_id::none) {
+
+					RenderTextureAll(Node->Persist.Position, Size * 1.4f, Color, 
+									Globals->AssetsList.RecipeDefinitions[(int)RecipeUnlocking].Icon->GLID,
+									RenderLayerPlanet, m4y4Identity(), Globals->GameRenderer);
+
+				} else {
+					RenderCircle(Node->Persist.Position, Size, Color, 2, Globals->GameRenderer);
+				}
+	
 				if (Vector2Distance(Node->Persist.Position, MouseWorldFlat) < Node->CircleRadius) {
 					EngineState->GameState.NodeHovering = Node;
 				}
@@ -1000,7 +1024,10 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			static skill_node* NodeSelected = {};
 
 			if (NodeSelected == GameNull && State->NodeHovering != GameNull) {
-				State->NodeHovering->CircleRadius = 4;
+				if (!State->NodeHovering->Unlocked && 
+					(State->NodeHovering->Parent == GameNull || State->NodeHovering->Parent->Unlocked)) { 
+					State->NodeHovering->CircleRadius = 4;
+				}
 
 				ImGui::SetNextWindowPos(ImVec2((float)Input->MousePos.X + 20, (float)Input->MousePos.Y));
 				bool Open = true;
