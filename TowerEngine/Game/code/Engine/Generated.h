@@ -699,6 +699,12 @@ void JsonFillStructShim_station_persistent (json::json_data* JsonData, string Ke
 return json::FillStruct(JsonData, KeyParent, &station_persistent_META[0], ArrayCount(station_persistent_META), DataDest);
 }
 
+string skill_node_icon_NAME[] { 
+"ship_limit",
+"fuel_force",
+}; 
+#define gen_skill_node_icon_count 2 
+ 
 meta_member skill_bonuses_META[] { 
 {meta_member_type::real32, "real32", "FuelForce", (uint64)&((skill_bonuses *)0)->FuelForce, 0, sizeof(real32),{},{},{},{},{}},
 {meta_member_type::int32, "int32", "ShipLimit", (uint64)&((skill_bonuses *)0)->ShipLimit, 0, sizeof(int32),{},{},{},{},{}},
@@ -793,6 +799,7 @@ meta_member skill_node_persistent_META[] {
 {meta_member_type::int64, "int64", "KnowledgeCost", (uint64)&((skill_node_persistent *)0)->KnowledgeCost, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::custom, "vector2", "Position", (uint64)&((skill_node_persistent *)0)->Position, 0, sizeof(vector2),&StructMetaFill_vector2, &JsonFillStructShim_vector2, &SaveDataFillShim_vector2, &vector2_META[0], ArrayCount(vector2_META) },
 {meta_member_type::custom, "skill_bonuses", "BonusAdditions", (uint64)&((skill_node_persistent *)0)->BonusAdditions, 0, sizeof(skill_bonuses),&StructMetaFill_skill_bonuses, &JsonFillStructShim_skill_bonuses, &SaveDataFillShim_skill_bonuses, &skill_bonuses_META[0], ArrayCount(skill_bonuses_META) },
+{meta_member_type::enumeration, "skill_node_icon", "Icon", (uint64)&((skill_node_persistent *)0)->Icon, 0, sizeof(skill_node_icon),{},{},{},{},{}},
 {meta_member_type::int64, "int64", "ChildrenIDs", (uint64)&((skill_node_persistent *)0)->ChildrenIDs, 10, sizeof(int64),{},{},{},{},{}},
 }; 
  

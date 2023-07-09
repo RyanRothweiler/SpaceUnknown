@@ -118,4 +118,5 @@ struct assets_list {
 
 	loaded_image* ShipModuleTypeIcons[100];
 	loaded_image* ShipModuleIcons[100];
+	loaded_image* SkillNodeIcons[100];
 };

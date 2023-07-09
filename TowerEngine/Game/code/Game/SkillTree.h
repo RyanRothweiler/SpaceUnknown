@@ -26,6 +26,7 @@ MetaStruct struct skill_node_persistent {
 	vector2 Position;
 	skill_bonuses BonusAdditions;
 
+	skill_node_icon Icon;
 	int64 ChildrenIDs[10];
 };
 

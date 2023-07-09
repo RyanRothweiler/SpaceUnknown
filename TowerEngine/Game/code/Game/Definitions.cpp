@@ -13,6 +13,14 @@ void CreateDefinitions()
 	Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner] = assets::GetImage("Icon_ShipModule_AsteroidMiner");
 	Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::salvager_i] = assets::GetImage("Icon_ShipModule_Salvager");
 
+	// Skill node icons
+	{
+		static_assert(ArrayCount(Globals->AssetsList.SkillNodeIcons) > gen_skill_node_icon_count, "Skill node image array not big enough");
+
+		Globals->AssetsList.SkillNodeIcons[(int)skill_node_icon::ship_limit] = assets::GetImage("NodeIcon_ShipLimit");
+		Globals->AssetsList.SkillNodeIcons[(int)skill_node_icon::fuel_force] = assets::GetImage("NodeIcon_FuelForce");
+	}
+
 	// Ship modules
 	{
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ID = ship_module_id::asteroid_miner;

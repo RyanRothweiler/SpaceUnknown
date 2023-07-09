@@ -496,6 +496,15 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 							Bonuses->RecipeUnlocked[i] = B;
 						}
 					}
+
+					const char* Options[gen_skill_node_icon_count];
+					for (int i = 0; i < gen_skill_node_icon_count; i++) {
+						Options[i] = skill_node_icon_NAME[i].Array();
+					}
+
+					int v = (int)EditorState->NodeSelected->Persist.Icon;
+					ImGui::Combo("Icon", &v, Options, gen_skill_node_icon_count);
+					EditorState->NodeSelected->Persist.Icon = (skill_node_icon)v;
 				}
 
 				ImGui::Dummy(ImVec2(0, 30));
@@ -1013,7 +1022,11 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 									RenderLayerPlanet, m4y4Identity(), Globals->GameRenderer);
 
 				} else {
-					RenderCircle(Node->Persist.Position, Size, Color, 2, Globals->GameRenderer);
+
+					RenderTextureAll(Node->Persist.Position, Size * 1.4f, Color, 
+									Globals->AssetsList.SkillNodeIcons[(int)Node->Persist.Icon]->GLID,
+									RenderLayerPlanet, m4y4Identity(), Globals->GameRenderer);
+						
 				}
 	
 				if (Vector2Distance(Node->Persist.Position, MouseWorldFlat) < Node->CircleRadius) {
@@ -1036,7 +1049,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				SkillTreeImguiDisplayBonuses(State->NodeHovering->Persist.BonusAdditions);
 				ImGui::End();
 
-				if (!State->NodeHovering->Unlocked && Input->MouseLeft.OnDown && !EditorState->EditorMode) {
+				if (!State->NodeHovering->Unlocked && State->NodeHovering->Parent->Unlocked && Input->MouseLeft.OnDown && !EditorState->EditorMode) {
 					ImGui::OpenPopup("Unlock");
 					NodeSelected = State->NodeHovering;
 				}

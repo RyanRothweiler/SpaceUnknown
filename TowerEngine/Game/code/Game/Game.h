@@ -283,6 +283,11 @@ MetaStruct struct station_persistent {
 	converter_persistent Converters[10];
 };
 
+MetaStruct enum class skill_node_icon {
+	ship_limit, fuel_force,
+};
+
+
 MetaStruct struct skill_bonuses {
 	real32 FuelForce;
 	int32 ShipLimit;

@@ -372,6 +372,9 @@ namespace assets {
 			{"Icon_ShipModule_AsteroidMiner", 		"Icons/Icon_ShipModule_AsteroidMiner.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Icon_ShipModule_Salvager", 			"Icons/Icon_ShipModule_Salvager.png", 				gl_blend_type::linear, correct_gamma::no},
 
+			{"NodeIcon_ShipLimit",					"NodeIcons/node_icon_ship_limit.png", 				gl_blend_type::linear, correct_gamma::no},
+			{"NodeIcon_FuelForce",					"NodeIcons/rocket-thruster.png",	 				gl_blend_type::linear, correct_gamma::no},
+
 			{"Icon_ShipModuleType_Industrial", 		"Icons/Icon_ShipModuleType_Industrial.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Icon_ShipModuleType_Structural", 		"Icons/Icon_ShipModuleType_Structural.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Icon_ShipModuleType_Science", 		"Icons/Icon_ShipModuleType_Science.png", 				gl_blend_type::linear, correct_gamma::no},
