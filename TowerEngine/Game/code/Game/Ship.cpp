@@ -66,8 +66,16 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 	real64 fuelToUse = Mov->CachedFuelToUse;
 	real64 fuelForce = Mov->CachedFuelForce;
 	vector2 dirToTargetForce = Mov->CachedDirToTargetForce;
+
+	r64 finalFuelForcePerGallon = fuelForcePerGallon;
+	finalFuelForcePerGallon += fuelForcePerGallon * TreeBonusesTotal->FuelForce;
+
+	// NOTE reevaluate this caching optimizations.
+	// If its enabled then there will be a bug here when fuelForcePerGallon changes.
+	// Cache should be invalidated then.
+
 	if (TimeMS != Mov->CachedTime || true) {
-		real64 FuelForceFinal = fuelForcePerGallon + (fuelForcePerGallon);
+		real64 FuelForceFinal = finalFuelForcePerGallon;
 
 		fuelToUse = Ship->Definition.FuelRateMassPerSecond * TimeSeconds;
 		fuelForce = fuelToUse * FuelForceFinal;
@@ -704,8 +712,8 @@ ship* ShipSetup(ship* Ship, ship_persistent* Persist, state* State)
 	Ship->Definition = Globals->AssetsList.ShipDefinitions[(int)Ship->Persist->Type];
 
 	// Setup item holds
-	Ship->Hold.Setup(Ship->Definition.HoldMass, &Ship->Persist->ItemHold);
-	Ship->FuelTank.Setup(Ship->Definition.FuelTankMassLimit, &Ship->Persist->FuelHold);
+	Ship->Hold.Setup(Ship->Definition.HoldMass, true, &Ship->Persist->ItemHold);
+	Ship->FuelTank.Setup(Ship->Definition.FuelTankMassLimit, true, &Ship->Persist->FuelHold);
 	ItemHoldUpdateMass(&Ship->Hold);
 	ItemHoldUpdateMass(&Ship->FuelTank);
 

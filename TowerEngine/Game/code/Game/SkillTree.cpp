@@ -77,6 +77,10 @@ void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
 		ImGui::Text("Ship limit increase %i", (int)(Bonuses.ShipLimit));
 	}
 
+	if (Bonuses.CargoSize > 0) {
+		ImGui::Text("Ship cargo hold mass limit addition %i(m)", Bonuses.CargoSize);
+	}
+
 	for (int i = 0; i < ArrayCount(Bonuses.RecipeUnlocked); i++) {
 		if (Bonuses.RecipeUnlocked[i]) { 
 			string Disp = "Unlock recipe " + recipe_id_NAME[i];

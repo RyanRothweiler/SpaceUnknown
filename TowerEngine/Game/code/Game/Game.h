@@ -288,9 +288,20 @@ MetaStruct enum class skill_node_icon {
 };
 
 
+/*
+	When adding new fields
+	- Add to operators in SkillBonusesAdd
+	- Add to displays SkillTreeImguiDisplayBonuses
+	- Implement effect
+*/
 MetaStruct struct skill_bonuses {
+
 	real32 FuelForce;
 	int32 ShipLimit;
+
+	int32 CargoSize;
+	real32 MiningLaserActivationTime;
+	real32 MiningLaserYield;
 
 	bool32 RecipeUnlocked[recipe_id_count];
 };
@@ -318,6 +329,8 @@ MetaStruct struct save_file {
 };
 // -----------------------------------------------------------------------------
 
+skill_bonuses* TreeBonusesTotal = {};
+
 #include "WorldObject.h"
 #include "Salvage.h"
 #include "Item.h"
@@ -327,7 +340,6 @@ MetaStruct struct save_file {
 #include "Station.h"
 #include "SkillTree.h"
 
-skill_bonuses* TreeBonusesTotal = {};
 
 // This also dictates the priority
 enum class selection_type { none, ship, station, asteroid, salvage };

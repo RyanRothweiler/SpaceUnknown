@@ -1,16 +1,10 @@
 
-/*
-	When adding new fields
-	- Add Field
-	- Add to operators in SkillBonusesAdd
-	- Add to displays when hovering
-*/
-
 skill_bonuses SkillBonusesAdd(skill_bonuses A, skill_bonuses B)
 {
 	skill_bonuses Ret = {};
 	Ret.FuelForce = A.FuelForce + B.FuelForce;
 	Ret.ShipLimit = A.ShipLimit + B.ShipLimit;
+	Ret.CargoSize = A.CargoSize + B.CargoSize;
 	
 	for (int i = 0; i < ArrayCount(A.RecipeUnlocked); i++) {
 		Ret.RecipeUnlocked[i] = A.RecipeUnlocked[i] || B.RecipeUnlocked[i];
@@ -41,9 +35,10 @@ struct skill_node {
 	int32 ChildrenCount;
 	skill_node* Parent;
 
+	static_assert(ArrayCount(Children) == ArrayCount(Persist.ChildrenIDs), "Persistent and children array lengths must match.");
+
 	void AddChild(skill_node* Child)
 	{
-		Assert(ArrayCount(Children) == ArrayCount(Persist.ChildrenIDs));
 
 		Children[ChildrenCount] = Child;
 		Persist.ChildrenIDs[ChildrenCount] = Child->Persist.ID;

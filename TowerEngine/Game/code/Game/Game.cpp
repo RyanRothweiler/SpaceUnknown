@@ -63,10 +63,18 @@ void StepUniverse(state* State, real64 TimeMS)
 string ChronoToString(std::chrono::seconds SecondsTotal)
 {
 	int64 Hours = std::chrono::duration_cast<std::chrono::hours>(SecondsTotal).count();
-	int64 Minutes = (int64)(std::chrono::duration_cast<std::chrono::minutes>(SecondsTotal).count() - (Hours * 60.0f));
-	int64 Seconds = (int64)(SecondsTotal.count() - (Minutes * 60.0f) - (Hours * 60.0f * 60.0f));
 
-	return string{Hours} + string{"h "} + string{Minutes} + string{"m "} + string{Seconds} + string{"s "};
+	int64 Days = (int64)((r64)Hours / 24.0f);
+	Hours -= Days * 24;
+
+	int64 Minutes = (int64)(std::chrono::duration_cast<std::chrono::minutes>(SecondsTotal).count() - (Hours * 60.0f) - (Days * 24.0f * 60.0f));
+	int64 Seconds = (int64)(SecondsTotal.count() - (Minutes * 60.0f) - (Hours * 60.0f * 60.0f) - (Days * 24.0f * 60.0f * 60.0f));
+
+	return 
+		string{Days} + string{"d "} + 
+		string{Hours} + string{"h "} + 
+		string{Minutes} + string{"m "} + 
+		string{Seconds} + string{"s "};
 }
 
 void SleepStepper(state* State, stepper* Stepper, real64 SleepDurationMS)
@@ -328,7 +336,7 @@ void Start(engine_state* EngineState)
 		{
 			for (int i = 0; i < State->PersistentData.StationsCount; i++) {
 				State->Stations[i].Persist = &State->PersistentData.Stations[i];
-				State->Stations[i].Hold.Setup(1000, &State->Stations[i].Persist->ItemHold);
+				State->Stations[i].Hold.Setup(1000, false, &State->Stations[i].Persist->ItemHold);
 
 				ItemHoldUpdateMass(&State->Stations[i].Hold);
 			}
@@ -468,8 +476,18 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 						ImGui::PushID(i);
 						if (ImGui::Button(" - ")) {
+							EditorState->NodeSelected->Children[i] = 0;
 							RemoveSlideArray((void*)&EditorState->NodeSelected->Children[0], EditorState->NodeSelected->ChildrenCount, sizeof(EditorState->NodeSelected->Children[0]), i);
 							EditorState->NodeSelected->ChildrenCount--;
+							
+							// rebuild persistent skill node children array
+							skill_node* NodeSel = EditorState->NodeSelected;
+							for (int j = 0; j < ArrayCount(NodeSel->Persist.ChildrenIDs); j++) {
+								NodeSel->Persist.ChildrenIDs[j] = 0;
+								if (j < NodeSel->ChildrenCount) {
+									NodeSel->Persist.ChildrenIDs[j] = NodeSel->Children[j]->Persist.ID;
+								}
+							}
 						}
 						ImGui::PopID();
 					}

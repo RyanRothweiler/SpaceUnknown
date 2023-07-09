@@ -6,10 +6,20 @@ struct item_hold {
 	changed_flag MassChanged;
 
 	int64 MassLimit;
+	bool32 Ship;
 
-	void Setup(int64 ML, item_hold_persistent* Per)
+	int64 GetMassLimit() {
+		if (Ship) {
+			return MassLimit + TreeBonusesTotal->CargoSize;
+		} else {
+			return MassLimit;
+		}
+	}
+
+	void Setup(int64 ML, b32 IsShip, item_hold_persistent* Per)
 	{
 		Persist = Per;
+		Ship = IsShip;
 
 		MassLimit = ML;
 		Persist->GUID = PlatformApi.GetGUID();
