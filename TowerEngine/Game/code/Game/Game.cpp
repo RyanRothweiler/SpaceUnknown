@@ -341,7 +341,7 @@ void Start(engine_state* EngineState)
 		{
 			for (int i = 0; i < State->PersistentData.StationsCount; i++) {
 				State->Stations[i].Persist = &State->PersistentData.Stations[i];
-				State->Stations[i].Hold.Setup(1000, false, &State->Stations[i].Persist->ItemHold);
+				State->Stations[i].Hold.Setup(1000, item_hold_type::fuel_tank, &State->Stations[i].Persist->ItemHold);
 
 				ItemHoldUpdateMass(&State->Stations[i].Hold);
 			}

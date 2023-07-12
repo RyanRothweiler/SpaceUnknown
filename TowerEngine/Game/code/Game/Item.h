@@ -1,3 +1,7 @@
+enum class item_hold_type {
+	ship_cargo, station_cargo, fuel_tank
+};
+
 struct item_hold {
 
 	item_hold_persistent* Persist;
@@ -5,23 +9,24 @@ struct item_hold {
 	real64 MassCurrent;
 	changed_flag MassChanged;
 
-	int64 MassLimit;
-	bool32 Ship;
+	item_hold_type Type;
 
+	// Always use GetMassLimit()
+	int64 MassLimitBase;
 	int64 GetMassLimit() {
-		if (Ship) {
-			return MassLimit + TreeBonusesTotal->CargoSize;
+		if (Type == item_hold_type::ship_cargo) {
+			return MassLimitBase + TreeBonusesTotal->CargoSize;
 		} else {
-			return MassLimit;
+			return MassLimitBase;
 		}
 	}
 
-	void Setup(int64 ML, b32 IsShip, item_hold_persistent* Per)
+	void Setup(int64 ML, item_hold_type TY, item_hold_persistent* Per)
 	{
 		Persist = Per;
-		Ship = IsShip;
+		Type = TY;
 
-		MassLimit = ML;
+		MassLimitBase = ML;
 		Persist->GUID = PlatformApi.GetGUID();
 		MassChanged.RegisterConsumer();
 	}

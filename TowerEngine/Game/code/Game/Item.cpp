@@ -31,11 +31,11 @@ real64 ItemHoldGetFuel(item_hold* Hold)
 real64 ItemStackGive(item_hold* Hold, item_instance_persistent* Inst, item_definition* Def, real64 Count)
 {
 	real64 NewMass = Hold->MassCurrent + (Def->Mass * Count);
-	if (NewMass <= Hold->MassLimit) {
+	if (NewMass <= Hold->GetMassLimit()) {
 		Inst->Count += Count;
 		return Count;
 	} else {
-		real64 MassAvail = Hold->MassLimit - Hold->MassCurrent;
+		real64 MassAvail = Hold->GetMassLimit() - Hold->MassCurrent;
 		int32 CountCanGive = (int32)(MassAvail / Def->Mass);
 		Inst->Count += CountCanGive;
 		return CountCanGive;
@@ -77,7 +77,7 @@ real64 ItemGive(item_hold* Hold, item_id ItemID, real64 Count)
 	// Not stackable, so make new stacks
 	{
 		// Verify we have space
-		if (Hold->MassCurrent + Def->Mass > Hold->MassLimit) { return 0; }
+		if (Hold->MassCurrent + Def->Mass > Hold->GetMassLimit()) { return 0; }
 
 		// Give
 		for (int c = 0; c < Count; c++) {
@@ -116,7 +116,7 @@ enum class item_hold_filter {
 void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* Input, bool32 CanTransfer, item_hold_filter AllowedItems)
 {
 	int64 CargoWeight = (int64)Hold->MassCurrent;
-	string CargoTitle = Title + " (" + string{CargoWeight} + "/" + string{(int64)Hold->MassLimit} + ")(t)###" + string{Hold->Persist->GUID};
+	string CargoTitle = Title + " (" + string{CargoWeight} + "/" + string{(int64)Hold->GetMassLimit()} + ")(t)###" + string{Hold->Persist->GUID};
 	if (ImGui::CollapsingHeader(CargoTitle.Array())) {
 
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(0, 0, 0, 100));

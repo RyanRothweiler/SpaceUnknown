@@ -224,7 +224,7 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 	bool32 Skip = false;
 
 	// If no cargo space then do nothing
-	if (Owner->Hold.MassCurrent == Owner->Hold.MassLimit) { Skip = true; }
+	if (Owner->Hold.MassCurrent == Owner->Hold.GetMassLimit()) { Skip = true; }
 
 	// Can only work when the ship is idle
 	if (Owner->Persist->Status != ship_status::idle) { Skip = true; }
@@ -433,10 +433,10 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	{
 		real64 FuelCurr = ItemHoldGetFuel(&CurrentShip->FuelTank);
 
-		string FuelDisp = "Fuel Tank (g) " + string{FuelCurr} + "/" + string{CurrentShip->FuelTank.MassLimit};
+		string FuelDisp = "Fuel Tank (g) " + string{FuelCurr} + "/" + string{CurrentShip->FuelTank.GetMassLimit()};
 		ImGui::Text(FuelDisp.Array());
 
-		float Progress = (float)(FuelCurr / CurrentShip->FuelTank.MassLimit);
+		float Progress = (float)(FuelCurr / CurrentShip->FuelTank.GetMassLimit());
 		ImGui::ProgressBar(Progress);
 	}
 	ItemDisplayHold("Fuel Tank", &CurrentShip->FuelTank, State, Input,
@@ -712,8 +712,8 @@ ship* ShipSetup(ship* Ship, ship_persistent* Persist, state* State)
 	Ship->Definition = Globals->AssetsList.ShipDefinitions[(int)Ship->Persist->Type];
 
 	// Setup item holds
-	Ship->Hold.Setup(Ship->Definition.HoldMass, true, &Ship->Persist->ItemHold);
-	Ship->FuelTank.Setup(Ship->Definition.FuelTankMassLimit, true, &Ship->Persist->FuelHold);
+	Ship->Hold.Setup(Ship->Definition.HoldMass, item_hold_type::ship_cargo, &Ship->Persist->ItemHold);
+	Ship->FuelTank.Setup(Ship->Definition.FuelTankMassLimit, item_hold_type::fuel_tank, &Ship->Persist->FuelHold);
 	ItemHoldUpdateMass(&Ship->Hold);
 	ItemHoldUpdateMass(&Ship->FuelTank);
 

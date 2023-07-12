@@ -301,7 +301,7 @@ void StationSetup(station* Station, station_persistent* Persist, state* State)
 	Station->Persist = Persist;
 	Station->Size = vector2{18.0f, 18.0f};
 
-	Station->Hold.Setup(1000, false, &Station->Persist->ItemHold);
+	Station->Hold.Setup(1000, item_hold_type::station_cargo, &Station->Persist->ItemHold);
 	ItemHoldUpdateMass(&Station->Hold);
 
 	selectable* Sel = RegisterSelectable(selection_type::station, &Station->Persist->Position, &Station->Size, (void*)Station, State);
