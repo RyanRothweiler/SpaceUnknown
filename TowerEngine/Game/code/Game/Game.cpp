@@ -183,6 +183,7 @@ void LoadGame(state* State)
 
 			// Initial state setup
 			State->PersistentData.TreeBonuses.ShipLimit = 1;
+			State->PersistentData.Knowledge = 15;
 
 			// Station
 			station* Station = StationCreate(State);
@@ -916,7 +917,8 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 			// Render planets
 			RenderCircle(vector2{1200, 200}, vector2{2000, 2000},
-			             COLOR_RED, RenderLayerPlanet, Globals->GameRenderer);
+			             Color255(12.0f, 39.0f, 35.0f, 255.0f), 
+						 RenderLayerPlanet, Globals->GameRenderer);
 
 			// Render world objects
 			for (int i = 0; i < State->WorldObjectsCount; i++)  {
@@ -1073,13 +1075,10 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				SkillTreeImguiDisplayBonuses(State->NodeHovering->Persist.BonusAdditions);
 				ImGui::End();
 
-
 				// can unlock
-				{
-					if (SkillNodeCanUnlock(State->NodeHovering) && Input->MouseLeft.OnDown && !EditorState->EditorMode) {
-						ImGui::OpenPopup("Unlock");
-						NodeSelected = State->NodeHovering;
-					}
+				if (SkillNodeCanUnlock(State->NodeHovering) && Input->MouseLeft.OnDown && !EditorState->EditorMode) {
+					ImGui::OpenPopup("Unlock");
+					NodeSelected = State->NodeHovering;
 				}
 			}
 

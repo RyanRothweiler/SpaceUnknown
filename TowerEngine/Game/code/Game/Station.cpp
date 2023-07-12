@@ -171,6 +171,9 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 		for (int i = 0; i < RecipeList->Count; i++) {
 			recipe_id ID = RecipeList->IDs[i];
 
+			// Can't use recipes that we don't have access to 
+			if (!TreeBonusesTotal->RecipeUnlocked[(int)ID]) { continue; }
+
 			ImGui::PushID(recipe_id_NAME[(int)ID].Array());
 
 			recipe* Recipe = &Globals->AssetsList.RecipeDefinitions[(int)ID];
