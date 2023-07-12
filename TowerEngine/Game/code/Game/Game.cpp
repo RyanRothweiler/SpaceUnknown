@@ -559,7 +559,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 				EditorState->DebugHold.Persist = &EditorState->DebugHoldPersist;
 
-				for (int i = 0; i < (int)item_id::count; i++) {
+				for (int i = 0; i < gen_item_id_count; i++) {
 					item_definition* Def = &Globals->AssetsList.ItemDefinitions[i];
 
 					{

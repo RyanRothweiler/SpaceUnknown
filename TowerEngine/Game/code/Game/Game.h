@@ -110,9 +110,9 @@ struct stepper_ptr {
 
 MetaStruct enum class ship_module_id {
 	none,
-	asteroid_miner,
-	salvager_i,
-	count
+	asteroid_miner			= 1,
+	salvager_i				= 2,
+	cargo_expansion_i		= 3,
 };
 
 // ITEM ------------------------------------------------------------------------
@@ -124,7 +124,7 @@ MetaStruct enum class item_id {
 	stl 					= 2,
 	sm_asteroid_miner 		= 3,
 	sm_salvager_i 			= 4,
-	count 					= 5,
+	cargo_expansion_i		= 5,
 };
 
 struct item_definition {
@@ -157,15 +157,16 @@ MetaStruct struct item_hold_persistent {
 };
 
 MetaStruct enum class recipe_id {
-	venigen_stl		= 0,
-	ship_advent		= 1,
-	sm_salvager_i	= 2,
+	venigen_stl			= 0,
+	ship_advent			= 1,
+	sm_salvager_i		= 2,
+	cargo_expansion_i	= 3,
 	// increment count define
 
 	count,
 	none,
 };
-#define recipe_id_count 3
+#define recipe_id_count 4
 
 // -----------------------------------------------------------------------------
 
