@@ -70,15 +70,15 @@ void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
 	ImGui::Separator();
 
 	if (Bonuses.FuelForce > 0) {
-		ImGui::Text("Additional force per fuel unit %i%%", (int)((Bonuses.FuelForce) * 100.0f));
+		ImGui::Text("+%i%% force per fuel unit", (int)((Bonuses.FuelForce) * 100.0f));
 	}
 
 	if (Bonuses.ShipLimit > 0) {
-		ImGui::Text("Ship limit increase %i", (int)(Bonuses.ShipLimit));
+		ImGui::Text("+%i ship limit", (int)(Bonuses.ShipLimit));
 	}
 
 	if (Bonuses.CargoSize > 0) {
-		ImGui::Text("Ship cargo hold mass limit addition %i(m)", Bonuses.CargoSize);
+		ImGui::Text("+%i(t) ship cargo hold mass limit", Bonuses.CargoSize);
 	}
 
 	for (int i = 0; i < ArrayCount(Bonuses.RecipeUnlocked); i++) {
@@ -87,4 +87,19 @@ void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
 			ImGui::Text(Disp.Array());
 		}
 	}
+}
+
+bool32 SkillNodeCanUnlock(skill_node* Node) { 
+
+	// Can't unlock twice
+	if (Node->Unlocked) { 
+		return false; 
+	}
+
+	// Can only unlock if parent is unlocked, if parent does exist
+	if (Node->Parent != GameNull && !Node->Parent->Unlocked) { 
+		return false;
+	}
+
+	return true;
 }

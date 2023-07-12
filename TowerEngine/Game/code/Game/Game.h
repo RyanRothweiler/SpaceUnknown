@@ -284,7 +284,8 @@ MetaStruct struct station_persistent {
 };
 
 MetaStruct enum class skill_node_icon {
-	ship_limit, fuel_force,
+	ship_limit, fuel_force, cargo_size,
+	activation_time, yield,
 };
 
 
@@ -298,10 +299,10 @@ MetaStruct struct skill_bonuses {
 
 	real32 FuelForce;
 	int32 ShipLimit;
-
 	int32 CargoSize;
-	real32 MiningLaserActivationTime;
-	real32 MiningLaserYield;
+
+	//real32 MiningLaserActivationTime;
+	//real32 MiningLaserYield;
 
 	bool32 RecipeUnlocked[recipe_id_count];
 };

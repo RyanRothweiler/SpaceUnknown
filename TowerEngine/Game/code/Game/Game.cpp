@@ -136,6 +136,11 @@ void SaveGame(state* State, save_data::member* Root)
 
 	// Skill nodess
 	{
+		// Clear any old data
+		for (int i = 0; i < ArrayCount(State->PersistentData.SkillNodesIDUnlocked); i++) {
+			State->PersistentData.SkillNodesIDUnlocked[i] = {};
+		}
+
 		int c = 0;
 		for (int i = 0; i < State->SkillNodesCount; i++) {
 			skill_node* Node = &State->SkillNodes[i];
@@ -507,6 +512,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 					skill_bonuses* Bonuses = &EditorState->NodeSelected->Persist.BonusAdditions;
 					ImGui::DragFloat("FuelForceAddition", &Bonuses->FuelForce, 0.001f);
 					ImGui::DragInt("ShipLimit", &Bonuses->ShipLimit, 1);
+					ImGui::DragInt("CargoSize", &Bonuses->CargoSize, 1);
 					if (ImGui::CollapsingHeader("Recipe")) {
 						for (int i = 0; i < ArrayCount(Bonuses->RecipeUnlocked); i++) {
 							bool B = Bonuses->RecipeUnlocked[i];
@@ -541,7 +547,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 					for (int i = 0; i < State->SkillNodesCount; i++) {
 						State->SkillNodes[i].Unlocked = false;
 					}
-					SkillTreeSaveAll(State);
+					Save();
 				}
 
 				ImGui::End();
@@ -1067,9 +1073,13 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				SkillTreeImguiDisplayBonuses(State->NodeHovering->Persist.BonusAdditions);
 				ImGui::End();
 
-				if (!State->NodeHovering->Unlocked && State->NodeHovering->Parent->Unlocked && Input->MouseLeft.OnDown && !EditorState->EditorMode) {
-					ImGui::OpenPopup("Unlock");
-					NodeSelected = State->NodeHovering;
+
+				// can unlock
+				{
+					if (SkillNodeCanUnlock(State->NodeHovering) && Input->MouseLeft.OnDown && !EditorState->EditorMode) {
+						ImGui::OpenPopup("Unlock");
+						NodeSelected = State->NodeHovering;
+					}
 				}
 			}
 
