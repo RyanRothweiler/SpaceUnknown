@@ -17,6 +17,8 @@ struct ship_module_definition {
 	string DisplayName;
 	real64 ActivationTimeMS;
 	real64 ActivationRange;
+
+	int32 CargoAddition;
 };
 
 struct ship_module {
@@ -52,7 +54,6 @@ struct ship {
 	item_hold FuelTank;
 
 	vector2 Size;
-
 
 	stepper Stepper;
 

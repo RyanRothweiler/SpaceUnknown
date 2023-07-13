@@ -12,12 +12,18 @@ struct item_hold {
 	item_hold_type Type;
 
 	// Always use GetMassLimit()
+	
+	// base value 
 	int64 MassLimitBase;
+
+	// Modification from any outside influence (such as ship modules)
+	int64 MassLimitMod;
+
 	int64 GetMassLimit() {
 		if (Type == item_hold_type::ship_cargo) {
-			return MassLimitBase + TreeBonusesTotal->CargoSize;
+			return MassLimitBase + TreeBonusesTotal->CargoSize + MassLimitMod;
 		} else {
-			return MassLimitBase;
+			return MassLimitBase + MassLimitMod;
 		}
 	}
 

@@ -177,6 +177,16 @@ void ShipStep(void* SelfData, real64 Time, state* State)
 {
 	ship* Ship = (ship*)SelfData;
 
+	// Update item cargo mod from modules.
+	// Maybe do something different so this isn't updated every frame idk
+	Ship->Hold.MassLimitMod = 0;
+	for (int i = 0; i < ArrayCount(Ship->EquippedModules); i++) {
+		if (Ship->EquippedModules[i].Persist != GameNull) {
+			Ship->Hold.MassLimitMod += Ship->EquippedModules[i].Definition.CargoAddition;
+		}
+	}
+
+	// Update ship journey
 	if (Ship->Persist->CurrentJourney.InProgress) {
 
 		journey_step* Step = &Ship->Persist->CurrentJourney.Steps[Ship->Persist->CurrentJourney.CurrentStep];
@@ -349,7 +359,9 @@ void ShipAddModule(ship_module* Dest, ship_module_id ModuleID, ship* Ship, state
 	Dest->Definition = Globals->AssetsList.ShipModuleDefinitions[(int)ModuleID];
 	per::SetShip(&Dest->Persist->Owner, Ship);
 
-	RegisterStepper(&Dest->Stepper, Dest->Definition.ActivationStepMethod, (void*)(Dest), State);
+	if (Dest->Definition.ActivationStepMethod != GameNull) {
+		RegisterStepper(&Dest->Stepper, Dest->Definition.ActivationStepMethod, (void*)(Dest), State);
+	}
 }
 
 void ShipRemoveModule(ship_module* Module, state* State)
@@ -666,8 +678,6 @@ void ShipSetPersist(ship* Ship, ship_persistent* Persist, state* State) {
 	for (int i = 0; i < ArrayCount(Persist->Modules); i++) {
 		Ship->EquippedModules[i].Persist = &Persist->Modules[i];
 		Ship->EquippedModules[i].Definition = Globals->AssetsList.ShipModuleDefinitions[(int)Ship->EquippedModules[i].Persist->Type];
-
-//void ShipAddModule(ship_module* Dest, ship_module_id ModuleID, ship* Ship, state* State)
 
 		if (Ship->EquippedModules[i].Persist->Filled) { 
 			ship_module* Mod = &Ship->EquippedModules[i];

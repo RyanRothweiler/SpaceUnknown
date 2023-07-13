@@ -523,7 +523,7 @@
 			"file": "Game/code/Engine/SaveData.cpp",
 			"settings":
 			{
-				"buffer_size": 7633,
+				"buffer_size": 7194,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -538,13 +538,11 @@
 			}
 		},
 		{
-			"contents": "#pragma once\n\n#ifndef ENGINE_CORE_H\n#define ENGINE_CORE_H\n\n#define internal static\n#define global_variable static\n\n#define ID_LINE __LINE__\n#define ID_FILE __FILE__\n#define ID_METHOD __func__\n#define COUNTER __COUNTER__\n\n#define STRINGIFY(x) #x\n#define TOSTRING(x) STRINGIFY(x)\n#define AT __FILE__ \":\" TOSTRING(__LINE__)\n\n#if PLATFORM_WINDOWS\n\t#define CRASH *(int *)0 = 0;\n\t#define WIN_EXPORT extern \"C\" __declspec(dllexport)\n#endif\n\n#define Assert(Expression) if (!(Expression)) {LOG(\"!!! ASSERT !!! \"); LOG(#Expression); LOG(AT); LOG(\"!!! end !!!\"); CRASH; }\n\n#define KEY_ESC 0\n#define KEY_TAB 0x09\n#define KEY_BACK 0\n#define KEY_LEFT 0\n#define KEY_RIGHT 0\n#define KEY_UP 0\n#define KEY_DOWN 0\n#define KEY_PRIOR 0\n#define KEY_NEXT 0\n#define KEY_HOME 0\n#define KEY_END 0\n#define KEY_INSERT 0\n#define KEY_DELETE 0\n#define KEY_SPACE 0\n#define KEY_RETURN 0\n#define KEY_ESCAPE 0\n#define KEY_SHIFT 0\n\n\n//#define Assert(Expression) if (!(Expression)) { LOG(\":: ASSERT \"); LOG(#Expression); LOG(\"\\n:: LINE \"); LOG(ID_LINE); LOG(\":: FILE \"); LOG(ID_FILE); LOG(\"\\n:: FUNC \"); LOG(ID_METHOD); LOG(\"\\n\"); *(int *)0 = 0; }\n//#define Assert(Expression) if (!(Expression)) { LOG(\":: ASSERT \"); LOG(#Expression); LOG(\"\\n:: LINE \"); LOG(\":: FILE \"); LOG(ID_FILE); LOG(\"\\n:: FUNC \"); LOG(ID_METHOD); LOG(\"\\n\"); *(int *)0 = 0; }\n//#else\n//\t#define Assert(Expression)\n//\t#define AssertM(Expression, Message)\n//#endif\n\n#define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))\n\n#include \"Types.cpp\"\n#include \"../preprocessor.h\"\n\n#define ARRAY_SIZE(Array, Type) sizeof(Array) / sizeof(Type)\n#define MAX_VALUE(a) (((unsigned long long)1 << (sizeof(a) * CHAR_BIT)) - 1)\n\n#define GameNull 0\n\n// -----------------------------------------------------------------------------\n// build variables\n// -----------------------------------------------------------------------------\n#if AUTOMATED_TESTING\n\tconst bool BuildVarAutomatedTesting = true;\n#else\n\tconst bool BuildVarAutomatedTesting = false;\n#endif\n\n#if RELEASE\n\tconst bool BuildVarRelease = true;\n#else\n\tconst bool BuildVarRelease = false;\n#endif\n// -----------------------------------------------------------------------------\n\nstruct read_file_result {\n\tuint32 ContentsSize;\n\tvoid *Contents;\n};\n\n#include \"GameConstants.cpp\"\n#include \"MemoryManager.h\"\n\nmemory_arena* GlobalPermMem;\nmemory_arena* GlobalTransMem;\nmemory_arena* GlobalThreadTransMem;\n\nstruct path_list;\n\nenum class work_status {null, waiting, running, finished};\ntypedef void (*game_thread_proc)(void* Params, int32 ThreadID);\n\nstruct thread_work {\n\tgame_thread_proc WorkMethod;\n\tvoid* WorkParams;\n\twork_status Status;\n};\n\nnamespace platform {\n\tstruct api {\n\t\tvoid(*MakeDirectory)(char* Path);\n\t\tread_file_result(*ReadFile)(char *Path, memory_arena *Memory);\n\t\tbool32(*FileExists)(char *Path);\n\t\tvoid(*WriteFile)(char *FileDestination, void *Data, uint32 DataSize);\n\t\tvoid(*AppendFile)(char *FileDestination, char *Data);\n\t\tvoid(*DeleteFile)(char *Path);\n\t\tuint64(*GetClockMS)();\n\t\tuint64(*GetCycle)();\n\t\tuint32(*GetGUID)();\n\t\tvoid(*Print)(char* Message);\n\t\tuint64(*GetFileWriteTime)(char* File);\n\t\tvoid*(*GetProcAddress)(char* Name);\n\t\tvoid(*OpenFileExternal)(char* File);\n\t\tpath_list*(*GetPathsForFileType)(char* FileType, const char* Root, memory_arena* Memory, path_list* PathList);\n\t\tvoid(*OpenFileDialogue)(char* Path, int32 MaxPathLength);\n\t\tthread_work*(*ThreadAddWork)(game_thread_proc WorkMethod, void* WorkParams);\n\n\t\t// Between 0 and 1\n\t\treal64(*RandomFloat)();\n\n\t\tuint64(*QueryPerformanceCounter)();\n\t\tuint64 PerformanceCounterFrequency;\n\n\t\t// Android\n\t\tread_file_result(*AndroidReadFile)(char *Path, memory_arena *Memory);\n\n\t\treal64 ScreenDPI;\n\t\treal64 ScreenDPICo;\n\t\treal64 ScreenTypePoints()\n\t\t{\n\t\t\t// one point exuals 1/72 of an inch\n\t\t\treturn (ScreenDPI / 72.0f) * ScreenDPICo;\n\t\t}\n\t};\n}\n\nplatform::api PlatformApi;\n\n#include \"Logging.cpp\"\n#include \"MemoryManager.cpp\"\n#include \"String.cpp\"\n\nvoid LogToConsole(char* Tag, string Message, int32 LineNumber, char* FileName)\n{\n\tLogToConsole(Tag, Message.Array(), LineNumber, FileName);\n}\n\n// Preprocessor member type ----------------------------------------------------\nstruct s_void {\n\tint64 Type;\n\tbool32 IsAllocated;\n\tint64 DataSize;\n\tvoid* Data;\n\n\tvoid Clear()\n\t{\n\t\tif (IsAllocated) {\n\t\t\tClearMemory((uint8*)Data, DataSize);\n\t\t}\n\t}\n};\n\nvoid SafeVoidAlloc(s_void* SafeVoid, memory_arena* Memory, int64 Size, int32 Type)\n{\n\tSafeVoid->IsAllocated = true;\n\tSafeVoid->Type = Type;\n\tSafeVoid->DataSize = Size;\n\tSafeVoid->Data = ArenaAllocate(Memory, Size);\n\tClearMemory((uint8*)SafeVoid->Data, Size);\n};\n\n// -----------------------------------------------------------------------------\n\n#include \"Color.cpp\"\n#include \"Array.cpp\"\n\nstruct line {\n\tvector2 Start, End;\n};\n\n// Should probably go in some renederer class ----------------------------------\n\nenum class gl_blend_type {\n\tnearest, linear\n};\n\nstruct loaded_image {\n\tstring FilePath;\n\tbool32 CorrectGamma;\n\tgl_blend_type BlendType;\n\n\tint Width;\n\tint Height;\n\n\tuint32 GLID;\n\n\t// If this image was loaded successfully\n\tbool32 Valid;\n};\n\n// -----------------------------------------------------------------------------\n\nstruct path_list {\n\tstring Path;\n\tpath_list* Next;\n};\n\nint32 PathListCount(path_list* Curr)\n{\n\tint Val = 0;\n\tif (!StringIsEmpty(Curr->Path)) {\n\t\tVal++;\n\t}\n\n\tif (Curr->Next != GameNull) {\n\t\tVal += PathListCount(Curr->Next);\n\t}\n\treturn Val;\n}\n\n#include \"FixedAllocator.cpp\"\n\nstruct sprite_sheet {\n\tuint8 ColumnCount;\n\tuint8 RowCount;\n\tuint8 Padding;\n\tloaded_image Image;\n};\n\nstruct window_info {\n\tuint32 Width;\n\tuint32 Height;\n};\n\n#include \"Rect.h\"\n\n#define TRANSFORM_MAX_CHILDREN 100\n\nstruct changed_flag {\nprivate:\n\tint32 ConsumersCount;\n\tint32 ChangedFlagCount;\n\npublic:\n\tvoid RegisterConsumer()\n\t{\n\t\tConsumersCount++;\n\t}\n\n\tbool32 DidChange()\n\t{\n\t\treturn ChangedFlagCount > 0;\n\t}\n\n\tvoid MarkAccess()\n\t{\n\t\tChangedFlagCount--;\n\t}\n\n\tvoid MarkChanged()\n\t{\n\t\tChangedFlagCount = ConsumersCount;\n\t}\n};\n\nstruct transform {\n\n\tm4y4 FinalWorld;\n\n\tvector3 LocalPos;\n\tvector3 LocalRot;\n\tvector3 LocalScale;\n\n\ttransform* Children[TRANSFORM_MAX_CHILDREN];\n\tint32 ChildrenCount;\n\n\tvoid AddChild(transform* Trans)\n\t{\n\t\tChildren[ChildrenCount] = Trans;\n\t\tChildrenCount++;\n\t\tAssert(ChildrenCount < TRANSFORM_MAX_CHILDREN);\n\t}\n\n\tvoid Update(m4y4 Parent)\n\t{\n\t\tquat Q = {};\n\t\tQ.FromEuler(LocalRot);\n\t\tm4y4 Rotation = Q.ToMatrix();\n\n\t\t// Questionable\n\t\tif (LocalScale.X == 0 && LocalScale.Y == 0 && LocalScale.Z == 0) {\n\t\t\tLocalScale = vector3{1, 1, 1};\n\t\t}\n\n\t\tm4y4 Scale = {\n\t\t\t{\n\t\t\t\t{(real32)LocalScale.X, \t0,  \t\t\t\t0, \t\t\t\t\t0},\n\t\t\t\t{0, \t\t\t\t(real32)LocalScale.Y, \t0, \t\t\t\t\t0},\n\t\t\t\t{0, \t\t\t\t0, \t\t\t\t\t(real32)LocalScale.Z, \t0},\n\t\t\t\t{0, \t\t\t\t0, \t\t\t\t\t0, \t\t\t\t\t1},\n\t\t\t}\n\t\t};\n\t\tm4y4 Translate = {\n\t\t\t{\n\t\t\t\t{1, \t0,  \t0, \t\t(real32)LocalPos.X},\n\t\t\t\t{0, \t1, \t\t0, \t\t(real32)LocalPos.Y},\n\t\t\t\t{0, \t0, \t\t1, \t\t(real32)LocalPos.Z},\n\t\t\t\t{0, \t0, \t\t0, \t\t1},\n\t\t\t}\n\t\t};\n\n\t\tm4y4 Model = MatrixMultiply(Scale, Rotation);\n\t\tModel = MatrixMultiply(Model, Translate);\n\n\t\tFinalWorld = MatrixMultiply(Model, Parent);\n\n\t\tfor (int x = 0; x < ChildrenCount; x++) {\n\t\t\tChildren[x]->Update(FinalWorld);\n\t\t}\n\t}\n};\n\n\n#include \"LinkedList.h\"\n#include \"Hash.h\"\n#include \"Profiler.h\"\n#include \"Renderer/Renderer.h\"\n#include \"Font.h\"\n\n\nstruct game_memory {\n\tbool32 IsInitialized;\n\tbool32 ImguiInitialized;\n\n\tuint64 TotalSize;\n\tvoid *GameMemoryBlock;\n\n\t// NOTE required to be cleared to 0 on startup / allocation\n\tmemory_arena PermanentMemory;\n\n\t// NOTE this transient memory head is reset to the top of transient storage at the beginning of the game loop\n\t// Anything that needs to stick around for more tha one game loop should go in PermanentStorage\n\tmemory_arena TransientMemory;\n\n\tmemory_arena ThreadTransientMemory;\n\n\t// This is a subset arena of PermanentMemory\n\tmemory_arena AssetsMemory;\n\n\tint64 ElapsedCycles;\n\n\tbool32 HotReloaded;\n\n\trender::api RenderApi;\n\tplatform::api PlatformApi;\n};\n\nstruct entity {\n\tuint32 ID;\n\ttransform Transform;\n\tstring Name;\n\n\tvao VAO;\n\n\t// Model Only --------------------------------------------------------------\n\tmodel* Model;\n\n\tmaterial* Material;\n\tstring MaterialID;\n\t// -------------------------------------------------------------------------\n\n\n\t// Skinned mesh renderer. Bones --------------------------------------------\n\tskin_controller SkinController;\n\tarmature* Armature;\n\t// -------------------------------------------------------------------------\n\n\taabb AABBLocal;\n\treal32 BoundingRadius;\n\n\tentity* Children[100];\n\tint32 ChildrenCount;\n\n\tbool32 Wireframe;\n \n\tvoid AddChild(entity* Child)\n\t{\n\t\tTransform.AddChild(&Child->Transform);\n\t\tChildren[ChildrenCount] = Child;\n\n\t\tAssert(ChildrenCount < ArrayCount(Children));\n\t\tChildrenCount++;\n\t}\n\n\taabb GetScaledAABB()\n\t{\n\t\taabb Ret = AABBLocal;\n\t\tRet.XMax = Ret.XMax * Transform.LocalScale.X;\n\t\tRet.XMin = Ret.XMin * Transform.LocalScale.X;\n\n\t\tRet.YMax = Ret.YMax * Transform.LocalScale.Y;\n\t\tRet.YMin = Ret.YMin * Transform.LocalScale.Y;\n\n\t\tRet.ZMax = Ret.ZMax * Transform.LocalScale.Z;\n\t\tRet.ZMin = Ret.ZMin * Transform.LocalScale.Z;\n\t\treturn Ret;\n\t}\n};\n\nstruct loaded_sound {\n\tuint32 SampleCount;\n\tuint32 ChannelCount;\n\tint16 *Samples[2];\n};\n\nstruct game_audio_output_buffer {\n\t// NOTE this running sample index is only for creating the sinwave. We don't need this otherwise. Remove this eventually.\n\tuint32 RunningSampleIndex;\n\n\tint SamplesPerSecond;\n\tint SampleCount;\n\tuint32 BytesPerSample;\n\tint16 *Samples;\n};\n\nstruct win32_audio_output {\n\tint SamplesPerSecond;\n\tint BytesPerSample;\n\tint SecondaryBufferSize;\n\tuint32 RunningSampleIndex;\n};\n\nstruct input_state {\n\tbool32 OnDown;\n\tbool32 OnUp;\n\tbool32 IsDown;\n\tbool32 IsUp;\n\n\tbool32 Claimed;\n};\n\nenum class touch_gesture {\n\tnone,\n\ttap, // finger has tapped, and lifted without going ouside the drag threshold\n\tdrag, // finger has tappend, is down, and is outside the drag threshold\n\thold // finger has tapped, and is down, and is inside the drag threshold\n};\n\nstruct touch {\n\ttouch_gesture Gesture;\n\tvector2 Position;\n\tvector2 Origin;\n\tvector2 Delta; // Change from origin\n\tvector2 FrameDelta; // Change from last frames position\n\tvector2 PositionLastFrame;\n};\n\n// Input for touchscreens. Only support two touces for now\n#define TOUCH_COUNT 2\n\nstruct game_input {\n\tvector2 MousePos;\n\tvector2 MouseDelta;\n\tvector2 MousePosOnDown;\n\n\treal64 MouseScrollDelta;\n\tbool32 ScrollClaimed;\n\n\t// this is set by the platform, and needs to be consumed by the game each frame\n\tshort InputChar;\n\n\tinput_state MouseRight;\n\tinput_state MouseRight;\n\tinput_state MouseMiddle;\n\n\tinput_state KeyboardInput[256];\n\tinput_state FunctionKeys[10];\n\tinput_state Escape;\n\n\tinput_state TouchStatus[TOUCH_COUNT];\n\tvector2 TouchPosition[TOUCH_COUNT];\n\n\ttouch Touches[TOUCH_COUNT]; // This is update in the game layer. Just provides easier convenience for interacting with the touch data\n\n\tbool32 MouseMoved()\n\t{\n\t\treturn Vector2Distance(MousePos, MousePosOnDown) > 10;\n\t}\n};\n\ngame_input EmptyInput = {};\n\n#include \"Range.h\"\n#include \"Hex.cpp\"\n#include \"Timer.h\"\n\n#define ImageRotationsCount 8\n\nstruct game_assets {\n\n\tshader GaussianBlurShader;\n\tshader CamBasicShader;\n\n\tentity UnitCube;\n\n\tmodel_polling ModelPolling;\n};\n\n#include \"Timer.cpp\"\n#include \"scene/scene.h\"\n#include \"ui/ui.h\"\n\nstruct monster_instance;\n\nstruct ui_panel;\nstruct panel_stack {\n\tui_panel* Panels[100];\n\tuint32 NextIndex;\n\n\tmonster_instance* Monster;\n\n\tgame_input* UIInput;\n};\n\nconst vector3 CamPlayerOffset = vector3{ -10.0f, 0, 25.0f};\nconst real64 PlayerSpeed = 0.3f;\nconst real32 PlayerRadius = 1.4f;\n\nstruct nav_mesh {\n\tstruct face {\n\t\tvector3 PointOne, PointTwo, PointThree;\n\t};\n\n\tface* Faces;\n\tint32 FacesCount;\n};\n\n// NOTE pointers in here will break state saving / loading\nstruct state_to_serialize {\n\n\tbool32 TestingDone;\n\n\tui::anim_state BackpackAnimState;\n\tui::anim_state FirstAbilityAnimState;\n\tui::anim_state SecondAbilityAnimState;\n\tui::anim_state CloseAnimState;\n\n\tlight Light;\n\tlight LightTwo;\n\n\tmaterial SkyboxMaterial;\n\n\tbool32 ShowingBackpack;\n\n\tcamera EditorCamera;\n\tcamera UICam;\n\tcamera BattleCam;\n\tcamera* ActiveCam;\n\n\t// TODO this scene should probably just be removed / phased out\n\tscene Scene;\n\n\tbool32 AudioPaused;\n\tbool32 AudioMuted;\n\n\tuint64 TimeRunningMS;\n\n\tvector3 GalaxyCamTargetPos;\n\tvector3 GalaxyCamTargetRot;\n\tbool GalaxyDetailShowing = false;\n\n\tpanel_stack PanelStack;\n};\n\nstruct globals;\nstruct engine_state;\n\n#include \"../Game/Game.h\"\n\nstruct engine_state {\n\tshader BackupShader;\n\n\tstring RootAssetPath;\n\n\tgame_assets* Assets;\n\tstate_to_serialize StateSerializing;\n\n\tstate GameState;\n\teditor_state EditorState;\n\n\t// TODO move ClearColor into renderer\n\tcolor ClearColor;\n\n\trenderer GameRenderer;\n\trenderer UIRenderer;\n\trenderer DebugUIRenderer;\n\trenderer MonsterPreviewRenderer;\n\n\tcamera GameCamera;\n\n\t// gif recording\n\tbool32 IsGifRecording;\n\tuint32 RecordingFrame;\n\n\tbool32 DebuggerPaused;\n\n\tloaded_sound TestSound;\n\tuint64 TestSoundSampleIndex;\n\n\treal64 DeltaTimeMS;\n\tint64 PrevFrameFPS;\n\n\treal64 BuildingInfoScroll;\n\n\tbool32 LockCursor;\n\n\t// This is the total cycles used in the previous frame. This includes the platform layer.\n\tuint64 TotalCyclesUsedLastFrame;\n\t// This is the number of cycles which were used doing nothing, effectively waiting just to hit a target frame rate.\n\tuint64 CyclesUsedWaiting;\n\t// The number of cycles spent rendering the opengl data on the platform layer.\n\tuint64 CyclesPlatformRendering;\n\t// Total cycles spent on game logic\n\tuint64 LogicCycles;\n\n\tglobals* Globals;\n\trender::data* RenderData;\n\n\tprofiler_data ProfilerData;\n\tprofiler_data OGLProfilerData;\n};\n\n// Game Loop\n#define GAME_LOOP(name) void name(game_memory *Memory, game_input *GameInput, window_info *WindowInfo, game_audio_output_buffer *AudioBuffer, char* RootAssetPath)\ntypedef GAME_LOOP(game_update_and_render);\n\n// Called before the window closes\n#define GAME_WINDOW_CLOSING(name) void name(game_memory *Memory)\ntypedef GAME_WINDOW_CLOSING(game_window_closing);\nGAME_WINDOW_CLOSING(GameWindowClosingStub) { }\n\n\n#endif",
 			"file": "Game/code/Engine/EngineCore.h",
-			"file_size": 14555,
-			"file_write_time": 133279997843844144,
 			"settings":
 			{
 				"buffer_size": 13914,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
@@ -552,7 +550,7 @@
 			"file": "Game/code/Game/Game.h",
 			"settings":
 			{
-				"buffer_size": 7561,
+				"buffer_size": 9322,
 				"line_ending": "Windows"
 			}
 		},
@@ -560,7 +558,7 @@
 			"file": "Game/code/Game/Game.cpp",
 			"settings":
 			{
-				"buffer_size": 32355,
+				"buffer_size": 35281,
 				"line_ending": "Windows"
 			}
 		},
@@ -568,12 +566,15 @@
 			"file": "Game/code/Game/Item.cpp",
 			"settings":
 			{
-				"buffer_size": 5590,
+				"buffer_size": 5610,
 				"line_ending": "Windows"
 			}
 		},
 		{
+			"contents": "#pragma once\n#ifndef ENGINE_CORE\n#define ENGINE_CORE\n\n#include \"EngineCore.h\"\n\nrender::api RenderApi;\n\n#include \"imgui/imgui.h\"\n#include \"imgui/imgui.cpp\"\n#include \"imgui/imgui_internal.h\"\n#include \"imgui/imconfig.h\"\n#include \"imgui/imstb_rectpack.h\"\n#include \"imgui/imstb_textedit.h\"\n#include \"imgui/imstb_truetype.h\"\n#include \"imgui/imgui_demo.cpp\"\n#include \"imgui/imgui_draw.cpp\"\n#include \"imgui/imgui_widgets.cpp\"\n\n#include \"Rect.cpp\"\n\n// This should be used with the generated system to guarantee safety\nint32 StringToEnum(string Input, string* NamesArray, int32 EnumsCount)\n{\n\tfor (int i = 0; i < EnumsCount; i++) {\n\t\tif (NamesArray[i] == Input) {\n\t\t\treturn i;\n\t\t}\n\t}\n\n\tConsoleLog(\"Could not convert string to enum\");\n\tConsoleLog(Input.Array());\n\n\treturn 0;\n}\n\nvector2 NearestOnLine(line Line, vector2 Point)\n{\n\tvector2 LineDir = Vector2Normalize(Line.Start - Line.End);\n\tvector2 LinePerp = Vector2Perp(LineDir);\n\n\t// Find intersection between mouse line and axis line. Try both directions.\n\treal32 CheckDistance = 10000;\n\tintersection_point P = {};\n\n\tP = GetIntersection(Line.Start, Line.End, Point, Point + (LinePerp * CheckDistance));\n\tif (P.Valid) { return P.Point; }\n\n\tP = GetIntersection(Line.Start, Line.End, Point, Point + (LinePerp * -CheckDistance));\n\tif (P.Valid) { return P.Point; }\n\n\t// This should never happen\n\tAssert(0);\n\treturn {};\n}\n\n#include \"LinkedList.cpp\"\n#include \"Collision.cpp\"\n\n#include \"Hash.cpp\"\n#include \"Random.cpp\"\n\n#include \"Hash.cpp\"\n#include \"Random.cpp\"\n#include \"Range.cpp\"\n\n#include \"Audio.cpp\"\n#include \"Sorts.cpp\"\n\n#include \"ParticleSystem.cpp\"\n#include \"Util.cpp\"\n\n#include \"../Game/Game.h\"\n#include \"../Game/AssetList.h\"\n#include \"CSV.cpp\"\n\nenum class meta_member_type {\n\tuint8, uint16, uint32,\n\tint8, int16, int32, int64,\n\treal32, real64, bool32,\n\n\t// structs / classes / custom types\n\tcustom, enumeration\n};\n\nstruct meta_member;\n\n#include \"SaveData.h\"\n#include \"Json.h\"\n\ntypedef void(*save_data_fill_shim)(save_data::member* Dest, string KeyParent, void* AccData);\n\ntypedef void(*struct_meta_fill_shim_func)(json::struct_string_return* Dest, void* AccData);\ntypedef void(*json_fill_struct_shim)(json::json_data* JsonData, string KeyParent, void* DataDest);\n\nstruct meta_member {\n\tmeta_member_type Type;\n\tstring TypeString;\n\tstring Name;\n\tuint64 Offset;\n\tbool32 ArrayLength;\n\tuint32 Size;\n\n\t// Data for custom types\n\tstruct_meta_fill_shim_func MetaFillShim;\n\tjson_fill_struct_shim JsonFillShim;\n\n\tsave_data_fill_shim SaveDataFillShim;\n\n\tmeta_member* CustomMetaInfo;\n\tint32 CustomMetaInfoCount;\n\n};\n\n#include \"Json.cpp\"\n#include \"SaveData.cpp\"\n\n#include \"Generated.h\"\n\n#include \"Editor.h\"\n#include \"Renderer/ShaderLoader.cpp\"\n#include \"ui/UiPanel.h\"\n\nstruct globals {\n\n\t// Here for loading thread. Better way to do this than make them globals??\n\tstring AssetRootDir;\n\tengine_state* GameState;\n\n\twindow_info* Window;\n\n\tshader_loader ShaderLoader;\n\tassets_list AssetsList;\n\n\teditor::data EditorData;\n\n\tuint32 IDSelected;\n\n\trenderer* UIRenderer;\n\trenderer* DebugUIRenderer;\n\trenderer* GameRenderer;\n\tcamera* ActiveCam;\n\n\tint32 GizmoColorStackIndex = 0;\n\tcolor GizmoColorStack[10];\n\n\tgame_input* Input;\n\n\t// For debugging purposes\n\tentity* UnitCube;\n\n\tloaded_font OpenSansRegular;\n\tloaded_font OpenSansBold;\n\n\tloaded_font RajMedium;\n\tloaded_font RajBold;\n\tloaded_font RajSemiBold;\n\n\tgame_input* UIUserInput;\n\tui_panels* UIPanels;\n\n\tfont_style FontStyleP;\n\tfont_style FontStyleH1;\n\tfont_style FontStyleH2;\n\tfont_style FontStyleH3;\n\tfont_style FontStyleButton;\n\tfont_style FontStyleDropInfo;\n};\nglobals* Globals;\n\n#include \"../Game/AssetList.cpp\"\n\n#include \"Renderer/Renderer.cpp\"\n#include \"gizmos.cpp\"\n#include \"scene/scene.cpp\"\n#include \"camera/camera.cpp\"\n#include \"Font.cpp\"\n#include \"ui/ui.cpp\"\n\nvoid ProgressBar(vector2 TopLeft,\n                 real64 Height, real64 Width, real64 Progress,\n                 string Contents, real32 ContentsSize, color ContentsColor,\n                 color BGColor, color FGColor\n                )\n{\n\t// Experience bar\n\treal64 LengthCurrent = Width * Progress;\n\n\tFontRenderString(&Globals->FontStyleH3, Contents,\n\t                 TopLeft + vector2{LengthCurrent, 20},\n\t                 ContentsColor, 0, Globals->UIRenderer);\n\n\t// bg\n\tRenderScreenLineMesh(TopLeft + vector2{0, 10},\n\t                     TopLeft + vector2{Width, 10},\n\t                     (real32)Height, BGColor, Globals->UIRenderer);\n\n\t// bar\n\tRenderScreenLineMesh(TopLeft + vector2{0, 10},\n\t                     TopLeft + vector2{LengthCurrent, 10},\n\t                     (real32)Height, FGColor, Globals->UIRenderer);\n\n}\n\n#include \"ModelLoading/obj.cpp\"\n\n#include \"imguiHelper.cpp\"\n#include \"Profiler.cpp\"\n\n#include \"../Game/Game.cpp\"\n\nentity* CheckSceneSelection(scene * Scene, renderer * GameRenderer, camera * Cam, window_info * WindowInfo)\n{\n\t// This will prevent selection when moving an object. but we don't do that a whole lot\n\t//if (Globals->Input->MouseLeft.OnDown && (MovingState == moving_state::none || MovingState == moving_state::translation_choice)) {\n\n\t// Check for selection\n\tif (Globals->Input->TouchStatus[0].OnDown ) {\n\t\tGlobals->IDSelected = RenderApi.DoPickRender(Cam, Globals->Input->MousePos, *WindowInfo);\n\n\t\tfor (uint32 i = 0; i < ArrayCount(Scene->Entities); i++) {\n\n\t\t\tentity* Entity = Scene->Entities[i];\n\t\t\tif (Entity != GameNull && Entity->ID == Globals->IDSelected) {\n\t\t\t\t//editor::EntitySelected(Entity, GameState);\n\t\t\t\treturn Entity;\n\t\t\t}\n\t\t}\n\t}\n\n\treturn GameNull;\n}\n\n#include \"Editor.cpp\"\n#include \"ui/UiPanel.cpp\"\n\nvoid PollModelReload(game_memory * Memory, game_assets * Assets)\n{\n\tfor (int x = 0; x < Assets->ModelPolling.Count; x++) {\n\t\tmodel* Obj = Assets->ModelPolling.Models[x];\n\n\t\tuint64 CurrWriteTime = PlatformApi.GetFileWriteTime(Obj->FileDir.CharArray);\n\n\t\tif (CurrWriteTime != Obj->FileWriteTime) {\n\t\t\t// !!!!!!!!!!!!! this will leak!!!\n\t\t\t//Dae::Load(Obj, Obj->FileDir, Memory, false, Assets);\n\t\t}\n\t}\n}\n\n// Initial setup, from loading assets to initializing data\nvoid GameSetup()\n{\n\tGlobalThreadTransMem->Head = (uint8 *)GlobalThreadTransMem->Memory;\n\tassets::LoadAssets(&Globals->AssetsList, Globals->AssetRootDir, GlobalThreadTransMem);\n}\n\nvoid GameSetupThread(void* Params, int32 ThreadID)\n{\n\tGameSetup();\n}\n\nvoid ImGuiSetEditorTheme()\n{\n\tImVec4* colors = ImGui::GetStyle().Colors;\n\tcolors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);\n\tcolors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);\n\tcolors[ImGuiCol_WindowBg]               = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);\n\tcolors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);\n\tcolors[ImGuiCol_PopupBg]                = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);\n\tcolors[ImGuiCol_Border]                 = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);\n\tcolors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);\n\tcolors[ImGuiCol_FrameBg]                = ImVec4(0.16f, 0.29f, 0.48f, 0.54f);\n\tcolors[ImGuiCol_FrameBgHovered]         = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);\n\tcolors[ImGuiCol_FrameBgActive]          = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);\n\tcolors[ImGuiCol_TitleBg]                = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);\n\tcolors[ImGuiCol_TitleBgActive]          = ImVec4(0.16f, 0.29f, 0.48f, 1.00f);\n\tcolors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.00f, 0.00f, 0.00f, 0.51f);\n\tcolors[ImGuiCol_MenuBarBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);\n\tcolors[ImGuiCol_ScrollbarBg]            = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);\n\tcolors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);\n\tcolors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);\n\tcolors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);\n\tcolors[ImGuiCol_CheckMark]              = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);\n\tcolors[ImGuiCol_SliderGrab]             = ImVec4(0.24f, 0.52f, 0.88f, 1.00f);\n\tcolors[ImGuiCol_SliderGrabActive]       = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);\n\tcolors[ImGuiCol_Button]                 = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);\n\tcolors[ImGuiCol_ButtonHovered]          = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);\n\tcolors[ImGuiCol_ButtonActive]           = ImVec4(0.06f, 0.53f, 0.98f, 1.00f);\n\tcolors[ImGuiCol_Header]                 = ImVec4(0.26f, 0.59f, 0.98f, 0.31f);\n\tcolors[ImGuiCol_HeaderHovered]          = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);\n\tcolors[ImGuiCol_HeaderActive]           = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);\n\tcolors[ImGuiCol_Separator]              = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);\n\tcolors[ImGuiCol_SeparatorHovered]       = ImVec4(0.10f, 0.40f, 0.75f, 0.78f);\n\tcolors[ImGuiCol_SeparatorActive]        = ImVec4(0.10f, 0.40f, 0.75f, 1.00f);\n\tcolors[ImGuiCol_ResizeGrip]             = ImVec4(0.26f, 0.59f, 0.98f, 0.25f);\n\tcolors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);\n\tcolors[ImGuiCol_ResizeGripActive]       = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);\n\tcolors[ImGuiCol_Tab]                    = ImVec4(0.18f, 0.35f, 0.58f, 0.86f);\n\tcolors[ImGuiCol_TabHovered]             = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);\n\tcolors[ImGuiCol_TabActive]              = ImVec4(0.20f, 0.41f, 0.68f, 1.00f);\n\tcolors[ImGuiCol_TabUnfocused]           = ImVec4(0.07f, 0.10f, 0.15f, 0.97f);\n\tcolors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.14f, 0.26f, 0.42f, 1.00f);\n\tcolors[ImGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);\n\tcolors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);\n\tcolors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);\n\tcolors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);\n\tcolors[ImGuiCol_TextSelectedBg]         = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);\n\tcolors[ImGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);\n\tcolors[ImGuiCol_NavHighlight]           = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);\n\tcolors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);\n\tcolors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);\n\tcolors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);\n}\n\nvoid ImGuiSetGameTheme()\n{\n\tImVec4* colors = ImGui::GetStyle().Colors;\n\tcolors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);\n\tcolors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);\n\tcolors[ImGuiCol_WindowBg]               = ImVec4(0.11f, 0.11f, 0.11f, 1.00f);\n\tcolors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);\n\tcolors[ImGuiCol_PopupBg]                = ImVec4(0.19f, 0.19f, 0.19f, 0.92f);\n\tcolors[ImGuiCol_Border]                 = ImVec4(0.19f, 0.19f, 0.19f, 0.29f);\n\tcolors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.24f);\n\tcolors[ImGuiCol_FrameBg]                = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);\n\tcolors[ImGuiCol_FrameBgHovered]         = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);\n\tcolors[ImGuiCol_FrameBgActive]          = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);\n\tcolors[ImGuiCol_TitleBg]                = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);\n\tcolors[ImGuiCol_TitleBgActive]          = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);\n\tcolors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);\n\tcolors[ImGuiCol_MenuBarBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);\n\tcolors[ImGuiCol_ScrollbarBg]            = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);\n\tcolors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);\n\tcolors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.40f, 0.40f, 0.40f, 0.54f);\n\tcolors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);\n\tcolors[ImGuiCol_CheckMark]              = ImVec4(0.76f, 0.19f, 0.15f, 1.00f);\n\tcolors[ImGuiCol_SliderGrab]             = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);\n\tcolors[ImGuiCol_SliderGrabActive]       = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);\n\tcolors[ImGuiCol_Button]                 = ImVec4(0.76f, 0.19f, 0.12f, 0.54f);\n\tcolors[ImGuiCol_ButtonHovered]          = ImVec4(0.44f, 0.10f, 0.07f, 0.54f);\n\tcolors[ImGuiCol_ButtonActive]           = ImVec4(0.76f, 0.19f, 0.12f, 1.00f);\n\tcolors[ImGuiCol_Header]                 = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);\n\tcolors[ImGuiCol_HeaderHovered]          = ImVec4(0.00f, 0.00f, 0.00f, 0.36f);\n\tcolors[ImGuiCol_HeaderActive]           = ImVec4(0.20f, 0.22f, 0.23f, 0.33f);\n\tcolors[ImGuiCol_Separator]              = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);\n\tcolors[ImGuiCol_SeparatorHovered]       = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);\n\tcolors[ImGuiCol_SeparatorActive]        = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);\n\tcolors[ImGuiCol_ResizeGrip]             = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);\n\tcolors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);\n\tcolors[ImGuiCol_ResizeGripActive]       = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);\n\tcolors[ImGuiCol_Tab]                    = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);\n\tcolors[ImGuiCol_TabHovered]             = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);\n\tcolors[ImGuiCol_TabActive]              = ImVec4(0.20f, 0.20f, 0.20f, 0.36f);\n\tcolors[ImGuiCol_TabUnfocused]           = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);\n\tcolors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);\n\tcolors[ImGuiCol_PlotLines]              = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);\n\tcolors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);\n\tcolors[ImGuiCol_PlotHistogram]          = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);\n\tcolors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);\n\tcolors[ImGuiCol_TextSelectedBg]         = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);\n\tcolors[ImGuiCol_DragDropTarget]         = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);\n\tcolors[ImGuiCol_NavHighlight]           = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);\n\tcolors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 0.00f, 0.00f, 0.70f);\n\tcolors[ImGuiCol_NavWindowingDimBg]      = ImVec4(1.00f, 0.00f, 0.00f, 0.20f);\n\tcolors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);\n\n\n\tImGuiStyle& style = ImGui::GetStyle();\n\tstyle.WindowPadding                     = ImVec2(8.00f, 5.00f);\n\tstyle.FramePadding                      = ImVec2(3.00f, 2.00f);\n\t//style.CellPadding                       = ImVec2(6.00f, 6.00f);\n\tstyle.ItemSpacing                       = ImVec2(6.00f, 3.00f);\n\tstyle.ItemInnerSpacing                  = ImVec2(3.00f, 3.00f);\n\tstyle.TouchExtraPadding                 = ImVec2(0.00f, 0.00f);\n\tstyle.IndentSpacing                     = 17;\n\tstyle.ScrollbarSize                     = 14;\n\tstyle.GrabMinSize                       = 10;\n\tstyle.WindowBorderSize                  = 0;\n\tstyle.ChildBorderSize                   = 0;\n\tstyle.PopupBorderSize                   = 0;\n\tstyle.FrameBorderSize                   = 0;\n\tstyle.TabBorderSize                     = 0;\n\n\tstyle.WindowRounding                    = 0;\n\tstyle.ChildRounding                     = 0;\n\tstyle.FrameRounding                     = 0;\n\tstyle.PopupRounding                     = 0;\n\tstyle.ScrollbarRounding                 = 0;\n\tstyle.GrabRounding                      = 0;\n\t//style.LogSliderDeadzone                 = 0;\n\tstyle.TabRounding                       = 0;\n}\n\nWIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_info * WindowInfo, game_audio_output_buffer * AudioBuffer, char* RootAssetPath)\n{\n\tAssert(sizeof(engine_state) <= Memory->PermanentMemory.Size);\n\tengine_state *GameState = (engine_state *)Memory->PermanentMemory.Memory;\n\tstate_to_serialize* State = &GameState->StateSerializing;\n\tAssert(GameState);\n\n\tMemory->TransientMemory.Head = (uint8 *)Memory->TransientMemory.Memory;\n\n\t// Setup global state\n\tRenderApi = Memory->RenderApi;\n\tPlatformApi = Memory->PlatformApi;\n\tGlobalTransMem = &Memory->TransientMemory;\n\tGlobalThreadTransMem = &Memory->ThreadTransientMemory;\n\tGlobalPermMem = &Memory->PermanentMemory;\n\n\tGlobals = GameState->Globals;\n\n\trender::Data = GameState->RenderData;\n\n\tGlobalProfilerData = &GameState->ProfilerData;\n\tGlobalProfilerData->Platform = &PlatformApi;\n\tGameState->OGLProfilerData.Platform = &PlatformApi;\n\n\t// -------------------------------------------------------------------------\n\n\tGameState->GameRenderer.RenderCommands = CreateList(GlobalTransMem, sizeof(render_command));\n\tGameState->DebugUIRenderer.RenderCommands = CreateList(GlobalTransMem, sizeof(render_command));\n\tGameState->UIRenderer.RenderCommands = CreateList(GlobalTransMem, sizeof(render_command));\n\n\tGameState->ClearColor = color{60.0f / 255.0f, 72.0f / 255.0f, 87.0f / 255.0f, 1.0f};\n\n\tState->TimeRunningMS += (uint64)GameState->DeltaTimeMS;\n\n\tif (GameInput->MouseLeft.OnDown) {\n\t\tGameInput->MousePosOnDown = GameInput->MousePos;\n\t}\n\n\tstatic thread_work* SetupWork = {};\n\n\t// Initialization\n\tif (!Memory->IsInitialized) {\n\t\tstring AssetRootDir = RootAssetPath;\n\t\tGameState->RootAssetPath = AssetRootDir;\n\n\t\tMemory->IsInitialized = true;\n\t\tGameState->Assets = (game_assets*)ArenaAllocate(&Memory->PermanentMemory, sizeof(game_assets));\n\t\tGameState->Globals = (globals*)ArenaAllocate(&Memory->PermanentMemory, sizeof(globals));\n\t\tGameState->RenderData = (render::data*)ArenaAllocate(&Memory->PermanentMemory, sizeof(render::data));\n\n\t\tGlobals = GameState->Globals;\n\t\tGlobals->Window = WindowInfo;\n\t\tGlobals->Input = GameInput;\n\t\tGlobals->AssetRootDir = AssetRootDir;\n\t\tGlobals->GameState = GameState;\n\n\t\trender::Data = GameState->RenderData;\n\n\t\tGizmoPushColor(COLOR_RED);\n\n\t\tAllocateProfiler();\n\n\t\tState->Scene.Init();\n\n\t\tGlobals->UIPanels = (ui_panels*)ArenaAllocate(GlobalPermMem, sizeof(ui_panels) * (int)panel_id::count);\n\t\tGlobals->UIPanels->Setup();\n\t\tGlobals->UIUserInput = GameInput;\n\n\t\t// Load and setup basic engine resources\n\t\t{\n\t\t\t// Load engine resources unit cube\n\t\t\tDae::Load(&GameState->Assets->UnitCube, AssetRootDir + \"UnitCube.dae\", true, GlobalTransMem);\n\t\t\tGlobals->UnitCube = assets::AllocateEntity(\"UnitCube\");\n\n\t\t\t// Engine resource shaders\n\t\t\t{\n\t\t\t\tGlobals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.ScreenDrawShader,\n\t\t\t\t                           AssetRootDir + \"Shaders/ScreenDraw.vs\",\n\t\t\t\t                           AssetRootDir + \"Shaders/ScreenDraw.fs\",\n\t\t\t\t                           GlobalTransMem);\n\t\t\t\tRenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ScreenDrawShader);\n\n\t\t\t\tGlobals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.ScreenDrawTextureShader,\n\t\t\t\t                           AssetRootDir + \"Shaders/ScreenDrawTexture.vs\",\n\t\t\t\t                           AssetRootDir + \"Shaders/ScreenDrawTexture.fs\",\n\t\t\t\t                           GlobalTransMem);\n\t\t\t\tRenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ScreenDrawTextureShader);\n\n\n\t\t\t\tGlobals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.ImGuiShader,\n\t\t\t\t                           AssetRootDir + \"Shaders/ImGui.vs\",\n\t\t\t\t                           AssetRootDir + \"Shaders/imGui.fs\",\n\t\t\t\t                           GlobalTransMem);\n\t\t\t\tRenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ImGuiShader);\n\t\t\t}\n\n\t\t\t// Create default white image for renderer\n\t\t\trender::Data->WhiteImage = assets::GLLoadPNG(RootAssetPath + string{\"SingleWhitePixel.png\"}, gl_blend_type::linear, correct_gamma::no, GlobalTransMem);\n\n\t\t\t// Cameras and some lights. Not all of this is stricly engine resources\n\t\t\t{\n\t\t\t\t// Init Camera\n\t\t\t\tInitCamera(&GameState->GameCamera, &GameState->Assets->CamBasicShader,\n\t\t\t\t           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::orthographic, 0,\n\t\t\t\t           0.1f, 10.0f);\n\t\t\t\tGameState->GameCamera.EulerRotation = vector3{PI * -0.5f, -1.57, 0};\n\n\t\t\t\tInitCamera(&State->UICam, &GameState->Assets->CamBasicShader,\n\t\t\t\t           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::brokenui, 0,\n\t\t\t\t           -10.0f, 10.0f);\n\t\t\t\tState->UICam.EulerRotation = vector3{PI, -0.88f, 0};\n\n\t\t\t\tInitCamera(&State->BattleCam, &GameState->Assets->CamBasicShader,\n\t\t\t\t           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::perspective, 0,\n\t\t\t\t           0.1f, 1200.0f);\n\t\t\t\tState->BattleCam.EulerRotation = vector3{3.14159f, -0.822f, 0};\n\t\t\t\tState->BattleCam.Center = vector3{ -9.024, 0, 18.0f};\n\n\t\t\t\tInitCamera(&State->EditorCamera, &GameState->Assets->CamBasicShader,\n\t\t\t\t           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::perspective, 0,\n\t\t\t\t           0.1f, 1200.0f);\n\n\t\t\t\tState->ActiveCam = &GameState->GameCamera;\n\n\t\t\t\t// Light camera\n\t\t\t\tInitCamera(&State->Light.Cam, &GameState->Assets->CamBasicShader,\n\t\t\t\t           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::perspective, 0,\n\t\t\t\t           0.1f, 1200.0f);\n\t\t\t\tState->Light.Cam.EulerRotation = vector3{2.36f, -1.184f, 0.0f};\n\t\t\t\tState->Light.Cam.Center = vector3{ -3.5f, 3.6f, 7.8f};\n\n\t\t\t\t{\n\t\t\t\t\tState->LightTwo.Type = light_type::directional;\n\t\t\t\t\tState->LightTwo.Transform.LocalPos = vector3{0, 0, 2};\n\t\t\t\t\tState->LightTwo.Transform.LocalRot = vector3{ -0.299, -3.47f, 0.321f};\n\t\t\t\t\tState->LightTwo.Color = color{10, 10, 10};\n\t\t\t\t\trender::RegisterLight(&State->LightTwo);\n\t\t\t\t}\n\t\t\t}\n\n\t\t\tassets::UploadAllQueuedImages(&Globals->AssetsList, GlobalTransMem);\n\t\t}\n\n\t\tGameState->GameRenderer.Camera = &GameState->GameCamera;\n\t\tGameState->DebugUIRenderer.Camera = &State->UICam;\n\t\tGameState->UIRenderer.Camera = &State->UICam;\n\n\t\tGlobals->GameRenderer = &GameState->GameRenderer;\n\t\tGlobals->UIRenderer = &GameState->UIRenderer;\n\t\tGlobals->DebugUIRenderer = &GameState->DebugUIRenderer;\n\n\t\t// Setup and Load game data\n\t\t// Load stuff\n\t\t{\n\t\t\t//SetupWork = PlatformApi.ThreadAddWork(GameSetupThread, 0);\n\t\t\t//GameSetup();\n\t\t\tassets::LoadAssets(&Globals->AssetsList, Globals->AssetRootDir, GlobalTransMem);\n\n\t\t\t// Compile shaders\n\t\t\tfor (int i = 0; i < Globals->AssetsList.ShadersCount; i++) {\n\n\t\t\t\tConsoleLog(\"Compiling shader\");\n\t\t\t\tshader* Shader = &Globals->AssetsList.Shaders[i].Shader;\n\n\t\t\t\tRenderApi.MakeProgram(Shader);\n\t\t\t}\n\n\t\t\tassets::UploadAllQueuedImages(&Globals->AssetsList, GlobalTransMem);\n\t\t\t//assets::UploadAllQueuedEntities(&Globals->AssetsList);\n\t\t}\n\n\t\t//PanelStackPush(panel_id::home, &State->PanelStack, State);\n\t\tStart(GameState);\n\n#if UNIT_TESTING\n\t\tLinkedListUnitTests(&Memory->TransientMemory);\n\n\t\t// Verify type sizes\n\t\tAssert(sizeof(uint8) == 1);\n\t\tAssert(sizeof(uint16) == 2);\n\t\tAssert(sizeof(uint32) == 4);\n\t\tAssert(sizeof(uint64) == 8);\n\n\t\tStringUnitTests(&Memory->TransientMemory);\n\t\tRandomUnitTests();\n\n\t\t// Remove slide testing\n\t\t{\n\t\t\tint32 Array[10];\n\t\t\tfor (int i = 0; i < ArrayCount(Array); i++) {\n\t\t\t\tArray[i] = i;\n\t\t\t}\n\n\t\t\tRemoveSlideArray((void*)&Array[0], ArrayCount(Array), sizeof(int32), 1);\n\t\t\tRemoveSlideArray((void*)&Array[0], ArrayCount(Array), sizeof(int32), 5);\n\t\t}\n#endif\n\t}\n\n\tGlobals->ActiveCam = State->ActiveCam;\n\n\t// Update camera matricies\n\tState->ActiveCam->UpdateMatricies();\n\tState->UICam.UpdateMatricies();\n\n\tif (Memory->HotReloaded) {\n\t\tGlobals->UIPanels->Setup();\n\t}\n\n\n\t// Editor / mouse touch emulation\n\t{\n\t\t// Toggle on / off\n\t\tbool EditorPrev = Globals->EditorData.EditorMode;\n\n\t\t/*\n\t\t// Do mouse touch emulation\n\t\teditor::SwitchToEditorCam(GameState);\n\n\t\tstatic int GLID = assets::GetImage(\"Gizmo_Circle\")->GLID;\n\t\tRenderTextureCenter(Globals->Input->MousePos,\n\t\t                    vector2{8, 8},\n\t\t                    color{1, 0, 0, 1},\n\t\t                    vector2{}, vector2{1, 1},\n\t\t                    GLID,\n\t\t                    0,\n\t\t                    Globals->DebugUIRenderer);\n\t\t*/\n\n\t\tif (Globals->EditorData.EditorMode) {\n\t\t\t// Disable touch input\n\t\t\tGlobals->Input->TouchStatus[0].OnDown = false;\n\t\t\tGlobals->Input->TouchStatus[0].IsDown = false;\n\t\t} else {\n\n\t\t\t// Disable mouse input\n\t\t\t/*\n\t\t\tGlobals->Input->MouseLeft.OnDown = false;\n\t\t\tGlobals->Input->MouseLeft.IsDown = false;\n\t\t\tGlobals->Input->MouseRight.OnDown = false;\n\t\t\tGlobals->Input->MouseRight.IsDown = false;\n\t\t\tGlobals->Input->MousePos = vector2{ -1, -1};\n\t\t\t*/\n\t\t}\n\t}\n\n\tui::NextAnimState = 0;\n\n\t// imgui init\n\tif (!Memory->ImguiInitialized) {\n\n\t\tMemory->ImguiInitialized = true;\n\t\tImGui::CreateContext();\n\t\tImGuiIO& io = ImGui::GetIO();\n\t\tio.DisplaySize.x = (float)WindowInfo->Width;\n\t\tio.DisplaySize.y = (float)WindowInfo->Height;\n\n\t\t// Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array that we will update during the application lifetime.\n\t\t// Removed for android. ImGui doesn't do anything on android, so what do?\n\t\tio.KeyMap[ImGuiKey_Backspace] = KEY_BACK;\n\t\tio.KeyMap[ImGuiKey_Tab] = KEY_TAB;\n\t\tio.KeyMap[ImGuiKey_LeftArrow] = KEY_LEFT;\n\t\tio.KeyMap[ImGuiKey_RightArrow] = KEY_RIGHT;\n\t\tio.KeyMap[ImGuiKey_UpArrow] = KEY_UP;\n\t\tio.KeyMap[ImGuiKey_DownArrow] = KEY_DOWN;\n\t\tio.KeyMap[ImGuiKey_PageUp] = KEY_PRIOR;\n\t\tio.KeyMap[ImGuiKey_PageDown] = KEY_NEXT;\n\t\tio.KeyMap[ImGuiKey_Home] = KEY_HOME;\n\t\tio.KeyMap[ImGuiKey_End] = KEY_END;\n\t\tio.KeyMap[ImGuiKey_Insert] = KEY_INSERT;\n\t\tio.KeyMap[ImGuiKey_Delete] = KEY_DELETE;\n\t\tio.KeyMap[ImGuiKey_Space] = KEY_SPACE;\n\t\tio.KeyMap[ImGuiKey_Enter] = KEY_RETURN;\n\t\tio.KeyMap[ImGuiKey_Escape] = KEY_ESCAPE;\n\n\t\t//io.IniFilename = NULL;\n\n\t\t// ImGui create font texture\n\t\tunsigned char* pixels;\n\t\tint width, height;\n\t\tio.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);   // Load as RGBA\n\n\t\tloaded_image Result = {};\n\t\tResult.Width = width;\n\t\tResult.Height = height;\n\t\tRenderApi.MakeTexture(&Result, (uint32*)pixels, false);\n\t\tio.Fonts->SetTexID((ImTextureID)(intptr_t)Result.GLID);\n\t}\n\n\t// imgui each frame\n\t{\n\t\t// Setup low-level inputs (e.g. on Win32, GetKeyboardState(), or write to those fields from your Windows message loop handlers, etc.)\n\t\tImGuiIO& io = ImGui::GetIO();\n\t\tio.DisplaySize.x = (float)WindowInfo->Width;\n\t\tio.DisplaySize.y = (float)WindowInfo->Height;\n\t\tio.DeltaTime = 1.0f / 60.0f;\n\n\t\tif (GameInput->MouseScrollDelta != 0) {\n\t\t\tio.MouseWheel += (float)(GameInput->MouseScrollDelta > 0 ? +1.0f : -1.0f);\n\t\t}\n\n\t\t// update keyboard input\n\t\tfor (int index = 0; index < ArrayCount(GameInput->KeyboardInput); index++) {\n\t\t\tio.KeysDown[index] = GameInput->KeyboardInput[index].IsDown ? 1 : 0;\n\n\t\t\t// clear keyboard after sending to imgui so we don't trigger any of our own hotkeys\n\t\t\tif (io.WantTextInput) {\n\t\t\t\tGameInput->KeyboardInput[index] = {};\n\t\t\t}\n\t\t}\n\n\t\t//char KeyboardState[256] = {};\n\t\t// PBYTE KeyboardStatePointer = (PBYTE)(&KeyboardState);\n\t\t//GetKeyboardState((char*)&KeyboardState);\n\n\t\tio.AddInputCharacter(GameInput->InputChar);\n\t\tGameInput->InputChar = 0;\n\n\t\tImVec2 mousePos = {};\n\t\tmousePos.x = (float)GameInput->MousePos.X;\n\t\tmousePos.y = (float)GameInput->MousePos.Y;\n\t\tio.MousePos = mousePos;\n\t\tio.MouseDown[0] = GameInput->MouseLeft.IsDown != 0;\n\t\tio.MouseDown[1] = GameInput->MouseRight.IsDown != 0;\n\t}\n\n\tImGui::NewFrame();\n\n\t// Update touch input\n\t{\n\t\treal64 DragThreshold = 35.0f;\n\t\tstatic bool WentOutThreshold = false;\n\n\t\tfor (int i = 0; i < TOUCH_COUNT; i++) {\n\t\t\ttouch* Touch = &Globals->Input->Touches[i];\n\n\t\t\t// Tap gesture only lasts one frame, so rest it\n\t\t\tif (Touch->Gesture == touch_gesture::tap) {\n\t\t\t\tTouch->Gesture = touch_gesture::none;\n\t\t\t}\n\n\t\t\tif (Globals->Input->TouchStatus[i].OnDown) {\n\t\t\t\tTouch->Origin = Globals->Input->TouchPosition[i];\n\t\t\t\tTouch->Gesture = touch_gesture::none;\n\t\t\t}\n\t\t\tif (Globals->Input->TouchStatus[i].IsDown) {\n\t\t\t\tTouch->Position = Globals->Input->TouchPosition[i];\n\t\t\t\tTouch->Delta = Touch->Origin - Globals->Input->TouchPosition[i];\n\n\t\t\t\tTouch->FrameDelta = Touch->PositionLastFrame - Touch->Position;\n\t\t\t\tTouch->PositionLastFrame = Touch->Position;\n\n\t\t\t\tTouch->Gesture = touch_gesture::hold;\n\n\t\t\t\tif (Vector2Distance(Touch->Delta, {}) > DragThreshold) {\n\t\t\t\t\tWentOutThreshold = true;\n\t\t\t\t}\n\n\t\t\t\tif (WentOutThreshold) {\n\t\t\t\t\tTouch->Gesture = touch_gesture::drag;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif (Globals->Input->TouchStatus[i].OnUp) {\n\t\t\t\tWentOutThreshold = false;\n\n\t\t\t\tif (Touch->Gesture == touch_gesture::hold) {\n\t\t\t\t\tTouch->Gesture = touch_gesture::tap;\n\t\t\t\t} else {\n\t\t\t\t\tTouch->Gesture = touch_gesture::none;\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\n\t// Editor things\n\t{\n\t\tImGuiStyle& style = ImGui::GetStyle();\n\t\tif (!Globals->EditorData.EditorMode) {\n\t\t\tstyle.Alpha = 0.25f;\n\t\t}\n\t\tif (Globals->Input->KeyboardInput[KEY_TAB].OnDown) {\n\t\t\tGlobals->EditorData.EditorMode = !Globals->EditorData.EditorMode;\n\t\t}\n\n\t\t// TODO Don't compile on release builds\n\t\t//editor::Update(GameState, WindowInfo);\n\n\t\tstyle.Alpha = 1.0f;\n\t}\n\n\tGlobals->ShaderLoader.PollReload();\n\tPollModelReload(Memory, GameState->Assets);\n\n\tstatic bool DemoShowing = true;\n\t//ImGui::ShowDemoWindow(&DemoShowing);\n\n\t// Prevent mouse clicks for game if imgui captures mouse\n\tif (ImGui::GetIO().WantCaptureMouse) {\n\t\tGameInput->MouseScrollDelta = {};\n\n\t\tGameInput->MouseLeft.IsDown = false;\n\t\tGameInput->MouseLeft.OnDown = false;\n\t\tGameInput->MouseLeft.IsUp = false;\n\t\tGameInput->MouseLeft.OnUp = false;\n\t\tGameInput->MouseRight.OnDown = false;\n\t\tGameInput->MouseRight.IsDown = false;\n\t\tGameInput->MouseRight.IsUp = false;\n\t\tGameInput->MouseRight.OnUp = false;\n\t}\n\n\t// Camera\n\tif (Globals->EditorData.EditorMode) {\n\t\teditor::SwitchToEditorCam(GameState);\n\n\t\tstatic bool MouseControlling = false;\n\t\tif (GameInput->MouseRight.OnDown) {\n\t\t\tMouseControlling = true;\n\t\t}\n\t\tif (GameInput->MouseRight.OnUp) {\n\t\t\tMouseControlling = false;\n\t\t}\n\n\t\treal64 MouseSpeed = 0.004f;\n\n\t\tif (MouseControlling) {\n\t\t\tstatic vector2 MouseStart = {};\n\t\t\tstatic vector3 EulerStart = {};\n\t\t\tif (GameInput->MouseRight.OnDown) {\n\t\t\t\tMouseStart = GameInput->MousePos;\n\t\t\t\tEulerStart = State->ActiveCam->EulerRotation;\n\t\t\t}\n\n\t\t\tState->ActiveCam->EulerRotation.Y += GameInput->MouseDelta.Y * MouseSpeed;\n\t\t\tState->ActiveCam->EulerRotation.X += GameInput->MouseDelta.X * MouseSpeed;\n\n\t\t\treal64 Bottom = (-PI / 2.0f) + 0.01f;\n\t\t\treal64 Top = -Bottom;\n\t\t\tState->ActiveCam->EulerRotation.Y = ClampValue(Bottom, Top, State->ActiveCam->EulerRotation.Y);\n\n\t\t\t//Globals->EditorData.EditorMode = !Globals->EditorData.EditorMode;\n\t\t}\n\n\t\tif (GameInput->MouseRight.OnDown) {\n\t\t\tGameState->LockCursor = true;\n\t\t}\n\t\tif (GameInput->MouseRight.OnUp) {\n\t\t\tGameState->LockCursor = false;\n\t\t}\n\n\t\t// Fly camera controls\n\t\tif (!ImGui::GetIO().WantCaptureMouse && State->ActiveCam == &State->EditorCamera) {\n\n\t\t\t//real64 KeyboardSpeed = 3;\n\t\t\treal64 KeyboardSpeed = 1;\n\t\t\tif (GameInput->KeyboardInput[KEY_SHIFT].IsDown) {\n\t\t\t\t//KeyboardSpeed = 1.5f;\n\t\t\t}\n\n\t\t\treal64 WindowSpeed = 4.0f;\n\n\t\t\tif (GameInput->KeyboardInput['E'].IsDown) {\n\t\t\t\tState->ActiveCam->Center.Z += KeyboardSpeed;\n\t\t\t\teditor::SwitchToEditorCam(GameState);\n\t\t\t}\n\t\t\tif (GameInput->KeyboardInput['Q'].IsDown) {\n\t\t\t\tState->ActiveCam->Center.Z -= KeyboardSpeed;\n\t\t\t\teditor::SwitchToEditorCam(GameState);\n\t\t\t}\n\t\t\tif (GameInput->KeyboardInput['A'].IsDown) {\n\n\t\t\t\tvector3 Right = Vector3Cross(State->ActiveCam->Forward, vector3{0, 0, 1});\n\t\t\t\tRight = Vector3Normalize(Right);\n\t\t\t\tState->ActiveCam->Center = State->ActiveCam->Center - (Right * (real32)KeyboardSpeed);\n\n\t\t\t\teditor::SwitchToEditorCam(GameState);\n\t\t\t}\n\t\t\tif (GameInput->KeyboardInput['D'].IsDown) {\n\n\t\t\t\tvector3 Right = Vector3Cross(State->ActiveCam->Forward, vector3{0, 0, 1});\n\t\t\t\tRight = Vector3Normalize(Right);\n\t\t\t\tState->ActiveCam->Center = State->ActiveCam->Center + (Right * (real32)KeyboardSpeed);\n\n\t\t\t\teditor::SwitchToEditorCam(GameState);\n\t\t\t}\n\t\t\tif (GameInput->KeyboardInput['W'].IsDown) {\n\n\t\t\t\tif (GameInput->MouseRight.IsDown) {\n\t\t\t\t\tState->ActiveCam->Center = State->ActiveCam->Center - (State->ActiveCam->Forward * (real32)KeyboardSpeed);\n\t\t\t\t} else {\n\t\t\t\t\tm4y4 r = RotationZ(-(real32)State->ActiveCam->EulerRotation.X);\n\t\t\t\t\tvector3 Dir = Apply4y4(r, vector3{1, 0, 0});\n\t\t\t\t\tState->ActiveCam->Center = State->ActiveCam->Center - (Dir * (real32)KeyboardSpeed);\n\t\t\t\t}\n\n\t\t\t\teditor::SwitchToEditorCam(GameState);\n\t\t\t}\n\t\t\tif (GameInput->KeyboardInput['S'].IsDown) {\n\n\t\t\t\tif (GameInput->MouseRight.IsDown) {\n\t\t\t\t\tState->ActiveCam->Center = State->ActiveCam->Center + (State->ActiveCam->Forward * (real32)KeyboardSpeed);\n\t\t\t\t} else {\n\t\t\t\t\tm4y4 r = RotationZ(-(real32)State->ActiveCam->EulerRotation.X);\n\t\t\t\t\tvector3 Dir = Apply4y4(r, vector3{1, 0, 0});\n\t\t\t\t\tState->ActiveCam->Center = State->ActiveCam->Center + (Dir * (real32)KeyboardSpeed);\n\t\t\t\t}\n\n\t\t\t\teditor::SwitchToEditorCam(GameState);\n\t\t\t}\n\t\t}\n\t} else {\n\t\tState->ActiveCam = &GameState->GameCamera;\n\t}\n\n\tif (GameInput->KeyboardInput['B'].OnDown) {\n\t\tGlobals->EditorData.GodMode = !Globals->EditorData.GodMode;\n\t}\n\n\t// Panel stuff\n\t/*\n\t{\n\t\tui_panel* ActivePanel = State->PanelStack.Panels[State->PanelStack.NextIndex - 1];\n\t\tif (ActivePanel->Overlay) {\n\t\t\tGlobals->UIUserInput = &EmptyInput;\n\t\t}\n\n\t\t// Render active panel and overlay\n\t\tif (ActivePanel->Overlay) {\n\n\t\t\tState->PanelStack.Panels[State->PanelStack.NextIndex - 2]->Render(State, WindowInfo);\n\n\t\t\t// Overlay background\n\t\t\tRenderRect(rect{0, 0, (real64)WindowInfo->Width, (real64)WindowInfo->Height}, color{0, 0, 0, 0.8f}, 0, Globals->UIRenderer);\n\t\t}\n\n\t\tGlobals->UIUserInput = GameInput;\n\t\tActivePanel->Render(State, WindowInfo);\n\t}\n\t*/\n\n\tImGuiSetGameTheme();\n\tLoop(GameState, WindowInfo, GameInput);\n\tImGuiSetEditorTheme();\n\n\t// Keep at the end, so it reports correctly on the frame\n\tif (Globals->EditorData.ProfilerWindowOpen) {\n\t\tprofiler::ImGuiProfiler(GameState, Memory, &GameState->ProfilerData, &GameState->OGLProfilerData);\n\t}\n\tprofiler::InitProfiler(&GameState->ProfilerData);\n\tprofiler::InitProfiler(&GameState->OGLProfilerData);\n\n\t// Render imgui\n\t{\n\t\tImGui::EndFrame();\n\n\t\tif (!BuildVarRelease) {\n\t\t\tImGui::Render();\n\n\t\t\tImDrawData* draw_data = ImGui::GetDrawData();\n\t\t\tImVec2 pos = draw_data->DisplayPos;\n\t\t\tfor (int n = 0; n < draw_data->CmdListsCount; n++) {\n\n\t\t\t\tconst ImDrawList* cmd_list = draw_data->CmdLists[n];\n\t\t\t\tconst ImDrawVert* vtx_buffer = cmd_list->VtxBuffer.Data;\n\t\t\t\tconst ImDrawIdx* idx_buffer = cmd_list->IdxBuffer.Data;\n\n\t\t\t\tfor (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++) {\n\t\t\t\t\tconst ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];\n\n\t\t\t\t\trender_command RendCommand = {};\n\t\t\t\t\tInitRenderCommand(&RendCommand, pcmd->ElemCount);\n\n\t\t\t\t\tshader* Shader = assets::GetShader(\"ImGui\");\n\t\t\t\t\tif (Shader == GameNull) continue;\n\n\t\t\t\t\tRendCommand.Shader = *Shader;\n\n\t\t\t\t\tlayout_data* VertexLayout = RendCommand.GetLayout();\n\t\t\t\t\tVertexLayout->Allocate(Shader->GetLayout(render::ShaderVertID), RendCommand.BufferCapacity, GlobalTransMem);\n\t\t\t\t\tVertexLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderVertID);\n\n\t\t\t\t\tlayout_data* TextureLayout = RendCommand.GetLayout();\n\t\t\t\t\tTextureLayout->Allocate(Shader->GetLayout(render::ShaderTextureCoordsID), RendCommand.BufferCapacity, GlobalTransMem);\n\t\t\t\t\tTextureLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderTextureCoordsID);\n\n\t\t\t\t\tlayout_data* ColorLayout = RendCommand.GetLayout();\n\t\t\t\t\tColorLayout->Allocate(Shader->GetLayout(render::ShaderColorID), RendCommand.BufferCapacity, GlobalTransMem);\n\t\t\t\t\tColorLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderColorID);\n\n\t\t\t\t\tRendCommand.ClipRect = vector4{pcmd->ClipRect.x, pcmd->ClipRect.y, pcmd->ClipRect.z, pcmd->ClipRect.w};\n\n\t\t\t\t\t// Copy index buffer\n\t\t\t\t\tfor (uint32 i = 0; i < pcmd->ElemCount; i++) {\n\t\t\t\t\t\tint32 EI = idx_buffer[i];\n\t\t\t\t\t\tImColor ImCol = ImColor(vtx_buffer[EI].col);\n\n\t\t\t\t\t\tVertexLayout->Data.Vec3[i] = v3{vtx_buffer[EI].pos.x, vtx_buffer[EI].pos.y, 0};\n\t\t\t\t\t\tTextureLayout->Data.Vec2[i] = v2{vtx_buffer[EI].uv.x, vtx_buffer[EI].uv.y};\n\t\t\t\t\t\tColorLayout->Data.Vec4[i] = v4{ImCol.Value.x, ImCol.Value.y, ImCol.Value.z, ImCol.Value.w};\n\n\t\t\t\t\t\tRendCommand.IndexBuffer[i] = i;\n\t\t\t\t\t}\n\n\n\t\t\t\t\tidx_buffer += pcmd->ElemCount;\n\n\t\t\t\t\t// Copy uniforms\n\t\t\t\t\tRendCommand.Uniforms = RendCommand.Shader.Uniforms.Copy(GlobalTransMem);\n\n\t\t\t\t\tRendCommand.Uniforms.SetImage(\"diffuseTex\", (uint64)pcmd->TextureId);\n\t\t\t\t\tRendCommand.Uniforms.SetMat4(\"projection\", m4y4Transpose(GameState->DebugUIRenderer.Camera->ProjectionMatrix));\n\t\t\t\t\tRendCommand.Uniforms.SetMat4(\"view\", m4y4Transpose(GameState->DebugUIRenderer.Camera->ViewMatrix));\n\n\t\t\t\t\t//Assert(false);\n\t\t\t\t\tInsertRenderCommand(&GameState->DebugUIRenderer, &RendCommand);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}\n\n// This must happen after all TIME_BEGIN calls so that COUNTER is exactly the number of TIME_BEGIN calls\n// COPIED INTO ogles3.cpp\nvoid AllocateProfiler()\n{\n\tGlobalProfilerData->TimesCount = COUNTER;\n\n\tGlobalProfilerData->AccumulatedMethods = (accum_method*)ArenaAllocate(GlobalPermMem, GlobalProfilerData->TimesCount * sizeof(accum_method));\n\tGlobalProfilerData->AccumulatedMethodsGraphs = (graph_data*)ArenaAllocate(GlobalPermMem, GlobalProfilerData->TimesCount * sizeof(graph_data));\n}\n\n#endif\n",
 			"file": "Game/code/Engine/EngineCore.cpp",
+			"file_size": 37450,
+			"file_write_time": 133334148266836487,
 			"settings":
 			{
 				"buffer_size": 36452,
@@ -603,14 +604,6 @@
 			{
 				"buffer_size": 153,
 				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/Users/perma/Desktop/hey.txt",
-			"settings":
-			{
-				"buffer_size": 71,
 				"line_ending": "Windows"
 			}
 		},
@@ -767,13 +760,13 @@
 	],
 	"file_history":
 	[
+		"/C/Users/perma/Desktop/hey.txt",
 		"/T/Game/code/Engine/EngineCore.h",
 		"/C/Users/perma/Desktop/server_run.txt",
 		"/C/Users/perma/Desktop/VirbelaExercise1/Exercise1/VirbelaExercise1RyanRothweiler/Assets/Scripts/Highlight/HighlightTypeBehavior.cs",
 		"/C/Digital Archive/ComputerEnhanceHW/gen_haversine/build/output/haversines.json",
 		"/C/Digital Archive/ComputerEnhanceHW/gen_haversine/build/haversines.json",
 		"/C/Digital Archive/ComputerEnhanceHW/gen_haversine/build/output/haversines.txt",
-		"/C/Users/perma/Desktop/hey.txt",
 		"/C/Users/perma/Desktop/info.txt",
 		"/C/Digital Archive/ComputerEnhanceHW/listings/listing_0056/listing_0056_estimating_cycles.txt",
 		"/T/Game/code/Game/Item.h",
@@ -1040,6 +1033,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"font_style",
 			"Consume",
 			"consume",
 			"consumer",
@@ -1166,8 +1160,7 @@
 			"_rippleTimeMode",
 			"rippletimemodd",
 			"createmovementstep",
-			"journey_step_type::movement",
-			"toggle"
+			"journey_step_type::movement"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1231,7 +1224,7 @@
 	"groups":
 	[
 		{
-			"selected": 12,
+			"selected": 6,
 			"sheets":
 			[
 				{
@@ -1240,7 +1233,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7633,
+						"buffer_size": 7194,
 						"regions":
 						{
 						},
@@ -1260,7 +1253,7 @@
 						"translation.y": 271.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
@@ -1289,7 +1282,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
@@ -1319,7 +1312,7 @@
 						"translation.y": 6900.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -1328,7 +1321,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7561,
+						"buffer_size": 9322,
 						"regions":
 						{
 						},
@@ -1348,7 +1341,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -1357,7 +1350,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 32355,
+						"buffer_size": 35281,
 						"regions":
 						{
 						},
@@ -1386,7 +1379,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5590,
+						"buffer_size": 5610,
 						"regions":
 						{
 						},
@@ -1406,7 +1399,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -1422,8 +1415,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								35366,
+								35366
 							]
 						],
 						"settings":
@@ -1432,10 +1425,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 75.0,
+						"translation.y": 14104.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -1463,7 +1456,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -1519,39 +1512,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "/C/Users/perma/Desktop/hey.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 71,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 10,
 					"file": "/C/Digital Archive/ComputerEnhanceHW/calc_haversine/build/haversines_one.json",
 					"semi_transient": false,
 					"settings":
@@ -1579,7 +1544,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 11,
 					"file": "/C/Users/perma/AppData/Local/nvim/testfile.txt",
 					"semi_transient": false,
 					"settings":
@@ -1603,11 +1568,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 12,
 					"file": "Game/code/Engine/LinkedList.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1632,11 +1597,11 @@
 						"translation.y": 797.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 13,
 					"file": "Game/code/Engine/MemoryManager.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1661,7 +1626,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 12,
 					"type": "text"
 				}
 			]
@@ -1728,11 +1693,15 @@
 		"selected_items":
 		[
 			[
-				"engineco",
-				"Game\\code\\Engine\\EngineCore.h"
+				"engin",
+				"Game\\code\\Engine\\enginecore.cpp"
 			],
 			[
 				"enginecore",
+				"T:\\Game\\code\\Engine\\EngineCore.cpp"
+			],
+			[
+				"engineco",
 				"Game\\code\\Engine\\EngineCore.h"
 			],
 			[
@@ -1846,10 +1815,6 @@
 			[
 				"plat",
 				"Game\\code\\Platform\\platform_win32.cpp"
-			],
-			[
-				"engin",
-				"Game\\code\\Engine\\EngineCore.h"
 			],
 			[
 				"types",
