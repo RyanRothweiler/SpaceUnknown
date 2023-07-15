@@ -39,8 +39,18 @@ struct item_hold {
 
 	void ConsumeFuel(real64 Count)
 	{
-		// TODO this should check that the first item is actually fuel
-		//Assert(Items[0].Definition.ID == item_id::stl);
+		//Assert(Persist->Items[0].ID == item_id::stl);
 		Persist->Items[0].Count -= Count;
+	}
+
+	r64 FuelLevel() {
+		//Assert(Persist->Items[0].ID == item_id::stl);
+		return Persist->Items[0].Count;
+	}
+
+	// Useful for testing. Shouldn't be used in gameplay
+	void SetFuelLevel(r64 Count) { 
+		//Assert(Persist->Items[0].ID == item_id::stl);
+		Persist->Items[0].Count = Count;
 	}
 };

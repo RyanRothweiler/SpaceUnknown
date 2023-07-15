@@ -40,7 +40,7 @@ vector2 WorldTargetGetPosition(world_target_persistent* Target, state* State) {
 	}
 	return {};
 }
-	 
+
 void ShipUpdateMass(ship* Ship)
 {
 	Ship->CurrentMassTotal = Ship->Hold.MassCurrent + Ship->FuelTank.MassCurrent + Ship->Definition.Mass;
@@ -59,6 +59,7 @@ real64 ShipGetMassTotal(ship* Ship)
 	return Ship->CurrentMassTotal;
 }
 
+// returns if finished
 bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, state* State)
 {
 	real64 TimeSeconds = TimeMS * 0.001f;
@@ -97,7 +98,6 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 	}
 
 	// past target
-	// Need a 0.1 buffer here because the two distances are equal during the journey, but not always exactly because of rounding errors
 	if (Mov->FullDistance < DistToEnd + DistToStart) {
 		// Stopping, past destination
 		Ship->Persist->Velocity = vector2{0, 0};
@@ -172,6 +172,43 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 #include "JourneyMovement.cpp"
 
 #include "JourneyGetMethods.cpp"
+
+struct ship_mov_ret {
+	r64 Duration;
+	r64 FuelUsage;
+};
+
+ship_mov_ret ShipEstimateJourney(ship* Ship, state* State) {
+
+	ship_mov_ret Ret = {};
+
+	ship_persistent DummyPersist = *Ship->Persist;
+	ship DummyShip = *Ship;
+	DummyShip.Persist = &DummyPersist;
+
+	r64 InitialFuel = 10000000;
+	DummyShip.FuelTank.SetFuelLevel(InitialFuel);
+
+	float SimFPS = 15.0f;
+	float TimeStepMS = (1.0f / SimFPS) * 1000.0f;
+	r64 Time = 0;
+
+	for (int i = 0; i < Ship->Persist->CurrentJourney.StepsCount; i++) {
+		journey_step* Step = &Ship->Persist->CurrentJourney.Steps[i];
+		if (Step->Type  == journey_step_type::movement) {
+			
+			ShipMovementStart(&DummyShip, Step, State);
+			while (!ShipSimulateMovement(&DummyShip, &Step->Movement, TimeStepMS, State)) {
+				Ret.Duration += TimeStepMS;
+			}
+
+		}
+	}
+	
+	Ret.FuelUsage = InitialFuel - DummyShip.FuelTank.FuelLevel();
+	return Ret;
+}
+
 
 void ShipStep(void* SelfData, real64 Time, state* State)
 {
@@ -563,6 +600,8 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	if (ImGui::CollapsingHeader("Commands")) {
 		ship_journey* CurrJour = &CurrentShip->Persist->CurrentJourney;
 
+		static ship_mov_ret Estimate = {};
+
 		bool32 DockState = (CurrentShip->Persist->Status == ship_status::docked);
 		station* LastStation = {};
 		vector2 JourneyPosCurrent = CurrentShip->Persist->Position;
@@ -609,6 +648,8 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 			if (!CurrJour->InProgress && ImGui::Button("-")) {
 				RemoveSlideArray((void*)&CurrentShip->Persist->CurrentJourney.Steps[0], CurrentShip->Persist->CurrentJourney.StepsCount, sizeof(CurrentShip->Persist->CurrentJourney.Steps[0]), i);
 				CurrentShip->Persist->CurrentJourney.StepsCount--;
+
+				Estimate = ShipEstimateJourney(CurrentShip, State);
 			}
 
 			ImGui::Separator();
@@ -624,6 +665,11 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 			bool r = CurrJour->Repeat;
 			ImGui::Checkbox("Return to start and repeat", &r);
 			CurrJour->Repeat = r;
+
+			ImGui::Separator();
+			ImGui::Text("Time Estimate %.2f Minutes", MillisecondsToMinutes(Estimate.Duration));
+			ImGui::Text("Fuel Usage %.2f", Estimate.FuelUsage);
+			ImGui::Separator();
 
 			if (ImGui::Button("Execute")) {
 
@@ -662,6 +708,9 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 					CreateMovementStep(CurrentShip, Station->Persist->Position);
 					CreateDockUndockStep(CurrentShip, Station);
 				}
+
+
+				Estimate = ShipEstimateJourney(CurrentShip, State);
 			}
 		}
 	}
@@ -681,7 +730,9 @@ void ShipSetPersist(ship* Ship, ship_persistent* Persist, state* State) {
 
 		if (Ship->EquippedModules[i].Persist->Filled) { 
 			ship_module* Mod = &Ship->EquippedModules[i];
-			RegisterStepper(&Mod->Stepper, Mod->Definition.ActivationStepMethod, (void*)(Mod), State);
+			if (Mod->Definition.ActivationStepMethod != GameNull) {
+				RegisterStepper(&Mod->Stepper, Mod->Definition.ActivationStepMethod, (void*)(Mod), State);
+			}
 		}
 	}
 }
@@ -703,9 +754,7 @@ ship* ShipCreate(state* State, ship_id Type) {
 	Ship->Persist->Type = Type;
 	Ship->Persist->Status = ship_status::idle;
 
-	// TODO setup modules
 	ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
-	//ShipAddModule(&Ship->EquippedModules[3], ship_module_id::salvager_i, Ship, State);
 
 	return Ship;
 }
