@@ -173,14 +173,9 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 
 #include "JourneyGetMethods.cpp"
 
-struct ship_mov_ret {
-	r64 Duration;
-	r64 FuelUsage;
-};
+ship_journey_estimate ShipEstimateJourney(ship* Ship, state* State) {
 
-ship_mov_ret ShipEstimateJourney(ship* Ship, state* State) {
-
-	ship_mov_ret Ret = {};
+	ship_journey_estimate Ret = {};
 
 	ship_persistent DummyPersist = *Ship->Persist;
 	item_hold_persistent DummyItemHold = {};
@@ -603,8 +598,6 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	if (ImGui::CollapsingHeader("Commands")) {
 		ship_journey* CurrJour = &CurrentShip->Persist->CurrentJourney;
 
-		static ship_mov_ret Estimate = {};
-
 		bool32 DockState = (CurrentShip->Persist->Status == ship_status::docked);
 		station* LastStation = {};
 		vector2 JourneyPosCurrent = CurrentShip->Persist->Position;
@@ -652,7 +645,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				RemoveSlideArray((void*)&CurrentShip->Persist->CurrentJourney.Steps[0], CurrentShip->Persist->CurrentJourney.StepsCount, sizeof(CurrentShip->Persist->CurrentJourney.Steps[0]), i);
 				CurrentShip->Persist->CurrentJourney.StepsCount--;
 
-				Estimate = ShipEstimateJourney(CurrentShip, State);
+				CurrJour->Estimate = ShipEstimateJourney(CurrentShip, State);
 			}
 
 			ImGui::Separator();
@@ -670,23 +663,29 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 			CurrJour->Repeat = r;
 
 			ImGui::Separator();
-			ImGui::Text("Time Estimate %.2f Minutes", MillisecondsToMinutes(Estimate.Duration));
-			ImGui::Text("Fuel Usage %.2f", Estimate.FuelUsage);
+			ImGui::Text("Time Estimate %.2f Minutes", MillisecondsToMinutes(CurrJour->Estimate.Duration));
+			ImGui::Text("Fuel Usage %.2f", CurrJour->Estimate.FuelUsage);
 			ImGui::Separator();
 
-			if (ImGui::Button("Execute")) {
+			// Can't execute if we don't have enough fuel
+			r64 FuelLevel = CurrentShip->FuelTank.FuelLevel(); 
+			if (FuelLevel < CurrJour->Estimate.FuelUsage) {
+				ImGui::Text("!!! Cannot execute journey. Not enough fuel !!!");
+			} else {
+				if (ImGui::Button("Execute")) {
 
-				if (CurrJour->Repeat) {
+					if (CurrJour->Repeat) {
 
-					// This assumes the next step is a movement step. which won't be true when we add more steps
-					if (DockState) {
-						CreateDockUndockStep(CurrentShip, LastStation);
+						// This assumes the next step is a movement step. which won't be true when we add more steps
+						if (DockState) {
+							CreateDockUndockStep(CurrentShip, LastStation);
+						}
+
+						CreateMovementStep(CurrentShip, CurrentShip->Persist->Position);
 					}
 
-					CreateMovementStep(CurrentShip, CurrentShip->Persist->Position);
+					journey::Execute(CurrJour);
 				}
-
-				journey::Execute(CurrJour);
 			}
 
 			// Click world to add movement command
@@ -713,7 +712,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				}
 
 
-				Estimate = ShipEstimateJourney(CurrentShip, State);
+				CurrJour->Estimate = ShipEstimateJourney(CurrentShip, State);
 			}
 		}
 	}

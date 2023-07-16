@@ -84,12 +84,19 @@ MetaStruct struct journey_step {
 	// -----
 };
 
+MetaStruct struct ship_journey_estimate {
+	real64 Duration;
+	real64 FuelUsage;
+};
+
 MetaStruct struct ship_journey {
 	bool32 InProgress;
 
 	journey_step Steps[10];
 	int32 CurrentStep;
 	int32 StepsCount;
+
+	ship_journey_estimate Estimate; 
 
 	bool32 Repeat;
 };
