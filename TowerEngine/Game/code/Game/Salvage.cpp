@@ -31,7 +31,7 @@ void SalvageSetup(salvage* Salvage, salvage_persistent* Persist, state* State) {
 // Create new salvage
 void SalvageCreate(vector2 Position, state* State)
 {
-	salvage* Salvage = &State->Salvages[State->PersistentData.SalvagesCount++];
+	salvage* Salvage = &State->Salvages[State->PersistentData.SalvagesCount];
 	Salvage->Persist = &State->PersistentData.Salvages[State->PersistentData.SalvagesCount];
 
 	State->PersistentData.SalvagesCount++;

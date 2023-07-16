@@ -135,7 +135,7 @@ void AsteroidClusterSetup(asteroid_cluster* Cluster, asteroid_cluster_persistent
 // Create a whole new asteroid cluster
 void AsteroidClusterCreate(vector2 Center, real64 Radius, item_id OreItem, state* State)
 {
-	asteroid_cluster* Cluster = &State->AsteroidClusters[State->PersistentData.AsteroidClustersCount++];
+	asteroid_cluster* Cluster = &State->AsteroidClusters[State->PersistentData.AsteroidClustersCount];
 	AsteroidClusterSetup(
 			Cluster, 
 			&State->PersistentData.AsteroidClusters[State->PersistentData.AsteroidClustersCount],
