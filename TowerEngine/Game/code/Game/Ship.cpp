@@ -183,8 +183,11 @@ ship_mov_ret ShipEstimateJourney(ship* Ship, state* State) {
 	ship_mov_ret Ret = {};
 
 	ship_persistent DummyPersist = *Ship->Persist;
+	item_hold_persistent DummyItemHold = {};
+
 	ship DummyShip = *Ship;
 	DummyShip.Persist = &DummyPersist;
+	DummyShip.FuelTank.Persist = &DummyItemHold;
 
 	r64 InitialFuel = 10000000;
 	DummyShip.FuelTank.SetFuelLevel(InitialFuel);
