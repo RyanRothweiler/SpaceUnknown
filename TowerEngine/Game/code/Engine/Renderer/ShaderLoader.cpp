@@ -397,6 +397,8 @@ public:
 
 		Shader->Uniforms.Count = 0;
 		Shader->LayoutsCount = 0;
+		Shader->VertError = false;
+		Shader->FragError = false;
 
 		Shader->VertSource = LoadShader(Shader, VertexShaderPath, Memory);
 		Shader->FragSource = LoadShader(Shader, FragmentShaderPath, Memory);
@@ -432,112 +434,115 @@ public:
 	{
 		Assert(ShaderWatchingCount < ArrayCount(ShadersWatching));
 		ShadersWatching[ShaderWatchingCount] = Shader;
-		ShaderWatchingCount++;
+			ShaderWatchingCount++;
 	}
 
+	// NOTE this leaks memory currently
 	void PollReload()
 	{
+		bool32 ShowError = false;
+
 		/*
-			bool32 ShowError = false;
+		// Materials
+		for (int x = 0; x < MaterialWatchingCount; x++) {
+			material* Mat = MaterialsWatching[x];
 
-			// Materials
-			for (int x = 0; x < MaterialWatchingCount; x++) {
-				material* Mat = MaterialsWatching[x];
+			uint64 VertWriteTime = PlatformApi.GetFileWriteTime(Mat->Shader->VertPath.CharArray);
+			uint64 FragWriteTime = PlatformApi.GetFileWriteTime(Mat->Shader->FragPath.CharArray);
 
-				uint64 VertWriteTime = PlatformApi.GetFileWriteTime(Mat->Shader->VertPath.CharArray);
-				uint64 FragWriteTime = PlatformApi.GetFileWriteTime(Mat->Shader->FragPath.CharArray);
-
-				if (VertWriteTime != Mat->Shader->VertWriteTime || FragWriteTime != Mat->Shader->FragWriteTime) {
-					Load(Mat->Shader, Mat->Shader->VertPath, Mat->Shader->FragPath);
+			if (VertWriteTime != Mat->Shader->VertWriteTime || FragWriteTime != Mat->Shader->FragWriteTime) {
+				Load(Mat->Shader, Mat->Shader->VertPath, Mat->Shader->FragPath, GlobalPermMem);
 
 
-					// Update locations for any materials that use this shader
+				// Update locations for any materials that use this shader
 
-					for (int m = 0; m < MaterialWatchingCount; m++) {
-						material* M = MaterialsWatching[m];
-						if (M->Shader == Mat->Shader) {
+				for (int m = 0; m < MaterialWatchingCount; m++) {
+					material* M = MaterialsWatching[m];
+					if (M->Shader == Mat->Shader) {
 
-							for (int y = 0; y < M->Uniforms.Count; y++) {
-								shader_uniform* MatUni = M->Uniforms.Array[y];
+						for (int y = 0; y < M->Uniforms.Count; y++) {
+							shader_uniform* MatUni = M->Uniforms.Array[y];
 
-								// Find the uniform from the shader
-								for (int z = 0; z < M->Shader->Uniforms.Count; z++) {
-									shader_uniform* ShaderUni = M->Shader->Uniforms.Array[z];
+							// Find the uniform from the shader
+							for (int z = 0; z < M->Shader->Uniforms.Count; z++) {
+								shader_uniform* ShaderUni = M->Shader->Uniforms.Array[z];
 
-									if (ShaderUni->Name == MatUni->Name) {
+								if (ShaderUni->Name == MatUni->Name) {
 
-										shader_uniform::uniform_data OrigData = MatUni->Data;
-										*MatUni = *ShaderUni;
-										MatUni->Data = OrigData;
+									shader_uniform::uniform_data OrigData = MatUni->Data;
+									*MatUni = *ShaderUni;
+									MatUni->Data = OrigData;
 
-										int xxx = 0;
-									}
+									int xxx = 0;
 								}
 							}
 						}
 					}
 				}
+			}
 
-				if (!Mat->Shader->Valid) {
-					ShowError = true;
+			if (!Mat->Shader->Valid) {
+				ShowError = true;
+			}
+		}
+		*/
+
+		// Shaders
+		for (int x = 0; x < ShaderWatchingCount; x++) {
+			shader* Shader = ShadersWatching[x];
+
+			uint64 VertWriteTime = PlatformApi.GetFileWriteTime(Shader->VertPath.CharArray);
+			uint64 FragWriteTime = PlatformApi.GetFileWriteTime(Shader->FragPath.CharArray);
+
+			if (VertWriteTime != Shader->VertWriteTime || FragWriteTime != Shader->FragWriteTime) {
+				Load(Shader, Shader->VertPath, Shader->FragPath, GlobalPermMem);
+				RenderApi.MakeProgram(Shader);
+				//Load(Shader, Shader->VertPath, Shader->FragPath, GlobalPermMem);
+			}
+
+			if (!Shader->Valid) {
+				ShowError = true;
+			}
+		}
+
+		if (ShowError) {
+			ImGui::Begin("Shader Error");
+			for (int x = 0; x < MaterialWatchingCount; x++) {
+				shader* Shader = MaterialsWatching[x]->Shader;
+				if (!Shader->Valid) {
+					ImGui::Separator();
+
+					if (Shader->FragError) {
+						ImGui::Text(Shader->FragPath.CharArray);
+					}
+
+					if (Shader->VertError) {
+						ImGui::Text(Shader->VertPath.CharArray);
+					}
+
+					ImGui::Text(Shader->ErrorInfo);
 				}
 			}
 
-			// Shaders
 			for (int x = 0; x < ShaderWatchingCount; x++) {
 				shader* Shader = ShadersWatching[x];
-
-				uint64 VertWriteTime = PlatformApi.GetFileWriteTime(Shader->VertPath.CharArray);
-				uint64 FragWriteTime = PlatformApi.GetFileWriteTime(Shader->FragPath.CharArray);
-
-				if (VertWriteTime != Shader->VertWriteTime || FragWriteTime != Shader->FragWriteTime) {
-					Load(Shader, Shader->VertPath, Shader->FragPath);
-				}
-
 				if (!Shader->Valid) {
-					ShowError = true;
+					ImGui::Separator();
+
+					if (Shader->FragError) {
+						ImGui::Text(Shader->FragPath.CharArray);
+					}
+
+					if (Shader->VertError) {
+						ImGui::Text(Shader->VertPath.CharArray);
+					}
+
+					ImGui::Text(Shader->ErrorInfo);
 				}
 			}
 
-			if (ShowError) {
-				ImGui::Begin("Shader Error");
-				for (int x = 0; x < MaterialWatchingCount; x++) {
-					shader* Shader = MaterialsWatching[x]->Shader;
-					if (!Shader->Valid) {
-						ImGui::Separator();
-
-						if (Shader->FragError) {
-							ImGui::Text(Shader->FragPath.CharArray);
-						}
-
-						if (Shader->VertError) {
-							ImGui::Text(Shader->VertPath.CharArray);
-						}
-
-						ImGui::Text(Shader->ErrorInfo);
-					}
-				}
-
-				for (int x = 0; x < ShaderWatchingCount; x++) {
-					shader* Shader = ShadersWatching[x];
-					if (!Shader->Valid) {
-						ImGui::Separator();
-
-						if (Shader->FragError) {
-							ImGui::Text(Shader->FragPath.CharArray);
-						}
-
-						if (Shader->VertError) {
-							ImGui::Text(Shader->VertPath.CharArray);
-						}
-
-						ImGui::Text(Shader->ErrorInfo);
-					}
-				}
-
-				ImGui::Separator();
-				ImGui::End();
-			}
-		*/
+			ImGui::Separator();
+			ImGui::End();
+		}
 	}
 };

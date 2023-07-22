@@ -251,6 +251,8 @@ void EnableSeamlessCubeMap()
 
 WIN_EXPORT render::api Init(window_info WindowInfo, platform::api* PlatApi, profiler_data* ProfilerData, memory_arena* PermMem, memory_arena* TransMem)
 {
+	PlatformApi = *PlatApi;
+
 	glGenVertexArrays = 			(gl_gen_vertex_arrays*)				PlatApi->GetProcAddress("glGenVertexArrays");
 	glDeleteVertexArrays = 			(gl_delete_vertex_arrays*)			PlatApi->GetProcAddress("glDeleteVertexArrays");
 	glBindVertexArray = 			(gl_bind_vertex_array*)				PlatApi->GetProcAddress("glBindVertexArray");
