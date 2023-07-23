@@ -372,8 +372,13 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 	State->Zoom = (real32)Lerp(State->Zoom, State->ZoomTarget, 0.5f);
 	float Curve = 3.5f;
+	float PrevOrtho = EngineState->GameCamera.OrthoZoom;
 	EngineState->GameCamera.OrthoZoom = (real32)LerpCurve(ZoomRealMin, ZoomRealMax, Curve, State->Zoom);
 	real64 ZoomSpeedAdj = LerpCurve(4.0f, 200.0f, Curve, State->Zoom);
+
+	if (Input->MouseScrollDelta > 0.01f) {
+		int x = 0;
+	}
 
 	// save timer
 	{
@@ -985,6 +990,73 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						RenderLine(Line, 2.0f, color{1, 0, 0, 0.5f}, &EngineState->UIRenderer, false);
 					}
 				}
+			}
+
+			// Render Fog
+			{
+				shader* Shader = assets::GetShader("Fog");
+
+				vector2 Center = vector2{Window->Width * 0.5f, Window->Height * 0.5f};
+				vector2 Size = vector2{(real64)Window->Width, (real64)Window->Height};
+				float RenderOrder = -10;
+
+				render_command RendCommand = {};
+				InitRenderCommand(&RendCommand, 6);
+				InitIndexBuffer(&RendCommand);
+				RendCommand.Shader = *Shader;
+
+				vector2 HalfSize = vector2{Size.X * 0.5f, Size.Y * 0.5f};
+
+				v3 TopLeft = 		v3{(real32)Center.X - (real32)HalfSize.X, (real32)Center.Y - (real32)HalfSize.Y, (real32)RenderOrder};
+				v3 TopRight = 		v3{(real32)Center.X - (real32)HalfSize.X, (real32)Center.Y + (real32)HalfSize.Y, (real32)RenderOrder};
+				v3 BottomRight = 	v3{(real32)Center.X + (real32)HalfSize.X, (real32)Center.Y + (real32)HalfSize.Y, (real32)RenderOrder};
+				v3 BottomLeft = 	v3{(real32)Center.X + (real32)HalfSize.X, (real32)Center.Y - (real32)HalfSize.Y, (real32)RenderOrder};
+
+				// Vertices
+				layout_data* VertexLayout = RendCommand.GetLayout();
+
+				VertexLayout->Allocate(Shader->GetLayout(render::ShaderVertID), RendCommand.BufferCapacity, GlobalTransMem);
+				VertexLayout->Data.Vec3[0] = TopRight;
+				VertexLayout->Data.Vec3[1] = BottomRight;
+				VertexLayout->Data.Vec3[2] = BottomLeft;
+				VertexLayout->Data.Vec3[3] = TopRight;
+				VertexLayout->Data.Vec3[4] = BottomLeft;
+				VertexLayout->Data.Vec3[5] = TopLeft;
+
+				RendCommand.Uniforms = RendCommand.Shader.Uniforms.Copy(GlobalTransMem);
+				RendCommand.Uniforms.SetFloat("radius", 100.0f / PrevOrtho);
+				RendCommand.Uniforms.SetMat4("model", m4y4Identity());
+				RendCommand.Uniforms.SetMat4("projection", m4y4Transpose(EngineState->UIRenderer.Camera->ProjectionMatrix));
+				RendCommand.Uniforms.SetMat4("view", m4y4Transpose(EngineState->UIRenderer.Camera->ViewMatrix));
+
+				vector3 WorldPos = {};	
+				static v3 Array[100] = {};
+				int PosCount = 0;
+
+				for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
+					ship* Ship = &State->Ships[i];
+					vector2 PosScreen = WorldToScreen(
+								vector3{Ship->Persist->Position.X, Ship->Persist->Position.Y, 0},
+								&EngineState->GameCamera
+							);
+					Array[PosCount++] = v3{(real32)PosScreen.X, Window->Height - (real32)PosScreen.Y, 0.0f};
+					Assert(PosCount < ArrayCount(Array));
+				}
+	
+				for (int i = 0; i < State->PersistentData.StationsCount; i++)  {
+					station* Station = &State->Stations[i];
+					vector2 PosScreen = WorldToScreen(
+								vector3{Station->Persist->Position.X, Station->Persist->Position.Y, 0},
+								&EngineState->GameCamera
+							);
+					Array[PosCount++] = v3{(real32)PosScreen.X, Window->Height - (real32)PosScreen.Y, 0.0f};
+					Assert(PosCount < ArrayCount(Array));
+				}
+
+				RendCommand.Uniforms.SetVec3Array("radiusCenter", &Array[0], ArrayCount(Array));
+				RendCommand.Uniforms.SetInt("radiusCenterCount", PosCount);
+
+				InsertRenderCommand(&EngineState->UIRenderer, &RendCommand);
 			}
 
 		}
