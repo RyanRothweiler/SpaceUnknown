@@ -65,6 +65,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Icon = assets::GetImage("Ship_Advent");
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelRateMassPerSecond = 0.5f;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Mass = 200;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].RadarRadius = 75;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelTankMassLimit = 300;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].HoldMass = 20;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotsCount = 4;

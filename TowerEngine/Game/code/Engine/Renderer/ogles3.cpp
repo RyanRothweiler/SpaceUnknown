@@ -469,7 +469,20 @@ namespace ogles3 {
 				} break;
 
 				case glsl_type::gl_float: {
-					glUniform1f(Uni->Location, (GLfloat)Uni->Data.Float);
+
+					int32 Count = 0;
+					float* Data = {};
+
+					if (!Uni->IsArray) {
+						Count = 1;
+						Data = &Uni->Data.Float;		
+					} else {
+						Count = Uni->ArrayCount;
+						Data = &Uni->Data.FloatArray[0];
+					}
+
+					//glUniform1f(Uni->Location, (GLfloat)Uni->Data.Float);
+					glUniform1fv(Uni->Location, Count, (GLfloat*)Data);
 				} break;
 
 				case glsl_type::gl_vec3: {

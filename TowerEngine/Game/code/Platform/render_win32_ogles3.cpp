@@ -50,6 +50,7 @@ typedef void gl_debug_message_callback (GLDEBUGPROC callback, const void *userPa
 typedef void gl_uniform_4f (GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
 typedef void gl_uniform_3f (GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
 typedef void gl_uniform_1f (GLint location, GLfloat v0);
+typedef void gl_uniform_1fv (GLint location, GLsizei count, const GLfloat *value);
 typedef void gl_uniform_1iv (GLint location, GLsizei count, const GLint *value);
 typedef void gl_active_texture (GLenum texture);
 typedef void gl_uniform_1i (GLint location, GLint v0);
@@ -98,6 +99,7 @@ gl_debug_message_callback* glDebugMessageCallback;
 gl_uniform_4f* glUniform4f;
 gl_uniform_3f* glUniform3f;
 gl_uniform_1f* glUniform1f;
+gl_uniform_1fv* glUniform1fv;
 gl_uniform_1iv* glUniform1iv;
 gl_active_texture* glActiveTexture;
 gl_uniform_1i* glUniform1i;
@@ -283,6 +285,7 @@ WIN_EXPORT render::api Init(window_info WindowInfo, platform::api* PlatApi, prof
 	glUniform4f =	 				(gl_uniform_4f*)					PlatApi->GetProcAddress("glUniform4f");
 	glUniform3f =	 				(gl_uniform_3f*)					PlatApi->GetProcAddress("glUniform3f");
 	glUniform1f =	 				(gl_uniform_1f*)					PlatApi->GetProcAddress("glUniform1f");
+	glUniform1fv =	 				(gl_uniform_1fv*)					PlatApi->GetProcAddress("glUniform1fv");
 	glUniform1iv =	 				(gl_uniform_1iv*)					PlatApi->GetProcAddress("glUniform1iv");
 	glActiveTexture =	 			(gl_active_texture*)				PlatApi->GetProcAddress("glActiveTexture");
 	glUniform1i =	 				(gl_uniform_1i*)					PlatApi->GetProcAddress("glUniform1i");

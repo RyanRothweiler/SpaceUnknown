@@ -1024,14 +1024,17 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				VertexLayout->Data.Vec3[5] = TopLeft;
 
 				RendCommand.Uniforms = RendCommand.Shader.Uniforms.Copy(GlobalTransMem);
-				RendCommand.Uniforms.SetFloat("radius", 100.0f / PrevOrtho);
 				RendCommand.Uniforms.SetMat4("model", m4y4Identity());
 				RendCommand.Uniforms.SetMat4("projection", m4y4Transpose(EngineState->UIRenderer.Camera->ProjectionMatrix));
 				RendCommand.Uniforms.SetMat4("view", m4y4Transpose(EngineState->UIRenderer.Camera->ViewMatrix));
 
 				vector3 WorldPos = {};	
-				static v3 Array[100] = {};
+				static v3 PositionsArray[100] = {};
+				static float RadiusArray[100] = {};
 				int PosCount = 0;
+
+				static_assert(ArrayCount(RadiusArray) < 256, "256 array length hard coded in the shader");
+				static_assert(ArrayCount(PositionsArray) < 256, "356 array length hard coded in the shader");
 
 				for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
 					ship* Ship = &State->Ships[i];
@@ -1039,8 +1042,12 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 								vector3{Ship->Persist->Position.X, Ship->Persist->Position.Y, 0},
 								&EngineState->GameCamera
 							);
-					Array[PosCount++] = v3{(real32)PosScreen.X, Window->Height - (real32)PosScreen.Y, 0.0f};
-					Assert(PosCount < ArrayCount(Array));
+					PositionsArray[PosCount] = v3{(real32)PosScreen.X, Window->Height - (real32)PosScreen.Y, 0.0f};
+					RadiusArray[PosCount] = Ship->Definition.RadarRadius / PrevOrtho;
+
+					PosCount++;
+					Assert(PosCount < ArrayCount(PositionsArray));
+					Assert(PosCount < ArrayCount(RadiusArray));
 				}
 	
 				for (int i = 0; i < State->PersistentData.StationsCount; i++)  {
@@ -1049,12 +1056,17 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 								vector3{Station->Persist->Position.X, Station->Persist->Position.Y, 0},
 								&EngineState->GameCamera
 							);
-					Array[PosCount++] = v3{(real32)PosScreen.X, Window->Height - (real32)PosScreen.Y, 0.0f};
-					Assert(PosCount < ArrayCount(Array));
+					PositionsArray[PosCount] = v3{(real32)PosScreen.X, Window->Height - (real32)PosScreen.Y, 0.0f};
+					RadiusArray[PosCount] = 200 / PrevOrtho;
+
+					PosCount++;
+					Assert(PosCount < ArrayCount(PositionsArray));
+					Assert(PosCount < ArrayCount(RadiusArray));
 				}
 
-				RendCommand.Uniforms.SetVec3Array("radiusCenter", &Array[0], ArrayCount(Array));
+				RendCommand.Uniforms.SetVec3Array("radiusCenter", &PositionsArray[0], ArrayCount(PositionsArray));
 				RendCommand.Uniforms.SetInt("radiusCenterCount", PosCount);
+				RendCommand.Uniforms.SetFloatArray("radius", &RadiusArray[0], ArrayCount(RadiusArray));
 
 				InsertRenderCommand(&EngineState->UIRenderer, &RendCommand);
 			}

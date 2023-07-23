@@ -1,10 +1,8 @@
 precision highp float;
 
-Expose uniform float radius;
-
 Expose uniform vec3 radiusCenter[256];
+Expose uniform float radius[256];
 Expose uniform int radiusCenterCount;
-
 
 uniform vec3 PickingColor;
 
@@ -16,7 +14,7 @@ void main()
 
 	for (int i = 0; i < radiusCenterCount; i++) {
 		float dist = distance(vec4(radiusCenter[i], 0), gl_FragCoord);
-		float f = 1.0 - smoothstep(radius, radius - 0.1, dist);
+		float f = 1.0 - smoothstep(radius[i], radius[i] - 0.1, dist);
 		fade = min(f, fade);
 	}
 

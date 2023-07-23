@@ -36,6 +36,7 @@ struct ship_definition {
 	int64 FuelTankMassLimit;
 	real64 FuelRateMassPerSecond;
 	int64 Mass;
+	r32 RadarRadius;
 
 	int32 HoldMass;
 
