@@ -398,7 +398,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	state_to_serialize* State = &GameState->StateSerializing;
 	Assert(GameState);
 
-	Memory->TransientMemory.Head = (uint8 *)Memory->TransientMemory.Memory;
+	MemoryReset(&Memory->TransientMemory);
 
 	// Setup global state
 	RenderApi = Memory->RenderApi;

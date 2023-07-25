@@ -12,7 +12,8 @@ namespace fixed_allocator {
 		memory Alloc = {};
 		Alloc.BlockSize = BlockSize;
 		Alloc.BlocksCount = BlocksCount;
-
+		
+		// Always permanent memory here?
 		Alloc.Blocks = ArenaAllocate(GlobalPermMem, BlockSize * BlocksCount);
 		Alloc.FreeBlockIndecies = (int32*)ArenaAllocate(GlobalPermMem, sizeof(*Alloc.FreeBlockIndecies) * BlocksCount);
 

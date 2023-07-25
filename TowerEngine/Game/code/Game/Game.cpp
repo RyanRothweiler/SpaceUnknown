@@ -301,7 +301,11 @@ void Start(engine_state* EngineState)
 
 		path_list* P = &NodeFiles;
 		while (StringLength(P->Path) > 0) {
+	
+			// Manually clear the transient allocations from this
+			uint8* MemHead = GlobalTransMem->Head;		
 			SkillTreeNodeLoad(P->Path.Array(), State);
+			GlobalTransMem->Head = MemHead;
 
 			P = P->Next;
 		}

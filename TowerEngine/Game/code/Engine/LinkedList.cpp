@@ -76,7 +76,7 @@ void InitList(list_head* ListHead, uint32 DataSize)
 
 list_head* CreateListFixed(memory_arena *Memory, uint32 DataSize, int32 Count)
 {
-	list_head *ListHead = (list_head *)ArenaAllocate(Memory, sizeof(list_head));
+	list_head *ListHead = (list_head *)ArenaAllocate(Memory, sizeof(list_head), true);
 	ListHead->UsingFixedMemory = true;
 	InitList(ListHead, DataSize);
 
@@ -88,19 +88,20 @@ list_head* CreateListFixed(memory_arena *Memory, uint32 DataSize, int32 Count)
 
 list_head* CreateList(memory_arena *Memory, uint32 DataSize)
 {
-	list_head *ListHead = (list_head *)ArenaAllocate(Memory, sizeof(list_head));
+	list_head *ListHead = (list_head *)ArenaAllocate(Memory, sizeof(list_head), true);
 	InitList(ListHead, DataSize);
 	return (ListHead);
 }
 
 list_link* AllocateLink(memory_arena *Memory, void* Data, uint32 DataSize,
                         fixed_allocator::memory* FixedDataAlloc,
-                        fixed_allocator::memory* FixedLinkAlloc
+                        fixed_allocator::memory* FixedLinkAlloc,
+						bool32 UsingFixedMem
                        )
 {
 	list_link *NewLink = {};
 	void* NewData = {};
-	if (FixedDataAlloc->BlocksCount != 0) {
+	if (FixedDataAlloc->BlocksCount != 0 && UsingFixedMem) {
 		NewLink = (list_link*)fixed_allocator::Alloc(FixedLinkAlloc);
 		NewData = fixed_allocator::Alloc(FixedDataAlloc);
 	} else {
@@ -118,7 +119,7 @@ void* AddLink(list_head *Head, void* Data, memory_arena *Memory)
 {
 	Assert(Head != GameNull);
 
-	list_link *NewLink = AllocateLink(Memory, Data, Head->DataSize, &Head->FixedDataMemory, &Head->FixedLinkMemory);
+	list_link *NewLink = AllocateLink(Memory, Data, Head->DataSize, &Head->FixedDataMemory, &Head->FixedLinkMemory, Head->UsingFixedMemory);
 
 	if (Head->LinkCount != 0) {
 		Head->BottomLink->NextLink = NewLink;
@@ -142,7 +143,7 @@ void InsertLink(list_head *Head, uint32 InsertionIndex, void* Data, memory_arena
 	if (InsertionIndex == Head->LinkCount - 1) {
 		if (Head->LinkCount == 1) {
 
-			list_link *NewLink = AllocateLink(Memory, Data, Head->DataSize, &Head->FixedDataMemory, &Head->FixedLinkMemory);
+			list_link *NewLink = AllocateLink(Memory, Data, Head->DataSize, &Head->FixedDataMemory, &Head->FixedLinkMemory, Head->UsingFixedMemory);
 
 			Head->LinkCount++;
 			Head->ArrayValid = false;
@@ -156,7 +157,7 @@ void InsertLink(list_head *Head, uint32 InsertionIndex, void* Data, memory_arena
 		}
 	}
 
-	list_link *NewLink = AllocateLink(Memory, Data, Head->DataSize, &Head->FixedDataMemory, &Head->FixedLinkMemory);
+	list_link *NewLink = AllocateLink(Memory, Data, Head->DataSize, &Head->FixedDataMemory, &Head->FixedLinkMemory, Head->UsingFixedMemory);
 
 	Head->LinkCount++;
 	Head->ArrayValid = false;

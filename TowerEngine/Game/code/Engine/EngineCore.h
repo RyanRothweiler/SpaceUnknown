@@ -137,6 +137,8 @@ namespace platform {
 
 platform::api PlatformApi;
 
+#include <cstdio>
+
 #include "Logging.cpp"
 #include "MemoryManager.cpp"
 #include "String.cpp"

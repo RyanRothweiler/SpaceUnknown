@@ -261,9 +261,7 @@ namespace save_data {
 	void Write(char* FileDest, meta_member* MetaInfo, uint32 MetaInfoCount, void* Data, member* Root)
 	{
 		Direction = direction::write;
-
 		ClearMemory((uint8*)Root, sizeof(member));
-
 		AddMembers(Root, "", MetaInfo, MetaInfoCount, Data);
 
 		PlatformApi.WriteFile(FileDest, (void*)Root, sizeof(member));

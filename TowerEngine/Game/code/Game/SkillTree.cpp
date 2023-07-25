@@ -36,9 +36,9 @@ void SkillTreeNodeLoad(char* FilePath, state* State)
 	);
 }
 
-void SkillTreeNodeSave(skill_node * Node)
+// SaveData write clears the memory so we can use the same root for all nodes
+void SkillTreeNodeSave(skill_node * Node, save_data::member* Root)
 {
-	save_data::member* Root = (save_data::member*)ArenaAllocate(GlobalTransMem, sizeof(save_data::member));
 	string Path = "T:/Game/assets/SkillTreeNodes/" + string{Node->Persist.ID} + ".skill_node";
 	save_data::Write(
 	    Path.Array(),
@@ -51,8 +51,9 @@ void SkillTreeNodeSave(skill_node * Node)
 
 void SkillTreeSaveAll(state * State)
 {
+	save_data::member* Root = (save_data::member*)ArenaAllocate(GlobalTransMem, sizeof(save_data::member));
 	for (int i = 0; i < State->SkillNodesCount; i++) {
-		SkillTreeNodeSave(&State->SkillNodes[i]);
+		SkillTreeNodeSave(&State->SkillNodes[i], Root);
 	}
 }
 
