@@ -1123,7 +1123,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 				real32 RadiusMax = 2;
 				if (Node->Unlocked) {
-					RadiusMax = 3;
+					//RadiusMax = 3;
 					Color = COLOR_WHITE;
 				}
 				Node->CircleRadius = Lerp(Node->CircleRadius, RadiusMax, 0.25f);

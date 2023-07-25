@@ -394,10 +394,11 @@ string recipe_id_NAME[] {
 "ship_advent",
 "sm_salvager_i",
 "cargo_expansion_i",
+"asteroid_miner_i",
 "count",
 "none",
 }; 
-#define gen_recipe_id_count 6 
+#define gen_recipe_id_count 7 
  
 meta_member color_persistent_META[] { 
 {meta_member_type::real32, "real32", "R", (uint64)&((color_persistent *)0)->R, 0, sizeof(real32),{},{},{},{},{}},
@@ -822,9 +823,10 @@ return json::FillStruct(JsonData, KeyParent, &save_file_META[0], ArrayCount(save
 string station_service_NAME[] { 
 "refinery",
 "shipyard",
+"manufacturing",
 "count",
 }; 
-#define gen_station_service_count 3 
+#define gen_station_service_count 4 
  
 string recipe_member_type_NAME[] { 
 "item",

@@ -66,12 +66,12 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelRateMassPerSecond = 0.5f;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Mass = 200;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].RadarRadius = 75;
-		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelTankMassLimit = 300;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelTankMassLimit = 150;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].HoldMass = 20;
-		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotsCount = 4;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotsCount = 3;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[0] = ship_module_slot_type::industrial;
-		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[2] = ship_module_slot_type::structural;
-		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[3] = ship_module_slot_type::science;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[1] = ship_module_slot_type::structural;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[2] = ship_module_slot_type::science;
 	}
 
 	// Items
@@ -120,15 +120,15 @@ void CreateDefinitions()
 
 	// Recipes
 	{
-		Assert(ArrayCount(Globals->AssetsList.RecipeDefinitions) > (int)recipe_id::count);
-		Assert(ArrayCount(Globals->AssetsList.RecipesByService) > (int)station_service::count);
-		Assert(ArrayCount(Globals->AssetsList.RecipesByService[0].IDs) > (int)recipe_id::count);
+		static_assert(ArrayCount(Globals->AssetsList.RecipeDefinitions) > (int)recipe_id::count, "Recipe definitions asset not large enough.");
+		static_assert(ArrayCount(Globals->AssetsList.RecipesByService) > (int)station_service::count, "Recipes by service not large enough.");
+		static_assert(ArrayCount(Globals->AssetsList.RecipesByService[0].IDs) > (int)recipe_id::count, "Service ids array not large enough");
 
 		// venigen_stl
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].ID = recipe_id::venigen_stl;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterInput(item_id::venigen, 5.0f);
-		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterOutput(item_id::stl, 1.0f);
-		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].DurationMS = MinutesToMilliseconds(60);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].RegisterOutput(item_id::stl, 15.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].DurationMS = MinutesToMilliseconds(1);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].ServiceRequired = station_service::refinery;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::venigen_stl].Icon = assets::GetImage("Icon_STL");
 
@@ -136,25 +136,34 @@ void CreateDefinitions()
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].ID = recipe_id::ship_advent;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].RegisterInput(item_id::venigen, 5.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].RegisterOutput(ship_id::advent, 1.0f);
-		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].DurationMS = MinutesToMilliseconds(60);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].DurationMS = HoursToMilliseconds(10);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].ServiceRequired = station_service::shipyard;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].Icon = assets::GetImage("Ship_Advent");
 
 		// sm_salvager_i
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].ID = recipe_id::sm_salvager_i;
-		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].RegisterInput(item_id::venigen, 5.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].RegisterInput(item_id::pyrexium, 20.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].RegisterOutput(item_id::sm_salvager_i, 1.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].DurationMS = MinutesToMilliseconds(60);
-		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].ServiceRequired = station_service::refinery;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].ServiceRequired = station_service::manufacturing;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].Icon = 
 				Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::salvager_i];
 
+		// asteroid_miner_i
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_i].ID = recipe_id::asteroid_miner_i;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_i].RegisterInput(item_id::pyrexium, 20.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_i].RegisterOutput(item_id::sm_asteroid_miner, 1.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_i].DurationMS = MinutesToMilliseconds(60);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_i].ServiceRequired = station_service::manufacturing;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_i].Icon = 
+				Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner];
+
 		// cargo_expansion_i
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::cargo_expansion_i].ID = recipe_id::cargo_expansion_i;
-		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::cargo_expansion_i].RegisterInput(item_id::venigen, 5.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::cargo_expansion_i].RegisterInput(item_id::pyrexium, 20.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::cargo_expansion_i].RegisterOutput(item_id::cargo_expansion_i, 1.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::cargo_expansion_i].DurationMS = MinutesToMilliseconds(60);
-		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::cargo_expansion_i].ServiceRequired = station_service::refinery;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::cargo_expansion_i].ServiceRequired = station_service::manufacturing;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::cargo_expansion_i].Icon = 
 				Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::cargo_expansion_i];
 

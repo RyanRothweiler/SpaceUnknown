@@ -246,6 +246,11 @@ void StationSelected(selection * Sel, engine_state * EngineState, game_input * I
 			StationProductionService(CurrentStation, 1, station_service::refinery);
 			ImGui::TreePop();
 		}
+
+		if (ImGui::TreeNode("Manufacturing")) {
+			StationProductionService(CurrentStation, 2, station_service::manufacturing);
+			ImGui::TreePop();
+		}
 	}
 
 
@@ -315,6 +320,9 @@ void StationSetup(station* Station, station_persistent* Persist, state* State)
 
 	RegisterStepper(&Station->Converters[1].Stepper, &ConverterUpdate, (void*)(&Station->Converters[1]), State);
 	Station->Converters[1].Setup(Station, &Station->Persist->Converters[1]);
+
+	RegisterStepper(&Station->Converters[2].Stepper, &ConverterUpdate, (void*)(&Station->Converters[2]), State);
+	Station->Converters[2].Setup(Station, &Station->Persist->Converters[2]);
 
 	per::AddSource(Station->Persist->GUID, Station, State);
 }

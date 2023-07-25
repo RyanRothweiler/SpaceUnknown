@@ -1,5 +1,5 @@
 MetaStruct enum class station_service {
-	refinery, shipyard,
+	refinery, shipyard, manufacturing,
 	count
 };
 
@@ -58,6 +58,6 @@ struct recipe {
 };
 
 struct recipe_list {
-	recipe_id IDs[100];
+	recipe_id IDs[10];
 	int32 Count;
 };

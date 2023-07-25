@@ -15,6 +15,7 @@
 #define Gigabytes(value) (Megabytes(value) * 1024LL)
 #define Terrabytes(value) (Gigabytes(value) * 1024LL)
 
+#define HoursToMilliseconds(value) (value * 1000.0f * 60.0f * 60.0f)
 #define MinutesToMilliseconds(value) (value * 1000.0f * 60.0f)
 #define SecondsToMilliseconds(value) (value * 1000.0f)
 
