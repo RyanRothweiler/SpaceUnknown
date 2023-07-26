@@ -33,7 +33,9 @@ struct skill_node {
 
 	skill_node* Children[10];
 	int32 ChildrenCount;
-	skill_node* Parent;
+
+	skill_node* Parent[10];
+	int32 ParentsCount;
 
 	static_assert(ArrayCount(Children) == ArrayCount(Persist.ChildrenIDs), "Persistent and children array lengths must match.");
 
@@ -45,7 +47,9 @@ struct skill_node {
 		ChildrenCount++;
 		Assert(ChildrenCount < ArrayCount(Children));
 
-		Child->Parent = this;	
+		Child->Parent[Child->ParentsCount] = this;	
+		Child->ParentsCount++;
+		Assert(Child->ParentsCount < ArrayCount(Child->Parent));
 	}
 
 	// This assumes only one recipe is being unlocked
@@ -57,5 +61,15 @@ struct skill_node {
 		}
 
 		return recipe_id::none;
+	}
+
+	bool32 ParentUnlocked() {
+		for (int i = 0; i < ParentsCount; i++) {
+			if (Parent[i]->Unlocked) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 };

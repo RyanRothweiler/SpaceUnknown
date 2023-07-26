@@ -1116,7 +1116,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				if (!Node->Unlocked) {
 					Color.A = 0.3f;
 				}
-				if (Node->Parent == GameNull || Node->Parent->Unlocked) {
+				if (Node->Parent == GameNull || Node->ParentUnlocked()) {
 					Color.A = 0.5f;
 					Size = Size * 1.1f;
 				}
@@ -1151,8 +1151,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			static skill_node* NodeSelected = {};
 
 			if (NodeSelected == GameNull && State->NodeHovering != GameNull) {
-				if (!State->NodeHovering->Unlocked && 
-					(State->NodeHovering->Parent == GameNull || State->NodeHovering->Parent->Unlocked)) { 
+				if (!State->NodeHovering->Unlocked && State->NodeHovering->ParentUnlocked()) { 
 					State->NodeHovering->CircleRadius = 4;
 				}
 

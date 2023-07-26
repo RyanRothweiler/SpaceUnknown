@@ -97,10 +97,5 @@ bool32 SkillNodeCanUnlock(skill_node* Node) {
 		return false; 
 	}
 
-	// Can only unlock if parent is unlocked, if parent does exist
-	if (Node->Parent != GameNull && !Node->Parent->Unlocked) { 
-		return false;
-	}
-
-	return true;
+	return Node->ParentUnlocked();
 }
