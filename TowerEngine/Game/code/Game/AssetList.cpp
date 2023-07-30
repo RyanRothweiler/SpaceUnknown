@@ -370,6 +370,7 @@ namespace assets {
 			{"Icon_STL", 			"Icons/Icon_STL.png", 				gl_blend_type::linear, correct_gamma::no},
 
 			{"Icon_ShipModule_AsteroidMiner", 		"Icons/Icon_ShipModule_AsteroidMiner.png", 			gl_blend_type::linear, correct_gamma::no},
+			{"Icon_ShipModule_Formean_I",	 		"Icons/Icon_ShipModule_Foreman_I.png",				gl_blend_type::linear, correct_gamma::no},
 			{"Icon_ShipModule_Salvager", 			"Icons/Icon_ShipModule_Salvager.png", 				gl_blend_type::linear, correct_gamma::no},
 			{"Icon_ShipModule_Cargo_Expansion_I", 	"Icons/Icon_ShipModule_CargoExpansion_I.png", 		gl_blend_type::linear, correct_gamma::no},
 

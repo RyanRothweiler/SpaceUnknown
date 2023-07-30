@@ -53,6 +53,33 @@ void StepUniverse(state* State, real64 TimeMS)
 		}
 	}
 
+	// Update ship bonus state
+	{
+		// Clear old state
+		for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
+			ship* Ship = &State->Ships[i];
+
+			// Clear old state
+			Ship->IndustrialActivationReduction = 0;
+		}
+
+		// Update state
+		for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
+			ship* Ship = &State->Ships[i];
+			for (int m = 0; m < ArrayCount(Ship->EquippedModules); m++) {
+				ship_module* Module = &Ship->EquippedModules[m];
+				if (Module->Persist->Filled) {
+					/*
+					if (Module->Persist->ID = ) {
+
+						//Ship->IndustrialActivationReduction = 0;
+					}
+					*/
+				}
+			}
+		}
+	}
+
 	// Step everything
 	for (int i = 0; i < State->SteppersCount; i++) {
 		stepper* Stepper = State->Steppers[i];
@@ -167,6 +194,9 @@ void SaveGame(state* State, save_data::member* Root)
 #include "Ship.cpp"
 #include "SkillTree.cpp"
 
+#include "ModuleAsteroidMiner.cpp"
+#include "ModuleSalvager.cpp"
+
 #include "Definitions.cpp"
 
 void LoadGame(state* State)
@@ -269,6 +299,12 @@ void LoadGame(state* State)
 		StepUniverse(State, State->ForwardSimulatingTimeRemaining);
 
 		State->ForwardSimulating = false;
+	} else {
+
+		// Once evrythig is setup. Initialize more only for first setup.
+
+		ItemGive(&State->Ships[0].FuelTank, item_id::stl, 200);
+
 	}
 	ConsoleLog("Finished");
 }

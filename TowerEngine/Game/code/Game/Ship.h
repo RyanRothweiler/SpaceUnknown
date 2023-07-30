@@ -56,6 +56,8 @@ struct ship {
 
 	vector2 Size;
 
+	r64 IndustrialActivationReduction;
+
 	stepper Stepper;
 
 	// Use method to get this most updated

@@ -15,6 +15,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner] = assets::GetImage("Icon_ShipModule_AsteroidMiner");
 		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::salvager_i] = assets::GetImage("Icon_ShipModule_Salvager");
 		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::cargo_expansion_i] = assets::GetImage("Icon_ShipModule_Cargo_Expansion_I");
+		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::foreman_i] = assets::GetImage("Icon_ShipModule_Formean_I");
 
 		// Verify we have setup all the icons
 		for (int i = 0; i < gen_ship_module_id_count; i++) {
@@ -50,6 +51,12 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationRange = 10.0f;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].SlotType = ship_module_slot_type::science;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationStepMethod = &ModuleUpdateSalvager;
+	
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ID = ship_module_id::foreman_i;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ItemID = item_id::foreman_i;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].DisplayName = "Foreman I";
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ActivationRange = 10.0f;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].SlotType = ship_module_slot_type::science;
 
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].ID = ship_module_id::cargo_expansion_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].ItemID = item_id::cargo_expansion_i;
@@ -111,6 +118,13 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].Mass = 1;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].Icon = 
 			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::cargo_expansion_i];
+
+		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].ID = item_id::foreman_i;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].DisplayName = "Forman I";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].ShipModuleID = ship_module_id::foreman_i;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].Mass = 1;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].Icon = 
+			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::foreman_i];
 
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].ID = item_id::stl;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].DisplayName = "STL Fuel";

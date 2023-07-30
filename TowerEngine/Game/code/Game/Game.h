@@ -120,6 +120,7 @@ MetaStruct enum class ship_module_id {
 	asteroid_miner			= 1,
 	salvager_i				= 2,
 	cargo_expansion_i		= 3,
+	foreman_i				= 4,
 };
 
 // ITEM ------------------------------------------------------------------------
@@ -132,6 +133,7 @@ MetaStruct enum class item_id {
 	sm_asteroid_miner 		= 3,
 	sm_salvager_i 			= 4,
 	cargo_expansion_i		= 5,
+	foreman_i				= 6,
 };
 
 struct item_definition {

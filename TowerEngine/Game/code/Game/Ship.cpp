@@ -259,122 +259,42 @@ void ShipStep(void* SelfData, real64 Time, state* State)
 	}
 }
 
+struct ships_list {
+	ship_persistent* List[100];
+	int32 ListCount;
+};
+
+ships_list GetShipsWithinRadius(vector2 Position, r32 Radius, state* State) {
+	ships_list Ret = {};
+
+	for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
+		if (Vector2Distance(Position, State->PersistentData.Ships[i].Position) < Radius) {
+			Ret.List[Ret.ListCount++] = &State->PersistentData.Ships[i];
+			Assert(Ret.ListCount < ArrayCount(Ret.List));
+		}
+	}		
+
+	return Ret;
+}
+
 r64 ModuleGetActivationTime(ship_module_definition* ModDef) {
 
 	r64 Val = ModDef->ActivationTimeMS; 
-	r64 Mod = 0; 
+	r64 ReductionMS = 0;
 
 	switch (ModDef->SlotType) {
-		case ship_module_slot_type::industrial:
-			Mod = MinutesToMilliseconds(TreeBonusesTotal->IndustrialActivationTimeMinutes);
+		case ship_module_slot_type::industrial: {
+
+			// skill tree
+			ReductionMS = MinutesToMilliseconds(TreeBonusesTotal->IndustrialActivationTimeMinutes);
+
+		}
 	}
 
-	Val = Val - Mod;
+	Val = Val - ReductionMS;
 	Val = ClampValue((r64)0, (r64)ModDef->ActivationTimeMS, (r64)Val);
 
 	return Val;
-}
-
-void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
-{
-	ship_module* Module = (ship_module*)SelfData;
-	ship* Owner = per::GetShip(&Module->Persist->Owner, State);
-
-	WorldTargetClear(&Module->Persist->Target);
-
-	bool32 Skip = false;
-
-	// If no cargo space then do nothing
-	if (Owner->Hold.MassCurrent == Owner->Hold.GetMassLimit()) { Skip = true; }
-
-	// Can only work when the ship is idle
-	if (Owner->Persist->Status != ship_status::idle) { Skip = true; }
-
-	if (Skip) {
-		Module->Persist->ActivationTimerMS = 0.0f;
-		return;
-	}
-
-	for (int i = 0; i < State->PersistentData.AsteroidClustersCount && !WorldTargetHasTarget(&Module->Persist->Target); i++) {
-		asteroid_cluster* Cluster = &State->AsteroidClusters[i];
-		for (int a = 0; a < ArrayCount(Cluster->Asteroids) && !WorldTargetHasTarget(&Module->Persist->Target); a++) {
-			asteroid* Roid = &Cluster->Asteroids[a];
-			if (Roid->Persist->Using) {
-				real64 Dist = Vector2Distance(Roid->Persist->WorldObject.Position, Owner->Persist->Position);
-				if (Dist < Module->Definition.ActivationRange) {
-					WorldTargetSet(&Module->Persist->Target, Roid);
-				}
-			}
-		}
-	}
-
-	if (WorldTargetHasTarget(&Module->Persist->Target)) {
-		Module->Persist->ActivationTimerMS += Time;
-
-		r64 ActivationTime = ModuleGetActivationTime(&Module->Definition);
-		if (Module->Persist->ActivationTimerMS >= ActivationTime) {
-			Module->Persist->ActivationTimerMS = 0.0f;
-
-			// Do module thing
-
-			asteroid* Roid = WorldTargetGetAsteroid(&Module->Persist->Target, State);
-
-			int Amount = SubtractAvailable(&Roid->Persist->OreCount, 2);
-			ItemGive(&Owner->Hold, Roid->Persist->OreItem, Amount);
-
-			if (Roid->Persist->OreCount <= 0) {
-				AsteroidDestroy(Roid, State);
-			}
-
-		}
-	} else {
-		Module->Persist->ActivationTimerMS = 0.0f;
-	}
-}
-
-void ModuleUpdateSalvager(void* SelfData, real64 Time, state* State)
-{
-	ship_module* Module = (ship_module*)SelfData;
-	ship* Owner = per::GetShip(&Module->Persist->Owner, State);
-
-	WorldTargetClear(&Module->Persist->Target);
-
-	bool32 Skip = false;
-
-	// Can only work when the ship is idle
-	if (Owner->Persist->Status != ship_status::idle) { Skip = true; }
-
-	if (Skip) {
-		Module->Persist->ActivationTimerMS = 0.0f;
-		return;
-	}
-
-	for (int i = 0; i < State->PersistentData.SalvagesCount && !WorldTargetHasTarget(&Module->Persist->Target); i++) {
-		salvage* Sal = &State->Salvages[i];
-
-		real64 Dist = Vector2Distance(Sal->Persist->WorldObject.Position, Owner->Persist->Position);
-		if (Dist < Module->Definition.ActivationRange) {
-			WorldTargetSet(&Module->Persist->Target, Sal);
-		}
-	}
-
-	if (WorldTargetHasTarget(&Module->Persist->Target)) {
-		Module->Persist->ActivationTimerMS += Time;
-		if (Module->Persist->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
-			Module->Persist->ActivationTimerMS = 0.0f;
-
-			// Do module thing
-
-			salvage* Sal = WorldTargetGetSalvage(&Module->Persist->Target, State);
-			int Amount = SubtractAvailable(&Sal->Persist->KnowledgeAmount, 2);
-			State->PersistentData.Knowledge += Amount;
-			if (Sal->Persist->KnowledgeAmount <= 0) {
-				SalvageSpawn(Sal);
-			}
-		}
-	} else {
-		Module->Persist->ActivationTimerMS = 0.0f;
-	}
 }
 
 void OnShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
