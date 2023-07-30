@@ -5,7 +5,8 @@ skill_bonuses SkillBonusesAdd(skill_bonuses A, skill_bonuses B)
 	Ret.FuelForce = A.FuelForce + B.FuelForce;
 	Ret.ShipLimit = A.ShipLimit + B.ShipLimit;
 	Ret.CargoSize = A.CargoSize + B.CargoSize;
-	
+	Ret.IndustrialActivationTimeMinutes = A.IndustrialActivationTimeMinutes + B.IndustrialActivationTimeMinutes;
+
 	for (int i = 0; i < ArrayCount(A.RecipeUnlocked); i++) {
 		Ret.RecipeUnlocked[i] = A.RecipeUnlocked[i] || B.RecipeUnlocked[i];
 	}

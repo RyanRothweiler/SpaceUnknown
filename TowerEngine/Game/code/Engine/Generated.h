@@ -738,15 +738,15 @@ string skill_node_icon_NAME[] {
 "ship_limit",
 "fuel_force",
 "cargo_size",
-"activation_time",
-"yield",
+"industrial_activation_time",
 }; 
-#define gen_skill_node_icon_count 5 
+#define gen_skill_node_icon_count 4 
  
 meta_member skill_bonuses_META[] { 
 {meta_member_type::real32, "real32", "FuelForce", (uint64)&((skill_bonuses *)0)->FuelForce, 0, sizeof(real32),{},{},{},{},{}},
 {meta_member_type::int32, "int32", "ShipLimit", (uint64)&((skill_bonuses *)0)->ShipLimit, 0, sizeof(int32),{},{},{},{},{}},
 {meta_member_type::int32, "int32", "CargoSize", (uint64)&((skill_bonuses *)0)->CargoSize, 0, sizeof(int32),{},{},{},{},{}},
+{meta_member_type::int32, "int32", "IndustrialActivationTimeMinutes", (uint64)&((skill_bonuses *)0)->IndustrialActivationTimeMinutes, 0, sizeof(int32),{},{},{},{},{}},
 {meta_member_type::bool32, "bool32", "RecipeUnlocked", (uint64)&((skill_bonuses *)0)->RecipeUnlocked, recipe_id_count, sizeof(bool32),{},{},{},{},{}},
 }; 
  

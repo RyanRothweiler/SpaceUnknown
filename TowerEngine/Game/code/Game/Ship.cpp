@@ -259,6 +259,22 @@ void ShipStep(void* SelfData, real64 Time, state* State)
 	}
 }
 
+r64 ModuleGetActivationTime(ship_module_definition* ModDef) {
+
+	r64 Val = ModDef->ActivationTimeMS; 
+	r64 Mod = 0; 
+
+	switch (ModDef->SlotType) {
+		case ship_module_slot_type::industrial:
+			Mod = MinutesToMilliseconds(TreeBonusesTotal->IndustrialActivationTimeMinutes);
+	}
+
+	Val = Val - Mod;
+	Val = ClampValue((r64)0, (r64)ModDef->ActivationTimeMS, (r64)Val);
+
+	return Val;
+}
+
 void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 {
 	ship_module* Module = (ship_module*)SelfData;
@@ -294,7 +310,9 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 
 	if (WorldTargetHasTarget(&Module->Persist->Target)) {
 		Module->Persist->ActivationTimerMS += Time;
-		if (Module->Persist->ActivationTimerMS >= Module->Definition.ActivationTimeMS) {
+
+		r64 ActivationTime = ModuleGetActivationTime(&Module->Definition);
+		if (Module->Persist->ActivationTimerMS >= ActivationTime) {
 			Module->Persist->ActivationTimerMS = 0.0f;
 
 			// Do module thing

@@ -373,6 +373,7 @@ namespace assets {
 			{"Icon_ShipModule_Salvager", 			"Icons/Icon_ShipModule_Salvager.png", 				gl_blend_type::linear, correct_gamma::no},
 			{"Icon_ShipModule_Cargo_Expansion_I", 	"Icons/Icon_ShipModule_CargoExpansion_I.png", 		gl_blend_type::linear, correct_gamma::no},
 
+			{"NodeIcon_IndustrialActivationTime",	"NodeIcons/industrial_activation_time.png", 		gl_blend_type::linear, correct_gamma::no},
 			{"NodeIcon_ShipLimit",					"NodeIcons/node_icon_ship_limit.png", 				gl_blend_type::linear, correct_gamma::no},
 			{"NodeIcon_FuelForce",					"NodeIcons/rocket-thruster.png",	 				gl_blend_type::linear, correct_gamma::no},
 			{"NodeIcon_CargoSize",					"NodeIcons/wooden-crate.png",						gl_blend_type::linear, correct_gamma::no},

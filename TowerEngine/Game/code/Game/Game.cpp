@@ -521,6 +521,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 					skill_bonuses* Bonuses = &EditorState->NodeSelected->Persist.BonusAdditions;
 					ImGui::DragFloat("FuelForceAddition", &Bonuses->FuelForce, 0.001f);
+					ImGui::DragInt("IndustrialActivationTimeMinutes", &Bonuses->IndustrialActivationTimeMinutes);
 					ImGui::DragInt("ShipLimit", &Bonuses->ShipLimit, 1);
 					ImGui::DragInt("CargoSize", &Bonuses->CargoSize, 1);
 					if (ImGui::CollapsingHeader("Recipe")) {
@@ -1116,7 +1117,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				if (!Node->Unlocked) {
 					Color.A = 0.3f;
 				}
-				if (Node->Parent == GameNull || Node->ParentUnlocked()) {
+				if (SkillNodeCanUnlock(Node)) {
 					Color.A = 0.5f;
 					Size = Size * 1.1f;
 				}
@@ -1151,7 +1152,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			static skill_node* NodeSelected = {};
 
 			if (NodeSelected == GameNull && State->NodeHovering != GameNull) {
-				if (!State->NodeHovering->Unlocked && State->NodeHovering->ParentUnlocked()) { 
+				if (SkillNodeCanUnlock(State->NodeHovering)) { 
 					State->NodeHovering->CircleRadius = 4;
 				}
 

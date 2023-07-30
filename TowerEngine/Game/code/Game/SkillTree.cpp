@@ -82,6 +82,10 @@ void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
 		ImGui::Text("+%i(t) ship cargo hold mass limit", Bonuses.CargoSize);
 	}
 
+	if (Bonuses.IndustrialActivationTimeMinutes > 0) {
+		ImGui::Text("-%i(m) activation time for industrial modules", Bonuses.IndustrialActivationTimeMinutes);
+	}
+
 	for (int i = 0; i < ArrayCount(Bonuses.RecipeUnlocked); i++) {
 		if (Bonuses.RecipeUnlocked[i]) { 
 			string Disp = "Unlock recipe " + recipe_id_NAME[i];
@@ -95,6 +99,10 @@ bool32 SkillNodeCanUnlock(skill_node* Node) {
 	// Can't unlock twice
 	if (Node->Unlocked) { 
 		return false; 
+	}
+
+	if (Node->ParentsCount == 0) {
+		return true;
 	}
 
 	return Node->ParentUnlocked();
