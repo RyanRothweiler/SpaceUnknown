@@ -431,11 +431,27 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 	ImGui::Dummy(ImVec2(0, 10));
 
+	// Render world module effects that only display when selected
+	{
+		for (int m = 0; m < ArrayCount(CurrentShip->EquippedModules); m++) {
+			ship_module* Module = &CurrentShip->EquippedModules[m];
+			if (Module->Persist->Filled) {
+
+				color Col = Module->Definition.ActivationRangeDisplayColor;
+				Col.A = 0.5f;
+				RenderCircle(CurrentShip->Persist->Position, vector2{Module->Definition.ActivationRange, Module->Definition.ActivationRange},
+				             Col, -1, Globals->GameRenderer, 0.98f);
+			}
+		}
+	}
+
 	if (ImGui::CollapsingHeader("Modules")) {
 		for (int i = 0; i < CurrentShip->Definition.SlotsCount; i++) {
 			ship_module* Module = &CurrentShip->EquippedModules[i];
 
 			if (Module->Persist->Filled != GameNull) {
+
+
 
 				loaded_image* Icon = Globals->AssetsList.ShipModuleIcons[(int)Module->Definition.ID];
 				ImGui::Image(
@@ -693,6 +709,7 @@ ship* ShipCreate(state* State, ship_id Type) {
 
 	Ship->Persist->Type = Type;
 	Ship->Persist->Status = ship_status::idle;
+	Ship->Persist->GUID = PlatformApi.GetGUID();
 
 	ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
 

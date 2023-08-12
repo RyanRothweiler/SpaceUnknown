@@ -9,10 +9,14 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 	bool32 Skip = false;
 
 	// If no cargo space then do nothing
-	if (Owner->Hold.MassCurrent == Owner->Hold.GetMassLimit()) { Skip = true; }
+	if (Owner->Hold.MassCurrent == Owner->Hold.GetMassLimit()) { 
+		Skip = true; 
+	}
 
 	// Can only work when the ship is idle
-	if (Owner->Persist->Status != ship_status::idle) { Skip = true; }
+	if (Owner->Persist->Status != ship_status::idle) { 
+		Skip = true; 
+	}
 
 	if (Skip) {
 		Module->Persist->ActivationTimerMS = 0.0f;

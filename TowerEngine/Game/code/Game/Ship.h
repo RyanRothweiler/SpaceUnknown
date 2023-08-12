@@ -16,7 +16,9 @@ struct ship_module_definition {
 	ship_module_slot_type SlotType;
 	string DisplayName;
 	real64 ActivationTimeMS;
+
 	real64 ActivationRange;
+	color ActivationRangeDisplayColor;
 
 	int32 CargoAddition;
 };

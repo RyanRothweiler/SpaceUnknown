@@ -33,8 +33,12 @@ struct item_hold {
 		Type = TY;
 
 		MassLimitBase = ML;
-		Persist->GUID = PlatformApi.GetGUID();
 		MassChanged.RegisterConsumer();
+
+		// Maybe this can be moved to only happen once on initialize? This if does the same thing but maybe kinda janky
+		if (Persist->GUID == 0) {
+			Persist->GUID = PlatformApi.GetGUID();
+		}
 	}
 
 	void ConsumeFuel(real64 Count)

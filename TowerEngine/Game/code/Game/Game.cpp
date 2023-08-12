@@ -68,13 +68,11 @@ void StepUniverse(state* State, real64 TimeMS)
 			ship* Ship = &State->Ships[i];
 			for (int m = 0; m < ArrayCount(Ship->EquippedModules); m++) {
 				ship_module* Module = &Ship->EquippedModules[m];
-				if (Module->Persist->Filled) {
-					/*
-					if (Module->Persist->ID = ) {
 
-						//Ship->IndustrialActivationReduction = 0;
-					}
-					*/
+				// forman bonuses
+				if (Module->Persist->Filled && Module->Definition.ID == ship_module_id::foreman_i) {
+					//ships_list ShipsWithin = GetShipsWithinRadius(Ship->Persist->Position, Module->Definition->ActivationRange, State);
+
 				}
 			}
 		}
@@ -302,7 +300,6 @@ void LoadGame(state* State)
 	} else {
 
 		// Once evrythig is setup. Initialize more only for first setup.
-
 		ItemGive(&State->Ships[0].FuelTank, item_id::stl, 200);
 
 	}
@@ -477,10 +474,26 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			}
 
 			ImGui::Separator();
-
 			if (ImGui::Button("Item Window")) { EditorState->ItemWindowOpen = !EditorState->ItemWindowOpen; }
-			ImGui::SameLine();
+			if (ImGui::Button("Ship Window")) { EditorState->ShipWindowOpen = !EditorState->ShipWindowOpen; }
 			if (ImGui::Button("Skill Node Window")) { EditorState->SkillNodeWindowOpen = !EditorState->SkillNodeWindowOpen; }
+			ImGui::Separator();
+
+			if (EditorState->ShipWindowOpen) {
+				ImGui::Begin("Ship Window");
+				for (int i = 0; i < gen_ship_id_count; i++) {
+					ImGui::Text("Create New Ship");
+					if (ImGui::Button(ship_id_NAME[i].Array())) {
+						ship* Ship = ShipCreate(State, (ship_id)i);
+							
+						// change this to use the correct persistent data index? use the next one?? redo this so its not so confusing
+						ShipSetup(Ship, Ship->Persist, State);
+
+						ItemGive(&Ship->FuelTank, item_id::stl, 200);
+					}	
+				}
+				ImGui::End();
+			}
 
 			if (EditorState->SkillNodeWindowOpen) {
 				ImGui::Begin("Skill Node Window");

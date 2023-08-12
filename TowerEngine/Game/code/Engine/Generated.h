@@ -473,9 +473,8 @@ return json::FillStruct(JsonData, KeyParent, &world_object_META[0], ArrayCount(w
 
 string ship_id_NAME[] { 
 "advent",
-"count",
 }; 
-#define gen_ship_id_count 2 
+#define gen_ship_id_count 1 
  
 string ship_status_NAME[] { 
 "idle",

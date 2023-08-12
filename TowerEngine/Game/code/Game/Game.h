@@ -211,8 +211,7 @@ MetaStruct struct world_object {
 
 // TODO rename this to ship_type
 MetaStruct enum class ship_id {
-	advent,
-	count
+	advent, 
 };
 
 MetaStruct enum class ship_status {
@@ -428,6 +427,7 @@ struct editor_state {
 	bool32 EditorMode;
 
 	bool32 ItemWindowOpen;
+	bool32 ShipWindowOpen;
 
 	item_hold_persistent DebugHoldPersist;
 	item_hold DebugHold;
