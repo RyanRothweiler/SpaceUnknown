@@ -131,8 +131,7 @@ void RenderRectangleOutline(rect Rect, real64 OutlineSize, color Color, real64 R
 	InsertRenderCommand(UIRenderer, &RendCommand);
 }
 
-void RenderCircle(vector2 Center, vector2 Size, color Color, real64 RenderOrder, renderer* UIRenderer,
-					r32 RingSize = 0.0f)
+void RenderCircle(vector2 Center, vector2 Size, color Color, real64 RenderOrder, renderer* UIRenderer)
 {
 	static shader* Shader = assets::GetShader("ScreenDrawCircle");
 
@@ -175,12 +174,16 @@ void RenderCircle(vector2 Center, vector2 Size, color Color, real64 RenderOrder,
 
 	RendCommand.Uniforms = RendCommand.Shader.Uniforms.Copy(GlobalTransMem);
 	RendCommand.Uniforms.SetVec4("color", v4{Color.R, Color.G, Color.B, Color.A});
-	RendCommand.Uniforms.SetFloat("ringSize", RingSize);
 	RendCommand.Uniforms.SetMat4("model", m4y4Identity());
 	RendCommand.Uniforms.SetMat4("projection", m4y4Transpose(UIRenderer->Camera->ProjectionMatrix));
 	RendCommand.Uniforms.SetMat4("view", m4y4Transpose(UIRenderer->Camera->ViewMatrix));
 
 	InsertRenderCommand(UIRenderer, &RendCommand);
+}
+
+void RenderCircleOutline(vector2 Center, vector2 Size, color Color, real64 Thickness, real64 RenderOrder, renderer* UIRenderer) {
+	RenderCircle(Center, Size, Color, RenderOrder, UIRenderer);
+	RenderCircle(Center, vector2{Size.X - Thickness, Size.Y - Thickness}, COLOR_BLACK, RenderOrder + 0.01f, UIRenderer);
 }
 
 void RenderRectangle(vector2 Center, vector2 Size, color Color, real64 RenderOrder, renderer* UIRenderer)

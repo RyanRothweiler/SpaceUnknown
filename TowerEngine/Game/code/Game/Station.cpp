@@ -44,7 +44,7 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 
 					for (int h = 0; h < ArrayCount(Source->Persist->Items); h++) {
 						if (Source->Persist->Items[h].ID == C->ItemID) {
-							Source->Persist->Items[h].Count -= C->Count;
+							ItemHoldConsumeItem(Source, h, C->Count);
 						}
 					}
 				}
@@ -181,7 +181,6 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 			string dur = Humanize((int64)MillisecondsToMinutes(Recipe->DurationMS)) + "(m)";
 			static bool sel = false;
 			if (ImGui::Selectable(dur.Array(), &sel, ImGuiSelectableFlags_SpanAllColumns, ImVec2(0, ImGuiImageSize.x))) {
-				//RecipeIDSelected = ID;
 				ConverterAddOrder(Converter, ID);
 				ImGui::CloseCurrentPopup();
 				sel = false;

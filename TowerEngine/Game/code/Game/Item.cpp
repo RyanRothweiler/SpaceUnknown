@@ -42,6 +42,20 @@ real64 ItemStackGive(item_hold* Hold, item_instance_persistent* Inst, item_defin
 	}
 }
 
+void ItemHoldConsumeItem(item_hold* Hold, int ItemIndex, real64 Count) { 
+	Assert(ItemIndex >= 0);
+	Assert(ArrayCount(Hold->Persist->Items) > ItemIndex);
+
+	Hold->Persist->Items[ItemIndex].Count -= Count;
+
+	// Cannot go below 0
+	if (Hold->Persist->Items[ItemIndex].Count < 0) {
+		Hold->Persist->Items[ItemIndex].Count = 0;
+	}
+
+	ItemHoldUpdateMass(Hold);
+}
+
 // returns amount given
 real64 ItemGive(item_hold* Hold, item_id ItemID, real64 Count)
 {
@@ -123,6 +137,9 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 		string ChildID = string{"itemchild"} + string{Hold->Persist->GUID};
 		ImGui::BeginChild(ChildID.Array(), ImVec2(0, 300), true, ImGuiWindowFlags_None);
 
+		static int ItemDestroying = -1;
+		bool OpenDestroyPopup = false;
+
 		for (int i = 0; i < ArrayCount(Hold->Persist->Items); i++) {
 
 			ImGui::PushID(i);
@@ -141,6 +158,15 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 				    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
 				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
 				);
+
+				if (ImGui::BeginPopupContextItem("item context menu")) {
+					if (ImGui::MenuItem("Detroy Item")) { 
+						ImGui::CloseCurrentPopup();
+						ItemDestroying = i;
+						OpenDestroyPopup = true;
+					}
+					ImGui::EndPopup();
+				}
 
 				if (CanTransfer && ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
 					State->ItemDragging = Item;
@@ -205,6 +231,24 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 			}
 
 			ImGui::EndDragDropTarget();
+		}
+
+		// destroy popup
+		static char* DestroyAcceptWindow = "Destory";
+		if (OpenDestroyPopup) { ImGui::OpenPopup(DestroyAcceptWindow); }
+		if (ImGui::BeginPopupModal(DestroyAcceptWindow)) {
+			ImGui::Text("Really destroy this item?");
+
+			real32 HW = ImGui::GetWindowContentRegionWidth();
+			if (ImGui::Button("Yes", ImVec2(HW * 0.5f, 0.0f))) {
+				ItemHoldConsumeItem(Hold, ItemDestroying, Hold->Persist->Items[ItemDestroying].Count);
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("No", ImVec2(HW * 0.5f, 0.0f))) {
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
 		}
 
 		ImGui::PopStyleColor();

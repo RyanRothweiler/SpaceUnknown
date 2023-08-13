@@ -439,8 +439,8 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 				color Col = Module->Definition.ActivationRangeDisplayColor;
 				Col.A = 0.5f;
-				RenderCircle(CurrentShip->Persist->Position, vector2{Module->Definition.ActivationRange, Module->Definition.ActivationRange},
-				             Col, -1, Globals->GameRenderer, 0.98f);
+				RenderCircleOutline(CurrentShip->Persist->Position, vector2{Module->Definition.ActivationRange, Module->Definition.ActivationRange},
+				             Col, 1, -10 - m, Globals->GameRenderer);
 			}
 		}
 	}
