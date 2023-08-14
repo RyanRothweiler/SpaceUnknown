@@ -21,6 +21,12 @@ struct ship_module_definition {
 	color ActivationRangeDisplayColor;
 
 	int32 CargoAddition;
+
+	union {
+		struct {
+			real32 ReductionMinutes;
+		} Foreman;
+	};
 };
 
 struct ship_module {
@@ -58,7 +64,8 @@ struct ship {
 
 	vector2 Size;
 
-	r64 IndustrialActivationReduction;
+	// Set anywhere outside this 
+	r64 IndustrialActivationReductionMinutes;
 
 	stepper Stepper;
 
@@ -66,6 +73,11 @@ struct ship {
 	real64 CurrentMassTotal;
 };
 
+
+struct ships_list {
+	ship* List[100];
+	int32 ListCount;
+};
 
 void ShipUpdateMass(ship* Ship);
 void ShipRemoveModule(ship_module* Module, state* State);

@@ -259,25 +259,8 @@ void ShipStep(void* SelfData, real64 Time, state* State)
 	}
 }
 
-struct ships_list {
-	ship_persistent* List[100];
-	int32 ListCount;
-};
-
-ships_list GetShipsWithinRadius(vector2 Position, r32 Radius, state* State) {
-	ships_list Ret = {};
-
-	for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
-		if (Vector2Distance(Position, State->PersistentData.Ships[i].Position) < Radius) {
-			Ret.List[Ret.ListCount++] = &State->PersistentData.Ships[i];
-			Assert(Ret.ListCount < ArrayCount(Ret.List));
-		}
-	}		
-
-	return Ret;
-}
-
-r64 ModuleGetActivationTime(ship_module_definition* ModDef) {
+// Time needed for the module to activate
+r64 ModuleGetActivationTime(ship_module_definition* ModDef, ship* Ship) {
 
 	r64 Val = ModDef->ActivationTimeMS; 
 	r64 ReductionMS = 0;
@@ -286,8 +269,10 @@ r64 ModuleGetActivationTime(ship_module_definition* ModDef) {
 		case ship_module_slot_type::industrial: {
 
 			// skill tree
-			ReductionMS = MinutesToMilliseconds(TreeBonusesTotal->IndustrialActivationTimeMinutes);
+			ReductionMS += MinutesToMilliseconds(TreeBonusesTotal->IndustrialActivationTimeMinutes);
 
+			// outside influence
+			ReductionMS += MinutesToMilliseconds(Ship->IndustrialActivationReductionMinutes);
 		}
 	}
 
@@ -432,7 +417,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	ImGui::Dummy(ImVec2(0, 10));
 
 	// Render world module effects that only display when selected
-	{
+	if (CurrentShip->Persist->Status != ship_status::docked) {
 		for (int m = 0; m < ArrayCount(CurrentShip->EquippedModules); m++) {
 			ship_module* Module = &CurrentShip->EquippedModules[m];
 			if (Module->Persist->Filled) {
@@ -440,7 +425,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				color Col = Module->Definition.ActivationRangeDisplayColor;
 				Col.A = 0.5f;
 				RenderCircleOutline(CurrentShip->Persist->Position, vector2{Module->Definition.ActivationRange, Module->Definition.ActivationRange},
-				             Col, 1, -10 - m, Globals->GameRenderer);
+				             Col, 0.5, -10 - m, Globals->GameRenderer);
 			}
 		}
 	}
@@ -450,8 +435,6 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 			ship_module* Module = &CurrentShip->EquippedModules[i];
 
 			if (Module->Persist->Filled != GameNull) {
-
-
 
 				loaded_image* Icon = Globals->AssetsList.ShipModuleIcons[(int)Module->Definition.ID];
 				ImGui::Image(
@@ -487,8 +470,18 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				ImGui::BeginGroup();
 
 				ImGui::Text(Module->Definition.DisplayName.Array());
-				float Progress = (float)(Module->Persist->ActivationTimerMS / Module->Definition.ActivationTimeMS);
+				float Progress = (float)(Module->Persist->ActivationTimerMS / ModuleGetActivationTime(&Module->Definition, CurrentShip));
 				ImGui::ProgressBar(Progress, ImVec2(-1.0f, 1.0f));
+
+				if (Module->Definition.ActivationTimeMS > 0) {
+					if (Module->Persist->ActivationTimerMS > 0) {
+						r64 MSRemaining = ModuleGetActivationTime(&Module->Definition, CurrentShip) - Module->Persist->ActivationTimerMS;
+						r64 MinutesRemaining = (r64)MillisecondsToMinutes(MSRemaining);
+						ImGui::Text("%.2lf minutes remaining ", MinutesRemaining);
+					} else {
+						ImGui::Text("Not Running");
+					}
+				}
 
 				ImGui::EndGroup();
 			} else {

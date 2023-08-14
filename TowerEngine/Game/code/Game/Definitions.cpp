@@ -59,6 +59,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ActivationRange = 100.0f;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ActivationRangeDisplayColor = COLOR_PURPLE;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].SlotType = ship_module_slot_type::science;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].Foreman.ReductionMinutes = 5;
 
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].ID = ship_module_id::cargo_expansion_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].ItemID = item_id::cargo_expansion_i;

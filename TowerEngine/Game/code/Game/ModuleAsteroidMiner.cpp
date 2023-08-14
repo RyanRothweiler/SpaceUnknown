@@ -39,7 +39,7 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 	if (WorldTargetHasTarget(&Module->Persist->Target)) {
 		Module->Persist->ActivationTimerMS += Time;
 
-		r64 ActivationTime = ModuleGetActivationTime(&Module->Definition);
+		r64 ActivationTime = ModuleGetActivationTime(&Module->Definition, Owner);
 		if (Module->Persist->ActivationTimerMS >= ActivationTime) {
 			Module->Persist->ActivationTimerMS = 0.0f;
 

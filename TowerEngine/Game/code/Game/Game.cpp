@@ -42,6 +42,20 @@ void UnregisterStepper(stepper* Stepper, state* State)
 	}
 }
 
+ships_list GetShipsWithinRadius(vector2 Position, r64 Radius, state* State) {
+	ships_list Ret = {};
+
+	for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
+		Assert(i < ArrayCount(State->Ships));
+		if (Vector2Distance(Position, State->Ships[i].Persist->Position) < Radius) {
+			Ret.List[Ret.ListCount++] = &State->Ships[i];
+			Assert(Ret.ListCount < ArrayCount(Ret.List));
+		}
+	}		
+
+	return Ret;
+}
+
 void StepUniverse(state* State, real64 TimeMS)
 {
 	// Check for wakeup stepper
@@ -58,9 +72,7 @@ void StepUniverse(state* State, real64 TimeMS)
 		// Clear old state
 		for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
 			ship* Ship = &State->Ships[i];
-
-			// Clear old state
-			Ship->IndustrialActivationReduction = 0;
+			Ship->IndustrialActivationReductionMinutes = 0;
 		}
 
 		// Update state
@@ -71,8 +83,11 @@ void StepUniverse(state* State, real64 TimeMS)
 
 				// forman bonuses
 				if (Module->Persist->Filled && Module->Definition.ID == ship_module_id::foreman_i) {
-					//ships_list ShipsWithin = GetShipsWithinRadius(Ship->Persist->Position, Module->Definition->ActivationRange, State);
-
+					ships_list ShipsWithin = GetShipsWithinRadius(Ship->Persist->Position, Module->Definition.ActivationRange, State);
+					for (int n = 0; n < ShipsWithin.ListCount; n++) {
+						ship* SH = ShipsWithin.List[n];
+						SH->IndustrialActivationReductionMinutes += Module->Definition.Foreman.ReductionMinutes;
+					}
 				}
 			}
 		}
