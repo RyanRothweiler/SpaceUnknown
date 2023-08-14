@@ -237,10 +237,10 @@ void LoadGame(state* State)
 			ship* Ship = ShipCreate(State, ship_id::advent);
 
 			// Ateroids
-			AsteroidClusterCreate(vector2{0, 0}, 30.0f, item_id::venigen, State);
+			AsteroidClusterCreate(vector2{-50, -50}, 30.0f, item_id::venigen, State);
 
 			// Salvages
-			SalvageCreate(vector2{ -30, -30}, State);
+			SalvageCreate(vector2{ -110, 40}, State);
 		}
 	} else {
 		State->LoadedFromFile = true;
@@ -315,7 +315,7 @@ void LoadGame(state* State)
 	} else {
 
 		// Once evrythig is setup. Initialize more only for first setup.
-		ItemGive(&State->Ships[0].FuelTank, item_id::stl, 200);
+		ItemGive(&State->Ships[0].FuelTank, item_id::stl, 400);
 
 	}
 	ConsoleLog("Finished");

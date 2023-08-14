@@ -39,7 +39,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ID = ship_module_id::asteroid_miner;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ItemID = item_id::sm_asteroid_miner;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].DisplayName = "Asteroid Miner";
-		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationTimeMS = MinutesToMilliseconds(10.0f);
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationTimeMS = MinutesToMilliseconds(30.0f);
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationRange = 30.0f;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationRangeDisplayColor = COLOR_TEAL;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].SlotType = ship_module_slot_type::industrial;
@@ -75,7 +75,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].ID = ship_id::advent;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Icon = assets::GetImage("Ship_Advent");
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelRateMassPerSecond = 0.5f;
-		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Mass = 200;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Mass = 170;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].RadarRadius = 75;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelTankMassLimit = 150;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].HoldMass = 20;
