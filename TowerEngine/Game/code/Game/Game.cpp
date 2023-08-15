@@ -226,7 +226,7 @@ void LoadGame(state* State)
 
 			// Initial state setup
 			State->PersistentData.TreeBonuses.ShipLimit = 1;
-			State->PersistentData.Knowledge = 15;
+			State->PersistentData.Knowledge = 20;
 
 			// Station
 			station* Station = StationCreate(State);
@@ -237,7 +237,7 @@ void LoadGame(state* State)
 			ship* Ship = ShipCreate(State, ship_id::advent);
 
 			// Ateroids
-			AsteroidClusterCreate(vector2{-50, -50}, 30.0f, item_id::venigen, State);
+			AsteroidClusterCreate(vector2{-50, -50}, 15.0f, item_id::venigen, State);
 
 			// Salvages
 			SalvageCreate(vector2{ -110, 40}, State);
