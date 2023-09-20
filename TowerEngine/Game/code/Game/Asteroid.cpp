@@ -119,9 +119,7 @@ void AsteroidClusterSetup(asteroid_cluster* Cluster, asteroid_cluster_persistent
 		Asteroid->Persist = &Persist->Asteroids[i];
 		
 		// Setup images
-		Asteroid->Persist->WorldObject.Image = Globals->AssetsList.AsteroidImages[
-			Asteroid->Persist->SpriteIndex
-		];
+		Asteroid->Persist->WorldObject.Image = Globals->AssetsList.AsteroidImages[Asteroid->Persist->SpriteIndex];
 
 		// Register data
 		WorldObjectRegister(State, &Asteroid->Persist->WorldObject);

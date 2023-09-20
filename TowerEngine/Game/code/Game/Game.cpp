@@ -340,7 +340,7 @@ void Start(engine_state* EngineState)
 	GlobalSaveDataRoot = (save_data::member*)ArenaAllocate(GlobalPermMem, sizeof(save_data::member));
 
 	// globalid hashmap
-	hash::AllocateTable(&State->PersistentPointerSources, 64, sizeof(global_id), GlobalPermMem);
+	hash::AllocateTable(&State->PersistentPointerSources, 64, sizeof(persistent_pointer), GlobalPermMem);
 
 	// Load skill nodes
 	{
@@ -1136,6 +1136,9 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				RendCommand.Uniforms.SetVec3Array("radiusCenter", &PositionsArray[0], ArrayCount(PositionsArray));
 				RendCommand.Uniforms.SetInt("radiusCenterCount", PosCount);
 				RendCommand.Uniforms.SetFloatArray("radius", &RadiusArray[0], ArrayCount(RadiusArray));
+
+				// There is ahard coded limit in the fog shader
+				Assert(PosCount < 100);
 
 				InsertRenderCommand(&EngineState->UIRenderer, &RendCommand);
 			}

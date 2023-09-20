@@ -1,3 +1,4 @@
+#include <limits>
 #define EM_LOG_C_STACK 1
 
 #include <string>
@@ -25,7 +26,7 @@ void Print(char* Message)
 
 real64 RandomFloat()
 {
-	return rand();
+	return emscripten_random();
 }
 
 read_file_result LoadFileData(std::string FileName, memory_arena *Memory)
@@ -141,11 +142,8 @@ GetWallClock()
 
 uint32 GetGUID()
 {
-	do this now;
-
-	Print("GetGUID - UNSUPPORTED");
-	Assert(0);
-	return 0;
+	r64 Num = rand() / RAND_MAX;
+	return Num * std::numeric_limits<r64>::max();
 }
 
 void* GetProcAddress(char* ProcName)

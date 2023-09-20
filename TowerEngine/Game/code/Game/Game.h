@@ -6,8 +6,6 @@
 #include <ctime>
 #include <chrono>
 
-#include "GlobalID.cpp"
-
 struct state;
 struct ship;
 struct journey_step;

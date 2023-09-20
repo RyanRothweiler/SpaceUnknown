@@ -19,7 +19,7 @@ popd
 cd /d "T:/"
 ::pushd "T:\Game\build\Emscripten"
 
-set WarningsIgnored=-Wno-writable-strings
+set WarningsIgnored=-Wno-writable-strings -Wno-format -Wno-switch
 
 ::-sALLOW_MEMORY_GROWTH
 
@@ -29,6 +29,7 @@ emcc ^
  --preload-file T:\Game\assets ^
  -sALLOW_MEMORY_GROWTH ^
  -sMAX_WEBGL_VERSION=2 ^
+ -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=$stackTrace ^
  -sFULL_ES3 ^
  -g ^
  %WarningsIgnored%

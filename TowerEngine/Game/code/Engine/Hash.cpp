@@ -64,8 +64,8 @@ namespace hash {
 	void Add(hash::table* Table, uint32 Hash, void* Data, real32 DataSize, memory_arena* Memory)
 	{
 		Hash = Hash % Table->TableSize;
-
 		Assert(Hash < Table->TableSize);
+
 		Assert(DataSize == Table->DataSize);
 
 		list_head* List = &Table->Table[Hash];
@@ -140,7 +140,6 @@ namespace hash {
 			CurrLink = CurrLink->NextLink;
 		}
 	}
-
 }
 
 #endif

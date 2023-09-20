@@ -328,6 +328,7 @@ uint64 GetCycle()
 
 uint32 GetGUID()
 {
+	fix this here 
 	return 0;
 }
 

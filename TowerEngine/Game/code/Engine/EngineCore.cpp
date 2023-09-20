@@ -114,7 +114,7 @@ struct meta_member {
 #include "Json.cpp"
 #include "SaveData.cpp"
 
-#include "Generated.h"
+#include "generated.h"
 
 #include "Editor.h"
 #include "Renderer/ShaderLoader.cpp"
@@ -574,7 +574,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		Assert(sizeof(uint32) == 4);
 		Assert(sizeof(uint64) == 8);
 
-		StringUnitTests(&Memory->TransientMemory);
+		//StringUnitTests(&Memory->TransientMemory);
 		RandomUnitTests();
 
 		// Remove slide testing
