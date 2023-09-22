@@ -479,10 +479,9 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 				                           GlobalTransMem);
 				RenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ScreenDrawTextureShader);
 
-
 				Globals->ShaderLoader.Load(&Globals->AssetsList.EngineResources.ImGuiShader,
 				                           AssetRootDir + "Shaders/ImGui.vs",
-				                           AssetRootDir + "Shaders/imGui.fs",
+				                           AssetRootDir + "Shaders/ImGui.fs",
 				                           GlobalTransMem);
 				RenderApi.MakeProgram(&Globals->AssetsList.EngineResources.ImGuiShader);
 			}
@@ -947,67 +946,66 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 	{
 		ImGui::EndFrame();
 
-		if (!BuildVarRelease) {
-			ImGui::Render();
+		ImGui::Render();
 
-			ImDrawData* draw_data = ImGui::GetDrawData();
-			ImVec2 pos = draw_data->DisplayPos;
-			for (int n = 0; n < draw_data->CmdListsCount; n++) {
+		ImDrawData* draw_data = ImGui::GetDrawData();
+		ImVec2 pos = draw_data->DisplayPos;
+		for (int n = 0; n < draw_data->CmdListsCount; n++) {
 
-				const ImDrawList* cmd_list = draw_data->CmdLists[n];
-				const ImDrawVert* vtx_buffer = cmd_list->VtxBuffer.Data;
-				const ImDrawIdx* idx_buffer = cmd_list->IdxBuffer.Data;
+			const ImDrawList* cmd_list = draw_data->CmdLists[n];
+			const ImDrawVert* vtx_buffer = cmd_list->VtxBuffer.Data;
+			const ImDrawIdx* idx_buffer = cmd_list->IdxBuffer.Data;
 
-				for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++) {
-					const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
+			for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++) {
+				const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
 
-					render_command RendCommand = {};
-					InitRenderCommand(&RendCommand, pcmd->ElemCount);
+				render_command RendCommand = {};
+				InitRenderCommand(&RendCommand, pcmd->ElemCount);
 
-					shader* Shader = assets::GetShader("ImGui");
-					if (Shader == GameNull) continue;
-
-					RendCommand.Shader = *Shader;
-
-					layout_data* VertexLayout = RendCommand.GetLayout();
-					VertexLayout->Allocate(Shader->GetLayout(render::ShaderVertID), RendCommand.BufferCapacity, GlobalTransMem);
-					VertexLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderVertID);
-
-					layout_data* TextureLayout = RendCommand.GetLayout();
-					TextureLayout->Allocate(Shader->GetLayout(render::ShaderTextureCoordsID), RendCommand.BufferCapacity, GlobalTransMem);
-					TextureLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderTextureCoordsID);
-
-					layout_data* ColorLayout = RendCommand.GetLayout();
-					ColorLayout->Allocate(Shader->GetLayout(render::ShaderColorID), RendCommand.BufferCapacity, GlobalTransMem);
-					ColorLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderColorID);
-
-					RendCommand.ClipRect = vector4{pcmd->ClipRect.x, pcmd->ClipRect.y, pcmd->ClipRect.z, pcmd->ClipRect.w};
-
-					// Copy index buffer
-					for (uint32 i = 0; i < pcmd->ElemCount; i++) {
-						int32 EI = idx_buffer[i];
-						ImColor ImCol = ImColor(vtx_buffer[EI].col);
-
-						VertexLayout->Data.Vec3[i] = v3{vtx_buffer[EI].pos.x, vtx_buffer[EI].pos.y, 0};
-						TextureLayout->Data.Vec2[i] = v2{vtx_buffer[EI].uv.x, vtx_buffer[EI].uv.y};
-						ColorLayout->Data.Vec4[i] = v4{ImCol.Value.x, ImCol.Value.y, ImCol.Value.z, ImCol.Value.w};
-
-						RendCommand.IndexBuffer[i] = i;
-					}
-
-
-					idx_buffer += pcmd->ElemCount;
-
-					// Copy uniforms
-					RendCommand.Uniforms = RendCommand.Shader.Uniforms.Copy(GlobalTransMem);
-
-					RendCommand.Uniforms.SetImage("diffuseTex", (uint64)pcmd->TextureId);
-					RendCommand.Uniforms.SetMat4("projection", m4y4Transpose(GameState->DebugUIRenderer.Camera->ProjectionMatrix));
-					RendCommand.Uniforms.SetMat4("view", m4y4Transpose(GameState->DebugUIRenderer.Camera->ViewMatrix));
-
-					//Assert(false);
-					InsertRenderCommand(&GameState->DebugUIRenderer, &RendCommand);
+				shader* Shader = &Globals->AssetsList.EngineResources.ImGuiShader;
+				if (Shader == GameNull) {
+					ConsoleLog("Missing imgui shader");
+					continue;
 				}
+
+				RendCommand.Shader = *Shader;
+
+				layout_data* VertexLayout = RendCommand.GetLayout();
+				VertexLayout->Allocate(Shader->GetLayout(render::ShaderVertID), RendCommand.BufferCapacity, GlobalTransMem);
+				VertexLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderVertID);
+
+				layout_data* TextureLayout = RendCommand.GetLayout();
+				TextureLayout->Allocate(Shader->GetLayout(render::ShaderTextureCoordsID), RendCommand.BufferCapacity, GlobalTransMem);
+				TextureLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderTextureCoordsID);
+
+				layout_data* ColorLayout = RendCommand.GetLayout();
+				ColorLayout->Allocate(Shader->GetLayout(render::ShaderColorID), RendCommand.BufferCapacity, GlobalTransMem);
+				ColorLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderColorID);
+
+				RendCommand.ClipRect = vector4{pcmd->ClipRect.x, pcmd->ClipRect.y, pcmd->ClipRect.z, pcmd->ClipRect.w};
+
+				// Copy index buffer
+				for (uint32 i = 0; i < pcmd->ElemCount; i++) {
+					int32 EI = idx_buffer[i];
+					ImColor ImCol = ImColor(vtx_buffer[EI].col);
+
+					VertexLayout->Data.Vec3[i] = v3{vtx_buffer[EI].pos.x, vtx_buffer[EI].pos.y, 0};
+					TextureLayout->Data.Vec2[i] = v2{vtx_buffer[EI].uv.x, vtx_buffer[EI].uv.y};
+					ColorLayout->Data.Vec4[i] = v4{ImCol.Value.x, ImCol.Value.y, ImCol.Value.z, ImCol.Value.w};
+
+					RendCommand.IndexBuffer[i] = i;
+				}
+
+				idx_buffer += pcmd->ElemCount;
+
+				// Copy uniforms
+				RendCommand.Uniforms = RendCommand.Shader.Uniforms.Copy(GlobalTransMem);
+
+				RendCommand.Uniforms.SetImage("diffuseTex", (uint64)pcmd->TextureId);
+				RendCommand.Uniforms.SetMat4("projection", m4y4Transpose(GameState->DebugUIRenderer.Camera->ProjectionMatrix));
+				RendCommand.Uniforms.SetMat4("view", m4y4Transpose(GameState->DebugUIRenderer.Camera->ViewMatrix));
+
+				InsertRenderCommand(&GameState->DebugUIRenderer, &RendCommand);
 			}
 		}
 	}

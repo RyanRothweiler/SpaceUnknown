@@ -440,7 +440,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			GlobalTriggerSave = false;
 			SaveTimer = 0.0f;
 
-			PlatformApi.ThreadAddWork(&SaveGameThread, (void*)State);
+			//PlatformApi.ThreadAddWork(&SaveGameThread, (void*)State);
 			//SaveGame(State, GlobalSaveDataRoot);
 		}
 	}

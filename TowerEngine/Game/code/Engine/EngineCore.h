@@ -66,12 +66,6 @@
 #else
 	const bool BuildVarAutomatedTesting = false;
 #endif
-
-#if RELEASE
-	const bool BuildVarRelease = true;
-#else
-	const bool BuildVarRelease = false;
-#endif
 // -----------------------------------------------------------------------------
 
 struct read_file_result {

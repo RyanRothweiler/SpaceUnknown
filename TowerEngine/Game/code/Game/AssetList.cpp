@@ -385,7 +385,6 @@ namespace assets {
 		};
 
 		asset_shader Shaders[] = {
-			{"ImGui", 				"Shaders/ImGui.vs", 				"Shaders/ImGui.fs"},
 			{"ScreenDrawCircle", 	"Shaders/ScreenDrawCircle.vs", 		"Shaders/ScreenDrawCircle.fs"},
 			{"Fog",					"Shaders/Fog.vs",					"Shaders/Fog.fs"},
 		};
