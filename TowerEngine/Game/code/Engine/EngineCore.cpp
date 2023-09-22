@@ -781,8 +781,10 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		style.Alpha = 1.0f;
 	}
 
-	Globals->ShaderLoader.PollReload();
-	PollModelReload(Memory, GameState->Assets);
+	if (!BuildConfig::Release) {
+		Globals->ShaderLoader.PollReload();
+		PollModelReload(Memory, GameState->Assets);
+	}
 
 	static bool DemoShowing = true;
 	//ImGui::ShowDemoWindow(&DemoShowing);

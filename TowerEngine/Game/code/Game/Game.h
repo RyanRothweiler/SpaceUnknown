@@ -6,6 +6,8 @@
 #include <ctime>
 #include <chrono>
 
+#include "BuildConfig.h"
+
 struct state;
 struct ship;
 struct journey_step;

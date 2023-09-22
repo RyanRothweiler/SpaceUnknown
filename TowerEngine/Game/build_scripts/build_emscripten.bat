@@ -32,4 +32,5 @@ emcc ^
  -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=$stackTrace ^
  -sFULL_ES3 ^
  -g ^
+ -DRELEASE ^
  %WarningsIgnored%
