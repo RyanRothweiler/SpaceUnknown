@@ -11,6 +11,9 @@
 #include <filesystem>
 #include <chrono>
 
+#include <semaphore.h>
+#include <pthread.h>
+
 #define WIN_EXPORT
 #define CRASH __builtin_trap();
 
@@ -77,12 +80,6 @@ void MakeDirectory(char* Path)
 	Print("MakeDirectory - UNSUPPORTED");
 }
 
-thread_work* AddWork(game_thread_proc WorkMethod, void* WorkParams)
-{
-	Print("ThreadAddWork - UNSUPPORTED");
-	return {};
-}
-
 void AppendFile(char *FileDestination, char *Data)
 {
 	Print("AppendFile - UNSUPPORTED");
@@ -118,6 +115,88 @@ uint64 GetFileWriteTime(char* File)
 {
 	Print("GetFileWriteTime - UNSUPPORTED");
 	return 0;
+}
+
+#define FenceWrite asm volatile("" ::: "memory");
+#define FenceRead asm volatile("" ::: "memory");
+#define FenceAll FenceWrite FenceRead
+
+struct worker_thread_info {
+	int32 ID;
+	pthread_t ThreadHandle;
+};
+
+void TestGameThread(void* Params, int32 ThreadID)
+{
+	int32* NumPrinting = (int32*)Params;
+	string Disp = string{"thread "} + ThreadID +  string{" : number "} + *NumPrinting + "\n";
+	Print(Disp.Array());
+}
+
+#undef Status
+
+thread_work WorkQueue[512];
+volatile uint64 NextWorkIndex = 0;
+volatile uint64 WorkIndexEnd = 0;
+sem_t SemaphoreHandle = {};
+pthread_mutex_t CountMutex = {};
+
+thread_work* AddWork(game_thread_proc WorkMethod, void* WorkParams)
+{
+	thread_work* NewWork = &WorkQueue[WorkIndexEnd % ArrayCount(WorkQueue)];
+	Assert(NewWork->Status != work_status::waiting && NewWork->Status != work_status::running);
+
+	NewWork->WorkMethod = WorkMethod;
+	NewWork->WorkParams = WorkParams;
+	NewWork->Status = work_status::waiting;
+
+	FenceAll;
+
+	pthread_mutex_lock(&CountMutex);
+	WorkIndexEnd++;
+	pthread_mutex_unlock(&CountMutex);
+
+	sem_post(&SemaphoreHandle);
+
+	return NewWork;
+}
+
+void *ThreadLoop(void* lpParameter)
+{
+	worker_thread_info* Info = (worker_thread_info*)lpParameter;
+
+	string Val = "Thread Starting " + string{Info->ID};
+	Print(Val.Array());
+
+	while (true) {
+		uint64 AwakeWorkIndex = NextWorkIndex;
+		if (AwakeWorkIndex < WorkIndexEnd) {
+
+			pthread_mutex_lock(&CountMutex);
+			uint64 AtomicWorkIndex = NextWorkIndex;
+
+			if (AtomicWorkIndex == AwakeWorkIndex) {
+				NextWorkIndex++;
+				pthread_mutex_unlock(&CountMutex);
+
+				FenceAll;
+
+				thread_work * NewWork = &WorkQueue[AtomicWorkIndex % ArrayCount(WorkQueue)];
+				NewWork->Status = work_status::running;
+
+				NewWork->WorkMethod(NewWork->WorkParams, Info->ID);
+				FenceAll;
+
+				NewWork->Status = work_status::finished;
+			} else {
+				pthread_mutex_unlock(&CountMutex);
+			}
+		} else {
+			sem_wait(&SemaphoreHandle);
+		}
+	}
+
+	return NULL;
 }
 
 // returns time in microseconds
@@ -524,7 +603,6 @@ void MainLoop()
 // esCreateWindow flat - multi-sample buffer
 #define ES_WINDOW_MULTISAMPLE   8
 
-
 int main()
 {
 	Print("Starting");
@@ -553,6 +631,40 @@ int main()
 	GameMemory.PermanentMemory.Head = (uint8 *)GameMemory.PermanentMemory.Memory + sizeof(engine_state);
 	Print("Memory Allocated");
 
+	Print("Start thread queue");
+	worker_thread_info ThreadInfos[4];
+	for (int i = 0; i < ArrayCount(ThreadInfos); i++) {
+		ThreadInfos[i].ID = i;
+
+		int Succ = pthread_create(&ThreadInfos[i].ThreadHandle, NULL, &ThreadLoop, (void*)(&ThreadInfos[i]));
+		if (Succ != 0) {
+			string Ret = "Error creating thread " + string{Succ};
+			Print(Ret.Array());
+			Assert(false);
+		}
+	}
+
+
+	/*
+	// --------------------
+	int one = 1;
+	int two = 2;
+	int three = 3;
+	int four = 4;
+	int five = 5;
+	int six = 6;
+	int seven = 7;
+	AddWork(TestGameThread, (void*)&one);
+	AddWork(TestGameThread, (void*)&two);
+	AddWork(TestGameThread, (void*)&three);
+	AddWork(TestGameThread, (void*)&four);
+	AddWork(TestGameThread, (void*)&five);
+	AddWork(TestGameThread, (void*)&six);
+	AddWork(TestGameThread, (void*)&seven);
+	// --------------------
+	*/
+	
+
 	platform::api PlatformEm = {};
 	PlatformEm.PerformanceCounterFrequency = 0;
 	PlatformEm.RandomFloat = &RandomFloat;
@@ -579,7 +691,6 @@ int main()
 
 	GameMemory.PlatformApi = PlatformEm;
 	PlatformApi = GameMemory.PlatformApi;
-
 
 	render::api RenderApi = {};
 	RenderApi.MakeProgram = &MakeProgram;

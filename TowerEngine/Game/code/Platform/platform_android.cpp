@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <dlfcn.h>
+
 #include <pthread.h>
 #include <semaphore.h>
 
@@ -628,7 +629,6 @@ ProcessInputState(input_state * ButtonProcessing, bool32 NewState)
 //#define FenceRead _ReadBarrier(); _mm_lfence();
 //#define FenceAll FenceWrite FenceRead
 #define FenceAll asm volatile ("" : : : "memory"); std::atomic_thread_fence(std::memory_order_acq_rel);
-
 
 void TestGameThread(void* Params, int32 ThreadID)
 {
