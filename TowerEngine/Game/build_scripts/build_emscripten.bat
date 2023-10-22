@@ -23,10 +23,12 @@ emcc ^
  --preload-file T:\Game\assets ^
  -sALLOW_MEMORY_GROWTH ^
  -sMAX_WEBGL_VERSION=2 ^
- -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=$stackTrace ^
+ -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=$ccall ^
+ -sEXPORTED_RUNTIME_METHODS=ccall ^
  -sFULL_ES3 ^
  -pthread ^
  -sPTHREAD_POOL_SIZE=4 ^
  -g ^
+ -lidbfs.js ^
  -DRELEASE ^
  %WarningsIgnored%

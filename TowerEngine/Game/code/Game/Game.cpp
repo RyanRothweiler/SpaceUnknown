@@ -191,7 +191,7 @@ void SaveGame(state* State, save_data::member* Root)
 		}
 	}
 
-	save_data::Write("SpaceUnknownSave.sus", &save_file_META[0], ArrayCount(save_file_META), (void*)&State->PersistentData, Root);
+	save_data::Write("/SpaceUnknownSave.sus", &save_file_META[0], ArrayCount(save_file_META), (void*)&State->PersistentData, Root);
 	ConsoleLog("Game Saved");
 }
 
@@ -217,7 +217,7 @@ void LoadGame(state* State)
 	State->PersistentData = {};
 	TreeBonusesTotal = &State->PersistentData.TreeBonuses;
 
-	if (!save_data::Read("SpaceUnknownSave.sus", (void*)&State->PersistentData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)) {
+	if (!save_data::Read("/SpaceUnknown/SpaceUnknownSave.sus", (void*)&State->PersistentData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)) {
 		State->LoadedFromFile = false;
 		ConsoleLog("No saved data file");
 
@@ -438,6 +438,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 		SaveTimer += EngineState->DeltaTimeMS;
 		if (MillisecondsToSeconds(SaveTimer) > 5.0f || GlobalTriggerSave) {
 			GlobalTriggerSave = false;
+			EngineState->DidSave = true;
 			SaveTimer = 0.0f;
 
 			PlatformApi.ThreadAddWork(&SaveGameThread, (void*)State);

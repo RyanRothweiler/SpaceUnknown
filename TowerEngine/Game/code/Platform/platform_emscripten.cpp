@@ -11,6 +11,10 @@
 #include <filesystem>
 #include <chrono>
 
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
 #include <semaphore.h>
 #include <pthread.h>
 
@@ -45,7 +49,7 @@ read_file_result LoadFileData(std::string FileName, memory_arena *Memory)
 	// get file size
 	fseek(File, 0, SEEK_END);
 	Result.ContentsSize = ftell(File);
-	fseek(File, 0, SEEK_SET);  /* same as rewind(f); */
+	fseek(File, 0, SEEK_SET);
 
 	// copy data
 	Result.Contents = ArenaAllocate(Memory, Result.ContentsSize);
@@ -90,9 +94,35 @@ void DeleteFile(char *Path)
 	Print("DeleteFile - UNSUPPORTED");
 }
 
+char* RootFolder = "/SpaceUnknown";
+
 void WriteFile(char *FileDestination, void *Data, uint32 DataSize)
 {
-	Print("WriteFile - UNSUPPORTED");
+	string DataPath = (char*)RootFolder;
+	string FullPath = DataPath + "/" + FileDestination;
+
+	FILE* FileHandle = fopen(FullPath.CharArray, "w");
+	if (FileHandle != NULL) {
+		int32 ElementsWritten = fwrite(Data, DataSize, 1, FileHandle);
+		if (ElementsWritten != 1) { 
+			fprintf(stderr, "Error writing file. %s \n", FullPath.CharArray);
+		} else {
+			printf("%i bytes written to %s \n", (int)(ElementsWritten * DataSize), FullPath.CharArray);
+		}
+		fclose(FileHandle);
+	} else {
+		printf("Could not write file %s \n", FullPath.CharArray);
+	}
+
+
+	/*
+	EM_ASM(
+        FS.syncfs(false, function (err) {
+            // Error
+        });
+    );
+	*/
+
 }
 
 void OpenFileExternal(char* FileDest)
@@ -556,6 +586,10 @@ EM_BOOL MouseCallback(int eventType, const EmscriptenMouseEvent *e, void *userDa
 EGLDisplay GLDisplay = {};
 EGLSurface GLSurface = {};
 
+bool FileSystemReady = false;
+
+#include "platform_emscripten.h"
+
 void MainLoop()
 {
 	// Update input states
@@ -573,22 +607,37 @@ void MainLoop()
 		}
 	}
 
-	GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
+	if (FileSystemReady) {
+		GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
 
-	engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
-	state_to_serialize* State = &GameStateFromMemory->StateSerializing;
-	GameMemory.RenderApi.Render(&GameMemory.RenderApi, State->ActiveCam, &State->Light.Cam, &WindowInfo, &GameStateFromMemory->DebugUIRenderer, &GameStateFromMemory->UIRenderer, &GameStateFromMemory->GameRenderer, &GameStateFromMemory->Assets->GaussianBlurShader);
-	eglSwapBuffers(GLDisplay, GLSurface);
+		engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
+		state_to_serialize* State = &GameStateFromMemory->StateSerializing;
+		GameMemory.RenderApi.Render(&GameMemory.RenderApi, State->ActiveCam, &State->Light.Cam, &WindowInfo, &GameStateFromMemory->DebugUIRenderer, &GameStateFromMemory->UIRenderer, &GameStateFromMemory->GameRenderer, &GameStateFromMemory->Assets->GaussianBlurShader);
+		eglSwapBuffers(GLDisplay, GLSurface);
 
-	auto CurrClock = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<float> ClockDiff = CurrClock - PrevClock;
-	PrevClock = CurrClock;
+		auto CurrClock = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<float> ClockDiff = CurrClock - PrevClock;
+		PrevClock = CurrClock;
 
-	float FPS = 1.0f / (ClockDiff.count());
-	GameStateFromMemory->DeltaTimeMS = ClockDiff.count() * 1000.0f;
-	//printf("FPS %f Clock %f Delta %f \n", FPS, ClockDiff.count(), GameStateFromMemory->DeltaTimeMS);
+		float FPS = 1.0f / (ClockDiff.count());
+		GameStateFromMemory->DeltaTimeMS = ClockDiff.count() * 1000.0f;
+		//printf("FPS %f Clock %f Delta %f \n", FPS, ClockDiff.count(), GameStateFromMemory->DeltaTimeMS);
 
-	GameInput.MouseScrollDelta = 0.0f;
+		GameInput.MouseScrollDelta = 0.0f;
+
+		if (GameStateFromMemory->DidSave) {
+			GameStateFromMemory->DidSave = false;
+
+			EM_ASM (
+				FS.syncfs(false, 
+					function(err) {
+						console.log("file system synced");
+					}
+				);
+			);
+
+		}
+	}
 }
 
 // https://github.com/emscripten-core/emscripten/blob/main/test/third_party/glbook/Common/esUtil.h
@@ -602,6 +651,7 @@ void MainLoop()
 #define ES_WINDOW_STENCIL       4
 // esCreateWindow flat - multi-sample buffer
 #define ES_WINDOW_MULTISAMPLE   8
+
 
 int main()
 {
@@ -630,6 +680,34 @@ int main()
 
 	GameMemory.PermanentMemory.Head = (uint8 *)GameMemory.PermanentMemory.Memory + sizeof(engine_state);
 	Print("Memory Allocated");
+
+	Print("Setup file system");
+    EM_ASM (
+        FS.mkdir('/SpaceUnknown');
+        FS.mount(IDBFS, {}, '/SpaceUnknown');
+        FS.syncfs(true, function (err) {
+			assert(!err);
+			console.log("File system created");
+			ccall('FileSystemCreated', 'v');
+        });
+    );
+
+
+
+	/*
+	test();
+
+	EM_ASM (
+		FS.syncfs(false, 
+			function(err) {
+				console.log("file system synced");
+			}
+		);
+	);
+
+
+	return 0;
+	*/
 
 	Print("Start thread queue");
 	worker_thread_info ThreadInfos[4];
@@ -859,31 +937,6 @@ int main()
 	GameMemory.RenderApi = ogles3::Initialize(WindowInfo, &GameStateFromMemory->OGLProfilerData, &GameMemory.PermanentMemory, &GameMemory.TransientMemory);
 
 	emscripten_set_main_loop(&MainLoop, 0, true);
-
-	// use -ASYNCIFY with this
-	/*
-	float TargetFPS = 60.0f;
-	float TargetFrameSec = 1.0f / TargetFPS;
-
-	while (true) {
-		GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
-
-		auto CurrClock = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<float> WorkDiff = CurrClock - PrevClock;
-
-		if (WorkDiff.count() > TargetFrameSec) {
-			float SleepLen = WorkDiff.count() - TargetFrameSec;
-			emscripten_sleep(SleepLen);
-		}
-
-		std::chrono::duration<float> TotalFrameDiff = CurrClock - PrevClock;
-		float FPS = 1.0f / (TotalFrameDiff.count());
-		printf("FPS %f \n", FPS);
-
-		PrevClock = CurrClock;
-	}
-	*/
-
 
 	return 0;
 }

@@ -577,6 +577,8 @@ struct engine_state;
 struct engine_state {
 	shader BackupShader;
 
+	bool DidSave;
+
 	string RootAssetPath;
 
 	game_assets* Assets;

@@ -533,27 +533,11 @@ void DeleteFile(char* FileDest)
 
 read_file_result ReadFileExternal(char *Path, memory_arena *Memory)
 {
-
-	/*
-	 // FILE* FileHandle = std::fopen((DataPath + FileLoading).CharArray, "r");
-	 // void* Buffer = ArenaAllocate(Memory, sizeof(int32));
-	 // std::fread(Buffer, sizeof(int32), 1, NextFile);
-	 // int32* Number = (int32*)Buffer;
-	 // LOGI("Char %i", Number[0]);
-	 int32 FileHandle = open((DataPath +  "/" + Path).CharArray, O_RDWR);
-	 struct stat FileStats = {};
-	 fstat(FileHandle, &FileStats);
-	 LOGI("FILE SIZE %i", (int)FileStats.st_size);
-	 */
-
-	// // fstat
-
 	read_file_result Result = {};
-
-
 
 	string DataPath = (char*)GlobalInternalDataPath;
 	string FullPath = DataPath + "/" + Path;
+
 	int FileHandle = open(FullPath.CharArray, O_RDWR);
 	if (FileHandle != -1) {
 		struct stat FileStats = {};
