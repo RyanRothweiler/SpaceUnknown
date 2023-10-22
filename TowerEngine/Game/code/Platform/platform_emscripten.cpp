@@ -94,24 +94,19 @@ void DeleteFile(char *Path)
 	Print("DeleteFile - UNSUPPORTED");
 }
 
-char* RootFolder = "/SpaceUnknown";
-
 void WriteFile(char *FileDestination, void *Data, uint32 DataSize)
 {
-	string DataPath = (char*)RootFolder;
-	string FullPath = DataPath + "/" + FileDestination;
-
-	FILE* FileHandle = fopen(FullPath.CharArray, "w");
+	FILE* FileHandle = fopen(FileDestination, "w");
 	if (FileHandle != NULL) {
 		int32 ElementsWritten = fwrite(Data, DataSize, 1, FileHandle);
 		if (ElementsWritten != 1) { 
-			fprintf(stderr, "Error writing file. %s \n", FullPath.CharArray);
+			fprintf(stderr, "Error writing file. %s \n", FileDestination);
 		} else {
-			printf("%i bytes written to %s \n", (int)(ElementsWritten * DataSize), FullPath.CharArray);
+			printf("%i bytes written to %s \n", (int)(ElementsWritten * DataSize), FileDestination);
 		}
 		fclose(FileHandle);
 	} else {
-		printf("Could not write file %s \n", FullPath.CharArray);
+		printf("Could not write file %s \n", FileDestination);
 	}
 
 
@@ -251,8 +246,9 @@ GetWallClock()
 
 uint32 GetGUID()
 {
-	r64 Num = rand() / RAND_MAX;
-	return Num * std::numeric_limits<r64>::max();
+	r64 Num = emscripten_random();
+	uint32 n = (uint32)(Num * 4294967.0f);
+	return n;
 }
 
 void* GetProcAddress(char* ProcName)
@@ -657,6 +653,7 @@ int main()
 {
 	Print("Starting");
 
+
 	Print("Allocating Memory");
 	GameMemory.PermanentMemory.Size = Megabytes(512);
 	GameMemory.TransientMemory.Size = Megabytes(512);
@@ -687,12 +684,9 @@ int main()
         FS.mount(IDBFS, {}, '/SpaceUnknown');
         FS.syncfs(true, function (err) {
 			assert(!err);
-			console.log("File system created");
 			ccall('FileSystemCreated', 'v');
         });
     );
-
-
 
 	/*
 	test();
@@ -935,6 +929,8 @@ int main()
 
 	engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
 	GameMemory.RenderApi = ogles3::Initialize(WindowInfo, &GameStateFromMemory->OGLProfilerData, &GameMemory.PermanentMemory, &GameMemory.TransientMemory);
+
+	GameStateFromMemory->SaveDataFolder = "SpaceUnknown";
 
 	emscripten_set_main_loop(&MainLoop, 0, true);
 

@@ -29,6 +29,7 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 			asteroid* Roid = &Cluster->Asteroids[a];
 			if (Roid->Persist->Using) {
 				real64 Dist = Vector2Distance(Roid->Persist->WorldObject.Position, Owner->Persist->Position);
+
 				if (Dist < Module->Definition.ActivationRange) {
 					WorldTargetSet(&Module->Persist->Target, Roid);
 				}

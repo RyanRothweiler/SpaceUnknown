@@ -191,7 +191,7 @@ void SaveGame(state* State, save_data::member* Root)
 		}
 	}
 
-	save_data::Write("/SpaceUnknownSave.sus", &save_file_META[0], ArrayCount(save_file_META), (void*)&State->PersistentData, Root);
+	save_data::Write((string{SaveDataFolder} + "/SpaceUnknownSave.sus").Array(), &save_file_META[0], ArrayCount(save_file_META), (void*)&State->PersistentData, Root);
 	ConsoleLog("Game Saved");
 }
 
@@ -217,7 +217,7 @@ void LoadGame(state* State)
 	State->PersistentData = {};
 	TreeBonusesTotal = &State->PersistentData.TreeBonuses;
 
-	if (!save_data::Read("/SpaceUnknown/SpaceUnknownSave.sus", (void*)&State->PersistentData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)) {
+	if (!save_data::Read((string{SaveDataFolder} + "/SpaceUnknownSave.sus").Array(), (void*)&State->PersistentData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)) {
 		State->LoadedFromFile = false;
 		ConsoleLog("No saved data file");
 
@@ -337,6 +337,7 @@ void Start(engine_state* EngineState)
 {
 	state* State = &EngineState->GameState;
 
+	SaveDataFolder = EngineState->SaveDataFolder;
 	GlobalSaveDataRoot = (save_data::member*)ArenaAllocate(GlobalPermMem, sizeof(save_data::member));
 
 	// globalid hashmap

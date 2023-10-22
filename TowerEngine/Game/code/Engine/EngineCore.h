@@ -574,9 +574,12 @@ struct engine_state;
 
 #include "../Game/Game.h"
 
+char* SaveDataFolder = "";
+
 struct engine_state {
 	shader BackupShader;
 
+	char* SaveDataFolder;
 	bool DidSave;
 
 	string RootAssetPath;
