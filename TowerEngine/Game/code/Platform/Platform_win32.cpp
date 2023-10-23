@@ -1118,7 +1118,7 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 
 		engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
 
-		GameStateFromMemory->SaveDataFolder = "";
+		GameStateFromMemory->SaveDataFolder = "T:/Game/build/Windows";
 
 		// Getting mouse position
 		if (Window != GameNull) {
