@@ -240,7 +240,7 @@ return json::FillStruct(JsonData, KeyParent, &journey_step_META[0], ArrayCount(j
 }
 
 meta_member ship_journey_estimate_META[] { 
-{meta_member_type::real64, "real64", "Duration", (uint64)&((ship_journey_estimate *)0)->Duration, 0, sizeof(real64),{},{},{},{},{}},
+{meta_member_type::real64, "real64", "DurationMS", (uint64)&((ship_journey_estimate *)0)->DurationMS, 0, sizeof(real64),{},{},{},{},{}},
 {meta_member_type::real64, "real64", "FuelUsage", (uint64)&((ship_journey_estimate *)0)->FuelUsage, 0, sizeof(real64),{},{},{},{},{}},
 }; 
  
@@ -273,6 +273,7 @@ return json::FillStruct(JsonData, KeyParent, &ship_journey_estimate_META[0], Arr
 
 meta_member ship_journey_META[] { 
 {meta_member_type::bool32, "bool32", "InProgress", (uint64)&((ship_journey *)0)->InProgress, 0, sizeof(bool32),{},{},{},{},{}},
+{meta_member_type::real64, "real64", "UniverseTimeEndMS", (uint64)&((ship_journey *)0)->UniverseTimeEndMS, 0, sizeof(real64),{},{},{},{},{}},
 {meta_member_type::custom, "journey_step", "Steps", (uint64)&((ship_journey *)0)->Steps, 10, sizeof(journey_step),&StructMetaFill_journey_step, &JsonFillStructShim_journey_step, &SaveDataFillShim_journey_step, &journey_step_META[0], ArrayCount(journey_step_META) },
 {meta_member_type::int32, "int32", "CurrentStep", (uint64)&((ship_journey *)0)->CurrentStep, 0, sizeof(int32),{},{},{},{},{}},
 {meta_member_type::int32, "int32", "StepsCount", (uint64)&((ship_journey *)0)->StepsCount, 0, sizeof(int32),{},{},{},{},{}},

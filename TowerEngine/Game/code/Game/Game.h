@@ -85,12 +85,13 @@ MetaStruct struct journey_step {
 };
 
 MetaStruct struct ship_journey_estimate {
-	real64 Duration;
+	real64 DurationMS;
 	real64 FuelUsage;
 };
 
 MetaStruct struct ship_journey {
 	bool32 InProgress;
+	real64 UniverseTimeEndMS;
 
 	journey_step Steps[10];
 	int32 CurrentStep;

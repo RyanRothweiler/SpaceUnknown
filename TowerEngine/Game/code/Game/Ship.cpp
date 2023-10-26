@@ -197,7 +197,7 @@ ship_journey_estimate ShipEstimateJourney(ship* Ship, state* State) {
 			
 			ShipMovementStart(&DummyShip, Step, State);
 			while (!ShipSimulateMovement(&DummyShip, &Step->Movement, TimeStepMS, State)) {
-				Ret.Duration += TimeStepMS;
+				Ret.DurationMS += TimeStepMS;
 			}
 
 		}
@@ -351,6 +351,9 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	ImGui::Text("Current Status:");
 	ImGui::SameLine();
 	ImGui::Text(ship_status_NAME[(int)CurrentShip->Persist->Status].Array());
+	
+	ImGui::Separator();
+	ImGui::Dummy(ImVec2(0, 10));
 
 	ImVec2 window_pos = ImGui::GetWindowPos();
 	Sel->Current->InfoWindowPos = vector2{window_pos.x, window_pos.y};
@@ -616,12 +619,12 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				Step->Type = journey_step_type::movement;
 			}
 
-			bool r = CurrJour->Repeat;
-			ImGui::Checkbox("Return to start and repeat", &r);
-			CurrJour->Repeat = r;
+			//bool r = CurrJour->Repeat;
+			//ImGui::Checkbox("Return to start and repeat", &r);
+			//CurrJour->Repeat = r;
 
 			ImGui::Separator();
-			ImGui::Text("Time Estimate %.2f Minutes", MillisecondsToMinutes(CurrJour->Estimate.Duration));
+			ImGui::Text("Time Estimate %.2f Minutes", MillisecondsToMinutes(CurrJour->Estimate.DurationMS));
 			ImGui::Text("Fuel Usage %.2f", CurrJour->Estimate.FuelUsage);
 			ImGui::Separator();
 
@@ -642,6 +645,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 						CreateMovementStep(CurrentShip, CurrentShip->Persist->Position);
 					}
 
+					CurrJour->UniverseTimeEndMS = State->PersistentData.UniverseTimeMS + CurrJour->Estimate.DurationMS;
 					journey::Execute(CurrJour);
 				}
 			}
@@ -672,6 +676,15 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 				CurrJour->Estimate = ShipEstimateJourney(CurrentShip, State);
 			}
+		} else {
+			// Journey in progress
+			ImGui::Text("Journey in progress");
+
+			r64 TimeLeft = CurrJour->UniverseTimeEndMS - State->PersistentData.UniverseTimeMS;
+			r64 PercProgress = TimeLeft / CurrJour->Estimate.DurationMS;
+			TimeLeft = MillisecondsToMinutes(TimeLeft);
+			ImGui::Text("%.2f minutes remaining ", TimeLeft);
+			ImGui::ProgressBar((float)PercProgress, ImVec2(-1.0f, 1.0f));
 		}
 	}
 
