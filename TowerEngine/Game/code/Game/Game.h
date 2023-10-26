@@ -139,6 +139,7 @@ MetaStruct enum class item_id {
 struct item_definition {
 	item_id ID;
 	string DisplayName;
+	string DisplayDescription;
 	bool32 Stackable;
 	real64 Mass;
 
@@ -352,6 +353,7 @@ skill_bonuses* TreeBonusesTotal = {};
 #include "Recipe.h"
 #include "Station.h"
 #include "SkillTree.h"
+#include "InfoWindow.h"
 
 
 // This also dictates the priority
@@ -437,9 +439,12 @@ struct editor_state {
 	skill_node* NodeSelected;
 
 	bool Paused;
+	bool HideFog;
 };
 
 struct state {
+
+	info_window InfoWindows[10];
 
 	b32 LoadedFromFile;
 	save_file PersistentData;

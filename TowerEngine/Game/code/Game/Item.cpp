@@ -160,7 +160,11 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 				);
 
 				if (ImGui::BeginPopupContextItem("item context menu")) {
-					if (ImGui::MenuItem("Detroy Item")) { 
+					if (ImGui::MenuItem("Info")) { 
+						InfoWindowShow(Item->ID, State);
+						ImGui::CloseCurrentPopup();
+					}
+					if (ImGui::MenuItem("Destroy Item")) { 
 						ImGui::CloseCurrentPopup();
 						ItemDestroying = i;
 						OpenDestroyPopup = true;

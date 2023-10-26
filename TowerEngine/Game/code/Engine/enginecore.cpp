@@ -320,7 +320,7 @@ void ImGuiSetGameTheme()
 	colors[ImGuiCol_WindowBg]               = ImVec4(0.11f, 0.11f, 0.11f, 1.00f);
 	colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 	colors[ImGuiCol_PopupBg]                = ImVec4(0.19f, 0.19f, 0.19f, 0.92f);
-	colors[ImGuiCol_Border]                 = ImVec4(0.19f, 0.19f, 0.19f, 0.29f);
+	colors[ImGuiCol_Border]                 = ImVec4(1.0f, 1.0f, 1.0f, 0.29f);
 	colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.24f);
 	colors[ImGuiCol_FrameBg]                = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
 	colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
@@ -375,7 +375,7 @@ void ImGuiSetGameTheme()
 	style.IndentSpacing                     = 17;
 	style.ScrollbarSize                     = 14;
 	style.GrabMinSize                       = 10;
-	style.WindowBorderSize                  = 0;
+	style.WindowBorderSize                  = 1;
 	style.ChildBorderSize                   = 0;
 	style.PopupBorderSize                   = 0;
 	style.FrameBorderSize                   = 0;
@@ -389,6 +389,8 @@ void ImGuiSetGameTheme()
 	style.GrabRounding                      = 0;
 	//style.LogSliderDeadzone                 = 0;
 	style.TabRounding                       = 0;
+
+	style.WindowMinSize                     = ImVec2(400, 300);
 }
 
 WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_info * WindowInfo, game_audio_output_buffer * AudioBuffer, char* RootAssetPath)

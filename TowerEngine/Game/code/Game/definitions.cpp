@@ -39,7 +39,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ID = ship_module_id::asteroid_miner;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ItemID = item_id::sm_asteroid_miner;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].DisplayName = "Asteroid Miner";
-		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationTimeMS = MinutesToMilliseconds(30.0f);
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationTimeMS = (i64)MinutesToMilliseconds(30);
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationRange = 30.0f;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationRangeDisplayColor = COLOR_TEAL;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].SlotType = ship_module_slot_type::industrial;
@@ -48,7 +48,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ID = ship_module_id::salvager_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ItemID = item_id::sm_salvager_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].DisplayName = "Salvager MK1";
-		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationTimeMS = MinutesToMilliseconds(60.0f);
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationTimeMS = (i64)MinutesToMilliseconds(60);
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationRange = 10.0f;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].SlotType = ship_module_slot_type::science;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationStepMethod = &ModuleUpdateSalvager;
@@ -91,18 +91,24 @@ void CreateDefinitions()
 
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].ID = item_id::venigen;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].DisplayName = "Venigen";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].DisplayDescription =
+			"Base metal used for construction.";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].Mass = 1;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].Icon = assets::GetImage("Icon_Venigen");
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].Stackable = true;
 
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].ID = item_id::pyrexium;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].DisplayName = "Pyrexium";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].DisplayDescription = 
+			"Base metal used for construction.";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].Mass = 5;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].Icon = assets::GetImage("Icon_Pyrexium");
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].Stackable = true;
 
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].ID = item_id::sm_asteroid_miner;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].DisplayName = "Asteroid Miner";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].DisplayDescription = 
+			"Basic asteroid miner. Mines asteroids into raw materials.";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].ShipModuleID = ship_module_id::asteroid_miner;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].Mass = 1;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].Icon = 
@@ -110,6 +116,8 @@ void CreateDefinitions()
 
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].ID = item_id::sm_salvager_i;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].DisplayName = "Salvager MK1";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].DisplayDescription = 
+			"Converts salvage into knowledge, which is used to unlock nodes on the skill tree.";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].ShipModuleID = ship_module_id::salvager_i;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].Mass = 1;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].Icon = 
@@ -117,6 +125,8 @@ void CreateDefinitions()
 
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].ID = item_id::cargo_expansion_i;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].DisplayName = "Cargo Expansion I";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].DisplayDescription = 
+			"Expands cargo. Gives a ship more cargo space.";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].ShipModuleID = ship_module_id::cargo_expansion_i;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].Mass = 1;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].Icon = 
@@ -124,6 +134,8 @@ void CreateDefinitions()
 
 		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].ID = item_id::foreman_i;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].DisplayName = "Forman I";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].DisplayDescription = 
+			"Decreases activation time of all industrial modules within a radius.";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].ShipModuleID = ship_module_id::foreman_i;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].Mass = 1;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].Icon = 
@@ -131,6 +143,8 @@ void CreateDefinitions()
 
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].ID = item_id::stl;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].DisplayName = "STL Fuel";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].DisplayDescription = 
+			"Slow Than Light fuel used to move ships at sub-light-speed speeds.";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Mass = 0.25f;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Icon = assets::GetImage("Icon_STL");
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Stackable = true;

@@ -262,7 +262,7 @@ void ShipStep(void* SelfData, real64 Time, state* State)
 // Time needed for the module to activate
 r64 ModuleGetActivationTime(ship_module_definition* ModDef, ship* Ship) {
 
-	r64 Val = ModDef->ActivationTimeMS; 
+	r64 Val = (r64)ModDef->ActivationTimeMS; 
 	r64 ReductionMS = 0;
 
 	switch (ModDef->SlotType) {
@@ -445,6 +445,14 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
 				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
 				);
+
+				if (ImGui::BeginPopupContextItem("item context menu")) {
+					if (ImGui::MenuItem("Info")) { 
+						InfoWindowShow(Module->Definition.ItemID, State);
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::EndPopup();
+				}
 
 				if (CurrentShip->Persist->Status == ship_status::docked &&
 				        ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)
