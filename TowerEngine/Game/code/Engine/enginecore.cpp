@@ -389,8 +389,6 @@ void ImGuiSetGameTheme()
 	style.GrabRounding                      = 0;
 	//style.LogSliderDeadzone                 = 0;
 	style.TabRounding                       = 0;
-
-	style.WindowMinSize                     = ImVec2(400, 300);
 }
 
 WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_info * WindowInfo, game_audio_output_buffer * AudioBuffer, char* RootAssetPath)

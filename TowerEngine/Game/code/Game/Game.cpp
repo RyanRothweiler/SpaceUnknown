@@ -847,6 +847,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 				ImGui::PushID(i);
 				string ID = "Info###" + string{i};
+				ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 				ImGui::Begin(ID.Array(), &IW->Showing);
 
 				ImGui::Image(
