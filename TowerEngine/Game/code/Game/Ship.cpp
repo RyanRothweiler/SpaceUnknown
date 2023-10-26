@@ -343,7 +343,10 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	             COLOR_RED, -1, Globals->GameRenderer);
 
 	bool Showing = true;
-	ImGui::Begin("Ship Info", &Showing);
+
+	ImGui::PushID(CurrentShip->Persist->GUID);
+	string ID = string{"Ship Info###"} + string{CurrentShip->Persist->GUID};
+	ImGui::Begin(ID.Array(), &Showing);
 
 	ImGui::Text("Current Status:");
 	ImGui::SameLine();
@@ -673,6 +676,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	}
 
 	ImGui::End();
+	ImGui::PopID();
 
 	if (!Showing) { Sel->Clear(); }
 }
