@@ -88,7 +88,8 @@ void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
 
 	for (int i = 0; i < ArrayCount(Bonuses.RecipeUnlocked); i++) {
 		if (Bonuses.RecipeUnlocked[i]) { 
-			string Disp = "Unlock recipe " + recipe_id_NAME[i];
+			recipe* Recipe = &Globals->AssetsList.RecipeDefinitions[i];
+			string Disp = "Unlock recipe " + string{Recipe->DisplayName};
 			ImGui::Text(Disp.Array());
 		}
 	}

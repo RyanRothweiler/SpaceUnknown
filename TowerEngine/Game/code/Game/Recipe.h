@@ -19,6 +19,7 @@ struct item_count {
 struct recipe {
 	station_service ServiceRequired;
 	recipe_id ID;
+	char* DisplayName;
 
 	loaded_image* Icon;
 	
