@@ -59,6 +59,11 @@ real64 ShipGetMassTotal(ship* Ship)
 	return Ship->CurrentMassTotal;
 }
 
+void ConsumeFuel(item_hold* Hold, r64 FuelAmount) {
+	Hold->ConsumeFuel(FuelAmount);
+	ItemHoldUpdateMass(Hold);
+}
+
 // returns if finished
 bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, state* State)
 {
@@ -110,13 +115,13 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 
 		// Speed up
 		if (DistToStart < Mov->DistFromSidesToCoast) {
-			Ship->FuelTank.ConsumeFuel(fuelToUse);
+			ConsumeFuel(&Ship->FuelTank, fuelToUse); 
 			Force = dirToTargetForce;
 		}
 
 		// Slow down
 		if (DistToEnd < Mov->DistFromSidesToCoast) {
-			Ship->FuelTank.ConsumeFuel(fuelToUse);
+			ConsumeFuel(&Ship->FuelTank, fuelToUse); 
 			Force = dirToTargetForce * -1.0f;
 
 			// slow enough
@@ -184,7 +189,7 @@ ship_journey_estimate ShipEstimateJourney(ship* Ship, state* State) {
 	DummyShip.Persist = &DummyPersist;
 	DummyShip.FuelTank.Persist = &DummyItemHold;
 
-	r64 InitialFuel = 10000000;
+	r64 InitialFuel = Ship->FuelTank.FuelLevel();
 	DummyShip.FuelTank.SetFuelLevel(InitialFuel);
 
 	float SimFPS = 15.0f;
