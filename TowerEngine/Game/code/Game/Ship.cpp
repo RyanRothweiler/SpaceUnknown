@@ -340,29 +340,74 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	editor_state* EditorState = &EngineState->EditorState;
 
 	ship* CurrentShip = Sel->GetShip();
+	ship_journey* CurrJour = &CurrentShip->Persist->CurrentJourney;
 
 	vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
 	vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
 
-	RenderCircle(MouseWorldFlat, vector2{1, 1},
-	             COLOR_RED, -1, Globals->GameRenderer);
+	//RenderCircle(MouseWorldFlat, vector2{1, 1}, COLOR_RED, -1, Globals->GameRenderer);
+
+	// Render world effects
+	{
+		// Module effects
+		if (CurrentShip->Persist->Status != ship_status::docked) {
+			for (int m = 0; m < ArrayCount(CurrentShip->EquippedModules); m++) {
+				ship_module* Module = &CurrentShip->EquippedModules[m];
+				if (Module->Persist->Filled) {
+
+					color Col = Module->Definition.ActivationRangeDisplayColor;
+					Col.A = 0.5f;
+					RenderCircleOutline(CurrentShip->Persist->Position, vector2{Module->Definition.ActivationRange, Module->Definition.ActivationRange},
+								 Col, 0.5, -10 - m, Globals->GameRenderer);
+				}
+			}
+		}
+
+		// Render journey lines
+		{
+			vector2 JourneyPosCurrent = CurrentShip->Persist->Position;
+
+			for (int i = 0; i < CurrentShip->Persist->CurrentJourney.StepsCount; i++) {
+
+				journey_step* Step = &CurrentShip->Persist->CurrentJourney.Steps[i];
+				switch (Step->Type) {
+					case journey_step_type::movement: {
+
+						// render line
+						if (i >= CurrJour->CurrentStep) {
+							vector2 Points[2] = {};
+							Points[0] = WorldToScreen(vector3{JourneyPosCurrent.X, JourneyPosCurrent.Y, 0}, &EngineState->GameCamera);
+							Points[1] = WorldToScreen(vector3{Step->Movement.EndPosition.X, Step->Movement.EndPosition.Y, 0}, &EngineState->GameCamera);
+							render_line Line = {};
+							Line.Points = Points;
+							Line.PointsCount = ArrayCount(Points);
+							RenderLine(Line, 1.5f, color{0, 1, 0, 0.2f}, &EngineState->UIRenderer, false);
+						}
+
+						JourneyPosCurrent = Step->Movement.EndPosition;
+					} break;
+
+					case journey_step_type::dock_undock: {
+						JourneyPosCurrent = per::GetStation(&Step->DockUndock.Station, State)->Persist->Position;
+					} break;
+
+
+					INVALID_DEFAULT
+				}
+			}
+		}
+	}
 
 	bool Showing = true;
+	static bool CreatingMovement = false;
 
 	ImGui::PushID(CurrentShip->Persist->GUID);
 	string ID = string{"Ship Info###"} + string{CurrentShip->Persist->GUID};
 	ImGui::Begin(ID.Array(), &Showing);
 
-	ImGui::Text("Current Status:");
-	ImGui::SameLine();
-	ImGui::Text(ship_status_NAME[(int)CurrentShip->Persist->Status].Array());
-	
-	ImGui::Separator();
-	ImGui::Dummy(ImVec2(0, 10));
-
 	ImVec2 window_pos = ImGui::GetWindowPos();
 	Sel->Current->InfoWindowPos = vector2{window_pos.x, window_pos.y};
-
+	
 	if (EditorState->EditorMode) {
 		if (ImGui::TreeNode("Basic")) {
 			// Posititon
@@ -389,297 +434,186 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 		ImGui::Separator();
 	}
 
-	// Weight
-	{
-		real64 MassTotal = ShipGetMassTotal(CurrentShip);
-		//string ShipWeightDisp = Humanize(MassTotal);
-		string ShipWeightDisp = string{MassTotal};
+	if (!CreatingMovement) {
 
-		ImGui::Text("Ship Total Mass (t)");
-		ImGui::SameLine();
-		ImGui::Text(ShipWeightDisp.Array());
-	}
+		// Ship info
+		{
+			ImGui::Columns(2);
 
-	// Velocity
-	{
-		string V = Humanize((int64)(Vector2Length(CurrentShip->Persist->Velocity) * UnitToMeters * 1000.0f));
-		ImGui::Text("Velocity (kph)");
-		ImGui::SameLine();
-		ImGui::Text(V.Array());
-	}
+			ImGui::Text("Current Status");
+			ImGui::NextColumn();
 
-	ImGui::Dummy(ImVec2(0, 10));
+			ImGui::Text(ship_status_NAME[(int)CurrentShip->Persist->Status].Array());
+			ImGui::NextColumn();
+			
+			// Weight
+			{
+				ImGui::Text("Ship Total Mass (t)");
+				ImGui::NextColumn();
 
-	// Fuel
-	{
-		real64 FuelCurr = ItemHoldGetFuel(&CurrentShip->FuelTank);
-
-		string FuelDisp = "Fuel Tank (g) " + string{FuelCurr} + "/" + string{CurrentShip->FuelTank.GetMassLimit()};
-		ImGui::Text(FuelDisp.Array());
-
-		float Progress = (float)(FuelCurr / CurrentShip->FuelTank.GetMassLimit());
-		ImGui::ProgressBar(Progress);
-	}
-	ItemDisplayHold("Fuel Tank", &CurrentShip->FuelTank, State, Input,
-	                CurrentShip->Persist->Status == ship_status::docked,
-	                item_hold_filter::stl
-	               );
-
-	ImGui::Dummy(ImVec2(0, 10));
-
-	// Render world module effects that only display when selected
-	if (CurrentShip->Persist->Status != ship_status::docked) {
-		for (int m = 0; m < ArrayCount(CurrentShip->EquippedModules); m++) {
-			ship_module* Module = &CurrentShip->EquippedModules[m];
-			if (Module->Persist->Filled) {
-
-				color Col = Module->Definition.ActivationRangeDisplayColor;
-				Col.A = 0.5f;
-				RenderCircleOutline(CurrentShip->Persist->Position, vector2{Module->Definition.ActivationRange, Module->Definition.ActivationRange},
-				             Col, 0.5, -10 - m, Globals->GameRenderer);
+				real64 MassTotal = ShipGetMassTotal(CurrentShip);
+				//string ShipWeightDisp = Humanize(MassTotal);
+				string ShipWeightDisp = string{MassTotal};
+				ImGui::Text(ShipWeightDisp.Array());
+				ImGui::NextColumn();
 			}
+
+			// Velocity
+			{
+				ImGui::Text("Velocity (kph)");
+				ImGui::NextColumn();
+
+				string V = Humanize((int64)(Vector2Length(CurrentShip->Persist->Velocity) * UnitToMeters * 1000.0f));
+				ImGui::Text(V.Array());
+				ImGui::NextColumn();
+			}
+
+			ImGui::Columns(1);
 		}
-	}
 
-	if (ImGui::CollapsingHeader("Modules")) {
-		for (int i = 0; i < CurrentShip->Definition.SlotsCount; i++) {
-			ship_module* Module = &CurrentShip->EquippedModules[i];
+		ImGui::Dummy(ImVec2(0, 10));
 
-			if (Module->Persist->Filled != GameNull) {
+		// Fuel
+		{
+			real64 FuelCurr = ItemHoldGetFuel(&CurrentShip->FuelTank);
 
-				loaded_image* Icon = Globals->AssetsList.ShipModuleIcons[(int)Module->Definition.ID];
-				ImGui::Image(
-				    (ImTextureID)((int64)Icon->GLID),
-				    ImGuiImageSize,
-				    ImVec2(0, 0),
-				    ImVec2(1, -1),
-				    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
-				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
-				);
+			string FuelDisp = "Fuel Tank (g) " + string{FuelCurr} + "/" + string{CurrentShip->FuelTank.GetMassLimit()};
+			ImGui::Text(FuelDisp.Array());
 
-				if (ImGui::BeginPopupContextItem("item context menu")) {
-					if (ImGui::MenuItem("Info")) { 
-						InfoWindowShow(Module->Definition.ItemID, State);
-						ImGui::CloseCurrentPopup();
-					}
-					ImGui::EndPopup();
-				}
+			float Progress = (float)(FuelCurr / CurrentShip->FuelTank.GetMassLimit());
+			ImGui::ProgressBar(Progress);
+		}
+		ItemDisplayHold("Fuel Tank", &CurrentShip->FuelTank, State, Input,
+						CurrentShip->Persist->Status == ship_status::docked,
+						item_hold_filter::stl
+					   );
 
-				if (CurrentShip->Persist->Status == ship_status::docked &&
-				        ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)
-				   ) {
-					State->ModuleUnequipping = Module;
+		ImGui::Dummy(ImVec2(0, 10));
 
-					int D = 0;
-					ImGui::SetDragDropPayload(ImguiShipModuleUnequippingDraggingID, &D, sizeof(D));
+		if (ImGui::CollapsingHeader("Modules")) {
+			for (int i = 0; i < CurrentShip->Definition.SlotsCount; i++) {
+				ship_module* Module = &CurrentShip->EquippedModules[i];
 
+				if (Module->Persist->Filled != GameNull) {
+
+					loaded_image* Icon = Globals->AssetsList.ShipModuleIcons[(int)Module->Definition.ID];
 					ImGui::Image(
-					    (ImTextureID)((int64)Icon->GLID),
-					    ImVec2(40, 40),
-					    ImVec2(0, 0),
-					    ImVec2(1, -1),
-					    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
-					    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+						(ImTextureID)((int64)Icon->GLID),
+						ImGuiImageSize,
+						ImVec2(0, 0),
+						ImVec2(1, -1),
+						ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+						ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
 					);
 
-					ImGui::EndDragDropSource();
-				}
-
-				ImGui::SameLine();
-				ImGui::BeginGroup();
-
-				ImGui::Text(Module->Definition.DisplayName.Array());
-				float Progress = (float)(Module->Persist->ActivationTimerMS / ModuleGetActivationTime(&Module->Definition, CurrentShip));
-				ImGui::ProgressBar(Progress, ImVec2(-1.0f, 1.0f));
-
-				if (Module->Definition.ActivationTimeMS > 0) {
-					if (Module->Persist->ActivationTimerMS > 0) {
-						r64 MSRemaining = ModuleGetActivationTime(&Module->Definition, CurrentShip) - Module->Persist->ActivationTimerMS;
-						r64 MinutesRemaining = (r64)MillisecondsToMinutes(MSRemaining);
-						ImGui::Text("%.2lf minutes remaining ", MinutesRemaining);
-					} else {
-						ImGui::Text("Not Running");
+					if (ImGui::BeginPopupContextItem("item context menu")) {
+						if (ImGui::MenuItem("Info")) { 
+							InfoWindowShow(Module->Definition.ItemID, State);
+							ImGui::CloseCurrentPopup();
+						}
+						ImGui::EndPopup();
 					}
-				}
 
-				ImGui::EndGroup();
-			} else {
+					if (CurrentShip->Persist->Status == ship_status::docked &&
+							ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)
+					   ) {
+						State->ModuleUnequipping = Module;
 
-				Assert(ArrayCount(CurrentShip->Definition.SlotTypes) > i);
+						int D = 0;
+						ImGui::SetDragDropPayload(ImguiShipModuleUnequippingDraggingID, &D, sizeof(D));
 
-				ImGui::Image(
-				    (ImTextureID)((int64)Globals->AssetsList.ShipModuleTypeIcons[(int)CurrentShip->Definition.SlotTypes[i]]->GLID),
-				    ImGuiImageSize,
-				    ImVec2(0, 0),
-				    ImVec2(1, -1),
-				    ImVec4(1.0f, 1.0f, 1.0f, 0.25f),
-				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
-				);
+						ImGui::Image(
+							(ImTextureID)((int64)Icon->GLID),
+							ImVec2(40, 40),
+							ImVec2(0, 0),
+							ImVec2(1, -1),
+							ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+							ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+						);
 
-				// Equipping ship module
-				if (CurrentShip->Persist->Status == ship_status::docked &&
-				        ImGui::BeginDragDropTarget()
-				   ) {
-					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
-						item_instance_persistent* Inst = State->ItemDragging;
-						item_definition* Def = GetItemDefinition(Inst->ID);
+						ImGui::EndDragDropSource();
+					}
 
-						if (Def->IsModule()) {
+					ImGui::SameLine();
+					ImGui::BeginGroup();
 
-							ship_module_slot_type DesiredType = Globals->AssetsList.ShipModuleDefinitions[(int)Def->ShipModuleID].SlotType;
-							if (DesiredType == CurrentShip->Definition.SlotTypes[i]) {
-								// Remove item
-								Inst->Count = 0;
-								ItemHoldUpdateMass(&CurrentShip->Hold);
+					ImGui::Text(Module->Definition.DisplayName.Array());
+					float Progress = (float)(Module->Persist->ActivationTimerMS / ModuleGetActivationTime(&Module->Definition, CurrentShip));
+					ImGui::ProgressBar(Progress, ImVec2(-1.0f, 1.0f));
 
-								// Add module
-								ShipAddModule(Module, Def->ShipModuleID, CurrentShip, State);
+					if (Module->Definition.ActivationTimeMS > 0) {
+						if (Module->Persist->ActivationTimerMS > 0) {
+							r64 MSRemaining = ModuleGetActivationTime(&Module->Definition, CurrentShip) - Module->Persist->ActivationTimerMS;
+							r64 MinutesRemaining = (r64)MillisecondsToMinutes(MSRemaining);
+							ImGui::Text("%.2lf minutes remaining ", MinutesRemaining);
+						} else {
+							ImGui::Text("Not Running");
+						}
+					}
+
+					ImGui::EndGroup();
+				} else {
+
+					Assert(ArrayCount(CurrentShip->Definition.SlotTypes) > i);
+
+					ImGui::Image(
+						(ImTextureID)((int64)Globals->AssetsList.ShipModuleTypeIcons[(int)CurrentShip->Definition.SlotTypes[i]]->GLID),
+						ImGuiImageSize,
+						ImVec2(0, 0),
+						ImVec2(1, -1),
+						ImVec4(1.0f, 1.0f, 1.0f, 0.25f),
+						ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+					);
+
+					// Equipping ship module
+					if (CurrentShip->Persist->Status == ship_status::docked &&
+							ImGui::BeginDragDropTarget()
+					   ) {
+						if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiItemDraggingID)) {
+							item_instance_persistent* Inst = State->ItemDragging;
+							item_definition* Def = GetItemDefinition(Inst->ID);
+
+							if (Def->IsModule()) {
+
+								ship_module_slot_type DesiredType = Globals->AssetsList.ShipModuleDefinitions[(int)Def->ShipModuleID].SlotType;
+								if (DesiredType == CurrentShip->Definition.SlotTypes[i]) {
+									// Remove item
+									Inst->Count = 0;
+									ItemHoldUpdateMass(&CurrentShip->Hold);
+
+									// Add module
+									ShipAddModule(Module, Def->ShipModuleID, CurrentShip, State);
+								} else {
+									//TODO DISPLAY_ERROR
+									ConsoleLog("Slots do not match. Display error");
+								}
 							} else {
 								//TODO DISPLAY_ERROR
-								ConsoleLog("Slots do not match. Display error");
+								ConsoleLog("Item is not module. Display error.");
 							}
-						} else {
-							//TODO DISPLAY_ERROR
-							ConsoleLog("Item is not module. Display error.");
 						}
 					}
+
+
+					ImGui::SameLine();
+					ImGui::Text("Empty Slot");
 				}
 
-
-				ImGui::SameLine();
-				ImGui::Text("Empty Slot");
+				ImGui::Separator();
 			}
-
-			ImGui::Separator();
 		}
-	}
 
-	// Cargo
-	ItemDisplayHold("Cargo", &CurrentShip->Hold, State, Input,
-	                CurrentShip->Persist->Status == ship_status::docked,
-	                item_hold_filter::any
-	               );
+		// Cargo
+		ItemDisplayHold("Cargo", &CurrentShip->Hold, State, Input,
+						CurrentShip->Persist->Status == ship_status::docked,
+						item_hold_filter::any
+					   );
 
-	// Journey
-	if (ImGui::CollapsingHeader("Commands")) {
-		ship_journey* CurrJour = &CurrentShip->Persist->CurrentJourney;
-
-		bool32 DockState = (CurrentShip->Persist->Status == ship_status::docked);
-		station* LastStation = {};
-		vector2 JourneyPosCurrent = CurrentShip->Persist->Position;
-
-		for (int i = 0; i < CurrentShip->Persist->CurrentJourney.StepsCount; i++) {
-
-			string id = "COMMAND_" + string{i};
-			ImGui::PushID(id.Array());
-
-			journey_step* Step = &CurrentShip->Persist->CurrentJourney.Steps[i];
-			switch (Step->Type) {
-				case journey_step_type::movement: {
-					ImGui::Text("Move");
-
-					// render line
-					if (i >= CurrJour->CurrentStep) {
-						vector2 Points[2] = {};
-						Points[0] = WorldToScreen(vector3{JourneyPosCurrent.X, JourneyPosCurrent.Y, 0}, &EngineState->GameCamera);
-						Points[1] = WorldToScreen(vector3{Step->Movement.EndPosition.X, Step->Movement.EndPosition.Y, 0}, &EngineState->GameCamera);
-						render_line Line = {};
-						Line.Points = Points;
-						Line.PointsCount = ArrayCount(Points);
-						RenderLine(Line, 1.5f, color{0, 1, 0, 0.2f}, &EngineState->UIRenderer, false);
-					}
-
-					JourneyPosCurrent = Step->Movement.EndPosition;
-				} break;
-
-				case journey_step_type::dock_undock: {
-					JourneyPosCurrent = per::GetStation(&Step->DockUndock.Station, State)->Persist->Position;
-					LastStation = per::GetStation(&Step->DockUndock.Station, State);
-					if (DockState) {
-						ImGui::Text("Undock");
-					} else {
-						ImGui::Text("Dock");
-					}
-					DockState = !DockState;
-				} break;
-
-
-				INVALID_DEFAULT
-			}
-
-			if (!CurrJour->InProgress && ImGui::Button("-")) {
-				RemoveSlideArray((void*)&CurrentShip->Persist->CurrentJourney.Steps[0], CurrentShip->Persist->CurrentJourney.StepsCount, sizeof(CurrentShip->Persist->CurrentJourney.Steps[0]), i);
-				CurrentShip->Persist->CurrentJourney.StepsCount--;
-
-				CurrJour->Estimate = ShipEstimateJourney(CurrentShip, State);
-			}
-
-			ImGui::Separator();
-			ImGui::PopID();
-		}
+		// Journey
 
 		if (!CurrJour->InProgress) {
-			if (ImGui::Button("+ Add Step +")) {
-				journey_step* Step = journey::AddStep(&CurrentShip->Persist->CurrentJourney);
-				Step->Type = journey_step_type::movement;
-			}
-
-			//bool r = CurrJour->Repeat;
-			//ImGui::Checkbox("Return to start and repeat", &r);
-			//CurrJour->Repeat = r;
-
-			ImGui::Separator();
-			ImGui::Text("Time Estimate %.2f Minutes", MillisecondsToMinutes(CurrJour->Estimate.DurationMS));
-			ImGui::Text("Fuel Usage %.2f", CurrJour->Estimate.FuelUsage);
-			ImGui::Separator();
-
-			// Can't execute if we don't have enough fuel
-			r64 FuelLevel = CurrentShip->FuelTank.FuelLevel(); 
-			if (FuelLevel < CurrJour->Estimate.FuelUsage) {
-				ImGui::Text("!!! Cannot execute journey. Not enough fuel !!!");
-			} else {
-				if (ImGui::Button("Execute")) {
-
-					if (CurrJour->Repeat) {
-
-						// This assumes the next step is a movement step. which won't be true when we add more steps
-						if (DockState) {
-							CreateDockUndockStep(CurrentShip, LastStation);
-						}
-
-						CreateMovementStep(CurrentShip, CurrentShip->Persist->Position);
-					}
-
-					CurrJour->UniverseTimeEndMS = State->PersistentData.UniverseTimeMS + CurrJour->Estimate.DurationMS;
-					journey::Execute(CurrJour);
-				}
-			}
-
-			// Click world to add movement command
-			if (Input->MouseLeft.OnUp && CurrentShip->Persist->Status != ship_status::moving && !Input->MouseMoved()) {
-
-				if (State->Hovering == GameNull) {
-					if (CurrentShip->Persist->Status == ship_status::docked) {
-						CreateDockUndockStep(
-								CurrentShip, 
-								per::GetStation(&CurrentShip->Persist->StationDocked, State)
-						);
-						CreateMovementStep(CurrentShip, MouseWorldFlat);
-					} else if (DockState) {
-						CreateDockUndockStep(CurrentShip, LastStation);
-						CreateMovementStep(CurrentShip, MouseWorldFlat);
-					} else {
-						CreateMovementStep(CurrentShip, MouseWorldFlat);
-					}
-
-				} else if (State->Hovering->Type == selection_type::station) {
-					station* Station = State->Hovering->GetStation();
-					CreateMovementStep(CurrentShip, Station->Persist->Position);
-					CreateDockUndockStep(CurrentShip, Station);
-				}
-
-
-				CurrJour->Estimate = ShipEstimateJourney(CurrentShip, State);
+			if (ImGui::Button("Move Ship", ImVec2(-1, 0))) {
+				CreatingMovement = true;
 			}
 		} else {
 			// Journey in progress
@@ -690,7 +624,104 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 			TimeLeft = MillisecondsToMinutes(TimeLeft);
 			ImGui::Text("%.2f minutes remaining ", TimeLeft);
 			ImGui::ProgressBar((float)PercProgress, ImVec2(-1.0f, 1.0f));
+
+			ImGui::Separator();
+
+			bool32 DockState = (CurrentShip->Persist->Status == ship_status::docked);
+
+			for (int i = 0; i < CurrentShip->Persist->CurrentJourney.StepsCount; i++) {
+
+				string id = "COMMAND_" + string{i};
+				ImGui::PushID(id.Array());
+
+				journey_step* Step = &CurrentShip->Persist->CurrentJourney.Steps[i];
+				switch (Step->Type) {
+					case journey_step_type::movement: {
+						ImGui::Text("Move");
+					} break;
+
+					case journey_step_type::dock_undock: {
+						if (DockState) {
+							ImGui::Text("Undock");
+						} else {
+							ImGui::Text("Dock");
+						}
+						DockState = !DockState;
+					} break;
+
+
+					INVALID_DEFAULT
+				}
+
+				ImGui::Separator();
+				ImGui::PopID();
+			}
 		}
+	} else {
+		// Create movement window
+		
+		if (ImGui::Button("Cancel", ImVec2(-1, 0))) {
+			CreatingMovement = false;
+		}
+
+		bool32 DockState = (CurrentShip->Persist->Status == ship_status::docked);
+		station* LastStation = {};
+
+		ImGui::Separator();
+		ImGui::Text("Time Estimate %.2f Minutes", MillisecondsToMinutes(CurrJour->Estimate.DurationMS));
+		ImGui::Text("Fuel Usage %.2f", CurrJour->Estimate.FuelUsage);
+		ImGui::Separator();
+
+		// Can't execute if we don't have enough fuel
+		r64 FuelLevel = CurrentShip->FuelTank.FuelLevel(); 
+		if (FuelLevel < CurrJour->Estimate.FuelUsage) {
+			ImGui::Text("!!! Cannot execute journey. Not enough fuel !!!");
+		} else {
+			if (ImGui::Button("Execute")) {
+				CreatingMovement = false;
+
+				if (CurrJour->Repeat) {
+
+					// This assumes the next step is a movement step. which won't be true when we add more steps
+					if (DockState) {
+						CreateDockUndockStep(CurrentShip, LastStation);
+					}
+
+					CreateMovementStep(CurrentShip, CurrentShip->Persist->Position);
+				}
+
+				CurrJour->UniverseTimeEndMS = State->PersistentData.UniverseTimeMS + CurrJour->Estimate.DurationMS;
+				journey::Execute(CurrJour);
+			}
+		}
+
+		// Click world to add movement command
+		if (Input->MouseLeft.OnUp && CurrentShip->Persist->Status != ship_status::moving && !Input->MouseMoved()) {
+
+			if (State->Hovering == GameNull) {
+				if (CurrentShip->Persist->Status == ship_status::docked) {
+					CreateDockUndockStep(
+							CurrentShip, 
+							per::GetStation(&CurrentShip->Persist->StationDocked, State)
+					);
+					CreateMovementStep(CurrentShip, MouseWorldFlat);
+				} else if (DockState) {
+					CreateDockUndockStep(CurrentShip, LastStation);
+					CreateMovementStep(CurrentShip, MouseWorldFlat);
+				} else {
+					CreateMovementStep(CurrentShip, MouseWorldFlat);
+				}
+
+			} else if (State->Hovering->Type == selection_type::station) {
+				station* Station = State->Hovering->GetStation();
+				CreateMovementStep(CurrentShip, Station->Persist->Position);
+				CreateDockUndockStep(CurrentShip, Station);
+			}
+
+
+			CurrJour->Estimate = ShipEstimateJourney(CurrentShip, State);
+		}
+		
 	}
 
 	ImGui::End();
