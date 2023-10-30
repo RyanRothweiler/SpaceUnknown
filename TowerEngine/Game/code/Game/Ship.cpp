@@ -251,9 +251,7 @@ void ShipStep(void* SelfData, real64 Time, state* State)
 				if (Ship->Persist->CurrentJourney.Repeat) {
 					journey::Execute(&Ship->Persist->CurrentJourney);
 				} else {
-					Ship->Persist->CurrentJourney.InProgress = false;
-					Ship->Persist->CurrentJourney.StepsCount = 0;
-					Ship->Persist->CurrentJourney.CurrentStep = 0;
+					journey::Clear(&Ship->Persist->CurrentJourney);
 
 					if (Ship->Persist->Status != ship_status::docked) {
 						Ship->Persist->Status = ship_status::idle;
@@ -616,8 +614,9 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				CreatingMovement = true;
 			}
 		} else {
-			// Journey in progress
 			ImGui::Text("Journey in progress");
+
+			ImGui::Separator();
 
 			r64 TimeLeft = CurrJour->UniverseTimeEndMS - State->PersistentData.UniverseTimeMS;
 			r64 PercProgress = TimeLeft / CurrJour->Estimate.DurationMS;
@@ -625,75 +624,76 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 			ImGui::Text("%.2f minutes remaining ", TimeLeft);
 			ImGui::ProgressBar((float)PercProgress, ImVec2(-1.0f, 1.0f));
 
-			ImGui::Separator();
-
-			bool32 DockState = (CurrentShip->Persist->Status == ship_status::docked);
-
-			for (int i = 0; i < CurrentShip->Persist->CurrentJourney.StepsCount; i++) {
-
-				string id = "COMMAND_" + string{i};
-				ImGui::PushID(id.Array());
-
-				journey_step* Step = &CurrentShip->Persist->CurrentJourney.Steps[i];
-				switch (Step->Type) {
-					case journey_step_type::movement: {
-						ImGui::Text("Move");
-					} break;
-
-					case journey_step_type::dock_undock: {
-						if (DockState) {
-							ImGui::Text("Undock");
-						} else {
-							ImGui::Text("Dock");
-						}
-						DockState = !DockState;
-					} break;
-
-
-					INVALID_DEFAULT
-				}
-
-				ImGui::Separator();
-				ImGui::PopID();
-			}
+			//journey::ImGuiDrawSteps(CurrJour, CurrentShip, State);
 		}
 	} else {
 		// Create movement window
-		
-		if (ImGui::Button("Cancel", ImVec2(-1, 0))) {
-			CreatingMovement = false;
+
+		if (CurrJour->StepsCount == 0) {
+			ImGui::BulletText("Click anywhere on map to queue movement command.");
+			ImGui::BulletText("Click on a station to move the ship and dock there.");
+			ImGui::BulletText("If the ship is already docked, then it will automatically undock before next movement.");
+			ImGui::Dummy(ImVec2(0, 20));
 		}
 
 		bool32 DockState = (CurrentShip->Persist->Status == ship_status::docked);
 		station* LastStation = {};
 
+		ImGui::Columns(2);
+
+		ImGui::Text("Time Estimate"); 
+		ImGui::NextColumn();
+
+		ImGui::Text("%.2f (min)", MillisecondsToMinutes(CurrJour->Estimate.DurationMS));
+		ImGui::NextColumn();
+
+		ImGui::Text("Fuel Usage");
+		ImGui::NextColumn();
+
+		ImGui::Text("%.2f", CurrJour->Estimate.FuelUsage);
+		ImGui::NextColumn();
+
+		ImGui::Columns(1);
 		ImGui::Separator();
-		ImGui::Text("Time Estimate %.2f Minutes", MillisecondsToMinutes(CurrJour->Estimate.DurationMS));
-		ImGui::Text("Fuel Usage %.2f", CurrJour->Estimate.FuelUsage);
-		ImGui::Separator();
 
-		// Can't execute if we don't have enough fuel
-		r64 FuelLevel = CurrentShip->FuelTank.FuelLevel(); 
-		if (FuelLevel < CurrJour->Estimate.FuelUsage) {
-			ImGui::Text("!!! Cannot execute journey. Not enough fuel !!!");
-		} else {
-			if (ImGui::Button("Execute")) {
-				CreatingMovement = false;
+		journey::ImGuiDrawSteps(CurrJour, CurrentShip, State);
 
-				if (CurrJour->Repeat) {
+		ImGui::Columns(2);
+		if (ImGui::Button("Cancel", ImVec2(-1, 0))) {
+			CreatingMovement = false;
+			journey::Clear(CurrJour);
+		}
+		ImGui::NextColumn();
 
-					// This assumes the next step is a movement step. which won't be true when we add more steps
-					if (DockState) {
-						CreateDockUndockStep(CurrentShip, LastStation);
+		// Have a journey set?
+		if (CurrJour->StepsCount > 0) {
+
+
+			// Enough fuel?
+			if (CurrentShip->FuelTank.FuelLevel() >= CurrJour->Estimate.FuelUsage) {
+
+				// Button clicked?
+				if (ImGui::Button("Execute", ImVec2(-1, 0))) { 
+					CreatingMovement = false;
+
+					if (CurrJour->Repeat) {
+
+						// This assumes the next step is a movement step. which won't be true when we add more steps
+						if (DockState) {
+							CreateDockUndockStep(CurrentShip, LastStation);
+						}
+
+						CreateMovementStep(CurrentShip, CurrentShip->Persist->Position);
 					}
 
-					CreateMovementStep(CurrentShip, CurrentShip->Persist->Position);
+					CurrJour->UniverseTimeEndMS = State->PersistentData.UniverseTimeMS + CurrJour->Estimate.DurationMS;
+					journey::Execute(CurrJour);
 				}
-
-				CurrJour->UniverseTimeEndMS = State->PersistentData.UniverseTimeMS + CurrJour->Estimate.DurationMS;
-				journey::Execute(CurrJour);
+			} else {
+				ImGui::TextWrapped("Not Enough Fuel");
 			}
 		}
+		ImGui::Columns(1);
 
 		// Click world to add movement command
 		if (Input->MouseLeft.OnUp && CurrentShip->Persist->Status != ship_status::moving && !Input->MouseMoved()) {
