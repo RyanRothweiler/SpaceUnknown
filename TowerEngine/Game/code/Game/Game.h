@@ -450,6 +450,8 @@ struct state {
 	b32 LoadedFromFile;
 	save_file PersistentData;
 
+	b32 CreatingMovement;
+
 	hash::table PersistentPointerSources;
 
 	game_scene Scene;

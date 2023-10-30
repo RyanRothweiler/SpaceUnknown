@@ -995,7 +995,12 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				}
 
 				// Selecting
-				if (State->Hovering != GameNull && !State->Hovering->Selected && State->Hovering->SelectionUpdate != GameNull &&
+				if (State->Hovering != GameNull && !State->Hovering->Selected && State->Hovering->SelectionUpdate != GameNull && 
+
+						// Can't select other things when issuing movement commands on ship
+						!State->CreatingMovement &&
+
+						// Clicked
 				        Input->MouseLeft.OnUp && !Input->MouseMoved()
 				   ) {
 					for (int i = 0; i < ArrayCount(State->Selections); i++) {
