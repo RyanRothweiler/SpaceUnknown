@@ -431,10 +431,6 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 	EngineState->GameCamera.OrthoZoom = (real32)LerpCurve(ZoomRealMin, ZoomRealMax, Curve, State->Zoom);
 	real64 ZoomSpeedAdj = LerpCurve(4.0f, 200.0f, Curve, State->Zoom);
 
-	if (Input->MouseScrollDelta > 0.01f) {
-		int x = 0;
-	}
-
 	// save timer
 	{
 		static real64 SaveTimer = 0;
@@ -458,13 +454,45 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 	// Main windows
 	{
-		static bool Open = true;
-		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::SetNextWindowSize(ImVec2(Window->Width * 0.15f, -1));
-		ImGui::Begin("Main", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+		ImGui::BeginMainMenuBar();
+
+		switch (State->Scene) {
+
+			case game_scene::universe: {
+				if (ImGui::Button("View Skill Tree", ImVec2(200, 0))) {
+					State->Scene = game_scene::skill_tree;
+
+					State->UniverseOrthoZoom = State->Zoom;
+					State->UniverseCamPos = EngineState->GameCamera.Center;
+					EngineState->GameCamera.Center = State->SkillTreeCamPos;
+					State->Zoom = State->SkillTreeOrthoZoom;
+					State->ZoomTarget = State->Zoom;
+				}
+			}
+			break;
+
+			case game_scene::skill_tree: {
+				if (ImGui::Button("View Universe", ImVec2(200, 0))) {
+					State->Scene = game_scene::universe;
+
+					State->SkillTreeCamPos = EngineState->GameCamera.Center;
+					State->SkillTreeOrthoZoom = State->Zoom;
+					EngineState->GameCamera.Center = State->UniverseCamPos;
+					State->Zoom = State->UniverseOrthoZoom;
+					State->ZoomTarget = State->Zoom;
+				}
+			}
+			break;
+
+			INVALID_DEFAULT;
+		}
+
+		ImGui::EndMainMenuBar();
 
 		if (EditorState->EditorMode) {
-			ImGui::Text("EDITOR MODE");
+
+			static bool Open = true;
+			ImGui::Begin("EDITOR", &Open);
 
 			// Mouse world position
 			{
@@ -783,8 +811,11 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 					ConsoleLog(Report.Array());
 				}
 			}
+
+			ImGui::End();
 		}
 
+		/*
 		ImGui::Text("Time");
 		ImGui::SameLine();
 
@@ -834,8 +865,8 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 		ImGui::Text("Resources");
 		ImGui::Text("Knowledge - %i", State->PersistentData.Knowledge);
 		ImGui::SameLine();
+		*/
 
-		ImGui::End();
 	}
 
 	// Info windows
