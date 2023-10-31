@@ -1,6 +1,6 @@
 struct ship;
 
-const real64 fuelForcePerGallon = 8.0f;
+const real64 fuelForcePerGallon = 7.0f;
 
 enum class ship_module_slot_type {
 	industrial, structural, science,

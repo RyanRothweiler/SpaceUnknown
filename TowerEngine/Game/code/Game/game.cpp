@@ -239,7 +239,7 @@ void LoadGame(state* State)
 
 			// Ateroids
 			AsteroidClusterCreate(vector2{-50, -50}, 15.0f, item_id::venigen, State);
-			AsteroidClusterCreate(vector2{-400, 100}, 10.0f, item_id::pyrexium, State);
+			AsteroidClusterCreate(vector2{-20, 130}, 10.0f, item_id::pyrexium, State);
 
 			// Salvages
 			SalvageCreate(vector2{ -110, 40}, State);
