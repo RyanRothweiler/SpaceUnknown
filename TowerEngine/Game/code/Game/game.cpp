@@ -450,47 +450,8 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 		if (Input->FunctionKeys[1].OnDown) {
 			EditorState->EditorMode = !EditorState->EditorMode;
 		}
-	}
-
-	// Main windows
-	{
-		ImGui::BeginMainMenuBar();
-
-		switch (State->Scene) {
-
-			case game_scene::universe: {
-				if (ImGui::Button("View Skill Tree", ImVec2(200, 0))) {
-					State->Scene = game_scene::skill_tree;
-
-					State->UniverseOrthoZoom = State->Zoom;
-					State->UniverseCamPos = EngineState->GameCamera.Center;
-					EngineState->GameCamera.Center = State->SkillTreeCamPos;
-					State->Zoom = State->SkillTreeOrthoZoom;
-					State->ZoomTarget = State->Zoom;
-				}
-			}
-			break;
-
-			case game_scene::skill_tree: {
-				if (ImGui::Button("View Universe", ImVec2(200, 0))) {
-					State->Scene = game_scene::universe;
-
-					State->SkillTreeCamPos = EngineState->GameCamera.Center;
-					State->SkillTreeOrthoZoom = State->Zoom;
-					EngineState->GameCamera.Center = State->UniverseCamPos;
-					State->Zoom = State->UniverseOrthoZoom;
-					State->ZoomTarget = State->Zoom;
-				}
-			}
-			break;
-
-			INVALID_DEFAULT;
-		}
-
-		ImGui::EndMainMenuBar();
 
 		if (EditorState->EditorMode) {
-
 			static bool Open = true;
 			ImGui::Begin("EDITOR", &Open);
 
@@ -813,26 +774,18 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			}
 
 			ImGui::End();
+	
 		}
+	}
 
-		/*
-		ImGui::Text("Time");
-		ImGui::SameLine();
-
-		std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>> Time = {};
-		Time += std::chrono::milliseconds((int)State->PersistentData.UniverseTimeMS);
-		std::chrono::seconds Diff = std::chrono::duration_cast<std::chrono::seconds>(Time.time_since_epoch());
-		string Disp = ChronoToString(Diff);
-		ImGui::Text(Disp.Array());
-
-		ImGui::Separator();
+	// Main windows
+	{
+		ImGui::BeginMainMenuBar();
 
 		switch (State->Scene) {
 
 			case game_scene::universe: {
-				ImGui::SliderFloat("Zoom", &State->ZoomTarget, ZoomMin, ZoomMax, " % .3f");
-
-				if (ImGui::Button("Skill Tree", ImVec2(-1, 0))) {
+				if (ImGui::Button("View Skill Tree", ImVec2(200, 0))) {
 					State->Scene = game_scene::skill_tree;
 
 					State->UniverseOrthoZoom = State->Zoom;
@@ -845,7 +798,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			break;
 
 			case game_scene::skill_tree: {
-				if (ImGui::Button("Universe", ImVec2(-1, 0))) {
+				if (ImGui::Button("View Universe", ImVec2(200, 0))) {
 					State->Scene = game_scene::universe;
 
 					State->SkillTreeCamPos = EngineState->GameCamera.Center;
@@ -860,13 +813,13 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			INVALID_DEFAULT;
 		}
 
-		ImGui::Separator();
-		ImGui::Text("Ship Limit - %i", State->PersistentData.TreeBonuses.ShipLimit);
-		ImGui::Text("Resources");
-		ImGui::Text("Knowledge - %i", State->PersistentData.Knowledge);
-		ImGui::SameLine();
-		*/
+		ImGui::Dummy(ImVec2(20,0));
+		ImGui::Text("Ship Limit %i", State->PersistentData.TreeBonuses.ShipLimit);
 
+		ImGui::Dummy(ImVec2(20,0));
+		ImGui::Text("Knowledge %i", State->PersistentData.Knowledge);
+
+		ImGui::EndMainMenuBar();
 	}
 
 	// Info windows
