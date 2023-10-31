@@ -5,14 +5,14 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 	if (Converter->Persist->RunsCount > 0) {
 
 		recipe Recipe = RecipeGetDefinition(Converter->Persist->RecipeID);
+
 		if (Converter->IsRunning) {
 			Converter->Persist->OrderTime += Time;
 			if (Converter->Persist->OrderTime >= Recipe.DurationMS) {
-				Converter->Persist->RunsCount--;
 
-				if (Converter->Persist->RunsCount <= 0) {
-					Converter->IsRunning = false;
-				}
+				Converter->Persist->RunsCount--;
+				Converter->Persist->OrderTime = 0;
+				Converter->IsRunning = false;
 
 				// Give outputs
 				for (int i = 0; i < Recipe.OutputsCount; i++) {
@@ -32,6 +32,7 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 				}
 			}
 		} else {
+
 			recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Recipe, &Converter->Owner->Hold);
 			if (InputsMissing.Count == 0) {
 				Converter->IsRunning = true;
@@ -124,8 +125,6 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 
 		ImGui::Columns(1);
 
-		recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Recipe, &Station->Hold);
-
 		if (Converter->IsRunning) {
 			// Progress
 			float Progress = (float)(Converter->Persist->OrderTime / Recipe.DurationMS);
@@ -134,12 +133,16 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 			string ProgDisp = ProgStr + "%";
 			ImGui::ProgressBar(Progress, ImVec2(-1.0f, 0.0f), ProgDisp.Array());
 		} else {
+			recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Recipe, &Station->Hold);
+
 			for (int i = 0; i < InputsMissing.Count; i++) {
 				item_definition Def = Globals->AssetsList.ItemDefinitions[(int)InputsMissing.Items[i].ItemID];
 				string Output = "Item Missing - " + Def.DisplayName + " x" + InputsMissing.Items[i].Count;
 				ImGui::TextColored(ImVec4(1, 0, 0, 1), Output.Array());
 			}
 		}
+
+		ImGui::SliderInt("Runs Remaining", &Converter->Persist->RunsCount, 1, 100);
 
 		if (ImGui::Button("Cancel Order", ImVec2(-1, 0))) {
 			Converter->Persist->RunsCount = {};
@@ -201,20 +204,6 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 		ImGui::PopStyleColor();
 
 		real32 HW = ImGui::GetWindowWidth();
-		/*
-		if (RecipeIDSelected != recipe_id::none) { HW = HW * 0.5f; }
-
-		ImGui::Separator();
-		if (RecipeIDSelected != recipe_id::none) {
-			if (ImGui::Button("Submit", ImVec2(HW, 0))) {
-				ConverterAddOrder(Converter, RecipeIDSelected);
-
-				ImGui::CloseCurrentPopup();
-			}
-			ImGui::SetItemDefaultFocus();
-			ImGui::SameLine();
-		}
-		*/
 
 		if (ImGui::Button("Cancel", ImVec2(HW, 0))) {
 			ImGui::CloseCurrentPopup();
