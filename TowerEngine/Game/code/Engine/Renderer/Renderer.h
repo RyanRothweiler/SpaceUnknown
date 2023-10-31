@@ -887,7 +887,7 @@ namespace render {
 		void (*GetFramebuffer) (camera* Cam, int32 ColorElementsCount);
 		void (*GetFramebufferDepth) (camera* Cam, uint32 Width, uint32 Height);
 		void (*GetFramebufferCubeMap)(camera* Cam, bool32 GenerateMipmap, bool32 Trilinear);
-		void (*Render) (render::api* API, camera* ActiveCam, camera* ShadowCam, window_info* WindowInfo, renderer* DebugUIRenderer, renderer* UIRenderer, renderer* GameRenderer, shader* GaussianBlurShader);
+		void (*Render) (render::api* API, camera* ActiveCam, window_info* WindowInfo, renderer* DebugUIRenderer, renderer* UIRenderer, renderer* GameRenderer, shader* GaussianBlurShader);
 		vao  (*CreateVAO)();
 		void (*VAOBind_v2) (vao* VAO, v2* Verts, uint32 VertsCount, int32 Location);
 		void (*VAOBind_v3) (vao* VAO, v3* Verts, uint32 VertsCount, int32 Location);

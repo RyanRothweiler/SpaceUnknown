@@ -629,9 +629,9 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 		// Create movement window
 
 		if (CurrJour->StepsCount == 0) {
-			ImGui::BulletText("Click anywhere on map to queue movement command.");
-			ImGui::BulletText("Click on a station to move the ship and dock there.");
-			ImGui::BulletText("If the ship is already docked, then it will automatically undock before next movement.");
+			ImGui::TextWrapped("- Click anywhere on map to queue movement command.");
+			ImGui::TextWrapped("- Click on a station to move the ship and dock there.");
+			ImGui::TextWrapped("- If the ship is already docked, then it will automatically undock before next movement.");
 			ImGui::Dummy(ImVec2(0, 20));
 		}
 

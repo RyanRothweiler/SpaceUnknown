@@ -348,8 +348,8 @@ void GetFramebuffer(camera* Cam, int32 ColorElementsCount)
 	Print("OGL GetFramebuffer");
 }
 
-void Render (render::api * API,
-             camera * ActiveCam, camera * ShadowCam, window_info * WindowInfo,
+void Render(render::api * API,
+             camera * ActiveCam, window_info * WindowInfo,
              renderer * DebugUIRenderer, renderer* UIRenderer, renderer * GameRenderer, shader * GaussianBlurShader
             )
 {
@@ -583,8 +583,14 @@ EGLDisplay GLDisplay = {};
 EGLSurface GLSurface = {};
 
 bool FileSystemReady = false;
+b32 DidResize = false;
 
 #include "platform_emscripten.h"
+
+static EM_BOOL ResizedCallback(int event_type, const EmscriptenUiEvent *event, void *user_data) {
+	DidResize = true;
+	return 0;
+}
 
 void MainLoop()
 {
@@ -603,12 +609,23 @@ void MainLoop()
 		}
 	}
 
+	if (DidResize) {
+		DidResize = false;
+
+		double width, height;
+		emscripten_get_element_css_size("canvas", &width, &height);
+
+		WindowInfo.Width = (int)width;
+		WindowInfo.Height = (int)height;
+	}
+
+
 	if (FileSystemReady) {
 		GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
 
 		engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
 		state_to_serialize* State = &GameStateFromMemory->StateSerializing;
-		GameMemory.RenderApi.Render(&GameMemory.RenderApi, State->ActiveCam, &State->Light.Cam, &WindowInfo, &GameStateFromMemory->DebugUIRenderer, &GameStateFromMemory->UIRenderer, &GameStateFromMemory->GameRenderer, &GameStateFromMemory->Assets->GaussianBlurShader);
+		GameMemory.RenderApi.Render(&GameMemory.RenderApi, State->ActiveCam, &WindowInfo, &GameStateFromMemory->DebugUIRenderer, &GameStateFromMemory->UIRenderer, &GameStateFromMemory->GameRenderer, &GameStateFromMemory->Assets->GaussianBlurShader);
 		eglSwapBuffers(GLDisplay, GLSurface);
 
 		auto CurrClock = std::chrono::high_resolution_clock::now();
@@ -794,6 +811,9 @@ int main()
 	emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
 	emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, KeyCallback);
 
+	emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, 0, ResizedCallback);
+
+	// full screen?
 	{
 		EmscriptenFullscreenStrategy s;
 		memset(&s, 0, sizeof(s));

@@ -1182,7 +1182,7 @@ int32 Run(int32 WindowWidth, int32 WindowHeight, HWND Window, bool32 Headless)
 
 		uint64 RenderingCyclesBegin = __rdtsc();
 		if (GlobalRunning) {
-			GameMemory.RenderApi.Render(&GameMemory.RenderApi, State->ActiveCam, &State->Light.Cam, &WindowInfo,
+			GameMemory.RenderApi.Render(&GameMemory.RenderApi, State->ActiveCam, &WindowInfo,
 			                            &GameStateFromMemory->DebugUIRenderer, &GameStateFromMemory->UIRenderer, &GameStateFromMemory->GameRenderer,
 			                            &GameStateFromMemory->Assets->GaussianBlurShader);
 		}

@@ -8,7 +8,6 @@
 #include <chrono>
 #include <ctime>
 
-
 int64 VersionMajor = 0;
 int64 VersionMinor = 1;
 int64 VersionBuild = 0;
@@ -430,6 +429,11 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 	float PrevOrtho = EngineState->GameCamera.OrthoZoom;
 	EngineState->GameCamera.OrthoZoom = (real32)LerpCurve(ZoomRealMin, ZoomRealMax, Curve, State->Zoom);
 	real64 ZoomSpeedAdj = LerpCurve(4.0f, 200.0f, Curve, State->Zoom);
+
+	// Window size might change
+	EngineState->GameCamera.Resolution =						vector2{(real64)Window->Width, (real64)Window->Height};
+	EngineState->StateSerializing.UICam.Resolution =			vector2{(real64)Window->Width, (real64)Window->Height};
+	EngineState->StateSerializing.EditorCamera.Resolution =		vector2{(real64)Window->Width, (real64)Window->Height};
 
 	// save timer
 	{

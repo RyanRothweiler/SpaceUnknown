@@ -542,16 +542,12 @@ struct state_to_serialize {
 	ui::anim_state SecondAbilityAnimState;
 	ui::anim_state CloseAnimState;
 
-	light Light;
-	light LightTwo;
-
 	material SkyboxMaterial;
 
 	bool32 ShowingBackpack;
 
 	camera EditorCamera;
 	camera UICam;
-	camera BattleCam;
 	camera* ActiveCam;
 
 	// TODO this scene should probably just be removed / phased out

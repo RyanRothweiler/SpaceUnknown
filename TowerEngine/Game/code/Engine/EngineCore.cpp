@@ -502,32 +502,12 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 				           -10.0f, 10.0f);
 				State->UICam.EulerRotation = vector3{PI, -0.88f, 0};
 
-				InitCamera(&State->BattleCam, &GameState->Assets->CamBasicShader,
-				           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::perspective, 0,
-				           0.1f, 1200.0f);
-				State->BattleCam.EulerRotation = vector3{3.14159f, -0.822f, 0};
-				State->BattleCam.Center = vector3{ -9.024, 0, 18.0f};
-
 				InitCamera(&State->EditorCamera, &GameState->Assets->CamBasicShader,
 				           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::perspective, 0,
 				           0.1f, 1200.0f);
 
 				State->ActiveCam = &GameState->GameCamera;
 
-				// Light camera
-				InitCamera(&State->Light.Cam, &GameState->Assets->CamBasicShader,
-				           vector2{(real64)WindowInfo->Width, (real64)WindowInfo->Height}, projection::perspective, 0,
-				           0.1f, 1200.0f);
-				State->Light.Cam.EulerRotation = vector3{2.36f, -1.184f, 0.0f};
-				State->Light.Cam.Center = vector3{ -3.5f, 3.6f, 7.8f};
-
-				{
-					State->LightTwo.Type = light_type::directional;
-					State->LightTwo.Transform.LocalPos = vector3{0, 0, 2};
-					State->LightTwo.Transform.LocalRot = vector3{ -0.299, -3.47f, 0.321f};
-					State->LightTwo.Color = color{10, 10, 10};
-					render::RegisterLight(&State->LightTwo);
-				}
 			}
 
 			assets::UploadAllQueuedImages(&Globals->AssetsList, GlobalTransMem);

@@ -877,8 +877,8 @@ namespace ogles3 {
 		glViewport(0, 0, WindowInfo->Width, WindowInfo->Height);
 	}
 
-	void Render (render::api * API,
-	             camera * ActiveCam, camera * ShadowCam, window_info * WindowInfo,
+	void Render(render::api * API,
+	             camera * ActiveCam, window_info * WindowInfo,
 	             renderer * DebugUIRenderer, renderer* UIRenderer, renderer * GameRenderer, shader * GaussianBlurShader
 	            )
 	{
