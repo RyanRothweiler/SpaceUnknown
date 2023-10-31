@@ -220,6 +220,7 @@ void StationSelected(selection * Sel, engine_state * EngineState, game_input * I
 	station* CurrentStation = Sel->GetStation();
 
 	bool Open = true;
+	ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Station Info", &Open);
 
 	ItemDisplayHold("Cargo", &CurrentStation->Hold, State, Input, true, item_hold_filter::any);

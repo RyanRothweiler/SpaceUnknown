@@ -400,6 +400,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 	ImGui::PushID(CurrentShip->Persist->GUID);
 	string ID = string{"Ship Info###"} + string{CurrentShip->Persist->GUID};
+	ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_FirstUseEver);
 	ImGui::Begin(ID.Array(), &Showing);
 
 	ImVec2 window_pos = ImGui::GetWindowPos();

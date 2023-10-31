@@ -10,7 +10,6 @@
 
 int64 VersionMajor = 0;
 int64 VersionMinor = 1;
-int64 VersionBuild = 0;
 
 ImGuiWindowFlags SelectionHoverFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing;
 
@@ -817,11 +816,15 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			INVALID_DEFAULT;
 		}
 
-		ImGui::Dummy(ImVec2(20,0));
+		float Spacing = 30;
+		ImGui::Dummy(ImVec2(Spacing, 0));
 		ImGui::Text("Ship Limit %i", State->PersistentData.TreeBonuses.ShipLimit);
 
-		ImGui::Dummy(ImVec2(20,0));
+		ImGui::Dummy(ImVec2(Spacing, 0));
 		ImGui::Text("Knowledge %i", State->PersistentData.Knowledge);
+
+		ImGui::Dummy(ImVec2(Spacing, 0));
+		ImGui::TextColored(ImVec4(1,1,1,0.5f), "v%i.%i", VersionMajor, VersionMinor);
 
 		ImGui::EndMainMenuBar();
 	}
