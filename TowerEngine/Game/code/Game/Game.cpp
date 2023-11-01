@@ -824,7 +824,8 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 		ImGui::Text("Knowledge %i", State->PersistentData.Knowledge);
 
 		ImGui::Dummy(ImVec2(Spacing, 0));
-		ImGui::TextColored(ImVec4(1,1,1,0.5f), "v%i.%i", VersionMajor, VersionMinor);
+		string V = "v" + string{VersionMajor} + "." + string{VersionMinor};
+		ImGui::TextColored(ImVec4(1,1,1,0.5f), V.Array());
 
 		ImGui::EndMainMenuBar();
 	}

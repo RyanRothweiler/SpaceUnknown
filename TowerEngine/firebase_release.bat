@@ -7,5 +7,6 @@ rem copy over build files
 robocopy Game/build/Emscripten Firebase/root /E
 
 rem deploy
-cd Firebase
+pushd Firebase
 firebase deploy
+popd

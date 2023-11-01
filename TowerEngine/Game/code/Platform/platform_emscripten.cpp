@@ -634,7 +634,7 @@ void MainLoop()
 
 		float FPS = 1.0f / (ClockDiff.count());
 		GameStateFromMemory->DeltaTimeMS = ClockDiff.count() * 1000.0f;
-		//printf("FPS %f Clock %f Delta %f \n", FPS, ClockDiff.count(), GameStateFromMemory->DeltaTimeMS);
+		GameStateFromMemory->PrevFrameFPS = FPS;
 
 		GameInput.MouseScrollDelta = 0.0f;
 
@@ -704,21 +704,6 @@ int main()
 			ccall('FileSystemCreated', 'v');
         });
     );
-
-	/*
-	test();
-
-	EM_ASM (
-		FS.syncfs(false, 
-			function(err) {
-				console.log("file system synced");
-			}
-		);
-	);
-
-
-	return 0;
-	*/
 
 	Print("Start thread queue");
 	worker_thread_info ThreadInfos[4];

@@ -69,11 +69,11 @@ namespace profiler {
 	                  )
 	{
 
-		ImGui::SetNextWindowPos(ImVec2(0, 20));
-		ImGui::SetNextWindowSize(ImVec2(Globals->Window->Width * 0.5f, (real32)Globals->Window->Height));
+		//ImGui::SetNextWindowPos(ImVec2(0, 20));
+		//ImGui::SetNextWindowSize(ImVec2(Globals->Window->Width * 0.5f, (real32)Globals->Window->Height));
 		//ImGui::SetNextWindowSize(ImVec2(100, 100));
 
-		ImGui::Begin("Profiler", &Globals->EditorData.ProfilerWindowOpen, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar);
+		ImGui::Begin("Profiler", &Globals->EditorData.ProfilerWindowOpen);
 
 		// fps
 		{

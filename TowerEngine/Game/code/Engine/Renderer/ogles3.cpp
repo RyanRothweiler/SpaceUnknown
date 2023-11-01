@@ -551,7 +551,6 @@ namespace ogles3 {
 		}
 
 		glDrawElements(GL_TRIANGLES, Command->BufferCapacity, GL_UNSIGNED_INT, Command->IndexBuffer);
-		CheckError("testing");
 
 		GlobalProfilerData->DrawCallCount++;
 

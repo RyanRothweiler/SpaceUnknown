@@ -19,7 +19,7 @@ set WarningsIgnored=-Wno-writable-strings -Wno-format -Wno-switch
 
 emcc ^
  T:/Game/code/Platform/platform_emscripten.cpp ^
- -o T:/Game/build/Emscripten/output.html ^
+ -o T:/Game/build/Emscripten/index.html ^
  --preload-file T:\Game\assets ^
  -sALLOW_MEMORY_GROWTH ^
  -sMAX_WEBGL_VERSION=2 ^
@@ -28,7 +28,9 @@ emcc ^
  -sFULL_ES3 ^
  -pthread ^
  -sPTHREAD_POOL_SIZE=4 ^
- -g ^
+ -g3 ^
+ -O3 ^
  -lidbfs.js ^
  -DRELEASE ^
+ -sDEMANGLE_SUPPORT=1 ^
  %WarningsIgnored%
