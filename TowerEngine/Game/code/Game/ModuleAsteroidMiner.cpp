@@ -7,6 +7,7 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 	WorldTargetClear(&Module->Persist->Target);
 
 	bool32 Skip = false;
+	i32 AmountGiving = 1;
 
 	// If no cargo space then do nothing
 	if (Owner->Hold.MassCurrent == Owner->Hold.GetMassLimit()) { 
@@ -41,7 +42,20 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 		}
 	}
 
+	// Mine the asteroid
 	if (WorldTargetHasTarget(&Module->Persist->Target)) {
+		asteroid* Roid = WorldTargetGetAsteroid(&Module->Persist->Target, State);
+
+		// Do we have room for that asteroid?
+		item_definition* OreInfo = GetItemDefinition(Roid->Persist->OreItem);
+		r64 NewMass = (r64)Owner->Hold.MassCurrent + ((r64)AmountGiving * OreInfo->Mass);
+		r64 Limit = (r64)Owner->Hold.GetMassLimit();
+		if (NewMass > Limit) { 
+			WorldTargetClear(&Module->Persist->Target);
+			Module->Persist->ActivationTimerMS = 0.0f;
+			return;	
+		}
+
 		Module->Persist->ActivationTimerMS += Time;
 
 		r64 ActivationTime = ModuleGetActivationTime(&Module->Definition, Owner);
@@ -50,9 +64,8 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 
 			// Do module thing
 
-			asteroid* Roid = WorldTargetGetAsteroid(&Module->Persist->Target, State);
 
-			int Amount = SubtractAvailable(&Roid->Persist->OreCount, 2);
+			int Amount = SubtractAvailable(&Roid->Persist->OreCount, AmountGiving);
 			ItemGive(&Owner->Hold, Roid->Persist->OreItem, Amount);
 
 			if (Roid->Persist->OreCount <= 0) {

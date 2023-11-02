@@ -195,12 +195,15 @@ void SaveGame(state* State, save_data::member* Root)
 
 item_definition* GetItemDefinition(item_id ItemID)
 {
+	Assert((int)ItemID < ArrayCount(Globals->AssetsList.ItemDefinitions));
 	return &Globals->AssetsList.ItemDefinitions[(int)ItemID];
 }
 
 #include "InfoWindow.cpp"
 
 bool ImGuiItemIcon(item_id ItemID, bool CanDelete) {
+
+	b32 Ret = false;
 
 	loaded_image* Icon = Globals->AssetsList.ItemDefinitions[(int)ItemID].Icon;
 	ImGui::Image(
@@ -220,14 +223,14 @@ bool ImGuiItemIcon(item_id ItemID, bool CanDelete) {
 		if (CanDelete) { 
 			if (ImGui::MenuItem("Destroy Item")) { 
 				ImGui::CloseCurrentPopup();
-				return true;
+				Ret = true;
 			}
 		}
 
 		ImGui::EndPopup();
 	}
 
-	return false;
+	return Ret;
 }
 
 #include "Persistent.cpp"
@@ -854,7 +857,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 		float Spacing = 30;
 		ImGui::Dummy(ImVec2(Spacing, 0));
-		ImGui::Text("Ship Limit %i", State->PersistentData.TreeBonuses.ShipLimit);
+		ImGui::Text("Ship Limit %i/%i", 1, State->PersistentData.TreeBonuses.ShipLimit);
 
 		ImGui::Dummy(ImVec2(Spacing, 0));
 		ImGui::Text("Knowledge %i", State->PersistentData.Knowledge);

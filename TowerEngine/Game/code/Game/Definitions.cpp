@@ -121,7 +121,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].ShipModuleID = ship_module_id::salvager_i;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].Mass = 1;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].Icon = 
-			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner];
+			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::salvager_i];
 
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].ID = item_id::cargo_expansion_i;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].DisplayName = "Cargo Expansion I";
