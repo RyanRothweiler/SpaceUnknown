@@ -55,7 +55,7 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 	}
 }
 
-void ConverterAddOrder(converter * Converter, recipe_id ID)
+void ConverterAddOrder(converter* Converter, recipe_id ID)
 {
 	Converter->IsRunning = false;
 
@@ -64,7 +64,7 @@ void ConverterAddOrder(converter * Converter, recipe_id ID)
 	Converter->Persist->RecipeID = ID;
 }
 
-void ImGuiItemCountList(item_count * Items, int32 Count)
+void ImGuiItemCountList(item_count* Items, int32 Count)
 {
 	for (int inp = 0; inp < Count; inp++) {
 		item_count* IC = &Items[inp];
@@ -72,12 +72,20 @@ void ImGuiItemCountList(item_count * Items, int32 Count)
 		int64 IconGLID = 0;
 		switch (IC->Type) {
 			case (recipe_member_type::item): {
-				IconGLID = Globals->AssetsList.ItemDefinitions[(int)IC->ItemID].Icon->GLID;
+				ImGuiItemIcon(IC->ItemID, false);
 				break;
 			}
 
 			case (recipe_member_type::ship): {
 				IconGLID = Globals->AssetsList.ShipDefinitions[(int)IC->ShipID].Icon->GLID;
+				ImGui::Image(
+					(ImTextureID)(IconGLID),
+					ImGuiImageSize,
+					ImVec2(0, 0),
+					ImVec2(1, -1),
+					ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+					ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
+				);
 				break;
 			}
 
@@ -85,14 +93,6 @@ void ImGuiItemCountList(item_count * Items, int32 Count)
 			INVALID_DEFAULT;
 		}
 
-		ImGui::Image(
-		    (ImTextureID)(IconGLID),
-		    ImGuiImageSize,
-		    ImVec2(0, 0),
-		    ImVec2(1, -1),
-		    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
-		    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
-		);
 
 		ImGui::SameLine();
 		ImGui::Text("x %i", (int)IC->Count);
@@ -117,10 +117,14 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 		ImGui::Text("Outputs"); ImGui::NextColumn();
 		ImGui::Separator();
 
+		ImGui::PushID("inputs");
 		ImGuiItemCountList(&Recipe.Inputs[0], Recipe.InputsCount);
+		ImGui::PopID();
 		ImGui::NextColumn();
 
+		ImGui::PushID("outputs");
 		ImGuiItemCountList(&Recipe.Outputs[0], Recipe.OutputsCount);
+		ImGui::PopID();
 		ImGui::NextColumn();
 
 		ImGui::Columns(1);
@@ -190,10 +194,14 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 			}
 			ImGui::NextColumn();
 
+			ImGui::PushID("input");
 			ImGuiItemCountList(&Recipe->Inputs[0], Recipe->InputsCount);
+			ImGui::PopID();
 			ImGui::NextColumn();
 
+			ImGui::PushID("outputs");
 			ImGuiItemCountList(&Recipe->Outputs[0], Recipe->OutputsCount);
+			ImGui::PopID();
 			ImGui::NextColumn();
 
 			ImGui::PopID();

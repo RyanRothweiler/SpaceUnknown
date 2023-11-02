@@ -445,8 +445,6 @@ struct editor_state {
 
 struct state {
 
-	info_window InfoWindows[10];
-
 	b32 LoadedFromFile;
 	save_file PersistentData;
 

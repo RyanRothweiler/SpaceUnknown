@@ -1,7 +1,3 @@
-item_definition* GetItemDefinition(item_id ItemID)
-{
-	return &Globals->AssetsList.ItemDefinitions[(int)ItemID];
-}
 
 void ItemHoldUpdateMass(item_hold* Hold)
 {
@@ -150,26 +146,10 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 			int64 ptr = (int64)Item;
 			if (Item->Count > 0) {
 
-				ImGui::Image(
-				    (ImTextureID)((int64)Def->Icon->GLID),
-				    ImGuiImageSize,
-				    ImVec2(0, 0),
-				    ImVec2(1, -1),
-				    ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
-				    ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
-				);
-
-				if (ImGui::BeginPopupContextItem("item context menu")) {
-					if (ImGui::MenuItem("Info")) { 
-						InfoWindowShow(Item->ID, State);
-						ImGui::CloseCurrentPopup();
-					}
-					if (ImGui::MenuItem("Destroy Item")) { 
-						ImGui::CloseCurrentPopup();
-						ItemDestroying = i;
-						OpenDestroyPopup = true;
-					}
-					ImGui::EndPopup();
+				if (ImGuiItemIcon(Item->ID, true)) {
+					ImGui::CloseCurrentPopup();
+					ItemDestroying = i;
+					OpenDestroyPopup = true;
 				}
 
 				if (CanTransfer && ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {

@@ -92,7 +92,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].ID = item_id::venigen;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].DisplayName = "Venigen";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].DisplayDescription =
-			"Base metal used for construction.";
+			"Base ore used for construction.";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].Mass = 1;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].Icon = assets::GetImage("Icon_Venigen");
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].Stackable = true;
@@ -100,7 +100,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].ID = item_id::pyrexium;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].DisplayName = "Pyrexium";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].DisplayDescription = 
-			"Base metal used for construction.";
+			"Base ore used for construction.";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].Mass = 5;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].Icon = assets::GetImage("Icon_Pyrexium");
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].Stackable = true;

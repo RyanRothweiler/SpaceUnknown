@@ -31,6 +31,10 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 				real64 Dist = Vector2Distance(Roid->Persist->WorldObject.Position, Owner->Persist->Position);
 
 				if (Dist < Module->Definition.ActivationRange) {
+					if (Module->Persist->Target.Asteroid.GUID != Roid->Persist->GUID) {
+						Module->Persist->ActivationTimerMS = 0.0f;
+					}
+
 					WorldTargetSet(&Module->Persist->Target, Roid);
 				}
 			}

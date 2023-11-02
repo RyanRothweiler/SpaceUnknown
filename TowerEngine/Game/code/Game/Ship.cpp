@@ -494,23 +494,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 				if (Module->Persist->Filled != GameNull) {
 
-					loaded_image* Icon = Globals->AssetsList.ShipModuleIcons[(int)Module->Definition.ID];
-					ImGui::Image(
-						(ImTextureID)((int64)Icon->GLID),
-						ImGuiImageSize,
-						ImVec2(0, 0),
-						ImVec2(1, -1),
-						ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
-						ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
-					);
-
-					if (ImGui::BeginPopupContextItem("item context menu")) {
-						if (ImGui::MenuItem("Info")) { 
-							InfoWindowShow(Module->Definition.ItemID, State);
-							ImGui::CloseCurrentPopup();
-						}
-						ImGui::EndPopup();
-					}
+					ImGuiItemIcon(Module->Definition.ItemID, false);
 
 					if (CurrentShip->Persist->Status == ship_status::docked &&
 							ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)
@@ -520,6 +504,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 						int D = 0;
 						ImGui::SetDragDropPayload(ImguiShipModuleUnequippingDraggingID, &D, sizeof(D));
 
+						loaded_image* Icon = Globals->AssetsList.ShipModuleIcons[(int)Module->Definition.ID];
 						ImGui::Image(
 							(ImTextureID)((int64)Icon->GLID),
 							ImVec2(40, 40),
