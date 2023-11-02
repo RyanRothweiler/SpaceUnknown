@@ -93,7 +93,7 @@ MetaStruct struct ship_journey {
 	bool32 InProgress;
 	real64 UniverseTimeEndMS;
 
-	journey_step Steps[10];
+	journey_step Steps[11];
 	int32 CurrentStep;
 	int32 StepsCount;
 

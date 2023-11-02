@@ -642,6 +642,10 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 		ImGui::Separator();
 
 		journey::ImGuiDrawSteps(CurrJour, CurrentShip, State);
+		if (!journey::CanAddSteps(CurrJour)) { 
+			string Disp = string{"Limit "} + string{journey::StepsLimit} + string{" steps per journey."} ;
+			ImGui::TextColored(ImVec4(1,0,0,1), Disp.Array()); 
+		}
 
 		ImGui::Columns(2);
 		if (ImGui::Button("Cancel", ImVec2(-1, 0))) {
@@ -681,9 +685,12 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 		ImGui::Columns(1);
 
 		// Click world to add movement command
-		if (Input->MouseLeft.OnUp && CurrentShip->Persist->Status != ship_status::moving && !Input->MouseMoved()) {
+		if (Input->MouseLeft.OnUp && CurrentShip->Persist->Status != ship_status::moving && !Input->MouseMoved() && 
+				journey::CanAddSteps(&CurrentShip->Persist->CurrentJourney)
+			) {
 
 			if (State->Hovering == GameNull) {
+
 				if (CurrentShip->Persist->Status == ship_status::docked) {
 					CreateDockUndockStep(
 							CurrentShip, 

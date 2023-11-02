@@ -1,8 +1,12 @@
 namespace journey {
 
+	// Manual limit one less than steps count 
+	// One click can add multiple steps
+	const int StepsLimit = 10;
+
 	journey_step* AddStep(ship_journey* SJ) {
-		journey_step* Step = &SJ->Steps[SJ->StepsCount++];
 		Assert(SJ->StepsCount < ArrayCount(SJ->Steps));
+		journey_step* Step = &SJ->Steps[SJ->StepsCount++];
 
 		return Step;
 	}
@@ -52,5 +56,9 @@ namespace journey {
 		}
 
 		ImGui::Separator();
+	}
+
+	b32 CanAddSteps(ship_journey* Jour) { 
+		return Jour->StepsCount < StepsLimit;
 	}
 }
