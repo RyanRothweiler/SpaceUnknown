@@ -197,13 +197,18 @@ ship_journey_estimate ShipEstimateJourney(ship* Ship, state* State) {
 
 	for (int i = 0; i < Ship->Persist->CurrentJourney.StepsCount; i++) {
 		journey_step* Step = &Ship->Persist->CurrentJourney.Steps[i];
-		if (Step->Type  == journey_step_type::movement) {
-			
-			ShipMovementStart(&DummyShip, Step, State);
-			while (!ShipSimulateMovement(&DummyShip, &Step->Movement, TimeStepMS, State)) {
-				Ret.DurationMS += TimeStepMS;
-			}
 
+		switch (Step->Type) {
+			case journey_step_type::movement: {
+				ShipMovementStart(&DummyShip, Step, State);
+				while (!ShipSimulateMovement(&DummyShip, &Step->Movement, TimeStepMS, State)) {
+					Ret.DurationMS += TimeStepMS;
+				}
+			} break;
+
+			case journey_step_type::dock_undock: {
+				Ret.DurationMS += DockTimeMS;
+			} break;
 		}
 	}
 	
