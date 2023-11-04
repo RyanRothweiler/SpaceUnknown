@@ -41,20 +41,23 @@ struct item_hold {
 		}
 	}
 
-	void ConsumeFuel(real64 Count)
-	{
-		//Assert(Persist->Items[0].ID == item_id::stl);
+	void ConsumeFuel(real64 Count) {
+		Assert(Persist->Items[0].ID == item_id::stl);
 		Persist->Items[0].Count -= Count;
+		MassChanged.MarkChanged();
 	}
 
 	r64 FuelLevel() {
-		//Assert(Persist->Items[0].ID == item_id::stl);
+		Assert(Persist->Items[0].ID == item_id::stl);
 		return Persist->Items[0].Count;
+		MassChanged.MarkChanged();
 	}
 
-	// Useful for testing. Shouldn't be used in gameplay
 	void SetFuelLevel(r64 Count) { 
-		//Assert(Persist->Items[0].ID == item_id::stl);
+		Assert(Persist->Items[0].Count == 0);
+
+		Persist->Items[0].ID = item_id::stl;
 		Persist->Items[0].Count = Count;
+		MassChanged.MarkChanged();
 	}
 };

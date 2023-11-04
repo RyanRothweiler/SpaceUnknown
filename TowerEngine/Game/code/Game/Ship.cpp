@@ -194,7 +194,6 @@ ship_journey_estimate ShipEstimateJourney(ship* Ship, state* State) {
 
 	float SimFPS = 15.0f;
 	float TimeStepMS = (1.0f / SimFPS) * 1000.0f;
-	r64 Time = 0;
 
 	for (int i = 0; i < Ship->Persist->CurrentJourney.StepsCount; i++) {
 		journey_step* Step = &Ship->Persist->CurrentJourney.Steps[i];
@@ -211,7 +210,6 @@ ship_journey_estimate ShipEstimateJourney(ship* Ship, state* State) {
 	Ret.FuelUsage = InitialFuel - DummyShip.FuelTank.FuelLevel();
 	return Ret;
 }
-
 
 void ShipStep(void* SelfData, real64 Time, state* State)
 {
@@ -603,10 +601,11 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 			ImGui::Separator();
 
-			r64 TimeLeft = CurrJour->UniverseTimeEndMS - State->PersistentData.UniverseTimeMS;
-			r64 PercProgress = TimeLeft / CurrJour->Estimate.DurationMS;
-			TimeLeft = MillisecondsToMinutes(TimeLeft);
-			ImGui::Text("%.2f minutes remaining ", TimeLeft);
+			r64 TimeLeftMS = CurrJour->UniverseTimeEndMS - State->PersistentData.UniverseTimeMS;
+			r64 TimeLeftMinutes = MillisecondsToMinutes(TimeLeftMS);
+			ImGui::Text("%.2f minutes remaining ", TimeLeftMinutes);
+
+			r64 PercProgress = TimeLeftMS / CurrJour->Estimate.DurationMS;
 			ImGui::ProgressBar((float)PercProgress, ImVec2(-1.0f, 1.0f));
 
 			//journey::ImGuiDrawSteps(CurrJour, CurrentShip, State);
