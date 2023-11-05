@@ -167,6 +167,8 @@ void Save()
 
 void SaveGame(state* State, save_data::member* Root)
 {
+	return;
+
 	// Time
 	using std::chrono::duration_cast;
 	using std::chrono::system_clock;

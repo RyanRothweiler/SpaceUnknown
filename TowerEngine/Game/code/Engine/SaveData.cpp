@@ -41,9 +41,9 @@ namespace save_data {
 			if (MI->Type != meta_member_type::custom) {
 
 				b32 Found = false;
-				for (int i = 0; i < ArrayCount(Root->Pairs[0]); i++) {
-					if (!Root->Pairs[KeyHash][i].Used) {
-						Pair = &Root->Pairs[KeyHash][i];
+				for (int i = 0; i < ArrayCount(Root->Pairs->Array); i++) {
+					if (!Root->Pairs[KeyHash].Array[i].Used) {
+						Pair = &Root->Pairs[KeyHash].Array[i];
 						Found = true;
 						break;
 					}
@@ -58,9 +58,9 @@ namespace save_data {
 			// if reading, then find a pair that exists
 
 			b32 Found = false;
-			for (int i = 0; i < ArrayCount(Root->Pairs[0]); i++) {
-				if (Root->Pairs[KeyHash][i].Key == KeyHashFull) {
-					Pair = &Root->Pairs[KeyHash][i];
+			for (int i = 0; i < ArrayCount(Root->Pairs->Array); i++) {
+				if (Root->Pairs[KeyHash].Array[i].Key == KeyHashFull) {
+					Pair = &Root->Pairs[KeyHash].Array[i];
 					Found = true;
 				}
 			}

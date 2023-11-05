@@ -25,8 +25,12 @@ namespace save_data {
 		} Data;
 	};
 
+	struct member_array {
+		pair Array[20];
+	};
+
 	struct member {
-		pair Pairs[MEMBER_PAIRS_MAX][20];
+		member_array* Pairs;
 	};
 
 };
