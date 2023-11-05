@@ -9,7 +9,7 @@
 #include <ctime>
 
 int64 VersionMajor = 0;
-int64 VersionMinor = 5;
+int64 VersionMinor = 6;
 
 ImGuiWindowFlags SelectionHoverFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing;
 
@@ -1228,7 +1228,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				color Color = COLOR_WHITE;
 				vector2 Size = vector2{Node->CircleRadius, Node->CircleRadius};
 				if (!Node->Unlocked) {
-					Color.A = 0.6f;
+					Color.A = 0.25f;
 				}
 				if (SkillNodeCanUnlock(Node)) {
 					Color.A = 0.5f;

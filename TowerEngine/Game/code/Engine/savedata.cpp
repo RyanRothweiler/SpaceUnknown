@@ -31,7 +31,7 @@ namespace save_data {
 	{
 		string KS = KeyParent + MI->Name + ArrayIndex;
 		int64 KeyHashFull = StringHash(KS);
-		int64 KeyHash = KeyHashFull % MEMBER_PARS_MAX;
+		int64 KeyHash = KeyHashFull % MEMBER_PAIRS_MAX;
 		pair* Pair = {};
 
 		if (Direction == direction::write) {
@@ -64,21 +64,6 @@ namespace save_data {
 					Found = true;
 				}
 			}
-
-			// Save data didn't have that key
-			if (!Found) {
-				//return;
-			}
-			//Assert(Found);
-
-			/*
-			for (int i = 0; i < Root->PairsCount; i++) {
-				if (Root->Pairs[i].Key == KeyHash) {
-					Pair = &Root->Pairs[i];
-					break;
-				}
-			}
-			*/
 		}
 
 		switch (MI->Type) {
