@@ -81,4 +81,5 @@ struct ships_list {
 
 void ShipUpdateMass(ship* Ship);
 void ShipRemoveModule(ship_module* Module, state* State);
-ship* ShipSetup(vector2 Pos, ship_id ID, state * State);
+ship* ShipSetup(ship* Ship, ship_persistent* Persist, state* State);
+ship* ShipCreate(state* State, ship_id Type);

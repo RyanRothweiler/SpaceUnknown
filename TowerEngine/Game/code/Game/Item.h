@@ -47,10 +47,11 @@ struct item_hold {
 		MassChanged.MarkChanged();
 	}
 
-	r64 FuelLevel() {
-		Assert(Persist->Items[0].ID == item_id::stl);
-		return Persist->Items[0].Count;
-		MassChanged.MarkChanged();
+	r64 GetFuelLevel() {
+		if (Persist->Items[0].ID == item_id::stl) {
+			return Persist->Items[0].Count;
+		}
+		return 0;
 	}
 
 	void SetFuelLevel(r64 Count) { 

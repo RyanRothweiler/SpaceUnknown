@@ -24,7 +24,9 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 						} break;
 
 						case (recipe_member_type::ship): {
-							//ShipSetup(vector2{0, 0}, C->ShipID, State);
+							ship* Ship = ShipCreate(State, C->ShipID);
+							ShipSetup(Ship, Ship->Persist, State);
+							StationDockShip(Converter->Owner, Ship);
 						} break;
 
 						INVALID_DEFAULT;

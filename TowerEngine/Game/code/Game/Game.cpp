@@ -1228,7 +1228,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				color Color = COLOR_WHITE;
 				vector2 Size = vector2{Node->CircleRadius, Node->CircleRadius};
 				if (!Node->Unlocked) {
-					Color.A = 0.3f;
+					Color.A = 0.6f;
 				}
 				if (SkillNodeCanUnlock(Node)) {
 					Color.A = 0.5f;

@@ -27,3 +27,6 @@ struct station {
 
 	item_hold Hold;
 };
+
+
+void StationDockShip(station * Station, ship * Ship);

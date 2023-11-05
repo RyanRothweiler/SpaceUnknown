@@ -189,7 +189,7 @@ ship_journey_estimate ShipEstimateJourney(ship* Ship, state* State) {
 	DummyShip.Persist = &DummyPersist;
 	DummyShip.FuelTank.Persist = &DummyItemHold;
 
-	r64 InitialFuel = Ship->FuelTank.FuelLevel();
+	r64 InitialFuel = Ship->FuelTank.GetFuelLevel();
 	DummyShip.FuelTank.SetFuelLevel(InitialFuel);
 
 	float SimFPS = 15.0f;
@@ -212,7 +212,7 @@ ship_journey_estimate ShipEstimateJourney(ship* Ship, state* State) {
 		}
 	}
 	
-	Ret.FuelUsage = InitialFuel - DummyShip.FuelTank.FuelLevel();
+	Ret.FuelUsage = InitialFuel - DummyShip.FuelTank.GetFuelLevel();
 	return Ret;
 }
 
@@ -663,7 +663,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 
 			// Enough fuel?
-			if (CurrentShip->FuelTank.FuelLevel() >= CurrJour->Estimate.FuelUsage) {
+			if (CurrentShip->FuelTank.GetFuelLevel() >= CurrJour->Estimate.FuelUsage) {
 
 				// Button clicked?
 				if (ImGui::Button("Execute", ImVec2(-1, 0))) { 
