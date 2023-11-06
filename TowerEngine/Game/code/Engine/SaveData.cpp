@@ -31,7 +31,7 @@ namespace save_data {
 	{
 		string KS = KeyParent + MI->Name + ArrayIndex;
 		int64 KeyHashFull = StringHash(KS);
-		int64 KeyHash = KeyHashFull % Root->PairsCount;
+		int64 KeyHash = KeyHashFull % Root->Info.PairsCount;
 		pair* Pair = {};
 
 		if (Direction == direction::write) {
@@ -41,11 +41,15 @@ namespace save_data {
 			if (MI->Type != meta_member_type::custom) {
 
 				b32 Found = false;
-				for (int i = 0; i < ArrayCount(Root->Pairs->Array); i++) {
-					if (!Root->Pairs[KeyHash].Array[i].Used) {
-						Pair = &Root->Pairs[KeyHash].Array[i];
-						Found = true;
-						break;
+				// Also iterate through the hash table. 
+				// This allows overflowing from this collision list onto the next
+				for (i64 j = KeyHash; j < Root->Info.PairsCount && !Found; j++) {
+					for (int i = 0; i < ArrayCount(Root->Pairs->Array) && !Found; i++) {
+						if (!Root->Pairs[j].Array[i].Used) {
+							Pair = &Root->Pairs[j].Array[i];
+							KeyHash = j;
+							Found = true;
+						}
 					}
 				}
 				Assert(Found);
@@ -241,11 +245,12 @@ namespace save_data {
 		}
 	}
 
-	member* AllocateMember(i32 PairsCount, memory_arena* Memory) {
-		Assert(PairsCount < MEMBER_PAIRS_MAX);
+	member* AllocateMember(i32 PairsCount, memory_arena* Memory, b32 Linear) {
+		Assert(PairsCount <= MEMBER_PAIRS_MAX);
 
 		member* Ret = (member*)ArenaAllocate(Memory, sizeof(save_data::member), true);
-		Ret->PairsCount = PairsCount;
+		Ret->Info.PairsCount = PairsCount;
+		Ret->Info.Linear = Linear;
 		return Ret;
 	}
 
@@ -253,7 +258,7 @@ namespace save_data {
 	{
 		Direction = direction::write;
 		AddMembers(Root, "", MetaInfo, MetaInfoCount, Data);
-		PlatformApi.WriteFile(FileDest, (void*)Root, sizeof(i32) + (sizeof(member_array) * Root->PairsCount));
+		PlatformApi.WriteFile(FileDest, (void*)Root, sizeof(member_info) + (sizeof(member_array) * Root->Info.PairsCount));
 	}
 
 	// Returns if successful

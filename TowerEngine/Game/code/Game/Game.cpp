@@ -379,7 +379,7 @@ void Start(engine_state* EngineState)
 	state* State = &EngineState->GameState;
 
 	SaveDataFolder = EngineState->SaveDataFolder;
-	GlobalSaveDataRoot = (save_data::member*)ArenaAllocate(GlobalPermMem, sizeof(save_data::member));
+	GlobalSaveDataRoot = save_data::AllocateMember(MEMBER_PAIRS_MAX, GlobalPermMem, false);
 
 	// globalid hashmap
 	hash::AllocateTable(&State->PersistentPointerSources, 64, sizeof(persistent_pointer), GlobalPermMem);

@@ -29,9 +29,14 @@ namespace save_data {
 		pair Array[20];
 	};
 
+	struct member_info {
+		i32 PairsCount;
+		b32 Linear;
+	};
+
 	// !!! Adding anything here will break theSaveData::Write
 	struct member {
-		i32 PairsCount;
+		member_info Info;
 		member_array Pairs[MEMBER_PAIRS_MAX];
 	};
 
