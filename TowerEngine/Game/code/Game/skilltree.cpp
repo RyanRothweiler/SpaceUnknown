@@ -51,7 +51,8 @@ void SkillTreeNodeSave(skill_node * Node, save_data::member* Root)
 
 void SkillTreeSaveAll(state * State)
 {
-	save_data::member* Root = (save_data::member*)ArenaAllocate(GlobalTransMem, sizeof(save_data::member));
+	//save_data::member* Root = (save_data::member*)ArenaAllocate(GlobalTransMem, sizeof(save_data::member));
+	save_data::member* Root = save_data::AllocateMember(256, GlobalTransMem);
 	for (int i = 0; i < State->SkillNodesCount; i++) {
 		SkillTreeNodeSave(&State->SkillNodes[i], Root);
 	}

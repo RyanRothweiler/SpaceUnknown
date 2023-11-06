@@ -31,7 +31,7 @@ namespace save_data {
 	{
 		string KS = KeyParent + MI->Name + ArrayIndex;
 		int64 KeyHashFull = StringHash(KS);
-		int64 KeyHash = KeyHashFull % MEMBER_PAIRS_MAX;
+		int64 KeyHash = KeyHashFull % Root->PairsCount;
 		pair* Pair = {};
 
 		if (Direction == direction::write) {
@@ -228,7 +228,6 @@ namespace save_data {
 
 				char* Start = (char*)Data;
 				Start = Start + (Member->Offset + (i * Member->Size));
-				//Start = Start + MI->Offset;
 
 				string Key = KeyParent;
 				string ArrayIndexKey = "";
@@ -242,14 +241,17 @@ namespace save_data {
 		}
 	}
 
-	// NOTE (Ryan) This works because trans mem will be allocated contiguously
+	member* AllocateMember(i32 PairsCount, memory_arena* Memory) {
+		member* Ret = (member*)ArenaAllocate(Memory, sizeof(save_data::member), true);
+		Ret->PairsCount = PairsCount;
+		return Ret;
+	}
+
 	void Write(char* FileDest, meta_member* MetaInfo, uint32 MetaInfoCount, void* Data, member* Root)
 	{
 		Direction = direction::write;
-		ClearMemory((uint8*)Root, sizeof(member));
 		AddMembers(Root, "", MetaInfo, MetaInfoCount, Data);
-
-		PlatformApi.WriteFile(FileDest, (void*)Root, sizeof(member));
+		PlatformApi.WriteFile(FileDest, (void*)Root, sizeof(i32) + (sizeof(member_array) * Root->PairsCount));
 	}
 
 	// Returns if successful
@@ -262,7 +264,6 @@ namespace save_data {
 		if (Result.ContentsSize > 0) {
 			member* Root = (member*)Result.Contents;
 			AddMembers(Root, "", MetaInfo, MetaInfoCount, Dest);
-
 			return true;
 		}
 

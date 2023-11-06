@@ -3,7 +3,7 @@ namespace save_data {
 	#define MEMBER_PAIRS_MAX 131'072
 
 	struct pair {
-		b32 Used;
+		i8 Used;
 		int64 Key;
 
 		meta_member_type Type;
@@ -29,8 +29,10 @@ namespace save_data {
 		pair Array[20];
 	};
 
+	// !!! Adding anything here will break theSaveData::Write
 	struct member {
-		member_array* Pairs;
+		i32 PairsCount;
+		member_array Pairs[MEMBER_PAIRS_MAX];
 	};
 
 };
