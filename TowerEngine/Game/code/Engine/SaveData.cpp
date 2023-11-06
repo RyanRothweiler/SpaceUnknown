@@ -242,6 +242,8 @@ namespace save_data {
 	}
 
 	member* AllocateMember(i32 PairsCount, memory_arena* Memory) {
+		Assert(PairsCount < MEMBER_PAIRS_MAX);
+
 		member* Ret = (member*)ArenaAllocate(Memory, sizeof(save_data::member), true);
 		Ret->PairsCount = PairsCount;
 		return Ret;
