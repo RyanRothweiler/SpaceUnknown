@@ -91,6 +91,10 @@ struct thread_work {
 	work_status Status;
 };
 
+struct network_call_result {
+	void* Response;
+};
+
 namespace platform {
 	struct api {
 		void(*MakeDirectory)(char* Path);
@@ -109,6 +113,8 @@ namespace platform {
 		path_list*(*GetPathsForFileType)(char* FileType, const char* Root, memory_arena* Memory, path_list* PathList);
 		void(*OpenFileDialogue)(char* Path, int32 MaxPathLength);
 		thread_work*(*ThreadAddWork)(game_thread_proc WorkMethod, void* WorkParams);
+
+		network_call_result(*SendNetworkCall)(memory_arena* Memory); 
 
 		// Between 0 and 1
 		real64(*RandomFloat)();

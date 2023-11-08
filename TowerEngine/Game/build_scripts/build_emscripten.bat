@@ -27,6 +27,7 @@ emcc ^
  -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=$ccall ^
  -sEXPORTED_RUNTIME_METHODS=ccall ^
  -sFULL_ES3 ^
+ -sFETCH ^
  -pthread ^
  -sPTHREAD_POOL_SIZE=4 ^
  -g3 ^

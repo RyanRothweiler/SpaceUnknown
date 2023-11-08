@@ -437,7 +437,7 @@ ProcessInputState(input_state *ButtonProcessing, bool32 NewState)
 
 EM_BOOL KeyCallback(int eventType, const EmscriptenKeyboardEvent *e, void *userData)
 {
-	//printf("Keyboard event %i button %s\n", eventType, e->key);
+	printf("Keyboard event %i button %s\n", eventType, e->key);
 
 	if (std::strlen(e->key) == 1) {
 		if (eventType == EMSCRIPTEN_EVENT_KEYDOWN) {
@@ -603,28 +603,19 @@ void downloadSucceeded(emscripten_fetch_t *fetch) {
 	printf("Finished downloading %llu bytes from URL %s.\n", fetch->numBytes, fetch->url);
 	// The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
 
-	//string Str = BuildString((char*)fetch->data, fetch->numBytes - 1);
+	string Str = BuildString((char*)fetch->data, fetch->numBytes - 1);
 	//Print(Str.Array());
 	//printf("%.*s \n", fetch->numBytes, fetch->data);
 
-	//json::json_data Json = json::Load(fetch->data, fetch->numBytes, );
-
 	for (int i = 0; i < fetch->numBytes - 1; i++) {
-		printf("%c", fetch->data[i]);
+		printf("%c \n", fetch->data[i]);
 	}
-	printf("\n");
 
 	emscripten_fetch_close(fetch); // Free data associated with the fetch.
 }
 
 void downloadFailed(emscripten_fetch_t *fetch) {
 	printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
-
-	for (int i = 0; i < fetch->numBytes - 1; i++) {
-		printf("%c", fetch->data[i]);
-	}
-	printf("\n");
-
 	emscripten_fetch_close(fetch); // Also free data on failure.
 }
 
@@ -795,7 +786,7 @@ int main()
 	PlatformEm.GetFileWriteTime = &GetFileWriteTime;
 	PlatformEm.GetProcAddress = &GetProcAddress;
 	PlatformEm.GetPathsForFileType = &GetPathsForFileType;
-	PlatformEm.SendNetworkCall = &SendNetworkCall;
+	//PlatformEm.SendNetworkCall = &SendNetworkCall;
 
 	PlatformEm.ScreenDPI = 100;
 	PlatformEm.ScreenDPICo = 1.0f;
@@ -975,16 +966,15 @@ int main()
 		emscripten_fetch_attr_t attr;
 		emscripten_fetch_attr_init(&attr);
 		strcpy(attr.requestMethod, "GET");
-		attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+		attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY | EMSCRIPTEN_FETCH_SYNCHRONOUS;
 
 		// Make a Range request to only fetch bytes 10 to 20
 		const char* headers[] = {"accept", "application/json", NULL};
 		attr.requestHeaders = headers;
-		attr.onsuccess = downloadSucceeded;
-		attr.onerror = downloadFailed;
+		//attr.onsuccess = downloadSucceeded;
+		//attr.onerror = downloadFailed;
 		emscripten_fetch_t *fetch = emscripten_fetch(&attr, "https://httpbin.org/get");
 
-		/*
 		if (fetch->status == 200) {
 			printf("Finished downloading %llu bytes from URL %s.\n", fetch->numBytes, fetch->url);
 			// The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
@@ -998,7 +988,6 @@ int main()
 		}
 
 		emscripten_fetch_close(fetch);
-		*/
 	}
 
 	engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;

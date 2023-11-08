@@ -65,7 +65,6 @@ namespace json {
 	json_data LoadJsonData(tokenizer* Tokenizer, bool32 IsArray, memory_arena* Memory)
 	{
 		json_data JsonData = GetJson(Memory);
-
 		token_type NextToken = GetNextToken(Tokenizer);
 
 		while (true) {
@@ -90,8 +89,8 @@ namespace json {
 
 				if (Next == token_type::quote) {
 					// data itself
+					
 					JsonData.Pairs[JsonData.PairsCount].Data = GrabUntilToken(Tokenizer, token_type::quote);
-
 
 				} else if (Next == token_type::open_bracket)  {
 					// an array
@@ -151,6 +150,17 @@ namespace json {
 		}
 
 		return json_data{};
+	}
+
+	json_data Load(char* Start, int32 Count, memory_arena * Memory) {
+		tokenizer Tokenizer = {};
+		Tokenizer.Position = Start;
+		Tokenizer.End = Tokenizer.Position + Count;
+
+		token_type NextToken = GetNextToken(&Tokenizer);
+		Assert(NextToken == token_type::open_curly);
+
+		return LoadJsonData(&Tokenizer, false, Memory);
 	}
 
 	void AddKeyPair(string Key, string Data, json_data * JsonData)
