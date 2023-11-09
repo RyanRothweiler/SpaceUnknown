@@ -572,24 +572,6 @@ static EM_BOOL ResizedCallback(int event_type, const EmscriptenUiEvent *event, v
 
 void downloadSucceeded(emscripten_fetch_t *fetch) {
 	printf("Finished downloading %llu bytes from URL %s.\n", fetch->numBytes, fetch->url);
-	// The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
-
-	//string Str = BuildString((char*)fetch->data, fetch->numBytes - 1);
-	//Print(Str.Array());
-	//printf("%.*s \n", fetch->numBytes, fetch->data);
-
-	//json::json_data Json = json::Load(fetch->data, fetch->numBytes, );
-
-	for (int i = 0; i < fetch->numBytes - 1; i++) {
-		printf("%c", fetch->data[i]);
-	}
-	printf("\n");
-
-	emscripten_fetch_close(fetch); // Free data associated with the fetch.
-}
-
-void downloadFailed(emscripten_fetch_t *fetch) {
-	printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
 
 	/*
 	for (int i = 0; i < fetch->numBytes - 1; i++) {
@@ -598,7 +580,41 @@ void downloadFailed(emscripten_fetch_t *fetch) {
 	printf("\n");
 	*/
 
+	emscripten_fetch_close(fetch); // Free data associated with the fetch.
+}
+
+void downloadFailed(emscripten_fetch_t *fetch) {
+	printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
 	emscripten_fetch_close(fetch); // Also free data on failure.
+}
+
+void SendEvent(string EventName, uint32 UserID) {
+	emscripten_fetch_attr_t attr;
+	emscripten_fetch_attr_init(&attr);
+	strcpy(attr.requestMethod, "POST");
+	attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+
+	const char* headers[] = {"accept", "application/json", NULL};
+	attr.requestHeaders = headers;
+	attr.onsuccess = downloadSucceeded;
+	attr.onerror = downloadFailed;
+
+	string Token = "5e61c8224851fa1166f68fa342367ad0";
+	string UserIDStr = string{UserID};
+	string InsertID = string{GetGUID()};
+	string Data = string{"[{\"event\":\"" + EventName + "\", \"properties\":{ \"token\":\"" + Token + "\", \"distinct_id\":\"" + UserIDStr + "\", \"$insert_id\":\""} + InsertID + string{"\"} }]"};
+
+	// !!!! not freed !!!! leak 
+	char* MalData = (char*)malloc(StringLength(Data));
+	MemoryCopy(MalData, Data.Array(), StringLength(Data));
+
+	Print("Sent call");
+	Print(Data.Array());
+
+	attr.requestData = MalData;
+	attr.requestDataSize = StringLength(Data);
+
+	emscripten_fetch_t *fetch = emscripten_fetch(&attr, "https://api.mixpanel.com/track");
 }
 
 void MainLoop()
@@ -630,6 +646,28 @@ void MainLoop()
 	}
 
 	if (FileSystemReady) {
+
+		// app start event
+		{
+			static bool First = true;
+			if (First) { 
+				First = false;
+				uint32 UserID = GetGUID();
+
+				char* FilePath = "SpaceUnknown/UserGUID.dat"; 
+				if (FileExists(FilePath)) {
+					read_file_result Result = PlatformApi.ReadFile(FilePath, &GameMemory.TransientMemory);
+					UserID = *((uint32*)Result.Contents);
+					printf("Found existing UserID \n");
+				} else {
+					WriteFile(FilePath, (void*)(&UserID), sizeof(uint32));
+				}
+
+				printf("Send app start event UserID %i \n", UserID);
+				SendEvent("app_start", UserID);
+			}
+		}
+
 		GameLoop(&GameMemory, &GameInput, &WindowInfo, &GameAudio, "T:/Game/assets/");
 
 		engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
@@ -713,6 +751,7 @@ int main()
 			ccall('FileSystemCreated', 'v');
         });
     );
+
 
 	Print("Start thread queue");
 	worker_thread_info ThreadInfos[4];
@@ -939,32 +978,6 @@ int main()
 			printf("OpenGL Info: %s \n", info);
 		}
 		Print("Created ogl context");
-	}
-
-	// http testing
-	{
-		Print("request testing");
-
-		emscripten_fetch_attr_t attr;
-		emscripten_fetch_attr_init(&attr);
-		strcpy(attr.requestMethod, "POST");
-		attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
-
-		// Make a Range request to only fetch bytes 10 to 20
-		const char* headers[] = {"accept", "application/json", NULL};
-		attr.requestHeaders = headers;
-		attr.onsuccess = downloadSucceeded;
-		attr.onerror = downloadFailed;
-
-
-		string Data = string{"[{\"event\":\"eventnamelocal\", \"properties\":{ \"token\":\"5e61c8224851fa1166f68fa342367ad0\", \"distinct_id\":\"ryanlocal\", \"$insert_id\":\""} + string{GetGUID()} + string{"\"} }]"};
-		Print(Data.Array());
-
-		attr.requestData = Data.Array();
-		attr.requestDataSize = StringLength(Data);
-
-		emscripten_fetch_t *fetch = emscripten_fetch(&attr, "https://api.mixpanel.com/track");
-
 	}
 
 	engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
