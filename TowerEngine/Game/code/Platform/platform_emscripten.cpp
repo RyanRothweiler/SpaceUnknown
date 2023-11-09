@@ -5,9 +5,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
 #include <emscripten.h>
+#include <emscripten/console.h>
 #include <emscripten/html5.h>
 #include <emscripten/fetch.h>
+
 #include <sys/time.h>
 #include <filesystem>
 #include <chrono>
@@ -30,6 +33,10 @@ void Print(char* Message)
 {
 	printf("%s", Message);
 	printf("\n");
+}
+
+void PrintError(char* Message) {
+	emscripten_console_error(Message);	
 }
 
 real64 RandomFloat()
@@ -109,16 +116,6 @@ void WriteFile(char *FileDestination, void *Data, uint32 DataSize)
 	} else {
 		printf("Could not write file %s \n", FileDestination);
 	}
-
-
-	/*
-	EM_ASM(
-        FS.syncfs(false, function (err) {
-            // Error
-        });
-    );
-	*/
-
 }
 
 void OpenFileExternal(char* FileDest)
@@ -259,29 +256,10 @@ void* GetProcAddress(char* ProcName)
 	return Ret;
 }
 
-string FileTypeDesired;
-static int Explore(const char *fpath, const struct stat *sb, int typeflag)
-{
-	/*
-	printf("Getting paths for %s \n", fpath);
-	printf("File type %s \n", FileTypeDesired.Array());
-
-	if (typeflag == FTW_F) {
-		if (fnmatch(FileTypeDesired.Array(), fpath, FNM_CASEFOLD) == 0) {
-			printf("Found file %s \n", fpath);
-			//std::cout << "found txt file: " << fpath << std::endl;
-		}
-	}
-	*/
-	return 0;
-}
-
 // This is recursive and will include all child files also.
 // Returns the end of the list
 path_list* GetPathsForFileType(char* FileTypeChar, const char* RootDir, memory_arena* Memory, path_list* PathList)
 {
-	//printf("Getting Paths For Type %s \n", RootDir);
-
 	path_list* NextPath = PathList;
 
 	std::string path = RootDir;
@@ -290,20 +268,13 @@ path_list* GetPathsForFileType(char* FileTypeChar, const char* RootDir, memory_a
 		std::string Path = entry.path().string();
 
 		if (entry.is_directory()) {
-			//printf("Do Directory %s \n", Path.c_str());
 			NextPath = GetPathsForFileType(FileTypeChar, Path.c_str(), Memory, NextPath);
 		} else {
-			//printf("File %s \n", Path.c_str());
 
 			string MyStr = Path.c_str();
 			if (StringEndsWith(MyStr, FileTypeChar)) {
 				NextPath->Path = Path.c_str();
 				NextPath->Next = (path_list*)ArenaAllocate(Memory, sizeof(path_list));
-
-				//int32 Count = PathListCount(NextPaths);
-				//int Count = NextPath->GetCount();
-				//printf("		adding file to path %s\n", NextPath->Path.Array());
-
 				NextPath = NextPath->Next;
 			}
 		}
@@ -620,10 +591,12 @@ void downloadSucceeded(emscripten_fetch_t *fetch) {
 void downloadFailed(emscripten_fetch_t *fetch) {
 	printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
 
+	/*
 	for (int i = 0; i < fetch->numBytes - 1; i++) {
 		printf("%c", fetch->data[i]);
 	}
 	printf("\n");
+	*/
 
 	emscripten_fetch_close(fetch); // Also free data on failure.
 }
@@ -974,7 +947,7 @@ int main()
 
 		emscripten_fetch_attr_t attr;
 		emscripten_fetch_attr_init(&attr);
-		strcpy(attr.requestMethod, "GET");
+		strcpy(attr.requestMethod, "POST");
 		attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
 
 		// Make a Range request to only fetch bytes 10 to 20
@@ -982,23 +955,16 @@ int main()
 		attr.requestHeaders = headers;
 		attr.onsuccess = downloadSucceeded;
 		attr.onerror = downloadFailed;
-		emscripten_fetch_t *fetch = emscripten_fetch(&attr, "https://httpbin.org/get");
 
-		/*
-		if (fetch->status == 200) {
-			printf("Finished downloading %llu bytes from URL %s.\n", fetch->numBytes, fetch->url);
-			// The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
-			//
-			for (int i = 0; i < fetch->numBytes - 1; i++) {
-				printf("%c \n", fetch->data[i]);
-			}
 
-		} else {
-			printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
-		}
+		string Data = string{"[{\"event\":\"eventnamelocal\", \"properties\":{ \"token\":\"5e61c8224851fa1166f68fa342367ad0\", \"distinct_id\":\"ryanlocal\", \"$insert_id\":\""} + string{GetGUID()} + string{"\"} }]"};
+		Print(Data.Array());
 
-		emscripten_fetch_close(fetch);
-		*/
+		attr.requestData = Data.Array();
+		attr.requestDataSize = StringLength(Data);
+
+		emscripten_fetch_t *fetch = emscripten_fetch(&attr, "https://api.mixpanel.com/track");
+
 	}
 
 	engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
