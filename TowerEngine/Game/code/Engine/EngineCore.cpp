@@ -917,8 +917,8 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 
 	// Keep at the end, so it reports correctly on the frame
 	//profiler::ImGuiProfiler(GameState, Memory, &GameState->ProfilerData, &GameState->OGLProfilerData);
-	profiler::InitProfiler(&GameState->ProfilerData);
-	profiler::InitProfiler(&GameState->OGLProfilerData);
+	//profiler::InitProfiler(&GameState->ProfilerData);
+	//profiler::InitProfiler(&GameState->OGLProfilerData);
 
 	// Render imgui
 	{

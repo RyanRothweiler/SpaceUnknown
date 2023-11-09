@@ -1,5 +1,6 @@
 rem Making emscripten build
 pushd Game
+set BuildVars=-DRELEASE
 call ./build_scripts/build_emscripten.bat
 popd
 

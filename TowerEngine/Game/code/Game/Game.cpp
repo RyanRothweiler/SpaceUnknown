@@ -488,7 +488,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 	}
 
 	// Editor
-	{
+	if (!BuildConfig::Release) {
 		if (Input->FunctionKeys[1].OnDown) {
 			EditorState->EditorMode = !EditorState->EditorMode;
 		}
