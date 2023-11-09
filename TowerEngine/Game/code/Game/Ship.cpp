@@ -533,7 +533,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 							r64 MinutesRemaining = (r64)MillisecondsToMinutes(MSRemaining);
 							ImGui::Text("%.2lf minutes remaining ", MinutesRemaining);
 						} else {
-							ImGui::Text("Not Running");
+ 							ImGui::TextColored(ImVec4(1,1,1,0.5f), "idle");
 						}
 					}
 
