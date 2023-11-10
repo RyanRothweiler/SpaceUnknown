@@ -12,7 +12,7 @@ set WarningsIgnored=-wd4201 -wd4100 -wd4127 -wd4189 -wd4505 -wd4065 -wd4700 -wd4
 set CommonCompilerFlags=-MTd -nologo -fp:fast -Gm- -GR- -EHa- -Od -Oi -WX -W4 %WarningsIgnored% -FC -Zi
 set CommonLinkerFlags= -incremental:no -opt:ref user32.lib gdi32.lib opengl32.lib Rpcrt4.lib shcore.lib winmm.lib Comdlg32.lib
 
-set BuildVariables= -DDEBUG=1 -DDEBUG_AUDIO=0 -DUNIT_TESTING=1 -DWINDOWS=1 -DAUTOMATED_TESTING=0 -DRELEASE=0 -DPLATFORM_WINDOWS=1
+set BuildVariables= -DDEBUG=1 -DDEBUG_AUDIO=0 -DUNIT_TESTING=1 -DWINDOWS=1 -DAUTOMATED_TESTING=0 -DPLATFORM_WINDOWS=1
 ::set BuildVariables= -DDEBUG=1 -DDEBUG_AUDIO=0 -DUNIT_TESTING=1 -DWINDOWS=1 -DAUTOMATED_TESTING=1
 
 

@@ -35,8 +35,8 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 			}
 		} else {
 
-			recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Recipe, &Converter->Owner->Hold);
-			if (InputsMissing.Count == 0) {
+			recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Recipe, &Converter->Owner->Hold, State);
+			if (InputsMissing.Meets()) {
 				Converter->IsRunning = true;
 
 				// Consume items. We can assume they exist in sufficient amounts
@@ -102,7 +102,7 @@ void ImGuiItemCountList(item_count* Items, int32 Count)
 	}
 }
 
-void StationProductionService(station* Station, int32 ConverterIndex, station_service Service)
+void StationProductionService(station* Station, int32 ConverterIndex, station_service Service, state* State)
 {
 	static recipe_id RecipeIDSelected = recipe_id::none;
 
@@ -139,12 +139,15 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 			string ProgDisp = ProgStr + "%";
 			ImGui::ProgressBar(Progress, ImVec2(-1.0f, 0.0f), ProgDisp.Array());
 		} else {
-			recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Recipe, &Station->Hold);
+			recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Recipe, &Station->Hold, State);
 
 			for (int i = 0; i < InputsMissing.Count; i++) {
 				item_definition Def = Globals->AssetsList.ItemDefinitions[(int)InputsMissing.Items[i].ItemID];
 				string Output = "Item Missing - " + Def.DisplayName + " x" + InputsMissing.Items[i].Count;
 				ImGui::TextColored(ImVec4(1, 0, 0, 1), Output.Array());
+			}
+			if (InputsMissing.ShipLimit) { 
+				ImGui::TextColored(ImVec4(1, 0, 0, 1), "Currently at ship limit. Cannot create more ships.");
 			}
 		}
 
@@ -237,17 +240,17 @@ void StationSelected(selection * Sel, engine_state * EngineState, game_input * I
 
 	if (ImGui::CollapsingHeader("Services")) {
 		if (ImGui::TreeNode("Ship Yard")) {
-			StationProductionService(CurrentStation, 0, station_service::shipyard);
+			StationProductionService(CurrentStation, 0, station_service::shipyard, State);
 			ImGui::TreePop();
 		}
 
 		if (ImGui::TreeNode("Refinery")) {
-			StationProductionService(CurrentStation, 1, station_service::refinery);
+			StationProductionService(CurrentStation, 1, station_service::refinery, State);
 			ImGui::TreePop();
 		}
 
 		if (ImGui::TreeNode("Manufacturing")) {
-			StationProductionService(CurrentStation, 2, station_service::manufacturing);
+			StationProductionService(CurrentStation, 2, station_service::manufacturing, State);
 			ImGui::TreePop();
 		}
 	}

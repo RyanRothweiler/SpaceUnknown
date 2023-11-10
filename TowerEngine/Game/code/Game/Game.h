@@ -494,6 +494,8 @@ struct state {
 	real32 UniverseOrthoZoom;
 	vector3 SkillTreeCamPos;
 	real32 SkillTreeOrthoZoom;
+
+	i32 ShipsCount;
 };
 
 #endif

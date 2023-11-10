@@ -31,8 +31,7 @@ void ClearMemory(uint8* Mem, uint64 Size)
 }
 
 
-void* ArenaAllocate(memory_arena *Memory, uint64 Size, 
-					bool32 ClearMem = false)
+void* ArenaAllocate(memory_arena *Memory, uint64 Size, bool32 ClearMem = false)
 {
 	// Require 4 byte alignment
 	if ((Size & 3) != 0) {

@@ -857,7 +857,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 		float Spacing = 30;
 		ImGui::Dummy(ImVec2(Spacing, 0));
-		ImGui::Text("Ship Limit %i/%i", 1, State->PersistentData.TreeBonuses.ShipLimit);
+		ImGui::Text("Ship Limit %i/%i", State->ShipsCount, State->PersistentData.TreeBonuses.ShipLimit);
 
 		ImGui::Dummy(ImVec2(Spacing, 0));
 		ImGui::Text("Knowledge %i", State->PersistentData.Knowledge);

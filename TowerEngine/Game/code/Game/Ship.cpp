@@ -769,6 +769,7 @@ ship* ShipCreate(state* State, ship_id Type) {
 // Setup data for exising ship
 ship* ShipSetup(ship* Ship, ship_persistent* Persist, state* State)
 {
+	State->ShipsCount++;
 	ShipSetPersist(Ship, Persist, State);
 
 	// Validate module counts
