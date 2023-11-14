@@ -199,6 +199,18 @@ item_definition* GetItemDefinition(item_id ItemID)
 	return &Globals->AssetsList.ItemDefinitions[(int)ItemID];
 }
 
+ship_module_slot_definition* GetShipModuleSlotDefinition(ship_module_slot_type Type)
+{
+	Assert((int)Type < ArrayCount(Globals->AssetsList.ShipModuleSlotDefinitions));
+	return &Globals->AssetsList.ShipModuleSlotDefinitions[(int)Type];
+}
+
+ship_definition* GetShipDefinition(ship_id ID)
+{
+	Assert((int)ID < ArrayCount(Globals->AssetsList.ShipDefinitions));
+	return &Globals->AssetsList.ShipDefinitions[(int)ID];
+}
+
 #include "InfoWindow.cpp"
 
 bool ImGuiItemIcon(item_id ItemID, bool CanDelete) {

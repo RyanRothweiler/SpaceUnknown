@@ -1,12 +1,18 @@
 void CreateDefinitions()
 {
-	static_assert(ArrayCount(Globals->AssetsList.ShipModuleDefinitions) > gen_ship_module_id_count, "Not enough ship module definitions.");
-
 	// Ship Module type icons
-	Assert(ArrayCount(Globals->AssetsList.ShipModuleTypeIcons) > (int)ship_module_slot_type::count);
-	Globals->AssetsList.ShipModuleTypeIcons[(int)ship_module_slot_type::industrial] = assets::GetImage("Icon_ShipModuleType_Industrial");
-	Globals->AssetsList.ShipModuleTypeIcons[(int)ship_module_slot_type::structural] = assets::GetImage("Icon_ShipModuleType_Structural");
-	Globals->AssetsList.ShipModuleTypeIcons[(int)ship_module_slot_type::science] = assets::GetImage("Icon_ShipModuleType_Science");
+	{
+		static_assert(ArrayCount(Globals->AssetsList.ShipModuleSlotDefinitions) > gen_ship_module_slot_type_count, "Ship module slot definitions array not large enough");
+
+		Globals->AssetsList.ShipModuleSlotDefinitions[(int)ship_module_slot_type::industrial].Icon = assets::GetImage("Icon_ShipModuleType_Industrial");
+		Globals->AssetsList.ShipModuleSlotDefinitions[(int)ship_module_slot_type::industrial].DisplayName = "Industrial";
+
+		Globals->AssetsList.ShipModuleSlotDefinitions[(int)ship_module_slot_type::structural].Icon = assets::GetImage("Icon_ShipModuleType_Structural");
+		Globals->AssetsList.ShipModuleSlotDefinitions[(int)ship_module_slot_type::structural].DisplayName = "Structural";
+
+		Globals->AssetsList.ShipModuleSlotDefinitions[(int)ship_module_slot_type::science].Icon = assets::GetImage("Icon_ShipModuleType_Science");
+		Globals->AssetsList.ShipModuleSlotDefinitions[(int)ship_module_slot_type::science].DisplayName = "Science";
+	} 
 
 	// Ship Module icons
 	{
@@ -36,6 +42,8 @@ void CreateDefinitions()
 
 	// Ship modules
 	{
+		static_assert(ArrayCount(Globals->AssetsList.ShipModuleDefinitions) > gen_ship_module_id_count, "Not enough ship module definitions.");
+
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ID = ship_module_id::asteroid_miner;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ItemID = item_id::sm_asteroid_miner;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].DisplayName = "Asteroid Miner";
@@ -73,6 +81,7 @@ void CreateDefinitions()
 		static_assert(ArrayCount(Globals->AssetsList.ShipDefinitions) > gen_ship_id_count, "Ship definitions array not large enough.");
 
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].ID = ship_id::advent;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].DisplayName = "Advent";
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Icon = assets::GetImage("Ship_Advent");
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelRateMassPerSecond = 0.35f;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Mass = 170;

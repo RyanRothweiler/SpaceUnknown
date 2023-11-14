@@ -109,6 +109,7 @@ struct assets_list {
 	item_definition ItemDefinitions[100];
 	ship_module_definition ShipModuleDefinitions[100];
 	ship_definition ShipDefinitions[100] = {};
+	ship_module_slot_definition ShipModuleSlotDefinitions[100];
 
 	recipe RecipeDefinitions[100];
 	recipe_list RecipesByService[100];
@@ -116,7 +117,6 @@ struct assets_list {
 	loaded_image* AsteroidImages[3];
 	loaded_image* SalvageImages[2];
 
-	loaded_image* ShipModuleTypeIcons[100];
 	loaded_image* ShipModuleIcons[100];
 	loaded_image* SkillNodeIcons[100];
 };

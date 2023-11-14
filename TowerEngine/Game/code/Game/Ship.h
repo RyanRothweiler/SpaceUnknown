@@ -2,9 +2,15 @@ struct ship;
 
 const real64 fuelForcePerGallon = 7.0f;
 
-enum class ship_module_slot_type {
+MetaStruct enum class ship_module_slot_type {
 	industrial, structural, science,
 	count
+};
+
+struct ship_module_slot_definition {
+	ship_module_slot_type Type;
+	loaded_image* Icon;
+	string DisplayName;
 };
 
 struct ship_module_definition {
@@ -38,6 +44,7 @@ struct ship_module {
 
 struct ship_definition {
 	ship_id ID;
+	string DisplayName;
 
 	loaded_image* Icon;
 

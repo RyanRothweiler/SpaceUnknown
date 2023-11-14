@@ -836,6 +836,14 @@ string recipe_member_type_NAME[] {
 }; 
 #define gen_recipe_member_type_count 2 
  
+string ship_module_slot_type_NAME[] { 
+"industrial",
+"struct",
+"science",
+"count",
+}; 
+#define gen_ship_module_slot_type_count 4 
+ 
 meta_member skill_node_persistent_META[] { 
 {meta_member_type::int64, "int64", "ID", (uint64)&((skill_node_persistent *)0)->ID, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::int64, "int64", "KnowledgeCost", (uint64)&((skill_node_persistent *)0)->KnowledgeCost, 0, sizeof(int64),{},{},{},{},{}},

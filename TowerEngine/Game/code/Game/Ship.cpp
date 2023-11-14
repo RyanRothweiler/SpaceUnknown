@@ -1,3 +1,4 @@
+
 void WorldTargetSet(world_target_persistent* Target, asteroid* Input) { 
 	Target->Type = world_target_type::asteroid;
 	per::SetAsteroid(&Target->Asteroid, Input);
@@ -469,6 +470,20 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				ImGui::NextColumn();
 			}
 
+			// Hull type
+			{
+				ImGui::Text("Hull Type");
+				ImGui::NextColumn();
+
+				string Disp = CurrentShip->Definition.DisplayName;
+				ImGui::Text(Disp.Array());
+				ImGui::SameLine();
+				if (ImGui::Button("Info")) {
+					InfoWindow::Show(CurrentShip->Definition.ID);
+				}
+				ImGui::NextColumn();
+			}
+
 			ImGui::Columns(1);
 		}
 
@@ -542,8 +557,9 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 					Assert(ArrayCount(CurrentShip->Definition.SlotTypes) > i);
 
+					ship_module_slot_definition* SlotDef = GetShipModuleSlotDefinition(CurrentShip->Definition.SlotTypes[i]);
 					ImGui::Image(
-						(ImTextureID)((int64)Globals->AssetsList.ShipModuleTypeIcons[(int)CurrentShip->Definition.SlotTypes[i]]->GLID),
+						(ImTextureID)((int64)SlotDef->Icon->GLID),
 						ImGuiImageSize,
 						ImVec2(0, 0),
 						ImVec2(1, -1),
