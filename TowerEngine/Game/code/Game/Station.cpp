@@ -79,6 +79,7 @@ void ImGuiItemCountList(item_count* Items, int32 Count)
 			}
 
 			case (recipe_member_type::ship): {
+
 				IconGLID = Globals->AssetsList.ShipDefinitions[(int)IC->ShipID].Icon->GLID;
 				ImGui::Image(
 					(ImTextureID)(IconGLID),
@@ -88,6 +89,15 @@ void ImGuiItemCountList(item_count* Items, int32 Count)
 					ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
 					ImVec4(1.0f, 1.0f, 1.0f, 0.5f)
 				);
+
+				if (ImGui::BeginPopupContextItem("item context menu")) {
+					if (ImGui::MenuItem("Info")) { 
+						InfoWindow::Show(IC->ShipID);
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::EndPopup();
+				}
+				
 				break;
 			}
 
