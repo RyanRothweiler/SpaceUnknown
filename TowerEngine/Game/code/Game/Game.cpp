@@ -9,7 +9,7 @@
 #include <ctime>
 
 int64 VersionMajor = 0;
-int64 VersionMinor = 7;
+int64 VersionMinor = 8;
 
 ImGuiWindowFlags SelectionHoverFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing;
 
@@ -267,32 +267,36 @@ void LoadGame(state* State)
 	State->PersistentData = {};
 	TreeBonusesTotal = &State->PersistentData.TreeBonuses;
 
-	if (!save_data::Read((string{SaveDataFolder} + "/SpaceUnknownSave.sus").Array(), (void*)&State->PersistentData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)) {
-		State->LoadedFromFile = false;
+	if (!save_data::Read((string{SaveDataFolder} + "/SpaceUnknownSave.sus").Array(), (void*)&State->PersistentData, &save_file_META[0], ArrayCount(save_file_META), GlobalTransMem)
+			|| !State->PersistentData.Valid
+		) {
+
 		ConsoleLog("No saved data file");
 
-		// If no save file, then create initial setup
-		if (!State->LoadedFromFile) { 
+		State->PersistentData = {};
+		State->PersistentData.Valid = true;
 
-			// Initial state setup
-			State->PersistentData.TreeBonuses.ShipLimit = 1;
-			State->PersistentData.Knowledge = 20;
+		State->LoadedFromFile = false;
 
-			// Station
-			station* Station = StationCreate(State);
-			Station->Persist->Position.X = 50;
-			Station->Persist->Position.Y = 50;
+		// Initial state setup
+		State->PersistentData.TreeBonuses.ShipLimit = 1;
+		State->PersistentData.Knowledge = 20;
 
-			// Ship
-			ship* Ship = ShipCreate(State, ship_id::advent);
+		// Station
+		station* Station = StationCreate(State);
+		Station->Persist->Position.X = 50;
+		Station->Persist->Position.Y = 50;
 
-			// Ateroids
-			AsteroidClusterCreate(vector2{-50, -50}, 15.0f, item_id::venigen, State);
-			AsteroidClusterCreate(vector2{-20, 130}, 10.0f, item_id::pyrexium, State);
+		// Ship
+		ship* Ship = ShipCreate(State, ship_id::advent);
 
-			// Salvages
-			SalvageCreate(vector2{ -110, 40}, State);
-		}
+		// Ateroids
+		AsteroidClusterCreate(vector2{-50, -50}, 15.0f, item_id::venigen, State);
+		AsteroidClusterCreate(vector2{-20, 130}, 10.0f, item_id::pyrexium, State);
+
+		// Salvages
+		SalvageCreate(vector2{ -110, 40}, State);
+
 	} else {
 		State->LoadedFromFile = true;
 	}
@@ -870,18 +874,74 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			INVALID_DEFAULT;
 		}
 
+
 		float Spacing = 30;
+
 		ImGui::Dummy(ImVec2(Spacing, 0));
 		ImGui::Text("Ship Limit %i/%i", State->ShipsCount, State->PersistentData.TreeBonuses.ShipLimit);
 
 		ImGui::Dummy(ImVec2(Spacing, 0));
 		ImGui::Text("Knowledge %i", State->PersistentData.Knowledge);
 
-		ImGui::Dummy(ImVec2(Spacing, 0));
-		string V = "v" + string{VersionMajor} + "." + string{VersionMinor};
-		ImGui::TextColored(ImVec4(1,1,1,0.5f), V.Array());
+		ImGui::Dummy(ImVec2(Spacing * 2, 0));
+		static bool SettingsOpen = false;
+		if (ImGui::Button("Settings")) {
+			SettingsOpen = !SettingsOpen;
+		}
+
+		//ImGui::Dummy(ImVec2(Spacing, 0));
+		//string V = "v" + string{VersionMajor} + "." + string{VersionMinor};
+		//ImGui::TextColored(ImVec4(1,1,1,0.5f), V.Array());
 
 		ImGui::EndMainMenuBar();
+
+		// settings window
+		if (SettingsOpen) {
+			ImGui::SetNextWindowSize(ImVec2(100, 100), ImGuiCond_FirstUseEver);
+			ImGui::Begin("Settings", &SettingsOpen);
+
+			ImGui::Columns(2);
+
+			ImGui::Text("Version");
+			ImGui::NextColumn();
+
+			string V = "v" + string{VersionMajor} + "." + string{VersionMinor};
+			ImGui::Text(V.Array());
+			ImGui::NextColumn();
+
+			ImGui::Columns(1);
+
+			if (ImGui::Button("Delete Save Data", ImVec2(-1, 0))) {
+				ImGui::OpenPopup("Confirm Delete Save");
+			}
+			if (ImGui::BeginPopupModal("Confirm Delete Save")) {
+				static bool Clicked = false;
+				if (!Clicked) { 
+					ImGui::Text("Delete all save data? This cannot be undone.");
+
+					real32 HW = ImGui::GetWindowWidth() * 0.47f;
+					if (ImGui::Button("Yes", ImVec2(HW, 0))) {
+						Clicked = true;
+
+						// save syncronously
+						State->PersistentData.Valid = false;
+						SaveGame(State, GlobalSaveDataRoot);
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("No", ImVec2(HW, 0))) {
+						ImGui::CloseCurrentPopup();
+					}
+				} else {
+					ImGui::Text("Save data deleted.");
+					ImGui::Text("Plese reload the page.");
+				}
+
+				ImGui::EndPopup();
+			}
+	
+			ImGui::End();
+
+		}
 	}
 
 	// Info windows
@@ -1345,8 +1405,9 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						if (ImGui::Button("No", ImVec2(HW, 0))) {
 							ImGui::CloseCurrentPopup();
 						}
-						ImGui::EndPopup();
 					}
+
+					ImGui::EndPopup();
 				}
 			}
 		}

@@ -780,6 +780,7 @@ return json::FillStruct(JsonData, KeyParent, &skill_bonuses_META[0], ArrayCount(
 }
 
 meta_member save_file_META[] { 
+{meta_member_type::bool32, "bool32", "Valid", (uint64)&((save_file *)0)->Valid, 0, sizeof(bool32),{},{},{},{},{}},
 {meta_member_type::int64, "int64", "RealTimeSaved", (uint64)&((save_file *)0)->RealTimeSaved, 0, sizeof(int64),{},{},{},{},{}},
 {meta_member_type::real64, "real64", "UniverseTimeMS", (uint64)&((save_file *)0)->UniverseTimeMS, 0, sizeof(real64),{},{},{},{},{}},
 {meta_member_type::int64, "int64", "SkillNodesIDUnlocked", (uint64)&((save_file *)0)->SkillNodesIDUnlocked, 256, sizeof(int64),{},{},{},{},{}},

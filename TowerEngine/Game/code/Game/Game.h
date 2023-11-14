@@ -323,6 +323,8 @@ MetaStruct struct skill_bonuses {
 
 // NOTE no pointers
 MetaStruct struct save_file {
+	bool32 Valid;
+
 	int64 RealTimeSaved;
 	real64 UniverseTimeMS;
 	int64 SkillNodesIDUnlocked[256];
