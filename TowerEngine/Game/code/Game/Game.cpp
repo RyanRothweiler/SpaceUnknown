@@ -1286,12 +1286,31 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				ImGui::Begin("Info", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
 				ImGui::Text("Knowledge Cost %i", State->NodeHovering->Persist.KnowledgeCost);
 				SkillTreeImguiDisplayBonuses(State->NodeHovering->Persist.BonusAdditions);
+				ImGui::TextColored(ImVec4(1,1,1,0.5f), "Right click for info on modules or ships.");
 				ImGui::End();
 
 				// can unlock
 				if (SkillNodeCanUnlock(State->NodeHovering) && Input->MouseLeft.OnDown && !EditorState->EditorMode) {
 					ImGui::OpenPopup("Unlock");
 					NodeSelected = State->NodeHovering;
+				}
+				if (Input->MouseRight.OnDown && !EditorState->EditorMode) {
+					// Probably an error some day!
+					// Pick the first recipe unlocked to use for info 
+					for (int i = 0; i < ArrayCount(State->NodeHovering->Persist.BonusAdditions.RecipeUnlocked); i++) {
+						if (State->NodeHovering->Persist.BonusAdditions.RecipeUnlocked[i]) {
+							recipe* Rec = &Globals->AssetsList.RecipeDefinitions[i];
+							Assert(Rec->OutputsCount > 0);
+
+							if (Rec->Outputs[0].Type == recipe_member_type::item) { 
+								InfoWindow::Show(Rec->Outputs[0].ItemID);
+							} else if (Rec->Outputs[0].Type == recipe_member_type::ship) {
+								InfoWindow::Show(Rec->Outputs[0].ShipID);
+							} else {
+								Assert(0);
+							}
+						}
+					}
 				}
 			}
 
