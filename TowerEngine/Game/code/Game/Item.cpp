@@ -236,6 +236,5 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 		}
 
 		ImGui::PopStyleColor();
-
 	}
 }

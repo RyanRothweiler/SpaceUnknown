@@ -333,11 +333,14 @@ void LoadGame(state* State)
 		using std::chrono::system_clock;
 		int64 CurrentSinceEpoch = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
 		int64 FileSinceEpoch = State->PersistentData.RealTimeSaved;
-		State->ForwardSimulatingTimeRemaining = (real64)(CurrentSinceEpoch - FileSinceEpoch);
+
+		i64 HoursLimit = 24;
+		r64 TotalMissing = (real64)(CurrentSinceEpoch - FileSinceEpoch);
+		State->ForwardSimulatingTimeRemaining = ClampValue(0.0f, HoursToMilliseconds(HoursLimit), TotalMissing);
 
 		real64 MissingMSStart = State->ForwardSimulatingTimeRemaining;
 
-		string P = "Simulating " + string{State->ForwardSimulatingTimeRemaining} + " ms of missing time";
+		string P = "Simulating " + string{MillisecondsToHours(State->ForwardSimulatingTimeRemaining)} + " h of missing time of total " + string{MillisecondsToHours(TotalMissing)};
 		ConsoleLog(P.Array());
 
 		State->ForwardSimulating = true;

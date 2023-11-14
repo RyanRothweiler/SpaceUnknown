@@ -697,6 +697,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 					CurrJour->UniverseTimeEndMS = State->PersistentData.UniverseTimeMS + CurrJour->Estimate.DurationMS;
 					journey::Execute(CurrJour);
+					Save();
 				}
 			} else {
 				ImGui::TextWrapped("Not Enough Fuel");

@@ -760,7 +760,7 @@ WIN_EXPORT void GameLoop(game_memory * Memory, game_input * GameInput, window_in
 		style.Alpha = 1.0f;
 	}
 
-	if (!BuildConfig::Release) {
+	if (!BuildConfig::Release && BuildConfig::Platform == platform_type::windows) {
 		Globals->ShaderLoader.PollReload();
 		PollModelReload(Memory, GameState->Assets);
 	}

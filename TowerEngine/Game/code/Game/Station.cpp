@@ -27,6 +27,7 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 							ship* Ship = ShipCreate(State, C->ShipID);
 							ShipSetup(Ship, Ship->Persist, State);
 							StationDockShip(Converter->Owner, Ship);
+							Save();
 						} break;
 
 						INVALID_DEFAULT;

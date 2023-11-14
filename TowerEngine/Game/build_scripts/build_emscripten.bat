@@ -17,7 +17,6 @@ cd /d "T:/"
 
 set WarningsIgnored=-Wno-writable-strings -Wno-format -Wno-switch
 
-
 emcc ^
  T:/Game/code/Platform/platform_emscripten.cpp ^
  -o T:/Game/build/Emscripten/index.html ^
@@ -35,5 +34,6 @@ emcc ^
  -O3 ^
  -lidbfs.js ^
  %BuildVars% ^
+ -DPLATFORM_EMSCRIPTEN ^
  -sDEMANGLE_SUPPORT=1 ^
  %WarningsIgnored%
