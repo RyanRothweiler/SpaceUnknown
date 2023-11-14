@@ -294,7 +294,7 @@ void OnShipSelected(selection* Sel, engine_state* EngineState, game_input* Input
 	state* State = &EngineState->GameState;
 	ship* CurrentShip = Sel->GetShip();
 
-	if (CurrentShip->Persist->Status != ship_status::moving) {
+	if (CurrentShip->Persist->Status == ship_status::idle) {
 		CurrentShip->Persist->CurrentJourney = {};
 	}
 }

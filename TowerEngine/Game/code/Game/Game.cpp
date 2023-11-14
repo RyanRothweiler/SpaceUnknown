@@ -167,6 +167,8 @@ void Save()
 
 void SaveGame(state* State, save_data::member* Root)
 {
+	return;
+
 	// Time
 	using std::chrono::duration_cast;
 	using std::chrono::system_clock;
@@ -244,6 +246,8 @@ bool ImGuiItemIcon(item_id ItemID, bool CanDelete) {
 
 	return Ret;
 }
+
+#include "ChangeLog.cpp"
 
 #include "Persistent.cpp"
 #include "Journey.cpp"
@@ -344,6 +348,7 @@ void LoadGame(state* State)
 
 		real64 MissingMSStart = State->ForwardSimulatingTimeRemaining;
 
+		State->ForwardSimulatingTimeRemaining = 1000;
 		string P = "Simulating " + string{MillisecondsToHours(State->ForwardSimulatingTimeRemaining)} + " h of missing time of total " + string{MillisecondsToHours(TotalMissing)};
 		ConsoleLog(P.Array());
 
@@ -539,7 +544,9 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("1 hour")) {
+					State->ForwardSimulating = true;
 					for (int i = 0; i < SimFPS * 60.0f * 60.0f; i++) { StepUniverse(State, FrameLengthMS); }
+					State->ForwardSimulating = false;
 				}
 			}
 
@@ -938,7 +945,11 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 				ImGui::EndPopup();
 			}
-	
+			ImGui::Separator();
+
+			ImGui::Text("Change Log");
+			ImGui::TextWrapped(ChangeLog);
+
 			ImGui::End();
 
 		}

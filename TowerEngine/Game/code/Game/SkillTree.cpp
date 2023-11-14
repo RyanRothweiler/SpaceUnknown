@@ -64,7 +64,7 @@ void SkillTreeUnlock(skill_node * Node, state * State)
 	Node->Unlocked = true;
 
 	State->PersistentData.TreeBonuses = SkillBonusesAdd(State->PersistentData.TreeBonuses, Node->Persist.BonusAdditions);
-	GlobalTriggerSave = true;
+	Save();
 }
 
 void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
