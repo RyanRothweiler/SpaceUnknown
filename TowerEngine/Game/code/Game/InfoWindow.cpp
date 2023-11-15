@@ -89,6 +89,8 @@ void InfoWindow::ImGuiRender() {
 
 					Locals.ShowMemberIfValid("Foreman Activation Time Reduction", ShipModuleDef.Foreman.ReductionMinutes, "(min)");
 
+					Locals.ShowMemberIfValid("Radar Range Addition", ShipModuleDef.Radar.RangeAddition, "");
+
 					ImGui::Separator();
 					ImGui::Columns(1, "mycolumns");
 				}

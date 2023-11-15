@@ -22,6 +22,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::salvager_i] = assets::GetImage("Icon_ShipModule_Salvager");
 		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::cargo_expansion_i] = assets::GetImage("Icon_ShipModule_Cargo_Expansion_I");
 		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::foreman_i] = assets::GetImage("Icon_ShipModule_Formean_I");
+		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::radar_expansion_i] = assets::GetImage("Icon_ShipModule_RadarExpansion_I");
 
 		// Verify we have setup all the icons
 		for (int i = 0; i < gen_ship_module_id_count; i++) {
@@ -76,6 +77,13 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].DisplayName = "Cargo Expansion MKI";
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].SlotType = ship_module_slot_type::structural;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].CargoAddition = 20;
+
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].ID = ship_module_id::radar_expansion_i;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].ItemID = item_id::radar_expansion_i;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].DisplayName = "Radar Expansion I";
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].SlotType = ship_module_slot_type::structural;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].Radar.RangeAddition = 30;
+
 	}
 
 	// Ships
@@ -151,6 +159,15 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].Mass = 1;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].Icon = 
 			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::foreman_i];
+
+		Globals->AssetsList.ItemDefinitions[(int)item_id::radar_expansion_i].ID = item_id::radar_expansion_i;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::radar_expansion_i].DisplayName = "Radar Expansion I";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::radar_expansion_i].DisplayDescription = 
+			"Moderately increases radar range.";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::radar_expansion_i].ShipModuleID = ship_module_id::radar_expansion_i;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::radar_expansion_i].Mass = 1;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::radar_expansion_i].Icon = 
+			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::radar_expansion_i];
 
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].ID = item_id::stl;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].DisplayName = "STL Fuel";

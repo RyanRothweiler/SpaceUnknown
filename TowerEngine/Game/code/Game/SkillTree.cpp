@@ -84,7 +84,7 @@ void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
 	}
 
 	if (Bonuses.IndustrialActivationTimeMinutes > 0) {
-		ImGui::Text("-%i(m) activation time for industrial modules", Bonuses.IndustrialActivationTimeMinutes);
+		ImGui::Text("-%i minutes activation time for industrial modules", Bonuses.IndustrialActivationTimeMinutes);
 	}
 
 	for (int i = 0; i < ArrayCount(Bonuses.RecipeUnlocked); i++) {

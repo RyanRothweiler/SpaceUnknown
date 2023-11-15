@@ -34,6 +34,10 @@ struct ship_module_definition {
 		struct {
 			real32 ReductionMinutes;
 		} Foreman;
+
+		struct {
+			r32 RangeAddition;
+		} Radar;
 	};
 };
 

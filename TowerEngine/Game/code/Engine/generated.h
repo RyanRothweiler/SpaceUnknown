@@ -314,8 +314,9 @@ string ship_module_id_NAME[] {
 "salvager_i",
 "cargo_expansion_i",
 "foreman_i",
+"radar_expansion_i",
 }; 
-#define gen_ship_module_id_count 5 
+#define gen_ship_module_id_count 6 
  
 string item_id_NAME[] { 
 "venigen",
@@ -325,8 +326,9 @@ string item_id_NAME[] {
 "sm_salvager_i",
 "cargo_expansion_i",
 "foreman_i",
+"radar_expansion_i",
 }; 
-#define gen_item_id_count 7 
+#define gen_item_id_count 8 
  
 meta_member item_instance_persistent_META[] { 
 {meta_member_type::enumeration, "item_id", "ID", (uint64)&((item_instance_persistent *)0)->ID, 0, sizeof(item_id),{},{},{},{},{}},
