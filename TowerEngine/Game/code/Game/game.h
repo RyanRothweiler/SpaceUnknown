@@ -447,7 +447,7 @@ struct editor_state {
 
 struct state {
 
-	b32 LoadedFromFile;
+	bool32 TutorialWindow;
 	save_file PersistentData;
 
 	b32 CreatingMovement;

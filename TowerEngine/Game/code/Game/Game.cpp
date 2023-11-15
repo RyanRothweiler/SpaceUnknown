@@ -266,6 +266,8 @@ bool ImGuiItemIcon(item_id ItemID, bool CanDelete) {
 
 void LoadGame(state* State)
 {
+	b32 LoadedFromFile = false;
+
 	State->PersistentData = {};
 	TreeBonusesTotal = &State->PersistentData.TreeBonuses;
 
@@ -274,11 +276,11 @@ void LoadGame(state* State)
 		) {
 
 		ConsoleLog("No saved data file");
-
 		State->PersistentData = {};
 		State->PersistentData.Valid = true;
+		State->TutorialWindow = true;
 
-		State->LoadedFromFile = false;
+		LoadedFromFile = false;
 
 		// Initial state setup
 		State->PersistentData.TreeBonuses.ShipLimit = 1;
@@ -300,7 +302,7 @@ void LoadGame(state* State)
 		SalvageCreate(vector2{ -110, 40}, State);
 
 	} else {
-		State->LoadedFromFile = true;
+		LoadedFromFile = true;
 	}
 
 	// Setup stations
@@ -333,7 +335,7 @@ void LoadGame(state* State)
 		}
 	}
 
-	if (State->LoadedFromFile) {
+	if (LoadedFromFile) {
 		// Simulate forward missing time
 		using std::chrono::duration_cast;
 		using std::chrono::system_clock;
@@ -346,7 +348,6 @@ void LoadGame(state* State)
 
 		real64 MissingMSStart = State->ForwardSimulatingTimeRemaining;
 
-		State->ForwardSimulatingTimeRemaining = 1000;
 		string P = "Simulating " + string{MillisecondsToHours(State->ForwardSimulatingTimeRemaining)} + " h of missing time of total " + string{MillisecondsToHours(TotalMissing)};
 		ConsoleLog(P.Array());
 
@@ -376,7 +377,7 @@ void LoadGame(state* State)
 	} else {
 
 		// Once evrythig is setup. Initialize more only for first setup.
-		ItemGive(&State->Ships[0].FuelTank, item_id::stl, 400);
+		ItemGive(&State->Ships[0].FuelTank, item_id::stl, 200);
 		ItemGive(&State->Stations[0].Hold, item_id::pyrexium, 10);
 	}
 	ConsoleLog("Finished");
@@ -508,6 +509,49 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			//SaveGame(State, GlobalSaveDataRoot);
 		}
 	}
+
+	// tutorial window
+	{
+		if (State->TutorialWindow) { 
+			ImGui::OpenPopup("Help / Tutorial");
+
+			//ImGui::SetNextWindowSize(ImVec2(200, 400), ImGuiCond_FirstUseEver);
+			//ImGui::Begin("Help / Tutorial", &State->TutorialWindow);
+				
+			//ImGui::End();
+
+			ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_FirstUseEver);
+			if (ImGui::BeginPopupModal("Help / Tutorial")) {
+				ImGui::Text("Welcome to Space Unknown");
+
+				float Spacing = 20;
+				ImGui::Dummy(ImVec2(0, Spacing));
+				ImGui::TextWrapped("This is an idle space game. The goal is to collect resource to build space ships to collect more resources.");
+
+				ImGui::Dummy(ImVec2(0, Spacing));
+				ImGui::TextWrapped("The game is still in early development.");
+
+				ImGui::Dummy(ImVec2(0, Spacing));
+				ImGui::TextWrapped("Save data is saved locally in browser persistent storage. So if you clear browser cache you will lose all save data.");
+
+				ImGui::Dummy(ImVec2(0, Spacing));
+				ImGui::TextWrapped("Your first goal is equip a salvager module to collect more knowledge from the salvage.");
+				ImGui::TextWrapped("Unlock the salvager module in the skill tree, then construct one on the station.");
+
+				ImGui::Dummy(ImVec2(0, Spacing));
+				ImGui::TextWrapped("Drag and drop modules onto the ship module window to equip / unqeuip them.");
+				ImGui::TextWrapped("Drag and drop items to / from cargo holds to move items between ship and station.");
+
+				ImGui::Dummy(ImVec2(0, Spacing));
+				if (ImGui::Button("Close", ImVec2(-1, 0))) {
+					ImGui::CloseCurrentPopup();
+					State->TutorialWindow = false;
+				}
+				ImGui::EndPopup();
+			}
+		}
+
+	} 
 
 	// Editor
 	if (!BuildConfig::Release) {
@@ -893,16 +937,15 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 		if (ImGui::Button("Settings")) {
 			SettingsOpen = !SettingsOpen;
 		}
-
-		//ImGui::Dummy(ImVec2(Spacing, 0));
-		//string V = "v" + string{VersionMajor} + "." + string{VersionMinor};
-		//ImGui::TextColored(ImVec4(1,1,1,0.5f), V.Array());
+		if (ImGui::Button("Help")) {
+			State->TutorialWindow = true;
+		}
 
 		ImGui::EndMainMenuBar();
 
 		// settings window
 		if (SettingsOpen) {
-			ImGui::SetNextWindowSize(ImVec2(100, 100), ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowSize(ImVec2(200, 400), ImGuiCond_FirstUseEver);
 			ImGui::Begin("Settings", &SettingsOpen);
 
 			ImGui::Columns(2);
@@ -930,6 +973,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 						// save syncronously
 						State->PersistentData.Valid = false;
+						EngineState->DidSave = true;
 						SaveGame(State, GlobalSaveDataRoot);
 					}
 					ImGui::SameLine();

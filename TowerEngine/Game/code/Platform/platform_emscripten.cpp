@@ -691,7 +691,7 @@ void MainLoop()
 			EM_ASM (
 				FS.syncfs(false, 
 					function(err) {
-						console.log("file system synced");
+						console.log("File system synced");
 					}
 				);
 			);
