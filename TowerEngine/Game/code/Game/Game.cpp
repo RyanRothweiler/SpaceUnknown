@@ -1288,13 +1288,15 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 								&EngineState->GameCamera
 							);
 					PositionsArray[PosCount] = v3{(real32)PosScreen.X, Window->Height - (real32)PosScreen.Y, 0.0f};
-					RadiusArray[PosCount] = Ship->Definition.RadarRadius / PrevOrtho;
+					RadiusArray[PosCount] = Ship->GetRadarRadius() / PrevOrtho;
 
 					PosCount++;
 					Assert(PosCount < ArrayCount(PositionsArray));
 					Assert(PosCount < ArrayCount(RadiusArray));
 				}
-	
+
+				i32 StationRadius = 200;
+
 				for (int i = 0; i < State->PersistentData.StationsCount; i++)  {
 					station* Station = &State->Stations[i];
 					vector2 PosScreen = WorldToScreen(
@@ -1302,7 +1304,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 								&EngineState->GameCamera
 							);
 					PositionsArray[PosCount] = v3{(real32)PosScreen.X, Window->Height - (real32)PosScreen.Y, 0.0f};
-					RadiusArray[PosCount] = 200 / PrevOrtho;
+					RadiusArray[PosCount] = StationRadius / PrevOrtho;
 
 					PosCount++;
 					Assert(PosCount < ArrayCount(PositionsArray));

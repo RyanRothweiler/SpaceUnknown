@@ -233,6 +233,16 @@ void CreateDefinitions()
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::cargo_expansion_i].Icon = 
 				Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::cargo_expansion_i];
 
+		// radar_expansion_i
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::radar_expansion_i].ID = recipe_id::radar_expansion_i;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::radar_expansion_i].DisplayName = Globals->AssetsList.ItemDefinitions[(int)item_id::radar_expansion_i].DisplayName.Array();
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::radar_expansion_i].RegisterInput(item_id::pyrexium, 20.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::radar_expansion_i].RegisterOutput(item_id::radar_expansion_i, 1.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::radar_expansion_i].DurationMS = HoursToMilliseconds(2);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::radar_expansion_i].ServiceRequired = station_service::manufacturing;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::radar_expansion_i].Icon = 
+				Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::radar_expansion_i];
+
 		// Organize recipes by service
 		{
 			for (int i = 0; i < (int)recipe_id::count; i++) {

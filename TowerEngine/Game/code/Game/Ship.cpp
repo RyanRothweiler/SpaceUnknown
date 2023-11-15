@@ -1,4 +1,5 @@
 
+
 void WorldTargetSet(world_target_persistent* Target, asteroid* Input) { 
 	Target->Type = world_target_type::asteroid;
 	per::SetAsteroid(&Target->Asteroid, Input);

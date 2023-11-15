@@ -84,8 +84,20 @@ struct ship {
 
 	// Use method to get this most updated
 	real64 CurrentMassTotal;
-};
 
+	r32 GetRadarRadius() {
+		r32 Ret = Definition.RadarRadius;
+		
+		for (int i = 0; i < ArrayCount(EquippedModules); i++) {
+			ship_module* Mod = &EquippedModules[i];
+			if (Mod->Persist->Filled) { 
+				Ret += Mod->Definition.Radar.RangeAddition;
+			}
+		}
+
+		return Ret;
+	}
+};
 
 struct ships_list {
 	ship* List[100];

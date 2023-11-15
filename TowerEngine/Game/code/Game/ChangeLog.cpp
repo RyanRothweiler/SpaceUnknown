@@ -2,6 +2,8 @@
 const char* ChangeLog = R"(
 [0.9]
 - Added basic tutorial
+- Expanded skill tree
+- Added Radar Range Expansion I module
 
 [0.8]
 - Fixed bug with selecting ship would reset the current journey when docking.

@@ -400,10 +400,11 @@ string recipe_id_NAME[] {
 "sm_salvager_i",
 "cargo_expansion_i",
 "asteroid_miner_i",
+"radar_expansion_i",
 "count",
 "none",
 }; 
-#define gen_recipe_id_count 7 
+#define gen_recipe_id_count 8 
  
 meta_member color_persistent_META[] { 
 {meta_member_type::real32, "real32", "R", (uint64)&((color_persistent *)0)->R, 0, sizeof(real32),{},{},{},{},{}},
