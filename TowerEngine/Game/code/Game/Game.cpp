@@ -9,7 +9,7 @@
 #include <ctime>
 
 int64 VersionMajor = 0;
-int64 VersionMinor = 8;
+int64 VersionMinor = 9;
 
 ImGuiWindowFlags SelectionHoverFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing;
 
