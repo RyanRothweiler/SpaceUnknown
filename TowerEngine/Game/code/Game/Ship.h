@@ -26,6 +26,8 @@ struct ship_module_definition {
 	real64 ActivationRange;
 	color ActivationRangeDisplayColor;
 
+	i32 Yield;
+
 	int32 CargoAddition;
 
 	union {

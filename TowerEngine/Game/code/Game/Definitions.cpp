@@ -52,6 +52,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationRangeDisplayColor = COLOR_TEAL;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].SlotType = ship_module_slot_type::industrial;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationStepMethod = &ModuleUpdateAsteroidMiner;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].Yield = 2;
 
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ID = ship_module_id::salvager_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ItemID = item_id::sm_salvager_i;
@@ -60,6 +61,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationRange = 10.0f;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].SlotType = ship_module_slot_type::science;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationStepMethod = &ModuleUpdateSalvager;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].Yield = 2;
 
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ID = ship_module_id::foreman_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ItemID = item_id::foreman_i;
@@ -85,8 +87,8 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Icon = assets::GetImage("Ship_Advent");
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelRateMassPerSecond = 0.35f;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Mass = 170;
-		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].RadarRadius = 75;
-		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelTankMassLimit = 150;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].RadarRadius = 60;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelTankMassLimit = 75;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].HoldMass = 20;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotsCount = 3;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[0] = ship_module_slot_type::industrial;
@@ -177,7 +179,8 @@ void CreateDefinitions()
 		// ship_advent
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].ID = recipe_id::ship_advent;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].DisplayName = "Ship Advent";
-		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].RegisterInput(item_id::venigen, 5.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].RegisterInput(item_id::venigen, 20.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].RegisterInput(item_id::pyrexium, 5.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].RegisterOutput(ship_id::advent, 1.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].DurationMS = HoursToMilliseconds(12);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].ServiceRequired = station_service::shipyard;
@@ -185,7 +188,7 @@ void CreateDefinitions()
 
 		// sm_salvager_i
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].ID = recipe_id::sm_salvager_i;
-		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].RegisterInput(item_id::pyrexium, 20.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].RegisterInput(item_id::pyrexium, 5.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].DisplayName = Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].DisplayName.Array();
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].RegisterOutput(item_id::sm_salvager_i, 1.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].DurationMS = HoursToMilliseconds(2);

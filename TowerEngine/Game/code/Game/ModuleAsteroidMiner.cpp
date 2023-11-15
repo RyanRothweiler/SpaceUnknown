@@ -7,7 +7,7 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 	WorldTargetClear(&Module->Persist->Target);
 
 	bool32 Skip = false;
-	i32 AmountGiving = 1;
+	i32 AmountGiving = Module->Definition.Yield;
 
 	// If no cargo space then do nothing
 	if (Owner->Hold.MassCurrent == Owner->Hold.GetMassLimit()) { 
@@ -63,7 +63,6 @@ void ModuleUpdateAsteroidMiner(void* SelfData, real64 Time, state* State)
 			Module->Persist->ActivationTimerMS = 0.0f;
 
 			// Do module thing
-
 
 			int Amount = SubtractAvailable(&Roid->Persist->OreCount, AmountGiving);
 			ItemGive(&Owner->Hold, Roid->Persist->OreItem, Amount);

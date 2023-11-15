@@ -32,7 +32,7 @@ void ModuleUpdateSalvager(void* SelfData, real64 Time, state* State)
 			// Do module thing
 
 			salvage* Sal = WorldTargetGetSalvage(&Module->Persist->Target, State);
-			int Amount = SubtractAvailable(&Sal->Persist->KnowledgeAmount, 2);
+			int Amount = SubtractAvailable(&Sal->Persist->KnowledgeAmount, Module->Definition.Yield);
 			State->PersistentData.Knowledge += Amount;
 			if (Sal->Persist->KnowledgeAmount <= 0) {
 				SalvageSpawn(Sal);

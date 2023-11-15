@@ -377,7 +377,7 @@ void LoadGame(state* State)
 
 		// Once evrythig is setup. Initialize more only for first setup.
 		ItemGive(&State->Ships[0].FuelTank, item_id::stl, 400);
-
+		ItemGive(&State->Stations[0].Hold, item_id::pyrexium, 10);
 	}
 	ConsoleLog("Finished");
 }
@@ -945,8 +945,10 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			}
 			ImGui::Separator();
 
-			ImGui::Text("Change Log");
-			ImGui::TextWrapped(ChangeLog);
+			if (ImGui::TreeNode("Change Log")) {
+				ImGui::TextWrapped(ChangeLog);
+				ImGui::TreePop();
+			}
 
 			ImGui::End();
 
