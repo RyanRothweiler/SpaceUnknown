@@ -39,6 +39,7 @@ void CreateDefinitions()
 		Globals->AssetsList.SkillNodeIcons[(int)skill_node_icon::fuel_force] = assets::GetImage("NodeIcon_FuelForce");
 		Globals->AssetsList.SkillNodeIcons[(int)skill_node_icon::cargo_size] = assets::GetImage("NodeIcon_CargoSize");
 		Globals->AssetsList.SkillNodeIcons[(int)skill_node_icon::industrial_activation_time] = assets::GetImage("NodeIcon_IndustrialActivationTime");
+		Globals->AssetsList.SkillNodeIcons[(int)skill_node_icon::ship_radar] = assets::GetImage("NodeIcon_ShipRadar");
 	}
 
 	// Ship modules
@@ -242,6 +243,16 @@ void CreateDefinitions()
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::radar_expansion_i].ServiceRequired = station_service::manufacturing;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::radar_expansion_i].Icon = 
 				Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::radar_expansion_i];
+		
+		// foreman_i
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::foreman_i].ID = recipe_id::foreman_i;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::foreman_i].DisplayName = Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].DisplayName.Array();
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::foreman_i].RegisterInput(item_id::pyrexium, 20.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::foreman_i].RegisterOutput(item_id::foreman_i, 1.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::foreman_i].DurationMS = HoursToMilliseconds(2);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::foreman_i].ServiceRequired = station_service::manufacturing;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::foreman_i].Icon = 
+				Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::foreman_i];
 
 		// Organize recipes by service
 		{

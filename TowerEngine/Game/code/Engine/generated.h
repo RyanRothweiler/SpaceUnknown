@@ -401,10 +401,11 @@ string recipe_id_NAME[] {
 "cargo_expansion_i",
 "asteroid_miner_i",
 "radar_expansion_i",
+"foreman_i",
 "count",
 "none",
 }; 
-#define gen_recipe_id_count 8 
+#define gen_recipe_id_count 9 
  
 meta_member color_persistent_META[] { 
 {meta_member_type::real32, "real32", "R", (uint64)&((color_persistent *)0)->R, 0, sizeof(real32),{},{},{},{},{}},
@@ -744,14 +745,16 @@ string skill_node_icon_NAME[] {
 "fuel_force",
 "cargo_size",
 "industrial_activation_time",
+"ship_radar",
 }; 
-#define gen_skill_node_icon_count 4 
+#define gen_skill_node_icon_count 5 
  
 meta_member skill_bonuses_META[] { 
 {meta_member_type::real32, "real32", "FuelForce", (uint64)&((skill_bonuses *)0)->FuelForce, 0, sizeof(real32),{},{},{},{},{}},
 {meta_member_type::int32, "int32", "ShipLimit", (uint64)&((skill_bonuses *)0)->ShipLimit, 0, sizeof(int32),{},{},{},{},{}},
 {meta_member_type::int32, "int32", "CargoSize", (uint64)&((skill_bonuses *)0)->CargoSize, 0, sizeof(int32),{},{},{},{},{}},
 {meta_member_type::int32, "int32", "IndustrialActivationTimeMinutes", (uint64)&((skill_bonuses *)0)->IndustrialActivationTimeMinutes, 0, sizeof(int32),{},{},{},{},{}},
+{meta_member_type::int32, "int32", "ShipRadarRangeAddition", (uint64)&((skill_bonuses *)0)->ShipRadarRangeAddition, 0, sizeof(int32),{},{},{},{},{}},
 {meta_member_type::bool32, "bool32", "RecipeUnlocked", (uint64)&((skill_bonuses *)0)->RecipeUnlocked, recipe_id_count, sizeof(bool32),{},{},{},{},{}},
 }; 
  

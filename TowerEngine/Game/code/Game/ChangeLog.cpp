@@ -4,6 +4,8 @@ const char* ChangeLog = R"(
 - Added basic tutorial
 - Expanded skill tree
 - Added Radar Range Expansion I module
+- Added ship radar range skill tree nodes
+- Added Foreman I recipe
 
 [0.8]
 - Fixed bug with selecting ship would reset the current journey when docking.

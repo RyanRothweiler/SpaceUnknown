@@ -87,6 +87,10 @@ void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
 		ImGui::Text("-%i minutes activation time for industrial modules", Bonuses.IndustrialActivationTimeMinutes);
 	}
 
+	if (Bonuses.ShipRadarRangeAddition > 0) {
+		ImGui::Text("+%i increase to ship radar range", Bonuses.ShipRadarRangeAddition);
+	}
+
 	for (int i = 0; i < ArrayCount(Bonuses.RecipeUnlocked); i++) {
 		if (Bonuses.RecipeUnlocked[i]) { 
 			recipe* Recipe = &Globals->AssetsList.RecipeDefinitions[i];

@@ -176,12 +176,13 @@ MetaStruct enum class recipe_id {
 	cargo_expansion_i	= 3,
 	asteroid_miner_i	= 4,
 	radar_expansion_i	= 5,
+	foreman_i			= 6,
 	// increment count define
 
 	count,
 	none,
 };
-#define recipe_id_count 6
+#define recipe_id_count 7
 static_assert(recipe_id_count == (int)recipe_id::count, "recipe_id define must be incremented");
 
 // -----------------------------------------------------------------------------
@@ -304,6 +305,7 @@ MetaStruct enum class skill_node_icon {
 	fuel_force,
 	cargo_size,
 	industrial_activation_time,
+	ship_radar,
 };
 
 
@@ -320,6 +322,7 @@ MetaStruct struct skill_bonuses {
 	int32 ShipLimit;
 	int32 CargoSize;
 	int32 IndustrialActivationTimeMinutes;
+	int32 ShipRadarRangeAddition;
 
 	bool32 RecipeUnlocked[recipe_id_count];
 };

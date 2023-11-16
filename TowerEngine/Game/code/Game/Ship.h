@@ -86,7 +86,7 @@ struct ship {
 	real64 CurrentMassTotal;
 
 	r32 GetRadarRadius() {
-		r32 Ret = Definition.RadarRadius;
+		r32 Ret = Definition.RadarRadius + TreeBonusesTotal->ShipRadarRangeAddition;
 		
 		for (int i = 0; i < ArrayCount(EquippedModules); i++) {
 			ship_module* Mod = &EquippedModules[i];
