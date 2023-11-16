@@ -793,8 +793,8 @@ ship* ShipSetup(ship* Ship, ship_persistent* Persist, state* State)
 	// Validate module counts
 	Assert(ArrayCount(Ship->EquippedModules) == ArrayCount(Persist->Modules));
 
-	Ship->Size = vector2{5, 5};
 	Ship->Definition = Globals->AssetsList.ShipDefinitions[(int)Ship->Persist->Type];
+	Ship->Size = vector2{Ship->Definition.Size, Ship->Definition.Size};
 
 	// Setup item holds
 	Ship->Hold.Setup(Ship->Definition.HoldMass, item_hold_type::ship_cargo, &Ship->Persist->ItemHold);

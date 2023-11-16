@@ -91,6 +91,7 @@ void CreateDefinitions()
 	{
 		static_assert(ArrayCount(Globals->AssetsList.ShipDefinitions) > gen_ship_id_count, "Ship definitions array not large enough.");
 
+		// advent
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].ID = ship_id::advent;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].DisplayName = "Advent";
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Icon = assets::GetImage("Ship_Advent");
@@ -99,10 +100,28 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].RadarRadius = 60;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].FuelTankMassLimit = 75;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].HoldMass = 20;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].Size = 4.5f;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotsCount = 3;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[0] = ship_module_slot_type::industrial;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[1] = ship_module_slot_type::structural;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::advent].SlotTypes[2] = ship_module_slot_type::science;
+
+		// prospector
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].ID = ship_id::prospector;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].DisplayName = "Prospector";
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].Icon = assets::GetImage("Ship_Prospector");
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].FuelRateMassPerSecond = 0.25f;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].Mass = 250;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].RadarRadius = 60;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].FuelTankMassLimit = 75;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].HoldMass = 85;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].Size = 6;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotsCount = 4;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotTypes[0] = ship_module_slot_type::industrial;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotTypes[1] = ship_module_slot_type::industrial;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotTypes[2] = ship_module_slot_type::structural;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotTypes[3] = ship_module_slot_type::structural;
+
 	}
 
 	// Items
@@ -200,9 +219,19 @@ void CreateDefinitions()
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].RegisterInput(item_id::venigen, 20.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].RegisterInput(item_id::pyrexium, 5.0f);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].RegisterOutput(ship_id::advent, 1.0f);
-		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].DurationMS = HoursToMilliseconds(12);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].DurationMS = HoursToMilliseconds(6);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].ServiceRequired = station_service::shipyard;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_advent].Icon = assets::GetImage("Ship_Advent");
+
+		// ship_prospector
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_prospector].ID = recipe_id::ship_prospector;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_prospector].DisplayName = "Ship Prospector";
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_prospector].RegisterInput(item_id::venigen, 50.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_prospector].RegisterInput(item_id::pyrexium, 10.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_prospector].RegisterOutput(ship_id::prospector, 1.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_prospector].DurationMS = HoursToMilliseconds(12);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_prospector].ServiceRequired = station_service::shipyard;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_prospector].Icon = assets::GetImage("Ship_Prospector");
 
 		// sm_salvager_i
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].ID = recipe_id::sm_salvager_i;

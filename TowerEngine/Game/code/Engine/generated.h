@@ -402,10 +402,11 @@ string recipe_id_NAME[] {
 "asteroid_miner_i",
 "radar_expansion_i",
 "foreman_i",
+"ship_prospector",
 "count",
 "none",
 }; 
-#define gen_recipe_id_count 9 
+#define gen_recipe_id_count 10 
  
 meta_member color_persistent_META[] { 
 {meta_member_type::real32, "real32", "R", (uint64)&((color_persistent *)0)->R, 0, sizeof(real32),{},{},{},{},{}},
@@ -478,8 +479,9 @@ return json::FillStruct(JsonData, KeyParent, &world_object_META[0], ArrayCount(w
 
 string ship_id_NAME[] { 
 "advent",
+"prospector",
 }; 
-#define gen_ship_id_count 1 
+#define gen_ship_id_count 2 
  
 string ship_status_NAME[] { 
 "idle",

@@ -63,6 +63,8 @@ struct ship_definition {
 
 	ship_module_slot_type SlotTypes[64];
 	int32 SlotsCount;
+
+	r32 Size;
 };
 
 struct ship {

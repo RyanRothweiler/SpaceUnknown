@@ -177,12 +177,13 @@ MetaStruct enum class recipe_id {
 	asteroid_miner_i	= 4,
 	radar_expansion_i	= 5,
 	foreman_i			= 6,
+	ship_prospector		= 7,
 	// increment count define
 
 	count,
 	none,
 };
-#define recipe_id_count 7
+#define recipe_id_count 8
 static_assert(recipe_id_count == (int)recipe_id::count, "recipe_id define must be incremented");
 
 // -----------------------------------------------------------------------------
@@ -218,6 +219,7 @@ MetaStruct struct world_object {
 // TODO rename this to ship_type
 MetaStruct enum class ship_id {
 	advent, 
+	prospector,
 };
 
 MetaStruct enum class ship_status {
