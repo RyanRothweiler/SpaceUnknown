@@ -116,6 +116,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].FuelTankMassLimit = 75;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].HoldMass = 85;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].Size = 6;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].Prospector.IndustrialActivationReductionPerc = 10.0;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotsCount = 4;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotTypes[0] = ship_module_slot_type::industrial;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotTypes[1] = ship_module_slot_type::industrial;

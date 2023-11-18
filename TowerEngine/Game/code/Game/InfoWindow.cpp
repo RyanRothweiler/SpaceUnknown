@@ -128,13 +128,22 @@ void InfoWindow::ImGuiRender() {
 				}
 				ImGui::Separator();
 
-				ImGui::Columns(2, "cols");
+				ImGui::Dummy(ImVec2(0,20));
 
+				ImGui::Columns(2, "cols");
 				Locals.ShowMemberIfValid("Hull Mass", (r64)Def->Mass, "(t)");
 				Locals.ShowMemberIfValid("Radar Radius", (r64)Def->RadarRadius, "");
 				Locals.ShowMemberIfValid("Engine Fuel Rate", (r64)Def->FuelRateMassPerSecond, "(t/s)");
 				Locals.ShowMemberIfValid("Cargo Hold Mass Limit", (r64)Def->HoldMass, "(t)");
 				Locals.ShowMemberIfValid("Fuel Tank Mass Limit", (r64)Def->FuelTankMassLimit, "(t)");
+				ImGui::Columns(1, "cols");
+
+				ImGui::Dummy(ImVec2(0,20));
+				ImGui::Text("Ship Innate Bonuses");
+				ImGui::Separator();
+				ImGui::Columns(2, "cols");
+				Locals.ShowMemberIfValid("Industrial Activation Time Reduction", (r64)Def->Prospector.IndustrialActivationReductionPerc, "%%");
+				ImGui::Columns(1, "cols");
 
 				ImGui::Columns(1, "cols");
 

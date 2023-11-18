@@ -65,6 +65,12 @@ struct ship_definition {
 	int32 SlotsCount;
 
 	r32 Size;
+
+	union {
+		struct {
+			r32 IndustrialActivationReductionPerc;
+		} Prospector;
+	};
 };
 
 struct ship {
