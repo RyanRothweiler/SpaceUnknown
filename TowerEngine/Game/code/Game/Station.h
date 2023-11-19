@@ -2,7 +2,6 @@ struct converter {
 	converter_persistent* Persist;
 
 	stepper Stepper;
-	bool32 IsRunning;
 	station* Owner;
 
 	bool32 HasOrder()

@@ -3,6 +3,7 @@ const char* ChangeLog = R"(
 [0.10]
 - Change skill tree node order.
 - Fix deleting save file data.
+- Fix bug with reloading converters cosuming more resources.
 
 [0.9]
 - Added basic tutorial.

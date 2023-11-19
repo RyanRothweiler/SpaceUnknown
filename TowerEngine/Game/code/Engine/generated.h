@@ -678,6 +678,7 @@ meta_member converter_persistent_META[] {
 {meta_member_type::enumeration, "recipe_id", "RecipeID", (uint64)&((converter_persistent *)0)->RecipeID, 0, sizeof(recipe_id),{},{},{},{},{}},
 {meta_member_type::real64, "real64", "OrderTime", (uint64)&((converter_persistent *)0)->OrderTime, 0, sizeof(real64),{},{},{},{},{}},
 {meta_member_type::int32, "int32", "RunsCount", (uint64)&((converter_persistent *)0)->RunsCount, 0, sizeof(int32),{},{},{},{},{}},
+{meta_member_type::bool32, "bool32", "IsRunning", (uint64)&((converter_persistent *)0)->IsRunning, 0, sizeof(bool32),{},{},{},{},{}},
 }; 
  
 void M_ALLOC__converter_persistent(s_void* SafeVoid, memory_arena* Memory) { 

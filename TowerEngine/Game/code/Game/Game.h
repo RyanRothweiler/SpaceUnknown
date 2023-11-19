@@ -290,6 +290,7 @@ MetaStruct struct converter_persistent {
 	recipe_id RecipeID;
 	real64 OrderTime;
 	int32 RunsCount;
+	bool32 IsRunning;
 };
 
 MetaStruct struct station_persistent {

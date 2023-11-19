@@ -6,13 +6,13 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 
 		recipe Recipe = RecipeGetDefinition(Converter->Persist->RecipeID);
 
-		if (Converter->IsRunning) {
+		if (Converter->Persist->IsRunning) {
 			Converter->Persist->OrderTime += Time;
 			if (Converter->Persist->OrderTime >= Recipe.DurationMS) {
 
 				Converter->Persist->RunsCount--;
 				Converter->Persist->OrderTime = 0;
-				Converter->IsRunning = false;
+				Converter->Persist->IsRunning = false;
 
 				// Give outputs
 				for (int i = 0; i < Recipe.OutputsCount; i++) {
@@ -38,7 +38,7 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 
 			recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Recipe, &Converter->Owner->Hold, State);
 			if (InputsMissing.Meets()) {
-				Converter->IsRunning = true;
+				Converter->Persist->IsRunning = true;
 
 				// Consume items. We can assume they exist in sufficient amounts
 				item_hold* Source = &Converter->Owner->Hold;
@@ -60,7 +60,7 @@ void ConverterUpdate(void* SelfData, real64 Time, state* State)
 
 void ConverterAddOrder(converter* Converter, recipe_id ID)
 {
-	Converter->IsRunning = false;
+	Converter->Persist->IsRunning = false;
 
 	Converter->Persist->RunsCount = 1;
 	Converter->Persist->OrderTime = 0.0f;
@@ -142,7 +142,7 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 
 		ImGui::Columns(1);
 
-		if (Converter->IsRunning) {
+		if (Converter->Persist->IsRunning) {
 			// Progress
 			r64 MSRemaining = Recipe.DurationMS - Converter->Persist->OrderTime;
 			r64 TimeLeftMinutes = MillisecondsToMinutes(MSRemaining);
