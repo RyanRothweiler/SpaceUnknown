@@ -716,7 +716,11 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				journey::CanAddSteps(&CurrentShip->Persist->CurrentJourney)
 			) {
 
-			if (State->Hovering == GameNull) {
+			if (State->Hovering != NULL && State->Hovering->Type == selection_type::station) {
+				station* Station = State->Hovering->GetStation();
+				CreateMovementStep(CurrentShip, Station->Persist->Position);
+				CreateDockUndockStep(CurrentShip, Station);
+			} else {
 
 				if (CurrentShip->Persist->Status == ship_status::docked) {
 					CreateDockUndockStep(
@@ -730,13 +734,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 				} else {
 					CreateMovementStep(CurrentShip, MouseWorldFlat);
 				}
-
-			} else if (State->Hovering->Type == selection_type::station) {
-				station* Station = State->Hovering->GetStation();
-				CreateMovementStep(CurrentShip, Station->Persist->Position);
-				CreateDockUndockStep(CurrentShip, Station);
 			}
-
 
 			CurrJour->Estimate = ShipEstimateJourney(CurrentShip, State);
 		}

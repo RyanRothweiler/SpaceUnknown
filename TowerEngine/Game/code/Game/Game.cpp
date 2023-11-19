@@ -379,6 +379,7 @@ void LoadGame(state* State)
 		// Once evrythig is setup. Initialize more only for first setup.
 		ItemGive(&State->Ships[0].FuelTank, item_id::stl, 200);
 		ItemGive(&State->Stations[0].Hold, item_id::pyrexium, 10);
+		ItemGive(&State->Stations[0].Hold, item_id::sm_salvager_i, 1);
 	}
 	ConsoleLog("Finished");
 }
@@ -529,10 +530,13 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				ImGui::TextWrapped("This is an idle space game. The goal is to collect resource to build space ships to collect more resources.");
 
 				ImGui::Dummy(ImVec2(0, Spacing));
+				ImGui::TextWrapped("The game runs even while the browser is closed. This is limited to 24 hours.");
+
+				ImGui::Dummy(ImVec2(0, Spacing));
 				ImGui::TextWrapped("The game is still in early development.");
 
 				ImGui::Dummy(ImVec2(0, Spacing));
-				ImGui::TextWrapped("Save data is saved locally in browser persistent storage. So if you clear browser cache you will lose all save data.");
+				ImGui::TextWrapped("Save data is saved locally in browser persistent storage. If you clear browser cache you will lose all save data.");
 
 				ImGui::Dummy(ImVec2(0, Spacing));
 				ImGui::TextWrapped("Your first goal is equip a salvager module to collect more knowledge from the salvage.");
@@ -1405,13 +1409,16 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 					State->NodeHovering->CircleRadius = 4;
 				}
 
-				ImGui::SetNextWindowPos(ImVec2((float)Input->MousePos.X + 20, (float)Input->MousePos.Y));
-				bool Open = true;
-				ImGui::Begin("Info", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
-				ImGui::Text("Knowledge Cost %i", State->NodeHovering->Persist.KnowledgeCost);
-				SkillTreeImguiDisplayBonuses(State->NodeHovering->Persist.BonusAdditions);
-				ImGui::TextColored(ImVec4(1,1,1,0.5f), "Right click for info on modules or ships.");
-				ImGui::End();
+				ImGuiIO& io = ImGui::GetIO();
+				if (!io.WantCaptureMouse){ 
+					ImGui::SetNextWindowPos(ImVec2((float)Input->MousePos.X + 20, (float)Input->MousePos.Y));
+					bool Open = true;
+					ImGui::Begin("Info", &Open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
+					ImGui::Text("Knowledge Cost %i", State->NodeHovering->Persist.KnowledgeCost);
+					SkillTreeImguiDisplayBonuses(State->NodeHovering->Persist.BonusAdditions);
+					ImGui::TextColored(ImVec4(1,1,1,0.5f), "Right click for info on modules or ships.");
+					ImGui::End();
+				}
 
 				// can unlock
 				if (SkillNodeCanUnlock(State->NodeHovering) && Input->MouseLeft.OnDown && !EditorState->EditorMode) {
