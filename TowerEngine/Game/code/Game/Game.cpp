@@ -9,7 +9,7 @@
 #include <ctime>
 
 int64 VersionMajor = 0;
-int64 VersionMinor = 10;
+int64 VersionMinor = 11;
 
 ImGuiWindowFlags SelectionHoverFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing;
 
@@ -950,7 +950,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 		// settings window
 		if (SettingsOpen) {
-			ImGui::SetNextWindowSize(ImVec2(200, 400), ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
 			ImGui::Begin("Settings", &SettingsOpen);
 
 			ImGui::Columns(2);
