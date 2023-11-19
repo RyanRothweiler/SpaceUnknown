@@ -80,7 +80,7 @@ void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
 	}
 
 	if (Bonuses.CargoSize > 0) {
-		ImGui::Text("+%i(t) ship cargo hold mass limit", Bonuses.CargoSize);
+		ImGui::Text("+%i(t) ship cargo hold mass", Bonuses.CargoSize);
 	}
 
 	if (Bonuses.IndustrialActivationTimeMinutes > 0) {

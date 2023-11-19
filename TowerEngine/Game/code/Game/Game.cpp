@@ -975,12 +975,15 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						// save syncronously
 						State->PersistentData.Valid = false;
 						EngineState->DidSave = true;
+						EngineState->FileSynced = false;
 						SaveGame(State, GlobalSaveDataRoot);
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("No", ImVec2(HW, 0))) {
 						ImGui::CloseCurrentPopup();
 					}
+				} else if (!EngineState->FileSynced) {
+					ImGui::Text("Clearing");
 				} else {
 					ImGui::Text("Save data deleted.");
 					ImGui::Text("Plese reload the page.");

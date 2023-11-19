@@ -1,12 +1,16 @@
 
 const char* ChangeLog = R"(
+[0.10]
+- Change skill tree node order.
+- Fix deleting save file data.
+
 [0.9]
-- Added basic tutorial
-- Expanded skill tree
-- Added Radar Range Expansion I module
-- Added ship radar range skill tree nodes
-- Added Foreman I recipe
-- Added Prospector ship
+- Added basic tutorial.
+- Expanded skill tree.
+- Added Radar Range Expansion I module.
+- Added ship radar range skill tree nodes.
+- Added Foreman I recipe.
+- Added Prospector ship.
 
 [0.8]
 - Fixed bug with selecting ship would reset the current journey when docking.

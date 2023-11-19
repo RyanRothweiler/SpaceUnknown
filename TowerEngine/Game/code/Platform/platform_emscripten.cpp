@@ -283,7 +283,7 @@ path_list* GetPathsForFileType(char* FileTypeChar, const char* RootDir, memory_a
 	return NextPath;
 }
 
-bool GlobalRunning = true;
+engine_state* GlobalEngineState = {};
 
 void MakeProgram(shader* Shader)
 {
@@ -617,6 +617,14 @@ void SendEvent(string EventName, uint32 UserID) {
 	emscripten_fetch_t *fetch = emscripten_fetch(&attr, "https://api.mixpanel.com/track");
 }
 
+/*
+void FileSystemDidSync() { 
+	printf("updating");
+	GlobalEngineState->FileSynced = true;
+	printf("done");
+}
+*/
+
 void MainLoop()
 {
 	// Update input states
@@ -672,6 +680,9 @@ void MainLoop()
 
 		engine_state *GameStateFromMemory = (engine_state *)GameMemory.PermanentMemory.Memory;
 		state_to_serialize* State = &GameStateFromMemory->StateSerializing;
+
+		GlobalEngineState = GameStateFromMemory;
+
 		GameMemory.RenderApi.Render(&GameMemory.RenderApi, State->ActiveCam, &WindowInfo, &GameStateFromMemory->DebugUIRenderer, &GameStateFromMemory->UIRenderer, &GameStateFromMemory->GameRenderer, &GameStateFromMemory->Assets->GaussianBlurShader);
 		eglSwapBuffers(GLDisplay, GLSurface);
 
@@ -692,6 +703,7 @@ void MainLoop()
 				FS.syncfs(false, 
 					function(err) {
 						console.log("File system synced");
+						ccall('FileSystemDidSync', 'v');
 					}
 				);
 			);

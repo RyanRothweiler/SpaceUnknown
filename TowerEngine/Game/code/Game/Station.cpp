@@ -144,11 +144,13 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 
 		if (Converter->IsRunning) {
 			// Progress
+			r64 MSRemaining = Recipe.DurationMS - Converter->Persist->OrderTime;
+			r64 TimeLeftMinutes = MillisecondsToMinutes(MSRemaining);
+			ImGui::Text("%.2f (m) remaining", TimeLeftMinutes);
+
 			float Progress = (float)(Converter->Persist->OrderTime / Recipe.DurationMS);
 			float PD = Progress * 100.0f;
-			string ProgStr = Real64ToString(PD, 2);
-			string ProgDisp = ProgStr + "%";
-			ImGui::ProgressBar(Progress, ImVec2(-1.0f, 0.0f), ProgDisp.Array());
+			ImGui::ProgressBar(Progress, ImVec2(-1.0f, 1.0f));
 		} else {
 			recipe_inputs_missing_return InputsMissing = RecipeInputsMissing(&Recipe, &Station->Hold, State);
 

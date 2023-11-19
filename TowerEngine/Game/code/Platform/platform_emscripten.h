@@ -6,5 +6,10 @@ extern "C" {
 		FileSystemReady = true;
 	}
 
+	EMSCRIPTEN_KEEPALIVE void FileSystemDidSync() {
+
+		GlobalEngineState->FileSynced = true;
+	}
+
 }
 
