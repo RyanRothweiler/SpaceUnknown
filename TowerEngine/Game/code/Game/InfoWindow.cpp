@@ -33,7 +33,12 @@ void InfoWindow::ImGuiRender() {
 			if (Value > 0) {
 				ImGui::TextWrapped(DisplayName); ImGui::NextColumn();
 
-				string Val = Humanize((int64)Value);
+				string Val = {};
+				if (Value > 1.0f) { 
+					Val = Humanize((int64)Value);
+				} else {
+					Val = Value;
+				}
 				ImGui::TextWrapped((Val + " " + string{Unit}).Array()); ImGui::NextColumn();
 
 				ImGui::Separator();
