@@ -353,8 +353,6 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 	vector3 MouseWorld = ScreenToWorld(Input->MousePos, vector3{0, 0, (EngineState->GameCamera.Far + EngineState->GameCamera.Near) * -0.5f}, vector3{0, 0, -1}, &EngineState->GameCamera);
 	vector2 MouseWorldFlat = vector2{MouseWorld.X, MouseWorld.Y};
 
-	//RenderCircle(MouseWorldFlat, vector2{1, 1}, COLOR_RED, -1, Globals->GameRenderer);
-
 	// Render world effects
 	{
 		// Module effects
@@ -365,8 +363,8 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 					color Col = Module->Definition.ActivationRangeDisplayColor;
 					Col.A = 0.5f;
-					RenderCircleOutline(CurrentShip->Persist->Position, vector2{Module->Definition.ActivationRange * 2.0f, Module->Definition.ActivationRange * 2.0f},
-								 Col, 0.5, -10 - m, Globals->GameRenderer);
+
+					RenderMeshCircleOutline(CurrentShip->Persist->Position, (r32)Module->Definition.ActivationRange, 0.3f, 64, Col, -2, Globals->GameRenderer);
 				}
 			}
 		}

@@ -62,6 +62,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationTimeMS = (i64)MinutesToMilliseconds(60);
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationRange = 10.0f;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].SlotType = ship_module_slot_type::science;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationRangeDisplayColor = COLOR_PURPLE;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationStepMethod = &ModuleUpdateSalvager;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].Yield = 2;
 

@@ -181,9 +181,78 @@ void RenderCircle(vector2 Center, vector2 Size, color Color, real64 RenderOrder,
 	InsertRenderCommand(UIRenderer, &RendCommand);
 }
 
-void RenderCircleOutline(vector2 Center, vector2 Size, color Color, real64 Thickness, real64 RenderOrder, renderer* UIRenderer) {
-	RenderCircle(Center, Size, Color, RenderOrder, UIRenderer);
-	RenderCircle(Center, vector2{Size.X - Thickness, Size.Y - Thickness}, COLOR_BLACK, RenderOrder + 0.01f, UIRenderer);
+void RenderMeshCircleOutline(vector2 Center, r32 Radius, r32 Outline, i32 VertsCount, color Color, r32 RenderOrder, renderer* Renderer) {
+ 
+	shader* Shader = &Globals->AssetsList.EngineResources.ScreenDrawTextureShader;
+
+	i32 TotalVerts = VertsCount * 6;
+
+	render_command RendCommand = {};
+	InitRenderCommand(&RendCommand, TotalVerts);
+	InitIndexBuffer(&RendCommand);
+	RendCommand.Shader = *Shader;
+
+	// Texture coords
+	layout_data* TextureLayout = RendCommand.GetLayout();
+	TextureLayout->Allocate(Shader->GetLayout(render::ShaderTextureCoordsID), RendCommand.BufferCapacity, GlobalTransMem);
+	TextureLayout->LayoutInfo->Loc = RenderApi.GetAttribLocation(Shader, render::ShaderTextureCoordsID);
+	/*
+	TextureLayout->Data.Vec2[0] = v2{(real32)UVBottomLeft.X, (real32)UVBottomLeft.Y};
+	TextureLayout->Data.Vec2[1] = v2{(real32)UVTopRight.X, (real32)UVBottomLeft.Y};
+	TextureLayout->Data.Vec2[2] = v2{(real32)UVTopRight.X, (real32)UVTopRight.Y};
+	TextureLayout->Data.Vec2[3] = v2{(real32)UVBottomLeft.X, (real32)UVBottomLeft.Y};
+	TextureLayout->Data.Vec2[4] = v2{(real32)UVTopRight.X, (real32)UVTopRight.Y};
+	TextureLayout->Data.Vec2[5] = v2{(real32)UVBottomLeft.X, (real32)UVTopRight.Y};
+	*/
+
+	// Vertices
+	layout_data* VertexLayout = RendCommand.GetLayout();
+	VertexLayout->Allocate(Shader->GetLayout(render::ShaderVertID), RendCommand.BufferCapacity, GlobalTransMem);
+	i32 VertIndex = 0;
+	for (int i = 0; i < VertsCount; i++) {
+		r32 ThetaFirst = (r32)DegToRad( ( (r32)i / VertsCount) * 360.0f );
+		v3 OutterFirst = v3{
+			(Radius * sin(ThetaFirst)) + (r32)Center.X,
+			(Radius * cos(ThetaFirst)) + (r32)Center.Y, 
+			RenderOrder
+		};
+		v3 InnerFirst = v3{
+			((Radius - Outline) * sin(ThetaFirst)) + (r32)Center.X, 
+			((Radius - Outline) * cos(ThetaFirst)) + (r32)Center.Y,
+			RenderOrder
+		};
+
+		int SecondI = (i + 1) % VertsCount;
+		r32 ThetaSecond = (r32)DegToRad( ( (r32)SecondI / VertsCount) * 360.0f );
+		v3 OutterSecond = v3{
+			(Radius * sin(ThetaSecond)) + (r32)Center.X,
+			(Radius * cos(ThetaSecond)) + (r32)Center.Y,
+			RenderOrder
+		};
+		v3 InnerSecond = v3{
+			((Radius - Outline) * sin(ThetaSecond)) + (r32)Center.X, 
+			((Radius - Outline) * cos(ThetaSecond)) + (r32)Center.Y, 
+			RenderOrder
+		};
+
+		VertexLayout->Data.Vec3[VertIndex++] = OutterFirst;
+		VertexLayout->Data.Vec3[VertIndex++] = OutterSecond;
+		VertexLayout->Data.Vec3[VertIndex++] = InnerSecond;
+
+		VertexLayout->Data.Vec3[VertIndex++] = InnerSecond;
+		VertexLayout->Data.Vec3[VertIndex++] = InnerFirst;
+		VertexLayout->Data.Vec3[VertIndex++] = OutterFirst;
+
+		Assert(VertIndex <= TotalVerts);
+	}
+
+	RendCommand.Uniforms = RendCommand.Shader.Uniforms.Copy(GlobalTransMem);
+	RendCommand.Uniforms.SetVec4("color", v4{Color.R, Color.G, Color.B, Color.A});
+	RendCommand.Uniforms.SetMat4("model", m4y4Identity());
+	RendCommand.Uniforms.SetMat4("projection", m4y4Transpose(Renderer->Camera->ProjectionMatrix));
+	RendCommand.Uniforms.SetMat4("view", m4y4Transpose(Renderer->Camera->ViewMatrix));
+
+	InsertRenderCommand(Renderer, &RendCommand);
 }
 
 void RenderRectangle(vector2 Center, vector2 Size, color Color, real64 RenderOrder, renderer* UIRenderer)
