@@ -780,8 +780,6 @@ ship* ShipCreate(state* State, ship_id Type) {
 	Ship->Persist->Status = ship_status::idle;
 	Ship->Persist->GUID = PlatformApi.GetGUID();
 
-	ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
-
 	return Ship;
 }
 

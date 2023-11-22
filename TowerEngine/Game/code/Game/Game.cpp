@@ -216,6 +216,7 @@ ship_definition* GetShipDefinition(ship_id ID)
 bool ImGuiItemIcon(item_id ItemID, bool CanDelete) {
 
 	b32 Ret = false;
+	ImGui::PushID(item_id_NAME[(int)ItemID].Array());
 
 	loaded_image* Icon = Globals->AssetsList.ItemDefinitions[(int)ItemID].Icon;
 	ImGui::Image(
@@ -241,6 +242,7 @@ bool ImGuiItemIcon(item_id ItemID, bool CanDelete) {
 
 		ImGui::EndPopup();
 	}
+	ImGui::PopID();
 
 	return Ret;
 }
@@ -293,6 +295,7 @@ void LoadGame(state* State)
 
 		// Ship
 		ship* Ship = ShipCreate(State, ship_id::advent);
+		ShipAddModule(&Ship->EquippedModules[0], ship_module_id::asteroid_miner, Ship, State);
 
 		// Ateroids
 		AsteroidClusterCreate(vector2{-50, -50}, 15.0f, item_id::venigen, State);
