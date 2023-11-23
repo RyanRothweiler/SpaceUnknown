@@ -111,18 +111,18 @@ bool32 ShipSimulateMovement(ship* Ship, journey_movement* Mov, real64 TimeMS, st
 		return true;
 	}
 
-	if (DistToStart < Mov->DistFromSidesToCoast || DistToEnd < Mov->DistFromSidesToCoast) {
+	if (DistToStart < Mov->DistFromSidesToCoast || DistToEnd < Mov->DistFromSidesToCoast || Mov->Cancel) {
 
 		vector2 Force = {};
 
 		// Speed up
-		if (DistToStart < Mov->DistFromSidesToCoast) {
+		if (DistToStart < Mov->DistFromSidesToCoast && !Mov->Cancel) {
 			ConsumeFuel(&Ship->FuelTank, fuelToUse); 
 			Force = dirToTargetForce;
 		}
 
 		// Slow down
-		if (DistToEnd < Mov->DistFromSidesToCoast) {
+		if (DistToEnd < Mov->DistFromSidesToCoast || Mov->Cancel) {
 			ConsumeFuel(&Ship->FuelTank, fuelToUse); 
 			Force = dirToTargetForce * -1.0f;
 
@@ -626,14 +626,27 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 			ImGui::Separator();
 
-			r64 TimeLeftMS = CurrJour->UniverseTimeEndMS - State->PersistentData.UniverseTimeMS;
-			r64 TimeLeftMinutes = MillisecondsToMinutes(TimeLeftMS);
-			ImGui::Text("%.2f minutes remaining ", TimeLeftMinutes);
+			journey_step* CurrStep = &CurrJour->Steps[CurrJour->CurrentStep];
+			b32 Canceling = false;
+			if (CurrStep->Type == journey_step_type::movement) { 
+				Canceling = CurrStep->Movement.Cancel;
+			}
+			
+			if (!Canceling) {
+				r64 TimeLeftMS = CurrJour->UniverseTimeEndMS - State->PersistentData.UniverseTimeMS;
+				r64 TimeLeftMinutes = MillisecondsToMinutes(TimeLeftMS);
+				ImGui::Text("%.2f minutes remaining ", TimeLeftMinutes);
 
-			r64 PercProgress = TimeLeftMS / CurrJour->Estimate.DurationMS;
-			ImGui::ProgressBar((float)PercProgress, ImVec2(-1.0f, 1.0f));
+				r64 PercProgress = TimeLeftMS / CurrJour->Estimate.DurationMS;
+				ImGui::ProgressBar((float)PercProgress, ImVec2(-1.0f, 1.0f));
 
-			//journey::ImGuiDrawSteps(CurrJour, CurrentShip, State);
+				if (CurrStep->Type == journey_step_type::movement && ImGui::Button("Cancel Journey", ImVec2(-1, 0))) {
+					CurrStep->Movement.Cancel = true;
+					Save();
+				}
+			} else {
+				ImGui::Text("Cancling Journey. Ship slowing");
+			}
 		}
 	} else {
 		// Create movement window
@@ -680,7 +693,6 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 		// Have a journey set?
 		if (CurrJour->StepsCount > 0) {
-
 
 			// Enough fuel?
 			if (CurrentShip->FuelTank.GetFuelLevel() >= CurrJour->Estimate.FuelUsage) {

@@ -9,6 +9,7 @@ void ShipMovementStart(ship* Ship, journey_step* JourneyStep, state* State)
 	Mov->DistFromSidesToCoast = Vector2Distance(Ship->Persist->Position, Mov->EndPosition) * 0.5f * Mov->EdgeRatio;
 	Mov->DirToEnd = Vector2Normalize(Mov->EndPosition - Ship->Persist->Position);
 	Mov->FullDistance = Vector2Distance(Mov->EndPosition, Ship->Persist->Position) + 1;
+	Mov->Cancel = false;
 
 	// Update rotation
 	vector2 MoveDir = Vector2Normalize(Mov->EndPosition - Ship->Persist->Position);

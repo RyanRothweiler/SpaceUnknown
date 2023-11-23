@@ -4,6 +4,7 @@ const char* ChangeLog = R"(
 - Misc display bugs.
 - Updated range rendering to fix range overlap issues.
 - Added range color for salvager module.
+- Allow canceling of journeys.
 
 [0.10]
 - Change skill tree node order.

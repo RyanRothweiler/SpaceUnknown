@@ -67,6 +67,8 @@ MetaStruct struct journey_movement {
 	real64 CachedFuelToUse;
 	real64 CachedFuelForce;
 	vector2 CachedDirToTargetForce;
+
+	bool32 Cancel;
 };
 
 MetaStruct struct journey_dock_undock {

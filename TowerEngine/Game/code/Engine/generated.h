@@ -139,6 +139,7 @@ meta_member journey_movement_META[] {
 {meta_member_type::real64, "real64", "CachedFuelToUse", (uint64)&((journey_movement *)0)->CachedFuelToUse, 0, sizeof(real64),{},{},{},{},{}},
 {meta_member_type::real64, "real64", "CachedFuelForce", (uint64)&((journey_movement *)0)->CachedFuelForce, 0, sizeof(real64),{},{},{},{},{}},
 {meta_member_type::custom, "vector2", "CachedDirToTargetForce", (uint64)&((journey_movement *)0)->CachedDirToTargetForce, 0, sizeof(vector2),&StructMetaFill_vector2, &JsonFillStructShim_vector2, &SaveDataFillShim_vector2, &vector2_META[0], ArrayCount(vector2_META) },
+{meta_member_type::bool32, "bool32", "Cancel", (uint64)&((journey_movement *)0)->Cancel, 0, sizeof(bool32),{},{},{},{},{}},
 }; 
  
 void M_ALLOC__journey_movement(s_void* SafeVoid, memory_arena* Memory) { 
