@@ -278,11 +278,11 @@ void StationSelected(selection * Sel, engine_state * EngineState, game_input * I
 
 void StationDockShip(station * Station, ship * Ship)
 {
+	Ship->Persist->DockIndex = Station->Persist->DockedCount;
 	int DockIndex = Station->Persist->DockedCount;
 	Station->Persist->DockedCount++;
 
-	int DocksCount = 10;
-	real64 DockRel = (real64)DockIndex / (real64)DocksCount;
+	real64 DockRel = (real64)DockIndex / (real64)StationDockCount;
 	real64 DockRadians = DockRel * (2 * PI);
 
 	real64 DockRadius = Station->Size.X * 0.5f * 0.9f;

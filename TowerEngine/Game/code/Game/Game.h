@@ -286,6 +286,8 @@ MetaStruct struct ship_persistent {
 	item_hold_persistent FuelHold;
 
 	ship_module_persistent Modules[16];
+	
+	int32 DockIndex;
 };
 
 MetaStruct struct converter_persistent {

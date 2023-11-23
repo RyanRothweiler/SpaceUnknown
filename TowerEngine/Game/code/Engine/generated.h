@@ -646,6 +646,7 @@ meta_member ship_persistent_META[] {
 {meta_member_type::custom, "item_hold_persistent", "ItemHold", (uint64)&((ship_persistent *)0)->ItemHold, 0, sizeof(item_hold_persistent),&StructMetaFill_item_hold_persistent, &JsonFillStructShim_item_hold_persistent, &SaveDataFillShim_item_hold_persistent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META) },
 {meta_member_type::custom, "item_hold_persistent", "FuelHold", (uint64)&((ship_persistent *)0)->FuelHold, 0, sizeof(item_hold_persistent),&StructMetaFill_item_hold_persistent, &JsonFillStructShim_item_hold_persistent, &SaveDataFillShim_item_hold_persistent, &item_hold_persistent_META[0], ArrayCount(item_hold_persistent_META) },
 {meta_member_type::custom, "ship_module_persistent", "Modules", (uint64)&((ship_persistent *)0)->Modules, 16, sizeof(ship_module_persistent),&StructMetaFill_ship_module_persistent, &JsonFillStructShim_ship_module_persistent, &SaveDataFillShim_ship_module_persistent, &ship_module_persistent_META[0], ArrayCount(ship_module_persistent_META) },
+{meta_member_type::int32, "int32", "DockIndex", (uint64)&((ship_persistent *)0)->DockIndex, 0, sizeof(int32),{},{},{},{},{}},
 }; 
  
 void M_ALLOC__ship_persistent(s_void* SafeVoid, memory_arena* Memory) { 

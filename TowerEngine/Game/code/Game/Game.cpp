@@ -1159,8 +1159,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 					station* StationDocked = per::GetStation(&Ship->Persist->StationDocked, State);
 					Ship->Persist->Rotation = StationDocked->Rotation;
 
-					int DocksCount = 10;
-					real64 DockRel = (real64)StationDocked->Persist->DockedCount / (real64)DocksCount;
+					real64 DockRel = (real64)Ship->Persist->DockIndex / (real64)StationDockCount;
 					real64 DockRadians = DockRel * (2 * PI);
 
 					real64 DockRadius = StationDocked->Size.X * 0.5f * 0.9f;

@@ -1,3 +1,5 @@
+const i8 StationDockCount = 10;
+
 struct converter {
 	converter_persistent* Persist;
 
