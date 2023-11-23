@@ -463,7 +463,7 @@ struct state {
 	bool32 TutorialWindow;
 	save_file PersistentData;
 
-	b32 CreatingMovement;
+	b32 AnyShipCreatingMovement;
 
 	hash::table PersistentPointerSources;
 

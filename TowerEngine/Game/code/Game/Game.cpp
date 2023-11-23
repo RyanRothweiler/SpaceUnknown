@@ -1066,7 +1066,6 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 		case game_scene::universe: {
 
-
 			// Selection
 			{
 				// Find what is hovered
@@ -1117,7 +1116,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				if (State->Hovering != GameNull && !State->Hovering->Selected && State->Hovering->SelectionUpdate != GameNull && 
 
 						// Can't select other things when issuing movement commands on ship
-						!State->CreatingMovement &&
+						!State->AnyShipCreatingMovement &&
 
 						// Clicked
 				        Input->MouseLeft.OnUp && !Input->MouseMoved()

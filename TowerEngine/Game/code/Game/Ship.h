@@ -90,6 +90,8 @@ struct ship {
 
 	stepper Stepper;
 
+	b32 CreatingMovement;
+
 	// Use method to get this most updated
 	real64 CurrentMassTotal;
 

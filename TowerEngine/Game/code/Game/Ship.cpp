@@ -440,7 +440,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input, 
 		ImGui::Separator();
 	}
 
-	if (!State->CreatingMovement) {
+	if (!CurrentShip->CreatingMovement) {
 
 		// Ship info
 		{
@@ -619,7 +619,8 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input, 
 
 		if (!CurrJour->InProgress) {
 			if (ImGui::Button("Move Ship", ImVec2(-1, 0))) {
-				State->CreatingMovement = true;
+				CurrentShip->CreatingMovement = true;
+				State->AnyShipCreatingMovement = true;
 			}
 		} else {
 			ImGui::Text("Journey in progress");
@@ -686,7 +687,8 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input, 
 
 		ImGui::Columns(2);
 		if (ImGui::Button("Cancel", ImVec2(-1, 0))) {
-			State->CreatingMovement = false;
+			CurrentShip->CreatingMovement = false;
+			State->AnyShipCreatingMovement = false;
 			journey::Clear(CurrJour);
 		}
 		ImGui::NextColumn();
@@ -699,7 +701,8 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input, 
 
 				// Button clicked?
 				if (ImGui::Button("Execute", ImVec2(-1, 0))) { 
-					State->CreatingMovement = false;
+					CurrentShip->CreatingMovement = false;
+					State->AnyShipCreatingMovement = false;
 
 					if (CurrJour->Repeat) {
 
