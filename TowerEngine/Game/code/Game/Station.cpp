@@ -238,7 +238,7 @@ void StationProductionService(station* Station, int32 ConverterIndex, station_se
 	}
 }
 
-void StationSelected(selection * Sel, engine_state * EngineState, game_input * Input)
+void StationSelected(selection * Sel, engine_state * EngineState, game_input * Input, i32 SelectionIndex)
 {
 	state* State = &EngineState->GameState;
 	editor_state* EditorState = &EngineState->EditorState;
@@ -246,7 +246,7 @@ void StationSelected(selection * Sel, engine_state * EngineState, game_input * I
 	station* CurrentStation = Sel->GetStation();
 
 	bool Open = true;
-	ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_FirstUseEver);
+	ImGuiSelectionWindowSetup(SelectionIndex);
 	ImGui::Begin("Station Info", &Open);
 
 	ItemDisplayHold("Cargo", &CurrentStation->Hold, State, Input, true, item_hold_filter::any);

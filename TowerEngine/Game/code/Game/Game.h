@@ -378,7 +378,7 @@ enum class selection_type { none, ship, station, asteroid, salvage };
 struct selection;
 struct selectable;
 
-typedef void(*selection_update_func)(selection* Sel, engine_state* EngineState, game_input* Input);
+typedef void(*selection_update_func)(selection* Sel, engine_state* EngineState, game_input* Input, i32 SelectionIndex);
 typedef void(*selection_on_func)(selection* Sel, engine_state* EngineState, game_input* Input);
 typedef void(*selection_on_hover_func)(selectable* Sel, engine_state* EngineState, game_input* Input);
 

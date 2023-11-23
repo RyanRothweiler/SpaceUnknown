@@ -252,6 +252,17 @@ bool ImGuiItemIcon(item_id ItemID, bool CanDelete) {
 #include "Persistent.cpp"
 #include "Journey.cpp"
 
+void ImGuiSelectionWindowSetup(i32 SelectionIndex) { 
+	ImGui::SetNextWindowPos(
+			ImVec2(
+				(30.0f * (SelectionIndex + 1)) + 50.0f, 
+				(30.0f * (SelectionIndex + 1)) + 50.0f
+				),
+			ImGuiCond_FirstUseEver
+		);
+	ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_FirstUseEver);
+}
+
 #include "WorldObject.cpp"
 #include "Asteroid.cpp"
 #include "Salvage.cpp"
@@ -1145,7 +1156,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						RenderLine(Line, 1.5f, color{1, 1, 1, 0.2f}, &EngineState->UIRenderer, false);
 					}
 
-					Sel->Current->SelectionUpdate(Sel, EngineState, Input);
+					Sel->Current->SelectionUpdate(Sel, EngineState, Input, i);
 				}
 			}
 

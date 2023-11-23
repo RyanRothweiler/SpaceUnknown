@@ -342,7 +342,7 @@ void ShipRemoveModule(ship_module* Module, state* State)
 	UnregisterStepper(&Module->Stepper, State);
 }
 
-void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
+void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input, i32 SelectionIndex)
 {
 	state* State = &EngineState->GameState;
 	editor_state* EditorState = &EngineState->EditorState;
@@ -408,7 +408,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input)
 
 	ImGui::PushID(CurrentShip->Persist->GUID);
 	string ID = string{"Ship Info###"} + string{CurrentShip->Persist->GUID};
-	ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_FirstUseEver);
+	ImGuiSelectionWindowSetup(SelectionIndex);
 	ImGui::Begin(ID.Array(), &Showing);
 
 	ImVec2 window_pos = ImGui::GetWindowPos();
