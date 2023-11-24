@@ -5,6 +5,7 @@ const char* ChangeLog = R"(
 - Updated range rendering to fix range overlap issues.
 - Added range color for salvager module.
 - Allow canceling of journeys.
+- Added Concord ship
 
 [0.10]
 - Change skill tree node order.

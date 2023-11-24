@@ -117,13 +117,29 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].FuelTankMassLimit = 75;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].HoldMass = 85;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].Size = 6;
-		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].Prospector.IndustrialActivationReductionPerc = 10.0;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].IndustrialActivationReductionPerc = 10.0;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotsCount = 4;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotTypes[0] = ship_module_slot_type::industrial;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotTypes[1] = ship_module_slot_type::industrial;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotTypes[2] = ship_module_slot_type::structural;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::prospector].SlotTypes[3] = ship_module_slot_type::structural;
 
+		// concord
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].ID = ship_id::concord;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].DisplayName = "Concord";
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].Icon = assets::GetImage("Ship_Concord");
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].FuelRateMassPerSecond = 0.5f;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].Mass = 80;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].RadarRadius = 150;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].FuelTankMassLimit = 500;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].HoldMass = 10;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].Size = 5;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].ScienceActivationReductionPerc = 10.0;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].SlotsCount = 4;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].SlotTypes[0] = ship_module_slot_type::science;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].SlotTypes[1] = ship_module_slot_type::science;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].SlotTypes[2] = ship_module_slot_type::structural;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].SlotTypes[3] = ship_module_slot_type::structural;
 	}
 
 	// Items
@@ -234,6 +250,16 @@ void CreateDefinitions()
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_prospector].DurationMS = HoursToMilliseconds(12);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_prospector].ServiceRequired = station_service::shipyard;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_prospector].Icon = assets::GetImage("Ship_Prospector");
+
+		// ship_concord
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_concord].ID = recipe_id::ship_concord;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_concord].DisplayName = "Ship Concord";
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_concord].RegisterInput(item_id::venigen, 50.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_concord].RegisterInput(item_id::pyrexium, 10.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_concord].RegisterOutput(ship_id::prospector, 1.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_concord].DurationMS = HoursToMilliseconds(12);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_concord].ServiceRequired = station_service::shipyard;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_concord].Icon = assets::GetImage("Ship_Concord");
 
 		// sm_salvager_i
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].ID = recipe_id::sm_salvager_i;

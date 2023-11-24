@@ -66,11 +66,8 @@ struct ship_definition {
 
 	r32 Size;
 
-	union {
-		struct {
-			r32 IndustrialActivationReductionPerc;
-		} Prospector;
-	};
+	r32 IndustrialActivationReductionPerc;
+	r32 ScienceActivationReductionPerc;
 };
 
 struct ship {
