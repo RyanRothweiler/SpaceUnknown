@@ -147,7 +147,7 @@ void InfoWindow::ImGuiRender() {
 				ImGui::Text("Ship Innate Bonuses");
 				ImGui::Separator();
 				ImGui::Columns(2, "cols");
-				Locals.ShowMemberIfValid("Industrial Activation Time Reduction", (r64)Def->Prospector.IndustrialActivationReductionPerc, "%%");
+				Locals.ShowMemberIfValid("Industrial Activation Time Reduction", (r64)Def->IndustrialActivationReductionPerc, "%%");
 				ImGui::Columns(1, "cols");
 
 				ImGui::Columns(1, "cols");

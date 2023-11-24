@@ -272,7 +272,10 @@ r64 ModuleGetActivationTime(ship_module_definition* ModDef, ship* Ship) {
 
 	r64 ReductionPerc = 0; 
 	if (ModDef->SlotType == ship_module_slot_type::industrial) { 
-		ReductionPerc = (r64)ModDef->ActivationTimeMS * (Ship->Definition.Prospector.IndustrialActivationReductionPerc / 100.0f); 
+		ReductionPerc = (r64)ModDef->ActivationTimeMS * (Ship->Definition.IndustrialActivationReductionPerc / 100.0f); 
+	}
+	if (ModDef->SlotType == ship_module_slot_type::science) {
+		ReductionPerc = (r64)ModDef->ActivationTimeMS * (Ship->Definition.ScienceActivationReductionPerc / 100.0f);
 	}
 
 	r64 Val = ModDef->ActivationTimeMS - ReductionPerc; 
