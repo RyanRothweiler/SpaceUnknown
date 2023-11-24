@@ -652,15 +652,19 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input, 
 	} else {
 		// Create movement window
 
+		static bool32 DockState;
+		static station* LastStation = {};
+
 		if (CurrJour->StepsCount == 0) {
 			ImGui::TextWrapped("- Click anywhere on map to queue movement command.");
 			ImGui::TextWrapped("- Click on a station to move the ship and dock there.");
 			ImGui::TextWrapped("- If the ship is already docked, then it will automatically undock before next movement.");
 			ImGui::Dummy(ImVec2(0, 20));
-		}
 
-		bool32 DockState = (CurrentShip->Persist->Status == ship_status::docked);
-		station* LastStation = {};
+			// init values
+			DockState = (CurrentShip->Persist->Status == ship_status::docked);
+			LastStation = {};
+		}
 
 		ImGui::Columns(2);
 
@@ -704,16 +708,6 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input, 
 					CurrentShip->CreatingMovement = false;
 					State->AnyShipCreatingMovement = false;
 
-					if (CurrJour->Repeat) {
-
-						// This assumes the next step is a movement step. which won't be true when we add more steps
-						if (DockState) {
-							CreateDockUndockStep(CurrentShip, LastStation);
-						}
-
-						CreateMovementStep(CurrentShip, CurrentShip->Persist->Position);
-					}
-
 					CurrJour->UniverseTimeEndMS = State->PersistentData.UniverseTimeMS + CurrJour->Estimate.DurationMS;
 					journey::Execute(CurrJour);
 					Save();
@@ -728,26 +722,50 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input, 
 		if (Input->MouseLeft.OnUp && CurrentShip->Persist->Status != ship_status::moving && !Input->MouseMoved() && 
 				journey::CanAddSteps(&CurrentShip->Persist->CurrentJourney)
 			) {
+				
 
-			if (State->Hovering != NULL && State->Hovering->Type == selection_type::station) {
-				station* Station = State->Hovering->GetStation();
-				CreateMovementStep(CurrentShip, Station->Persist->Position);
-				CreateDockUndockStep(CurrentShip, Station);
+			bool32 StationSelected = (State->Hovering != NULL && State->Hovering->Type == selection_type::station);
+			if (DockState) {
+				if (!StationSelected) {
+
+					station* Station = {};
+					if (LastStation != GameNull) {
+						Station = LastStation;
+					} else if (CurrentShip->Persist->Status == ship_status::docked) { 
+						Station = per::GetStation(&CurrentShip->Persist->StationDocked, State);
+					}
+
+					CreateDockUndockStep(CurrentShip, Station);
+					CreateMovementStep(CurrentShip, MouseWorldFlat);
+					DockState = !DockState;
+				}
 			} else {
-
-				if (CurrentShip->Persist->Status == ship_status::docked) {
-					CreateDockUndockStep(
-							CurrentShip, 
-							per::GetStation(&CurrentShip->Persist->StationDocked, State)
-					);
-					CreateMovementStep(CurrentShip, MouseWorldFlat);
-				} else if (DockState) {
-					CreateDockUndockStep(CurrentShip, LastStation);
-					CreateMovementStep(CurrentShip, MouseWorldFlat);
+				if (StationSelected) {
+					station* Station = State->Hovering->GetStation();
+					CreateMovementStep(CurrentShip, Station->Persist->Position);
+					CreateDockUndockStep(CurrentShip, Station);
+					DockState = !DockState;
+					LastStation = Station;
 				} else {
 					CreateMovementStep(CurrentShip, MouseWorldFlat);
 				}
 			}
+
+			/*
+			if (State->Hovering != NULL && State->Hovering->Type == selection_type::station) {
+
+					station* Station = State->Hovering->GetStation();
+					CreateMovementStep(CurrentShip, Station->Persist->Position);
+					CreateDockUndockStep(CurrentShip, Station);
+					DockState = !DockState;
+			} else {
+
+				if (CurrentShip->Persist->Status == ship_status::docked) {
+				} else if (DockState) {
+				} else {
+				}
+			}
+			*/
 
 			CurrJour->Estimate = ShipEstimateJourney(CurrentShip, State);
 		}

@@ -14,17 +14,17 @@ void ShipDockUndockStart(ship* Ship, journey_step* JourneyStep, state* State)
 
 bool ShipDockUndockStep(ship* Ship, journey_step* JourneyStep, real64 Time, state* State)
 {
+	station* Station = per::GetStation(&JourneyStep->DockUndock.Station, State);
+
 	JourneyStep->DockUndock.TimeAccum += Time;
-	Ship->Persist->Position = per::GetStation(&JourneyStep->DockUndock.Station, State)->Persist->Position;
+	Ship->Persist->Position = Station->Persist->Position;
 
 	if (JourneyStep->DockUndock.TimeAccum >= DockTimeMS) {
 
 		if (Ship->Persist->Status == ship_status::undocking) {
 			StationUndockShip(Ship, State);
 		} else {
-			StationDockShip(
-					per::GetStation(&JourneyStep->DockUndock.Station, State), 
-					Ship);
+			StationDockShip(Station, Ship);
 		}
 
 		return true;
