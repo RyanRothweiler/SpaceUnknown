@@ -225,9 +225,11 @@ void ShipStep(void* SelfData, real64 Time, state* State)
 	// Update item cargo mod from modules.
 	// Maybe do something different so this isn't updated every frame idk
 	Ship->Hold.MassLimitMod = 0;
+	Ship->FuelTank.MassLimitMod = 0;
 	for (int i = 0; i < ArrayCount(Ship->EquippedModules); i++) {
 		if (Ship->EquippedModules[i].Persist != GameNull) {
 			Ship->Hold.MassLimitMod += Ship->EquippedModules[i].Definition.CargoAddition;
+			Ship->FuelTank.MassLimitMod += Ship->EquippedModules[i].Definition.FuelTankAddition;
 		}
 	}
 
@@ -589,6 +591,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input, 
 									// Remove item
 									Inst->Count = 0;
 									ItemHoldUpdateMass(&CurrentShip->Hold);
+									ItemHoldUpdateMass(&CurrentShip->FuelTank);
 
 									// Add module
 									ShipAddModule(Module, Def->ShipModuleID, CurrentShip, State);

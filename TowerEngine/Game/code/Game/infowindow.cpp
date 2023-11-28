@@ -90,6 +90,7 @@ void InfoWindow::ImGuiRender() {
 					Locals.ShowMemberIfValid("Activation Range", ShipModuleDef.ActivationRange, "");
 					Locals.ShowMemberIfValid("Activation Time", MillisecondsToMinutes(ShipModuleDef.ActivationTimeMS), "(min)");
 					Locals.ShowMemberIfValid("Cargo Increase", ShipModuleDef.CargoAddition, "(t)");
+					Locals.ShowMemberIfValid("Fuel Tank Increase", ShipModuleDef.FuelTankAddition, "(t)");
 					Locals.ShowMemberIfValid("Yield", ShipModuleDef.Yield, "");
 
 					Locals.ShowMemberIfValid("Foreman Activation Time Reduction", ShipModuleDef.Foreman.ReductionMinutes, "(min)");

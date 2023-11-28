@@ -24,6 +24,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::foreman_i] = assets::GetImage("Icon_ShipModule_Formean_I");
 		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::radar_expansion_i] = assets::GetImage("Icon_ShipModule_RadarExpansion_I");
 		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner_ii] = assets::GetImage("Icon_ShipModule_AsteroidMiner_ii");
+		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::fuel_tank_expansion_i] = assets::GetImage("Icon_ShipModule_FTI");
 
 		// Verify we have setup all the icons
 		for (int i = 0; i < gen_ship_module_id_count; i++) {
@@ -104,6 +105,12 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].SlotType = ship_module_slot_type::structural;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].Radar.RangeAddition = 30;
 
+		// fuel_tank_expansion_i
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::fuel_tank_expansion_i].ID = ship_module_id::fuel_tank_expansion_i;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::fuel_tank_expansion_i].ItemID = item_id::fuel_tank_expansion_i;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::fuel_tank_expansion_i].DisplayName = "Fuel Tank Expansion I";
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::fuel_tank_expansion_i].SlotType = ship_module_slot_type::structural;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::fuel_tank_expansion_i].FuelTankAddition = 30;
 	}
 
 	// Ships
@@ -250,6 +257,17 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Mass = 0.25f;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Icon = assets::GetImage("Icon_STL");
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].Stackable = true;
+
+		// fuel_tank_expansion_i
+		Globals->AssetsList.ItemDefinitions[(int)item_id::fuel_tank_expansion_i].ID = item_id::fuel_tank_expansion_i;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::fuel_tank_expansion_i].DisplayName = "Fuel Tank Expansion I";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::fuel_tank_expansion_i].ShipModuleID = ship_module_id::fuel_tank_expansion_i;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::fuel_tank_expansion_i].DisplayDescription = 
+			"Increases fuel tank size.";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::fuel_tank_expansion_i].Mass = 1;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::fuel_tank_expansion_i].Icon =
+			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::fuel_tank_expansion_i];
+
 	}
 
 	// Recipes

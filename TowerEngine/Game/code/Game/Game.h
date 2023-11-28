@@ -126,11 +126,13 @@ MetaStruct enum class ship_module_id {
 	foreman_i				= 4,
 	radar_expansion_i		= 5,
 	asteroid_miner_ii		= 6,
+	fuel_tank_expansion_i	= 7,
 };
 
 // ITEM ------------------------------------------------------------------------
 
 // sm is short for ship_module. That is checked so its required to mark ship modules. The name matters
+// (still true??)
 MetaStruct enum class item_id {
 	venigen 				= 0,
 	pyrexium 				= 1,
@@ -141,6 +143,7 @@ MetaStruct enum class item_id {
 	foreman_i				= 6,
 	radar_expansion_i		= 7,
 	asteroid_miner_ii		= 8,
+	fuel_tank_expansion_i	= 9,
 };
 
 struct item_definition {

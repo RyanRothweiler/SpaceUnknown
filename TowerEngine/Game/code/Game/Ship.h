@@ -29,6 +29,7 @@ struct ship_module_definition {
 	i32 Yield;
 
 	int32 CargoAddition;
+	int32 FuelTankAddition;
 
 	union {
 		struct {
