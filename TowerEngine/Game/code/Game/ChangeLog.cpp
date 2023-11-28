@@ -2,6 +2,7 @@
 const char* ChangeLog = R"(
 [0.12]
 - Add Asteroid Miner II module
+- Fuel Tank Size skill node
 
 [0.11]
 - Misc display bugs.

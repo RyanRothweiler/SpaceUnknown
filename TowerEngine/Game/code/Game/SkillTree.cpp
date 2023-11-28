@@ -51,7 +51,6 @@ void SkillTreeNodeSave(skill_node * Node, save_data::member* Root)
 
 void SkillTreeSaveAll(state * State)
 {
-	//save_data::member* Root = (save_data::member*)ArenaAllocate(GlobalTransMem, sizeof(save_data::member));
 	save_data::member* Root = save_data::AllocateMember(256, GlobalTransMem, true);
 	for (int i = 0; i < State->SkillNodesCount; i++) {
 		SkillTreeNodeSave(&State->SkillNodes[i], Root);
@@ -89,6 +88,10 @@ void SkillTreeImguiDisplayBonuses(skill_bonuses Bonuses)
 
 	if (Bonuses.ShipRadarRangeAddition > 0) {
 		ImGui::Text("+%i increase to ship radar range", Bonuses.ShipRadarRangeAddition);
+	}
+
+	if (Bonuses.FuelTankSize > 0) {
+		ImGui::Text("+%i(t) increase to fuel tank ", Bonuses.FuelTankSize);
 	}
 
 	for (int i = 0; i < ArrayCount(Bonuses.RecipeUnlocked); i++) {

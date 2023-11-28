@@ -711,6 +711,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 					ImGui::DragInt("ShipLimit", &Bonuses->ShipLimit, 1);
 					ImGui::DragInt("CargoSize", &Bonuses->CargoSize, 1);
 					ImGui::DragInt("ShipRadarRangeAddition", &Bonuses->ShipRadarRangeAddition, 1);
+					ImGui::DragInt("FuelTankSize", &Bonuses->FuelTankSize, 1);
 					if (ImGui::CollapsingHeader("Recipe")) {
 						for (int i = 0; i < ArrayCount(Bonuses->RecipeUnlocked); i++) {
 							bool B = Bonuses->RecipeUnlocked[i];

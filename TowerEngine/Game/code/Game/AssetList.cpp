@@ -371,9 +371,8 @@ namespace assets {
 			{"Icon_Pyrexium", 		"Icons/Icon_Pyrexium.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Icon_STL", 			"Icons/Icon_STL.png", 				gl_blend_type::linear, correct_gamma::no},
 
-
 			{"Icon_ShipModule_AsteroidMiner", 		"Icons/Icon_ShipModule_AsteroidMiner.png", 			gl_blend_type::linear, correct_gamma::no},
-			{"Icon_ShipModule_AsteroidMiner_ii", 		"Icons/Icon_ShipModule_AsteroidMiner_ii.png", 			gl_blend_type::linear, correct_gamma::no},
+			{"Icon_ShipModule_AsteroidMiner_ii", 	"Icons/Icon_ShipModule_AsteroidMiner_ii.png", 		gl_blend_type::linear, correct_gamma::no},
 			{"Icon_ShipModule_Formean_I",	 		"Icons/Icon_ShipModule_Foreman_I.png",				gl_blend_type::linear, correct_gamma::no},
 			{"Icon_ShipModule_Salvager", 			"Icons/Icon_ShipModule_Salvager.png", 				gl_blend_type::linear, correct_gamma::no},
 			{"Icon_ShipModule_Cargo_Expansion_I", 	"Icons/Icon_ShipModule_CargoExpansion_I.png", 		gl_blend_type::linear, correct_gamma::no},
@@ -384,6 +383,7 @@ namespace assets {
 			{"NodeIcon_FuelForce",					"NodeIcons/rocket-thruster.png",	 				gl_blend_type::linear, correct_gamma::no},
 			{"NodeIcon_CargoSize",					"NodeIcons/wooden-crate.png",						gl_blend_type::linear, correct_gamma::no},
 			{"NodeIcon_ShipRadar",					"NodeIcons/radar-sweep.png",						gl_blend_type::linear, correct_gamma::no},
+			{"NodeIcon_FuelTank",					"NodeIcons/gas-pump.png",							gl_blend_type::linear, correct_gamma::no},
 
 			{"Icon_ShipModuleType_Industrial", 		"Icons/Icon_ShipModuleType_Industrial.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Icon_ShipModuleType_Structural", 		"Icons/Icon_ShipModuleType_Structural.png", 			gl_blend_type::linear, correct_gamma::no},

@@ -7,6 +7,7 @@ skill_bonuses SkillBonusesAdd(skill_bonuses A, skill_bonuses B)
 	Ret.CargoSize = A.CargoSize + B.CargoSize;
 	Ret.IndustrialActivationTimeMinutes = A.IndustrialActivationTimeMinutes + B.IndustrialActivationTimeMinutes;
 	Ret.ShipRadarRangeAddition = A.ShipRadarRangeAddition + B.ShipRadarRangeAddition;
+	Ret.FuelTankSize = A.FuelTankSize + B.FuelTankSize;
 
 	for (int i = 0; i < ArrayCount(A.RecipeUnlocked); i++) {
 		Ret.RecipeUnlocked[i] = A.RecipeUnlocked[i] || B.RecipeUnlocked[i];

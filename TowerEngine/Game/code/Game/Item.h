@@ -23,7 +23,8 @@ struct item_hold {
 		if (Type == item_hold_type::ship_cargo) {
 			return MassLimitBase + TreeBonusesTotal->CargoSize + MassLimitMod;
 		} else {
-			return MassLimitBase + MassLimitMod;
+			// Assume fuel tank 
+			return MassLimitBase + TreeBonusesTotal->FuelTankSize + MassLimitMod;
 		}
 	}
 

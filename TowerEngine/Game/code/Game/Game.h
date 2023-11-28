@@ -318,14 +318,15 @@ MetaStruct enum class skill_node_icon {
 	cargo_size,
 	industrial_activation_time,
 	ship_radar,
+	fuel_tank_size,
 };
 
 
 /*
 	When adding new fields
-	- Add to operators in SkillBonusesAdd
-	- Add to displays SkillTreeImguiDisplayBonuses
-	- Add to editor display
+	- Add to operators in SkillBonusesAdd (SkillTree.h)
+	- Add to displays SkillTreeImguiDisplayBonuses (SkilLTree.cpp)
+	- Add to editor display (Game.cpp)
 	- Implement effect
 */
 MetaStruct struct skill_bonuses {
@@ -335,6 +336,7 @@ MetaStruct struct skill_bonuses {
 	int32 CargoSize;
 	int32 IndustrialActivationTimeMinutes;
 	int32 ShipRadarRangeAddition;
+	int32 FuelTankSize;
 
 	bool32 RecipeUnlocked[recipe_id_count];
 };

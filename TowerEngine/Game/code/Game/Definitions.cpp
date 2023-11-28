@@ -41,6 +41,7 @@ void CreateDefinitions()
 		Globals->AssetsList.SkillNodeIcons[(int)skill_node_icon::cargo_size] = assets::GetImage("NodeIcon_CargoSize");
 		Globals->AssetsList.SkillNodeIcons[(int)skill_node_icon::industrial_activation_time] = assets::GetImage("NodeIcon_IndustrialActivationTime");
 		Globals->AssetsList.SkillNodeIcons[(int)skill_node_icon::ship_radar] = assets::GetImage("NodeIcon_ShipRadar");
+		Globals->AssetsList.SkillNodeIcons[(int)skill_node_icon::fuel_tank_size] = assets::GetImage("NodeIcon_FuelTank");
 	}
 
 	// Ship modules
