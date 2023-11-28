@@ -23,6 +23,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::cargo_expansion_i] = assets::GetImage("Icon_ShipModule_Cargo_Expansion_I");
 		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::foreman_i] = assets::GetImage("Icon_ShipModule_Formean_I");
 		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::radar_expansion_i] = assets::GetImage("Icon_ShipModule_RadarExpansion_I");
+		Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner_ii] = assets::GetImage("Icon_ShipModule_AsteroidMiner_ii");
 
 		// Verify we have setup all the icons
 		for (int i = 0; i < gen_ship_module_id_count; i++) {
@@ -46,6 +47,7 @@ void CreateDefinitions()
 	{
 		static_assert(ArrayCount(Globals->AssetsList.ShipModuleDefinitions) > gen_ship_module_id_count, "Not enough ship module definitions.");
 
+		// asteroid_miner
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ID = ship_module_id::asteroid_miner;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ItemID = item_id::sm_asteroid_miner;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].DisplayName = "Asteroid Miner";
@@ -56,6 +58,18 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationStepMethod = &ModuleUpdateAsteroidMiner;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].Yield = 2;
 
+		// asteroid_miner_ii
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].ID = ship_module_id::asteroid_miner_ii;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].ItemID = item_id::asteroid_miner_ii;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].DisplayName = "Asteroid Miner II";
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].ActivationTimeMS = (i64)MinutesToMilliseconds(25);
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].ActivationRange = 20.0f;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].ActivationRangeDisplayColor = COLOR_TEAL;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].SlotType = ship_module_slot_type::industrial;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].ActivationStepMethod = &ModuleUpdateAsteroidMiner;
+		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].Yield = 3;
+
+		// salvager_i
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ID = ship_module_id::salvager_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ItemID = item_id::sm_salvager_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].DisplayName = "Salvager MK1";
@@ -66,6 +80,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationStepMethod = &ModuleUpdateSalvager;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].Yield = 2;
 
+		// foreman_i
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ID = ship_module_id::foreman_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ItemID = item_id::foreman_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].DisplayName = "Foreman I";
@@ -74,12 +89,14 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].SlotType = ship_module_slot_type::science;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].Foreman.ReductionMinutes = 5;
 
+		// cargo_expansion_i
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].ID = ship_module_id::cargo_expansion_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].ItemID = item_id::cargo_expansion_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].DisplayName = "Cargo Expansion MKI";
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].SlotType = ship_module_slot_type::structural;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].CargoAddition = 20;
 
+		// radar_expansion_i
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].ID = ship_module_id::radar_expansion_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].ItemID = item_id::radar_expansion_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].DisplayName = "Radar Expansion I";
@@ -146,6 +163,7 @@ void CreateDefinitions()
 	{
 		static_assert(ArrayCount(Globals->AssetsList.ItemDefinitions) > gen_item_id_count, "Item definitions list too small.");
 
+		// venigern
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].ID = item_id::venigen;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].DisplayName = "Venigen";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].DisplayDescription =
@@ -154,6 +172,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].Icon = assets::GetImage("Icon_Venigen");
 		Globals->AssetsList.ItemDefinitions[(int)item_id::venigen].Stackable = true;
 
+		// pyrexium
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].ID = item_id::pyrexium;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].DisplayName = "Pyrexium";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].DisplayDescription = 
@@ -162,6 +181,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].Icon = assets::GetImage("Icon_Pyrexium");
 		Globals->AssetsList.ItemDefinitions[(int)item_id::pyrexium].Stackable = true;
 
+		// sm_asteroid_miner
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].ID = item_id::sm_asteroid_miner;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].DisplayName = "Asteroid Miner";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].DisplayDescription = 
@@ -171,6 +191,17 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_asteroid_miner].Icon = 
 			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner];
 
+		// asteroid_miner_ii
+		Globals->AssetsList.ItemDefinitions[(int)item_id::asteroid_miner_ii].ID = item_id::asteroid_miner_ii;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::asteroid_miner_ii].DisplayName = "Asteroid Miner II";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::asteroid_miner_ii].DisplayDescription = 
+			"Basic asteroid miner. Mines asteroids into raw materials.";
+		Globals->AssetsList.ItemDefinitions[(int)item_id::asteroid_miner_ii].ShipModuleID = ship_module_id::asteroid_miner_ii;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::asteroid_miner_ii].Mass = 1;
+		Globals->AssetsList.ItemDefinitions[(int)item_id::asteroid_miner_ii].Icon = 
+			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner_ii];
+
+		// sm_salvager_i
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].ID = item_id::sm_salvager_i;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].DisplayName = "Salvager MK1";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].DisplayDescription = 
@@ -180,6 +211,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::sm_salvager_i].Icon = 
 			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::salvager_i];
 
+		// cargo_expansion_i
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].ID = item_id::cargo_expansion_i;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].DisplayName = "Cargo Expansion I";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].DisplayDescription = 
@@ -189,6 +221,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::cargo_expansion_i].Icon = 
 			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::cargo_expansion_i];
 
+		// foreman_i
 		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].ID = item_id::foreman_i;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].DisplayName = "Forman I";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].DisplayDescription = 
@@ -198,6 +231,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::foreman_i].Icon = 
 			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::foreman_i];
 
+		// radar_expansion_i
 		Globals->AssetsList.ItemDefinitions[(int)item_id::radar_expansion_i].ID = item_id::radar_expansion_i;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::radar_expansion_i].DisplayName = "Radar Expansion I";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::radar_expansion_i].DisplayDescription = 
@@ -207,6 +241,7 @@ void CreateDefinitions()
 		Globals->AssetsList.ItemDefinitions[(int)item_id::radar_expansion_i].Icon = 
 			Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::radar_expansion_i];
 
+		// stl
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].ID = item_id::stl;
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].DisplayName = "STL Fuel";
 		Globals->AssetsList.ItemDefinitions[(int)item_id::stl].DisplayDescription = 
@@ -280,6 +315,16 @@ void CreateDefinitions()
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_i].ServiceRequired = station_service::manufacturing;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_i].Icon = 
 				Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner];
+
+		// asteroid_miner_ii
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_ii].ID = recipe_id::asteroid_miner_ii;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_ii].DisplayName = Globals->AssetsList.ItemDefinitions[(int)item_id::asteroid_miner_ii].DisplayName.Array();
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_ii].RegisterInput(item_id::pyrexium, 30.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_ii].RegisterOutput(item_id::sm_asteroid_miner, 1.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_ii].DurationMS = HoursToMilliseconds(2);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_ii].ServiceRequired = station_service::manufacturing;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::asteroid_miner_ii].Icon = 
+				Globals->AssetsList.ShipModuleIcons[(int)ship_module_id::asteroid_miner_ii];
 
 		// cargo_expansion_i
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::cargo_expansion_i].ID = recipe_id::cargo_expansion_i;

@@ -316,8 +316,9 @@ string ship_module_id_NAME[] {
 "cargo_expansion_i",
 "foreman_i",
 "radar_expansion_i",
+"asteroid_miner_ii",
 }; 
-#define gen_ship_module_id_count 6 
+#define gen_ship_module_id_count 7 
  
 string item_id_NAME[] { 
 "venigen",
@@ -328,8 +329,9 @@ string item_id_NAME[] {
 "cargo_expansion_i",
 "foreman_i",
 "radar_expansion_i",
+"asteroid_miner_ii",
 }; 
-#define gen_item_id_count 8 
+#define gen_item_id_count 9 
  
 meta_member item_instance_persistent_META[] { 
 {meta_member_type::enumeration, "item_id", "ID", (uint64)&((item_instance_persistent *)0)->ID, 0, sizeof(item_id),{},{},{},{},{}},
@@ -405,10 +407,11 @@ string recipe_id_NAME[] {
 "foreman_i",
 "ship_prospector",
 "ship_concord",
+"asteroid_miner_ii",
 "count",
 "none",
 }; 
-#define gen_recipe_id_count 11 
+#define gen_recipe_id_count 12 
  
 meta_member color_persistent_META[] { 
 {meta_member_type::real32, "real32", "R", (uint64)&((color_persistent *)0)->R, 0, sizeof(real32),{},{},{},{},{}},

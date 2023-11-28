@@ -1,5 +1,8 @@
 
 const char* ChangeLog = R"(
+[0.12]
+- Add Asteroid Miner II module
+
 [0.11]
 - Misc display bugs.
 - Updated range rendering to fix range overlap issues.

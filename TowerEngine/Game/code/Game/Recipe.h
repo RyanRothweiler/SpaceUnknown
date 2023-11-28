@@ -59,6 +59,6 @@ struct recipe {
 };
 
 struct recipe_list {
-	recipe_id IDs[10];
+	recipe_id IDs[20];
 	int32 Count;
 };
