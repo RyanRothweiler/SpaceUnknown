@@ -187,12 +187,13 @@ MetaStruct enum class recipe_id {
 	ship_prospector		= 7,
 	ship_concord		= 8,
 	asteroid_miner_ii	= 9,
+	fuel_tank_expansion_i	= 10,
 	// increment count define
 
 	count,
 	none,
 };
-#define recipe_id_count 10
+#define recipe_id_count 11
 static_assert(recipe_id_count == (int)recipe_id::count, "recipe_id define must be incremented");
 
 // -----------------------------------------------------------------------------
