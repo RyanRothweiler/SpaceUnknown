@@ -1185,11 +1185,6 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				}
 			}
 
-			// Render planets
-			RenderCircle(vector2{1200, 200}, vector2{2000, 2000},
-			             Color255(12.0f, 39.0f, 35.0f, 255.0f), 
-						 RenderLayerPlanet, Globals->GameRenderer);
-
 			// Render world objects
 			for (int i = 0; i < State->WorldObjectsCount; i++)  {
 				world_object* Obj = State->WorldObjects[i];

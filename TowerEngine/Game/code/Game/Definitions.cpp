@@ -165,6 +165,21 @@ void CreateDefinitions()
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].SlotTypes[1] = ship_module_slot_type::science;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].SlotTypes[2] = ship_module_slot_type::structural;
 		Globals->AssetsList.ShipDefinitions[(int)ship_id::concord].SlotTypes[3] = ship_module_slot_type::structural;
+
+		// ranger
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::ranger].ID = ship_id::ranger;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::ranger].DisplayName = "Ranger";
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::ranger].Icon = assets::GetImage("Ship_Ranger");
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::ranger].FuelRateMassPerSecond = 1.0f;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::ranger].Mass = 40;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::ranger].RadarRadius = 400;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::ranger].FuelTankMassLimit = 400;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::ranger].HoldMass = 10;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::ranger].Size = 4;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::ranger].SlotsCount = 2;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::ranger].SlotTypes[0] = ship_module_slot_type::science;
+		Globals->AssetsList.ShipDefinitions[(int)ship_id::ranger].SlotTypes[1] = ship_module_slot_type::science;
+
 	}
 
 	// Items
@@ -314,6 +329,15 @@ void CreateDefinitions()
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_concord].DurationMS = HoursToMilliseconds(12);
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_concord].ServiceRequired = station_service::shipyard;
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_concord].Icon = assets::GetImage("Ship_Concord");
+
+		// ship_ranger
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_ranger].ID = recipe_id::ship_ranger;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_ranger].DisplayName = "Ship Ranger";
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_ranger].RegisterInput(item_id::venigen, 25.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_ranger].RegisterOutput(ship_id::ranger, 1.0f);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_ranger].DurationMS = HoursToMilliseconds(12);
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_ranger].ServiceRequired = station_service::shipyard;
+		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::ship_ranger].Icon = assets::GetImage("Ship_Ranger");
 
 		// sm_salvager_i
 		Globals->AssetsList.RecipeDefinitions[(int)recipe_id::sm_salvager_i].ID = recipe_id::sm_salvager_i;

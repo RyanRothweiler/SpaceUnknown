@@ -411,10 +411,11 @@ string recipe_id_NAME[] {
 "ship_concord",
 "asteroid_miner_ii",
 "fuel_tank_expansion_i",
+"ship_ranger",
 "count",
 "none",
 }; 
-#define gen_recipe_id_count 13 
+#define gen_recipe_id_count 14 
  
 meta_member color_persistent_META[] { 
 {meta_member_type::real32, "real32", "R", (uint64)&((color_persistent *)0)->R, 0, sizeof(real32),{},{},{},{},{}},
@@ -489,8 +490,9 @@ string ship_id_NAME[] {
 "advent",
 "prospector",
 "concord",
+"ranger",
 }; 
-#define gen_ship_id_count 3 
+#define gen_ship_id_count 4 
  
 string ship_status_NAME[] { 
 "idle",

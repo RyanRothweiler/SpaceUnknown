@@ -366,6 +366,7 @@ namespace assets {
 			{"Ship_Advent", 		"Ships/Advent.png", 					gl_blend_type::linear, correct_gamma::no},
 			{"Ship_Prospector", 	"Ships/Prospector.png", 				gl_blend_type::linear, correct_gamma::no},
 			{"Ship_Concord",		"Ships/Concord.png",					gl_blend_type::linear, correct_gamma::no},
+			{"Ship_Ranger",			"Ships/Ranger.png",						gl_blend_type::linear, correct_gamma::no},
 
 			{"Icon_Venigen", 		"Icons/Icon_Venigen.png", 			gl_blend_type::linear, correct_gamma::no},
 			{"Icon_Pyrexium", 		"Icons/Icon_Pyrexium.png", 			gl_blend_type::linear, correct_gamma::no},

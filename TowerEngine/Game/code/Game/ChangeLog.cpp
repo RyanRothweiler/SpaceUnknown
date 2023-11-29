@@ -1,16 +1,17 @@
 
 const char* ChangeLog = R"(
 [0.12]
-- Add Asteroid Miner II module
-- Fuel Tank Size skill node
-- Skill Tree changes
+- Add Asteroid Miner II module.
+- Fuel Tank Size skill node.
+- Skill Tree changes.
+- Added ranger ship.
 
 [0.11]
 - Misc display bugs.
 - Updated range rendering to fix range overlap issues.
 - Added range color for salvager module.
 - Allow canceling of journeys.
-- Added Concord ship
+- Added Concord ship.
 
 [0.10]
 - Change skill tree node order.
