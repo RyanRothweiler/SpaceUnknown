@@ -56,45 +56,58 @@ ships_list GetShipsWithinRadius(vector2 Position, r64 Radius, state* State) {
 
 void StepUniverse(state* State, real64 TimeMS)
 {
-	// Check for wakeup stepper
-	if (State->SleepingSteppers->LinkCount >= 1) {
-		stepper_ptr* pt = (stepper_ptr*)GetLinkData(State->SleepingSteppers, 0);
-		if (State->PersistentData.UniverseTimeMS >= pt->Stp->WakeupTime) {
-			AddStepper(pt->Stp, State);
-			RemoveLink(State->SleepingSteppers, 0);
+	float MaxSimFPS = 15.0f;
+	float MaxTimeStepMS = (1.0f / MaxSimFPS) * 1000.0f;
+	
+	while (TimeMS > 0) {
+
+		r64 TimeStep = Min(MaxTimeStepMS, TimeMS);
+			
+		// Increase universe time
+		State->PersistentData.UniverseTimeMS += TimeStep;
+
+		// Check for wakeup stepper
+		if (State->SleepingSteppers->LinkCount >= 1) {
+			stepper_ptr* pt = (stepper_ptr*)GetLinkData(State->SleepingSteppers, 0);
+			if (State->PersistentData.UniverseTimeMS >= pt->Stp->WakeupTime) {
+				AddStepper(pt->Stp, State);
+				RemoveLink(State->SleepingSteppers, 0);
+			}
 		}
-	}
 
-	// Update ship bonus state
-	{
-		// Clear old state
-		for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
-			ship* Ship = &State->Ships[i];
-			Ship->IndustrialActivationReductionMinutes = 0;
-		}
+		// Update ship bonus state
+		{
+			// Clear old state
+			for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
+				ship* Ship = &State->Ships[i];
+				Ship->IndustrialActivationReductionMinutes = 0;
+			}
 
-		// Update state
-		for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
-			ship* Ship = &State->Ships[i];
-			for (int m = 0; m < ArrayCount(Ship->EquippedModules); m++) {
-				ship_module* Module = &Ship->EquippedModules[m];
+			// Update state
+			for (int i = 0; i < State->PersistentData.ShipsCount; i++) {
+				ship* Ship = &State->Ships[i];
+				for (int m = 0; m < ArrayCount(Ship->EquippedModules); m++) {
+					ship_module* Module = &Ship->EquippedModules[m];
 
-				// forman bonuses
-				if (Module->Persist->Filled && Module->Definition.ID == ship_module_id::foreman_i) {
-					ships_list ShipsWithin = GetShipsWithinRadius(Ship->Persist->Position, Module->Definition.ActivationRange, State);
-					for (int n = 0; n < ShipsWithin.ListCount; n++) {
-						ship* SH = ShipsWithin.List[n];
-						SH->IndustrialActivationReductionMinutes += Module->Definition.Foreman.ReductionMinutes;
+					// forman bonuses
+					if (Module->Persist->Filled && Module->Definition.ID == ship_module_id::foreman_i) {
+						ships_list ShipsWithin = GetShipsWithinRadius(Ship->Persist->Position, Module->Definition.ActivationRange, State);
+						for (int n = 0; n < ShipsWithin.ListCount; n++) {
+							ship* SH = ShipsWithin.List[n];
+							SH->IndustrialActivationReductionMinutes += Module->Definition.Foreman.ReductionMinutes;
+						}
 					}
 				}
 			}
 		}
-	}
 
-	// Step everything
-	for (int i = 0; i < State->SteppersCount; i++) {
-		stepper* Stepper = State->Steppers[i];
-		Stepper->Step(Stepper->SelfData, TimeMS, State);
+		// Step everything
+		for (int i = 0; i < State->SteppersCount; i++) {
+			stepper* Stepper = State->Steppers[i];
+			Stepper->Step(Stepper->SelfData, TimeStep, State);
+		}
+
+		TimeMS -= TimeStep;
 	}
 }
 
@@ -139,11 +152,6 @@ void SleepStepper(state* State, stepper* Stepper, real64 SleepDurationMS)
 
 	// Add to end, return out before getting here
 	AddLink(State->SleepingSteppers, (void*)&Data, GlobalPermMem);
-}
-
-void TimeStep(void* SelfData, real64 Time, state* State)
-{
-	State->PersistentData.UniverseTimeMS += Time;
 }
 
 selectable* RegisterSelectable(selection_type Type, vector2* Center, vector2* Size, void* Data, state* State)
@@ -460,8 +468,6 @@ void Start(engine_state* EngineState)
 	State->SleepingSteppers = CreateListFixed(GlobalPermMem, sizeof(stepper_ptr), 100);
 
 	CreateDefinitions();
-
-	RegisterStepper(&State->UniverseTimeStepper, &TimeStep, GameNull, State);
 
 	// Load asteroid images
 	Globals->AssetsList.AsteroidImages[0] = assets::GetImage("Asteroid1");
