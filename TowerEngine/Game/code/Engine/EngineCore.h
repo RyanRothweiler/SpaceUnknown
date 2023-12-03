@@ -583,7 +583,9 @@ struct engine_state {
 
 	char* SaveDataFolder;
 	bool DidSave;
+	bool FileSystemSyncing;
 	bool FileSynced;
+	bool Saving;
 
 	string RootAssetPath;
 

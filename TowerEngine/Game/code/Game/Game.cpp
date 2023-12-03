@@ -165,8 +165,11 @@ void Save()
 	GlobalTriggerSave = true;
 }
 
-void SaveGame(state* State, save_data::member* Root)
+void SaveGame(engine_state* EngineState, save_data::member* Root)
 {
+	state* State = &EngineState->GameState;
+	EngineState->Saving = true;
+
 	// Time
 	using std::chrono::duration_cast;
 	using std::chrono::system_clock;
@@ -190,6 +193,7 @@ void SaveGame(state* State, save_data::member* Root)
 	}
 
 	save_data::Write((string{SaveDataFolder} + "/SpaceUnknownSave.sus").Array(), &save_file_META[0], ArrayCount(save_file_META), (void*)&State->PersistentData, Root);
+	EngineState->DidSave = true;
 	ConsoleLog("Game Saved");
 }
 
@@ -360,8 +364,6 @@ void LoadGame(state* State)
 		r64 TotalMissing = (real64)(CurrentSinceEpoch - FileSinceEpoch);
 		State->ForwardSimulatingTimeRemaining = ClampValue(0.0f, HoursToMilliseconds(HoursLimit), TotalMissing);
 
-		State->ForwardSimulatingTimeRemaining = HoursToMilliseconds(5.1234f);
-
 		real64 MissingMSStart = State->ForwardSimulatingTimeRemaining;
 
 		string P = "Simulating " + string{MillisecondsToHours(State->ForwardSimulatingTimeRemaining)} + " h of missing time of total " + string{MillisecondsToHours(TotalMissing)};
@@ -389,6 +391,8 @@ void LoadGame(state* State)
 			}
 		}
 
+		// This results in some weird behavior, maybe negative values?
+		// Keeping it out probably loses a bit of background simulation time.
 		//StepUniverse(State, State->ForwardSimulatingTimeRemaining);
 
 		State->ForwardSimulating = false;
@@ -409,7 +413,7 @@ void SaveGameThread(void* Params, int32 ThreadID)
 {
 	if (!Saving) {
 		Saving = true;
-		SaveGame((state*)Params, GlobalSaveDataRoot);
+		SaveGame((engine_state*)Params, GlobalSaveDataRoot);
 		Saving = false;
 	}
 }
@@ -517,14 +521,14 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 
 	// save timer
 	{
-		static real64 SaveTimer = 0;
-		SaveTimer += EngineState->DeltaTimeMS;
-		if (MillisecondsToSeconds(SaveTimer) > 5.0f || GlobalTriggerSave) {
+		//static real64 SaveTimer = 0;
+		//SaveTimer += EngineState->DeltaTimeMS;
+		
+		if (GlobalTriggerSave) {
 			GlobalTriggerSave = false;
-			EngineState->DidSave = true;
-			SaveTimer = 0.0f;
+			//SaveTimer = 0.0f;
 
-			PlatformApi.ThreadAddWork(&SaveGameThread, (void*)State);
+			PlatformApi.ThreadAddWork(&SaveGameThread, (void*)EngineState);
 			//SaveGame(State, GlobalSaveDataRoot);
 		}
 	}
@@ -966,6 +970,11 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 			State->TutorialWindow = true;
 		}
 
+		ImGui::Dummy(ImVec2(Spacing * 2, 0));
+		if (EngineState->FileSystemSyncing) {
+			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0f), "!! Saving. Don't exit. !!");
+		}
+
 		ImGui::EndMainMenuBar();
 
 		// settings window
@@ -1000,7 +1009,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 						State->PersistentData.Valid = false;
 						EngineState->DidSave = true;
 						EngineState->FileSynced = false;
-						SaveGame(State, GlobalSaveDataRoot);
+						SaveGame(EngineState, GlobalSaveDataRoot);
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("No", ImVec2(HW, 0))) {

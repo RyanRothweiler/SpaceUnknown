@@ -698,6 +698,7 @@ void MainLoop()
 
 		if (GameStateFromMemory->DidSave) {
 			GameStateFromMemory->DidSave = false;
+			GameStateFromMemory->FileSystemSyncing = true;
 
 			EM_ASM (
 				FS.syncfs(false, 
