@@ -619,7 +619,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				ImGui::SameLine();
 				if (ImGui::Button("1 hour")) {
 					State->ForwardSimulating = true;
-					i32 Hours = 5;
+					i32 Hours = 1;
 					for (int i = 0; i < SimFPS * 60.0f * 60.0f * Hours; i++) { StepUniverse(State, FrameLengthMS); }
 					State->ForwardSimulating = false;
 				}

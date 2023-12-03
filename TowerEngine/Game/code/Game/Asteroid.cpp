@@ -103,7 +103,7 @@ void AsteroidSpawnStep(void* SelfData, real64 Time, state* State)
 {
 	asteroid_cluster* Self = (asteroid_cluster*)SelfData;
 	SpawnAsteroid(Self, State);
-	SleepStepper(State, &Self->Spawner, SecondsToMilliseconds(5));
+	SleepStepper(State, &Self->Spawner, HoursToMilliseconds(6));
 }
 
 // Setup data for existing asteroid cluster
@@ -120,13 +120,15 @@ void AsteroidClusterSetup(asteroid_cluster* Cluster, asteroid_cluster_persistent
 		
 		// Setup images
 		Asteroid->Persist->WorldObject.Image = Globals->AssetsList.AsteroidImages[Asteroid->Persist->SpriteIndex];
-
-		// Register data
-		WorldObjectRegister(State, &Asteroid->Persist->WorldObject);
-		selectable* Sel = RegisterSelectable(selection_type::asteroid, &Asteroid->Persist->WorldObject.Position, &Asteroid->Persist->WorldObject.Size, (void*)Asteroid, State);
-		Sel->OnHover = &AsteroidHovering;
 		
 		per::AddSource(Asteroid->Persist->GUID, Asteroid, State);
+
+		// Register data
+		if (Asteroid->Persist->Using) {
+			WorldObjectRegister(State, &Asteroid->Persist->WorldObject);
+			selectable* Sel = RegisterSelectable(selection_type::asteroid, &Asteroid->Persist->WorldObject.Position, &Asteroid->Persist->WorldObject.Size, (void*)Asteroid, State);
+			Sel->OnHover = &AsteroidHovering;
+		}
 	}
 }
 
