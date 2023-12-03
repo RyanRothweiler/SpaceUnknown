@@ -1,6 +1,8 @@
 
 const char* ChangeLog = R"(
 [0.13]
+- Misc bug fixes.
+- Fix bug with incorrect movement forward simulation.
 
 [0.12]
 - Add Asteroid Miner II module.

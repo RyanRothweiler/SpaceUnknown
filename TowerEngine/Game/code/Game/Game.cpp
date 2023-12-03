@@ -360,6 +360,8 @@ void LoadGame(state* State)
 		r64 TotalMissing = (real64)(CurrentSinceEpoch - FileSinceEpoch);
 		State->ForwardSimulatingTimeRemaining = ClampValue(0.0f, HoursToMilliseconds(HoursLimit), TotalMissing);
 
+		State->ForwardSimulatingTimeRemaining = HoursToMilliseconds(5.1234f);
+
 		real64 MissingMSStart = State->ForwardSimulatingTimeRemaining;
 
 		string P = "Simulating " + string{MillisecondsToHours(State->ForwardSimulatingTimeRemaining)} + " h of missing time of total " + string{MillisecondsToHours(TotalMissing)};
@@ -371,6 +373,8 @@ void LoadGame(state* State)
 
 		float SimFPS = 15.0f;
 		float TimeStepMS = (1.0f / SimFPS) * 1000.0f;
+
+
 		while (State->ForwardSimulatingTimeRemaining > TimeStepMS) {
 			StepUniverse(State, TimeStepMS);
 
@@ -385,7 +389,7 @@ void LoadGame(state* State)
 			}
 		}
 
-		StepUniverse(State, State->ForwardSimulatingTimeRemaining);
+		//StepUniverse(State, State->ForwardSimulatingTimeRemaining);
 
 		State->ForwardSimulating = false;
 	} else {
@@ -597,7 +601,7 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				ImGui::Checkbox("Pause", &EditorState->Paused);
 				ImGui::Checkbox("HideFog", &EditorState->HideFog);
 
-				real64 SimFPS = 60.0f;
+				real64 SimFPS = 15.0f;
 				real64 FrameLengthMS = (1.0f / SimFPS) * 1000.0f;
 				if (ImGui::Button("1 minute")) {
 					for (int i = 0; i < SimFPS * 60.0f; i++) { StepUniverse(State, FrameLengthMS); }
@@ -605,7 +609,8 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				ImGui::SameLine();
 				if (ImGui::Button("1 hour")) {
 					State->ForwardSimulating = true;
-					for (int i = 0; i < SimFPS * 60.0f * 60.0f; i++) { StepUniverse(State, FrameLengthMS); }
+					i32 Hours = 5;
+					for (int i = 0; i < SimFPS * 60.0f * 60.0f * Hours; i++) { StepUniverse(State, FrameLengthMS); }
 					State->ForwardSimulating = false;
 				}
 			}
