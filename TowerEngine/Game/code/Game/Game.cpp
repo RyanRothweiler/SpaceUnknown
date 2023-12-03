@@ -410,6 +410,8 @@ void LoadGame(state* State)
 		ItemGive(&State->Ships[0].FuelTank, item_id::stl, 200);
 		ItemGive(&State->Stations[0].Hold, item_id::pyrexium, 10);
 		ItemGive(&State->Stations[0].Hold, item_id::sm_salvager_i, 1);
+		ItemGive(&State->Stations[0].Hold, item_id::sm_asteroid_miner, 1);
+		ItemGive(&State->Stations[0].Hold, item_id::cargo_expansion_i, 1);
 	}
 	ConsoleLog("Finished");
 }

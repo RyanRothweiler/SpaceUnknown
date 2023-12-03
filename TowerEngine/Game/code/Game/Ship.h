@@ -20,7 +20,6 @@ struct ship_module_definition {
 	step_func ActivationStepMethod;
 
 	ship_module_slot_type SlotType;
-	string DisplayName;
 	i64 ActivationTimeMS;
 
 	real64 ActivationRange;

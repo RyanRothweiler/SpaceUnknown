@@ -521,6 +521,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input, 
 
 				if (Module->Persist->Filled != GameNull) {
 
+					item_definition* ItemDef = GetItemDefinition(Module->Definition.ItemID);
 					ImGuiItemIcon(Module->Definition.ItemID, false);
 
 					if (CurrentShip->Persist->Status == ship_status::docked &&
@@ -547,7 +548,7 @@ void ShipSelected(selection* Sel, engine_state* EngineState, game_input* Input, 
 					ImGui::SameLine();
 					ImGui::BeginGroup();
 
-					ImGui::Text(Module->Definition.DisplayName.Array());
+					ImGui::Text(ItemDef->DisplayName.Array());
 					float Progress = (float)(Module->Persist->ActivationTimerMS / ModuleGetActivationTime(&Module->Definition, CurrentShip));
 					ImGui::ProgressBar(Progress, ImVec2(-1.0f, 1.0f));
 

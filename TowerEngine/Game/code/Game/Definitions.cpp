@@ -52,7 +52,6 @@ void CreateDefinitions()
 		// asteroid_miner
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ID = ship_module_id::asteroid_miner;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ItemID = item_id::sm_asteroid_miner;
-		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].DisplayName = "Asteroid Miner";
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationTimeMS = (i64)MinutesToMilliseconds(30);
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationRange = 15.0f;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner].ActivationRangeDisplayColor = COLOR_TEAL;
@@ -63,7 +62,6 @@ void CreateDefinitions()
 		// asteroid_miner_ii
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].ID = ship_module_id::asteroid_miner_ii;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].ItemID = item_id::asteroid_miner_ii;
-		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].DisplayName = "Asteroid Miner II";
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].ActivationTimeMS = (i64)MinutesToMilliseconds(25);
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].ActivationRange = 20.0f;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::asteroid_miner_ii].ActivationRangeDisplayColor = COLOR_TEAL;
@@ -74,7 +72,6 @@ void CreateDefinitions()
 		// salvager_i
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ID = ship_module_id::salvager_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ItemID = item_id::sm_salvager_i;
-		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].DisplayName = "Salvager MK1";
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationTimeMS = (i64)MinutesToMilliseconds(60);
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].ActivationRange = 10.0f;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::salvager_i].SlotType = ship_module_slot_type::science;
@@ -85,7 +82,6 @@ void CreateDefinitions()
 		// foreman_i
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ID = ship_module_id::foreman_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ItemID = item_id::foreman_i;
-		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].DisplayName = "Foreman I";
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ActivationRange = 25.0f;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].ActivationRangeDisplayColor = COLOR_PURPLE;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::foreman_i].SlotType = ship_module_slot_type::science;
@@ -94,21 +90,18 @@ void CreateDefinitions()
 		// cargo_expansion_i
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].ID = ship_module_id::cargo_expansion_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].ItemID = item_id::cargo_expansion_i;
-		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].DisplayName = "Cargo Expansion MKI";
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].SlotType = ship_module_slot_type::structural;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::cargo_expansion_i].CargoAddition = 20;
 
 		// radar_expansion_i
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].ID = ship_module_id::radar_expansion_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].ItemID = item_id::radar_expansion_i;
-		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].DisplayName = "Radar Expansion I";
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].SlotType = ship_module_slot_type::structural;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::radar_expansion_i].Radar.RangeAddition = 30;
 
 		// fuel_tank_expansion_i
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::fuel_tank_expansion_i].ID = ship_module_id::fuel_tank_expansion_i;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::fuel_tank_expansion_i].ItemID = item_id::fuel_tank_expansion_i;
-		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::fuel_tank_expansion_i].DisplayName = "Fuel Tank Expansion I";
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::fuel_tank_expansion_i].SlotType = ship_module_slot_type::structural;
 		Globals->AssetsList.ShipModuleDefinitions[(int)ship_module_id::fuel_tank_expansion_i].FuelTankAddition = 30;
 	}
