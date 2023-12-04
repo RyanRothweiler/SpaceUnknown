@@ -524,6 +524,8 @@ struct state {
 	real32 SkillTreeOrthoZoom;
 
 	i32 ShipsCount;
+
+	b32 UnequipPopup;
 };
 
 #endif

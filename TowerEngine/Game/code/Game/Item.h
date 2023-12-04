@@ -62,4 +62,12 @@ struct item_hold {
 		Persist->Items[0].Count = Count;
 		MassChanged.MarkChanged();
 	}
+
+	b32 CanReduceSize(i32 Reduction) { 
+		i64 NewLimit = GetMassLimit() - Reduction;
+		if (MassCurrent > NewLimit) { 
+			return false;
+		}
+		return true;
+	}
 };

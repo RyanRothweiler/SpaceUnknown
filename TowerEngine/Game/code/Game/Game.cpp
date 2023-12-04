@@ -1053,6 +1053,23 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 		StepUniverse(State, EngineState->DeltaTimeMS);
 	}
 
+	{
+		if (State->UnequipPopup) { 
+			State->UnequipPopup = false;
+			ImGui::OpenPopup("Unequip Error");
+		}
+		if (ImGui::BeginPopupModal("Unequip Error")) {
+			ImGui::Text("Cannot remove module.");
+			ImGui::Text("Removing that module would not leave enough space to hold the current contents.");
+			ImGui::Text("Reduce current contents weight before removing the module.");
+			if (ImGui::Button("ok", ImVec2(-1, 0))) {
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
+	}
+
+
 	// camera controls
 	{
 		// Keyboard

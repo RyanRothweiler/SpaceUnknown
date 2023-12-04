@@ -210,8 +210,30 @@ void ItemDisplayHold(string Title, item_hold* Hold, state* State, game_input* In
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(ImguiShipModuleUnequippingDraggingID)) {
 				ship_module* Inst = State->ModuleUnequipping;
 
-				ItemGive(Hold, Inst->Definition.ItemID, 1);
-				ShipRemoveModule(Inst, State);
+				// validate, can we even safely remove that module?
+				bool Safe = true;
+				{
+					ship* CurrentShip = per::GetShip(&Inst->Persist->Owner, State);
+
+					// Does module reduce cargo space?
+					if (Inst->Definition.CargoAddition > 0) {
+						if (!CurrentShip->Hold.CanReduceSize(Inst->Definition.CargoAddition)) { 
+							Safe = false;
+						}
+					}
+					if (Inst->Definition.FuelTankAddition > 0) {
+						if (!CurrentShip->FuelTank.CanReduceSize(Inst->Definition.FuelTankAddition)) { 
+							Safe = false;
+						}
+					}
+				}
+
+				if (Safe) {
+					ItemGive(Hold, Inst->Definition.ItemID, 1);
+					ShipRemoveModule(Inst, State);
+				} else {
+					State->UnequipPopup = true;
+				}
 			}
 
 			ImGui::EndDragDropTarget();
