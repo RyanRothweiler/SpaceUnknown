@@ -105,9 +105,20 @@ color RandomColor()
 vector2 RandomRadius(real64 Radius)
 {
 	vector2 Ret = {};
-	real64 Theta = RandomRangeFloat(0.0f, 1.0f);
+	real64 Theta = RandomRangeFloat(0.0f, 2.0f * PI);
 	Ret.X = Radius * cos(Theta);
 	Ret.Y = Radius * sin(Theta);
+	return Ret;
+}
+
+vector2 RandomWithinCircle(r64 Radius) {
+
+	r64 Theta = RandomRangeFloat(0.0f, 1.0f) * 2.0f * PI;
+	r64 r = Radius * sqrt(RandomRangeFloat(0.0f, 1.0f));
+
+	vector2 Ret = {};
+	Ret.X = r * cos(Theta);
+	Ret.Y = r * sin(Theta);
 	return Ret;
 }
 

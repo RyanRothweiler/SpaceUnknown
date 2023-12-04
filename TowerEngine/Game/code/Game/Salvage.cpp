@@ -12,7 +12,7 @@ void SalvageHovering(selectable* Sel, engine_state* EngineState, game_input* Inp
 	ImGui::End();
 }
 
-int32 SalvageOrigAmount = 20;
+int32 SalvageOrigAmount = 10;
 
 // Setup data for existing salvage
 void SalvageSetup(salvage* Salvage, salvage_persistent* Persist, state* State) {
@@ -48,8 +48,8 @@ void SalvageCreate(vector2 Position, state* State)
 	Salvage->Persist->WorldObject.Position = Position;
 	Salvage->Persist->WorldObject.Size = vector2{8, 8};
 
-	Salvage->Persist->SpawnRadius = 10.0f;
-	Salvage->Persist->SpawnCenter = {};
+	Salvage->Persist->SpawnRadius = 300.0f;
+	Salvage->Persist->SpawnCenter = Position;
 
 	Salvage->Persist->SpriteIndex = RandomRangeInt(0, ArrayCount(Globals->AssetsList.SalvageImages));
 
@@ -63,5 +63,5 @@ void SalvageCreate(vector2 Position, state* State)
 void SalvageSpawn(salvage* Salvage)
 {
 	Salvage->Persist->KnowledgeAmount = SalvageOrigAmount;
-	Salvage->Persist->WorldObject.Position = Salvage->Persist->SpawnCenter + RandomRadius(Salvage->Persist->SpawnRadius);
+	Salvage->Persist->WorldObject.Position = Salvage->Persist->SpawnCenter + RandomWithinCircle(Salvage->Persist->SpawnRadius);
 }
