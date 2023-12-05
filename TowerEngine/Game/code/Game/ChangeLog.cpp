@@ -1,6 +1,7 @@
 
 const char* ChangeLog = R"(
 [0.14]
+- Bug with forward simulating sleeping incorrect values.
 
 [0.13]
 - Misc bug fixes.

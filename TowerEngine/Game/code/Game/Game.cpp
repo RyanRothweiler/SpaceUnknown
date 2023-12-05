@@ -384,7 +384,6 @@ void LoadGame(state* State)
 		float SimFPS = 15.0f;
 		float TimeStepMS = (1.0f / SimFPS) * 1000.0f;
 
-
 		while (State->ForwardSimulatingTimeRemaining > TimeStepMS) {
 			StepUniverse(State, TimeStepMS);
 
@@ -622,6 +621,13 @@ void Loop(engine_state* EngineState, window_info* Window, game_input* Input)
 				if (ImGui::Button("1 hour")) {
 					State->ForwardSimulating = true;
 					i32 Hours = 1;
+					for (int i = 0; i < SimFPS * 60.0f * 60.0f * Hours; i++) { StepUniverse(State, FrameLengthMS); }
+					State->ForwardSimulating = false;
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("10 hour")) {
+					State->ForwardSimulating = true;
+					i32 Hours = 10;
 					for (int i = 0; i < SimFPS * 60.0f * 60.0f * Hours; i++) { StepUniverse(State, FrameLengthMS); }
 					State->ForwardSimulating = false;
 				}
